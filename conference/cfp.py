@@ -178,12 +178,12 @@ def update_speakers(request, talk_uuid):
     if not conf.cfp():
         return HttpResponseForbidden()
 
-    speaker_form = AddSpeakerToTalkForm(
+    speaker_form = UpdateAttendeeProfile(
         initial=extract_initial_speaker_data_from_user(request.user)
     )
 
     if request.method == 'POST':
-        speaker_form = AddSpeakerToTalkForm(request.POST)
+        speaker_form = UpdateAttendeeProfile(request.POST)
         if speaker_form.is_valid():
             with transaction.atomic():
                 save_information_from_speaker_form(
@@ -369,6 +369,10 @@ class AddSpeakerToTalkForm(forms.ModelForm):
             'company',
             'company_homepage',
         ]
+
+
+class UpdateAttendeeProfile(AddSpeakerToTalkForm):
+    pass
 
 
 class ProposalForm(forms.ModelForm):
