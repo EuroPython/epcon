@@ -3,6 +3,7 @@ from datetime import datetime, date
 
 from django.conf.urls import url
 from django.db import transaction
+from django.contrib.admin.views.decorators import staff_member_required
 from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
@@ -46,6 +47,7 @@ def cart_step1_choose_type_of_order(request):
 
 
 @login_required
+@staff_member_required  # TEMPORARY for testing
 def cart_step2_pick_tickets(request, type_of_tickets):
     """
     Only submit this form if user is authenticated, otherwise dispaly some
@@ -103,6 +105,7 @@ def cart_step2_pick_tickets(request, type_of_tickets):
 
 
 @login_required
+@staff_member_required  # TEMPORARY for testing
 def cart_step3_add_billing_info(request, order_uuid):
 
     order = get_object_or_404(Order, uuid=order_uuid)
@@ -131,6 +134,7 @@ def cart_step3_add_billing_info(request, order_uuid):
 
 
 @login_required
+@staff_member_required  # TEMPORARY for testing
 def cart_step4_payment(request, order_uuid):
     order = get_object_or_404(Order, uuid=order_uuid)
     total_for_stripe = int(order.total() * 100)
@@ -176,6 +180,7 @@ def cart_step4_payment(request, order_uuid):
 
 
 @login_required
+@staff_member_required  # TEMPORARY for testing
 def cart_step5_congrats_order_complete(request, order_uuid):
     order = get_object_or_404(Order, uuid=order_uuid)
     return TemplateResponse(
