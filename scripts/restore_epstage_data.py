@@ -225,6 +225,6 @@ def restore_data(users_file, talks_file):
     users = read_dict(users_file)
     talks = read_dict(talks_file)
 
-    with transaction.atomic:
+    with transaction.atomic():
         restore_users(users)
-        restore_users(talks)
+        restore_talks(talks)
