@@ -3,6 +3,7 @@ from datetime import datetime
 import pickle
 
 from django.contrib.auth import get_user_model
+from django.db import transaction
 
 from assopy.models import AssopyUser
 from conference.models import AttendeeProfile, Conference, Speaker, Talk, TalkSpeaker
@@ -218,3 +219,12 @@ def restore_talks(talks):
         TalkSpeaker.objects.get_or_create(talk=conference_talk, speaker=speaker)
 
         print('Talk created: {}'.format(conference_talk.title))
+
+
+def restore_data(users_file, talks_file):
+    users = read_dict(users_file)
+    talks = read_dict(talks_file)
+
+    with transaction.atomic:
+        restore_users(users)
+        restore_users(talks)
