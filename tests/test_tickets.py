@@ -1,7 +1,3 @@
-# coding: utf-8
-
-
-
 from datetime import date
 
 import responses
@@ -20,7 +16,6 @@ from conference.fares import (
     set_regular_fare_dates,
     SOCIAL_EVENT_FARE_CODE
 )
-from conference import invoicing
 from conference.currencies import (
     DAILY_ECB_URL,
     EXAMPLE_ECB_DAILY_XML,
@@ -39,11 +34,6 @@ DEFAULT_VAT_RATE = "0.2"  # 20%
 DEFAULT_SHIRT_SIZE        = 'l'
 DEFAULT_DIET              = 'omnivorous'
 DEFAULT_PYTHON_EXPERIENCE = 0
-
-# TODO/NOTE(artcz)(2018-06-26) – We use this for settings, but we should
-# actually implement two sets of tests – one for full placeholder behaviour and
-# one for non-placeholder behaviour.
-invoicing.FORCE_PLACEHOLDER = True
 
 
 def make_basic_fare_setup():
@@ -216,14 +206,9 @@ class TestBuyingTickets(TestCase):
             order.confirm_order(timezone.now())
             assert order._complete
 
-            invoice = Invoice.objects.get()
-            assert invoice.html == invoicing.VAT_NOT_AVAILABLE_PLACEHOLDER
-
             response = self.client.get(my_profile_url)
             self.assertContains(response, 'View your tickets (3)')
             self.assertContains(response, tickets_url)
-            self.assertContains(response,
-                                invoicing.VAT_NOT_AVAILABLE_PLACEHOLDER)
 
             response = self.client.get(p3_tickets_url)
             latest_ticket = Ticket.objects.latest('id')
@@ -359,10 +344,11 @@ class TestTicketManagementScenarios(TestCase):
         assert self.tc.python_experience == DEFAULT_PYTHON_EXPERIENCE
 
     def test_assign_ticket_to_another_user_case_insensitive(self):
-        # we need to confirm the order for the tickets to display in the profile
+        # we need to confirm the order for the tickets to display in the
+        # profile
         self.order.confirm_order(timezone.now())
 
-        other_user = make_user(self.OTHER_USER_EMAIL)
+        make_user(self.OTHER_USER_EMAIL)
 
         response = self.client.post(self.ticket_url, {
             # This is the only field we're interested in

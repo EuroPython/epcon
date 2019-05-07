@@ -12,7 +12,6 @@ from django.http import QueryDict
 from pytest import mark
 
 from django.core.urlresolvers import reverse
-from django.core.management import call_command
 from django.conf import settings
 from django.utils import timezone
 
@@ -23,15 +22,13 @@ import responses
 from assopy.models import Country, Invoice, Order, Vat
 from assopy.tests.factories.user import AssopyUserFactory
 from assopy.stripe.tests.factories import FareFactory, OrderFactory
-from conference.models import AttendeeProfile, Ticket, Fare
+from conference.models import AttendeeProfile, Ticket, Fare, Conference
 from conference import settings as conference_settings
-from conference import invoicing  # for monkey patching below
 from conference.invoicing import (
     ACPYSS_16,
     PYTHON_ITALIA_17,
     EPS_18,
     VAT_NOT_AVAILABLE_PLACEHOLDER,
-    upgrade_invoice_placeholder_to_real_invoice,
     CSV_2018_REPORT_COLUMNS,
 )
 from conference.currencies import (
@@ -55,11 +52,6 @@ from tests.common_tools import (  # NOQA
     serve_response,
     serve_text
 )
-
-# TODO/NOTE(artcz)(2018-06-26) – We use this for settings, but we should
-# actually implement two sets of tests – one for full placeholder behaviour and
-# one for non-placeholder behaviour.
-invoicing.FORCE_PLACEHOLDER = True
 
 
 def _prepare_invoice_for_basic_test(order_code, invoice_code):
@@ -320,17 +312,6 @@ def test_invoices_from_buying_tickets(client):
     order.confirm_order(SOME_RANDOM_DATE)
     assert order.payment_date == SOME_RANDOM_DATE
 
-    # # multiple items per invoice, one invoice per vat rate.
-    # # 2 invoices but they are both placeholders
-    assert Invoice.objects.all().count() == 2
-    assert Invoice.objects.filter(
-        html=VAT_NOT_AVAILABLE_PLACEHOLDER
-    ).count() == 2
-
-    # # and we can then upgrade all invoices to non-placeholders
-    for _invoice in Invoice.objects.all():
-        upgrade_invoice_placeholder_to_real_invoice(_invoice)
-
     assert Invoice.objects.all().count() == 2
     assert Invoice.objects.filter(
         html=VAT_NOT_AVAILABLE_PLACEHOLDER
@@ -403,7 +384,7 @@ def test_invoices_from_buying_tickets(client):
     assert 'I/19.0002' in response.content.decode('utf-8')
 
 
-def create_order_and_invoice(assopy_user, fare, keep_as_placeholder=False):
+def create_order_and_invoice(assopy_user, fare):
     order = OrderFactory(user=assopy_user, items=[(fare, {'qty': 1})])
 
     with responses.RequestsMock() as rsps:
@@ -416,9 +397,7 @@ def create_order_and_invoice(assopy_user, fare, keep_as_placeholder=False):
     # confirm_order by default creates placeholders, but for most of the tests
     # we can upgrade them to proper invoices anyway.
     invoice = Invoice.objects.get(order=order)
-    if keep_as_placeholder:
-        return invoice
-    return upgrade_invoice_placeholder_to_real_invoice(invoice)
+    return invoice
 
 
 @mark.django_db
@@ -427,6 +406,10 @@ def test_if_invoice_stores_information_about_the_seller(client):
     Testing #591
     https://github.com/EuroPython/epcon/issues/591
     """
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_CONFERENCE,
+    )
 
     # need this email to generate invoices/orders
     Email.objects.create(code='purchase-complete')
@@ -484,6 +467,11 @@ def test_vat_in_GBP_for_2018(client):
     https://github.com/EuroPython/epcon/issues/617
     """
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
+
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_CONFERENCE,
+    )
 
     Email.objects.create(code='purchase-complete')
     fare = FareFactory()
@@ -571,59 +559,15 @@ def test_create_invoice_with_many_items(client):
         fetch_and_store_latest_ecb_exrates()
 
     order.confirm_order(timezone.now())
-    # invoice = Invoice.objects.get()
-    # serve_response(PdfResponse(
-    #     filename="some-invoice.pdf",
-    #     content=render_invoice_as_html(invoice)
-    # ))
-
-    # testing debug panel
-    # url = reverse("debug_panel_invoice_forcepreview",
-    #               kwargs={'invoice_id': invoice.id})
-    # url = reverse('debug_panel_invoice_placeholders')
-    # client.login(email='joedoe@example.com', password='password123')
-    # response = client.get(url)
-    # serve_response(response)
-
-
-@mark.django_db
-@responses.activate
-@freeze_time("2018-05-05")
-def test_upgrade_invoices_for_2018_command(client):
-    """
-    """
-    responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
-    Email.objects.create(code='purchase-complete')
-    fare = FareFactory()
-    user = make_user()
-    with freeze_time("2018-05-05"):
-        client.login(email='joedoe@example.com', password='password123')
-        invoice1 = create_order_and_invoice(
-            user.assopy_user, fare, keep_as_placeholder=True
-        )
-        assert invoice1.html == VAT_NOT_AVAILABLE_PLACEHOLDER
-        invoice2 = create_order_and_invoice(
-            user.assopy_user, fare, keep_as_placeholder=True
-        )
-        assert invoice2.html == VAT_NOT_AVAILABLE_PLACEHOLDER
-        assert invoice1.code != invoice2.code
-
-    placeholders = Invoice.objects.filter(html=VAT_NOT_AVAILABLE_PLACEHOLDER)
-    all_invoices = Invoice.objects.all()
-    assert all_invoices.count() == 2
-    assert placeholders.count() == 2
-
-    call_command('upgrade_placeholder_invoices_for_2018')
-
-    placeholders = Invoice.objects.filter(html=VAT_NOT_AVAILABLE_PLACEHOLDER)
-    all_invoices = Invoice.objects.all()
-    assert all_invoices.count() == 2
-    assert placeholders.count() == 0
 
 
 @mark.django_db
 @responses.activate
 def test_export_invoice_csv(client):
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_CONFERENCE,
+    )
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
     Email.objects.create(code='purchase-complete')
     fare = FareFactory()
@@ -632,9 +576,7 @@ def test_export_invoice_csv(client):
     client.login(email=user.email, password='password123')
 
     with freeze_time("2018-05-05"):
-        invoice1 = create_order_and_invoice(
-            user.assopy_user, fare, keep_as_placeholder=True
-        )
+        invoice1 = create_order_and_invoice(user.assopy_user, fare)
 
     query_dict = QueryDict(mutable=True)
     query_dict['start_date'] = date(2018, 1, 1)
@@ -673,6 +615,10 @@ def test_export_invoice_csv(client):
 @mark.django_db
 @responses.activate
 def test_export_invoice_csv_before_period(client):
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_CONFERENCE,
+    )
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
     Email.objects.create(code='purchase-complete')
     fare = FareFactory()
@@ -681,9 +627,7 @@ def test_export_invoice_csv_before_period(client):
     client.login(email=user.email, password='password123')
 
     with freeze_time("2018-04-05"):
-        create_order_and_invoice(
-            user.assopy_user, fare, keep_as_placeholder=True
-        )
+        create_order_and_invoice(user.assopy_user, fare)
 
     query_dict = QueryDict(mutable=True)
     query_dict['start_date'] = date(2018, 5, 1)
@@ -707,6 +651,10 @@ def test_export_invoice_csv_before_period(client):
 @mark.django_db
 @responses.activate
 def test_export_invoice(client):
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_CONFERENCE,
+    )
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
     Email.objects.create(code="purchase-complete")
     fare = FareFactory()
@@ -715,9 +663,7 @@ def test_export_invoice(client):
     client.login(email=user.email, password="password123")
 
     with freeze_time("2018-05-05"):
-        invoice1 = create_order_and_invoice(
-            user.assopy_user, fare, keep_as_placeholder=True
-        )
+        invoice1 = create_order_and_invoice(user.assopy_user, fare)
 
     query_dict = QueryDict(mutable=True)
     query_dict["start_date"] = date(2018, 1, 1)
@@ -741,6 +687,10 @@ def test_export_invoice(client):
 @mark.django_db
 @responses.activate
 def test_export_invoice_accounting_json(client):
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_CONFERENCE,
+    )
     responses.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
     Email.objects.create(code='purchase-complete')
     fare = FareFactory()
@@ -749,9 +699,7 @@ def test_export_invoice_accounting_json(client):
     client.login(email=user.email, password='password123')
 
     with freeze_time('2018-05-05'):
-        invoice1 = create_order_and_invoice(
-            user.assopy_user, fare, keep_as_placeholder=True
-        )
+        invoice1 = create_order_and_invoice(user.assopy_user, fare)
 
     query_dict = QueryDict(mutable=True)
     query_dict['start_date'] = date(2018, 1, 1)
@@ -777,6 +725,10 @@ def test_export_invoice_accounting_json(client):
 
 
 def test_reissue_invoice(admin_client):
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_CONFERENCE,
+    )
     invoice_code, order_code = 'I123', 'asdf'
     invoice = _prepare_invoice_for_basic_test(order_code, invoice_code)
 

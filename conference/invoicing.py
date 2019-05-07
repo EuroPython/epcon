@@ -102,11 +102,6 @@ VAT invoices will be generated as soon as we have been issued a VAT ID.
 Please stay tuned.
 """.strip()
 
-# NOTE(artcz)(2018-06-26) – This is a global setting that decides whether we
-# issue placeholders (basically Invoice is normal but it's html is equal to
-# VAT_NOT_AVAILABLE_PLACEHOLDER – or regular invoice with a proper template.
-FORCE_PLACEHOLDER = False
-
 
 def is_real_invoice_code(invoice_code):
     return invoice_code.startswith(REAL_INVOICE_PREFIX)
@@ -166,7 +161,7 @@ def extract_customer_info(order):
     return '\n'.join(customer)
 
 
-def create_invoices_for_order(order, force_placeholder=False):
+def create_invoices_for_order(order):
     assert isinstance(order, Order)
 
     payment_date = order.payment_date
@@ -226,11 +221,7 @@ def create_invoices_for_order(order, force_placeholder=False):
                     }
                 )
 
-                if force_placeholder:
-                    invoice.html = VAT_NOT_AVAILABLE_PLACEHOLDER
-                else:
-                    invoice.html = render_invoice_as_html(invoice)
-
+                invoice.html = render_invoice_as_html(invoice)
                 invoice.save()
 
                 assert invoice.net_price() == net_price
@@ -239,13 +230,6 @@ def create_invoices_for_order(order, force_placeholder=False):
                 invoices.append(invoice)
 
     return invoices
-
-
-def upgrade_invoice_placeholder_to_real_invoice(invoice):
-    invoice.issuer = ISSUER_BY_YEAR[invoice.emit_date.year]
-    invoice.html = render_invoice_as_html(invoice)
-    invoice.save()
-    return invoice
 
 
 def render_invoice_as_html(invoice):
