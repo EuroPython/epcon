@@ -158,14 +158,12 @@ class P3Profile(models.Model):
 
     def public_profile_image_url(self):
         """ Like `profile_image_url` but takes into account the visibility rules of the profile."""
-        # import pdb; pdb.set_trace()
         if self.profile.visibility != 'x':
             url = self.profile_image_url()
             if url == self.image_url:
                 return reverse('p3-profile-avatar', kwargs={'slug': self.profile.slug})
             return url
         return dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR
-
 
     def send_user_message(self, from_, subject, message):
         from conference.models import Conference, AttendeeLink
