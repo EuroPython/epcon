@@ -165,6 +165,44 @@ def update_proposal(request, talk_uuid):
 
 
 @login_required
+def update_speakers(request, talk_uuid):
+    """
+    Update/Edit proposal's speaker(s) view
+    """
+    talk = get_object_or_404(Talk, uuid=talk_uuid)
+
+    if not talk.created_by == request.user:
+        return HttpResponseForbidden()
+
+    conf = Conference.objects.current()
+    if not conf.cfp():
+        return HttpResponseForbidden()
+
+    speaker_form = UpdateAttendeeProfile(
+        initial=extract_initial_speaker_data_from_user(request.user)
+    )
+
+    if request.method == 'POST':
+        speaker_form = UpdateAttendeeProfile(request.POST)
+        if speaker_form.is_valid():
+            with transaction.atomic():
+                save_information_from_speaker_form(
+                    request.user, speaker_form.cleaned_data
+                )
+
+                messages.success(
+                    request,
+                    "Speaker updated successfully.",
+                )
+                return redirect("cfp:preview", talk_slug=talk.slug)
+
+    return TemplateResponse(request, "ep19/bs/cfp/update_speakers.html", {
+        "talk": talk,
+        "speaker_edit_form": speaker_form,
+    })
+
+
+@login_required
 def preview_proposal(request, talk_slug):
     """
     Preview proposal
@@ -333,6 +371,10 @@ class AddSpeakerToTalkForm(forms.ModelForm):
         ]
 
 
+class UpdateAttendeeProfile(AddSpeakerToTalkForm):
+    pass
+
+
 class ProposalForm(forms.ModelForm):
 
     type = forms.ChoiceField(
@@ -434,6 +476,11 @@ urlpatterns = [
         name="preview",
     ),
     url(
+        r"^update/(?P<talk_uuid>[\w-]+)/speakers/$",
+        update_speakers,
+        name="update_speakers",
+    ),
+    url(
         r"^update/(?P<talk_uuid>[\w-]+)/$",
         update_proposal,
         name="update",
@@ -444,3 +491,4 @@ urlpatterns = [
         name="program_wg_download_all_talks",
     ),
 ]
+

@@ -37,6 +37,7 @@
             <div style='margin-top:5em'>
                 {% if cfp_is_open and talk.created_by == request.user %}
                 <a href='{% url "cfp:update" talk.uuid %}' class='btn btn-outline-success'>Update proposal</a>
+                <a href='{% url "cfp:update_speakers" talk.uuid %}' class='btn btn-outline-success'>Update bio</a>
                 {% endif %}
 
                 {% if user.is_staff %}
