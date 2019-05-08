@@ -50,7 +50,8 @@ def manage_ticket(request, ticket_id):
     )
 
     ticket_configuration_form = TicketConfigurationForm(
-        instance=ticket_configuration
+        instance=ticket_configuration,
+        initial={'name': request.user.assopy_user.name()},
     )
 
     if request.method == 'POST':
@@ -138,7 +139,7 @@ class TicketConfigurationForm(forms.ModelForm):
 
     class Meta:
         model = TicketConference
-        fields = ['diet', 'shirt_size', 'tagline', 'days']
+        fields = ['name', 'diet', 'shirt_size', 'tagline', 'days']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

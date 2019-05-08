@@ -1,18 +1,21 @@
 <table class='table'>
     <tr>
         <th>ID</th>
-        <th></th>
-        <th></th>
-        <th></th>
+        <th>Code</th>
+        <th>Name</th>
+        <th class='text-right'>Manage</th>
 
     </tr>
 
     {% for ticket in tickets %}
     <tr>
-        <td><a href='{% url "user_panel:manage_ticket" ticket.id %}'>{{ ticket.id }}</a></td>
-        <td>{{ ticket.fare }}</td>
-        <td>{{ ticket.orderitem.order }}</td>
-        <td><a href='{% url "user_panel:assign_ticket" ticket.id %}'>assign ticket</a>
+        <td>#{{ ticket.id }}</td>
+        <td>{{ ticket.fare.code }}</td>
+        <td>{{ ticket.p3_conference.name }}</td>
+        <td class='text-right'>
+            <a class='btn btn-outline-primary' href='{% url "user_panel:manage_ticket" ticket.id %}'>Configure ticket</a>
+            <a class='btn btn-outline-primary' href='{% url "user_panel:assign_ticket" ticket.id %}'>Assign ticket</a>
+        </td>
     </tr>
     {% endfor %}{# ticket in tickets #}
 </table>

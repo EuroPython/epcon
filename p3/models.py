@@ -67,6 +67,12 @@ class TicketConference(models.Model):
         Ticket,
         related_name='p3_conference',
         on_delete=models.CASCADE)
+
+    name = models.CharField(
+        max_length=255,
+        help_text="What name should appear on the badge?"
+    )
+
     shirt_size = models.CharField(
         max_length=5,
         choices=TICKET_CONFERENCE_SHIRT_SIZES,
@@ -95,7 +101,7 @@ class TicketConference(models.Model):
                     "Don't use a very large image, 250x250 should be fine."))
     assigned_to = models.EmailField(
         blank=True,
-        help_text=_("EMail of the attendee for whom this ticket was bought."))
+        help_text=_("Email of the attendee for whom this ticket was bought."))
 
     objects = TicketConferenceQuerySet.as_manager()
 
