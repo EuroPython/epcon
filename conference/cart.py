@@ -157,10 +157,13 @@ def cart_step4_payment(request, order_uuid):
             email=request.POST.get('stripeEmail'),
         )
         try:
+            # Save the payment information as soon as it goes through to
+            # avoid data loss.
+            charge_for_payment(stripe_payment)
+            order.payment_date = date.today()
+            order.save()
+
             with transaction.atomic():
-                charge_for_payment(stripe_payment)
-                order.payment_date = date.today()
-                order.save()
                 create_invoices_for_order(order)
                 # TODO send_confirmation_email()
 
