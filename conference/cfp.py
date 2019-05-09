@@ -278,7 +278,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
             'email': speaker.user.email,
             'company': ap.company,
             'company_homepage': ap.company_homepage,
-            'bio': ap.getBio().body,
+            'bio': getattr(ap.getBio(), "body", ""),
             'phone': ap.phone,
         })
 
