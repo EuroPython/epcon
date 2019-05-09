@@ -287,6 +287,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
 
 def save_information_from_speaker_form(user, cleaned_data):
     user.first_name = cleaned_data['users_given_name']
+    user.last_name = ''
     user.save()
 
     ap = user.attendeeprofile
@@ -491,4 +492,3 @@ urlpatterns = [
         name="program_wg_download_all_talks",
     ),
 ]
-

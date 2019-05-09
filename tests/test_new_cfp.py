@@ -471,7 +471,7 @@ def test_update_speaker_updated_speaker(user_client):
     user.refresh_from_db()
     attendee_profile = user.attendeeprofile
     attendee_profile.refresh_from_db()
-    assert user.first_name == speaker_data["users_given_name"]
+    assert user.assopy_user.name() == speaker_data["users_given_name"]
     assert attendee_profile.phone == speaker_data["phone"]
     assert attendee_profile.is_minor == speaker_data["is_minor"]
     assert attendee_profile.job_title == speaker_data["job_title"]
@@ -479,6 +479,36 @@ def test_update_speaker_updated_speaker(user_client):
     assert attendee_profile.company == speaker_data["company"]
     assert speaker_data["company_homepage"] in attendee_profile.company_homepage
     assert attendee_profile.getBio().body == speaker_data["bio"]
+
+
+def test_update_speaker_updated_speaker_name(user_client):
+    create_conference_with_open_cfp()
+    talk = TalkFactory()
+    talk.setAbstract("some abstract")
+    talk.created_by = user_client.user
+    talk.save()
+
+    user = user_client.user
+    user.first_name = "John"
+    user.last_name = "Doe"
+    user.save()
+
+    edit_url = reverse("cfp:update_speakers", args=[talk.uuid])
+    speaker_data = dict(
+        users_given_name="new name",
+        phone="+48123456789",
+        bio="this is my bio",
+    )
+
+    response = user_client.post(edit_url, speaker_data)
+
+    assert response.status_code == 302
+    assert redirects_to(response, reverse("cfp:preview", args=[talk.slug]))
+
+    user.refresh_from_db()
+    attendee_profile = user.attendeeprofile
+    attendee_profile.refresh_from_db()
+    assert user.assopy_user.name() == speaker_data["users_given_name"]
 
 
 # Mark with django db only because AddSpeakerToTalkForm is a ModelForm
