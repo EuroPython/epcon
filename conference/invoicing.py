@@ -185,7 +185,7 @@ def create_invoices_for_order(order):
                 )
 
                 gross_price = vat_item['price']
-                vat_rate    = normalize_price((1 + vat_item['vat'].value) / 100)
+                vat_rate    = normalize_price(1 + vat_item['vat'].value / 100)
                 net_price   = normalize_price(vat_item['price'] / vat_rate)
                 vat_price   = vat_item['price'] - net_price
 

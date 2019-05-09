@@ -30,7 +30,7 @@ from conference.accounts import get_or_create_attendee_profile_for_new_user
 from conference.fares import set_early_bird_fare_dates
 
 
-DEFAULT_VAT_RATE = "0.2"  # 20%
+DEFAULT_VAT_RATE = "20"  # 20%
 
 
 class Command(BaseCommand):
