@@ -287,6 +287,9 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
 
 def save_information_from_speaker_form(user, cleaned_data):
     user.first_name = cleaned_data['users_given_name']
+    # TODO: this is an ugly fix required to get current version of `AssopyUser.name()` to work
+    # The fix is described in the aforementioned method.
+    user.last_name = cleaned_data['users_given_name']
     user.save()
 
     ap = user.attendeeprofile
@@ -491,4 +494,3 @@ urlpatterns = [
         name="program_wg_download_all_talks",
     ),
 ]
-
