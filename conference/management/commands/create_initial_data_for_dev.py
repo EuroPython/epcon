@@ -43,7 +43,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         conference, _ = Conference.objects.get_or_create(
             code=settings.CONFERENCE_CONFERENCE,
-            name=settings.CONFERENCE_CONFERENCE,
+            name="Europython 2019",
             # For easier testing open CFP
             cfp_start=timezone.now() - timedelta(days=3),
             cfp_end=timezone.now() + timedelta(days=3),

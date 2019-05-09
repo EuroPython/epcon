@@ -134,7 +134,7 @@ class CommaStringMultipleChoiceField(forms.MultipleChoiceField):
 class TicketConfigurationForm(forms.ModelForm):
 
     days = CommaStringMultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple(), required=False
+        label="Days of attendance", widget=forms.CheckboxSelectMultiple(), required=False
     )
 
     class Meta:

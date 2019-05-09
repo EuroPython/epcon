@@ -252,8 +252,7 @@ def render_invoice_as_html(invoice):
     # TODO: why, instead of passing invoice objects, it explicitly passes
     # every attribute?
     ctx = {
-        # TODO: get it from Conference instance
-        'conference_name': "EuroPython 2018",
+        'conference_name': Conference.objects.current().name,
         "conference_location": EP_CITY_FOR_YEAR[invoice.emit_date.year],
         "bank_info": "",
         "currency": invoice.local_currency,
