@@ -77,11 +77,11 @@ def create_order(for_user, for_date, fares_info, calculation, coupon=None):
         )
         order.save()
 
-        for fare_code, amount in fares_info.items():
+        for fare_code, ticket_count in fares_info.items():
             fare = fares[fare_code]
             vat = fare.vat_set.all()[0]
 
-            for i in range(amount):
+            for i in range(ticket_count):
                 # This is a relict of the past we should at some point reverse
                 # the relationship and create tickets from orderitems, not the
                 # other way around.
@@ -94,7 +94,7 @@ def create_order(for_user, for_date, fares_info, calculation, coupon=None):
                     order=order,
                     code=fare_code,
                     ticket=ticket,
-                    description=f'{fare.description} {i+1}/{amount}',
+                    description=f'{fare.description} {i+1}/{ticket_count}',
                     # full price here, apply full discount as another OrderItem
                     price=fare.price,
                     vat=vat,
