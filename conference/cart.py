@@ -2,13 +2,13 @@ import uuid
 from datetime import datetime, date
 
 from django.conf.urls import url
+from django.contrib import messages
 from django.db import transaction
 from django.contrib.admin.views.decorators import staff_member_required
 from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
-from django.http import HttpResponse
 from django import forms
 
 from conference.models import StripePayment
@@ -40,9 +40,11 @@ def cart_step1_choose_type_of_order(request):
     This view is not login required because we want to display some summary of
     ticket prices here as well.
     """
-
+    context = {
+        'show_special': 'special' in TicketType.ALL
+    }
     return TemplateResponse(
-        request, "ep19/bs/cart/step_1_choose_type_of_order.html", {}
+        request, "ep19/bs/cart/step_1_choose_type_of_order.html", context
     )
 
 
@@ -81,23 +83,25 @@ def cart_step2_pick_tickets(request, type_of_tickets):
                 discount_code=discount_code,
             )
         except FareIsNotAvailable:
-            return HttpResponse("Fare is not available", status=403)
+            messages.error(request, "A selected fare is not available")
+        else:
+            if CartActions.apply_discount_code in request.POST:
+                context['calculation'] = calculation
+                context['discount_code'] = discount_code or 'No discount code'
+                if discount_code and not coupon:
+                    messages.warning(request, "The discount code provided expired or is invalid")
 
-        if CartActions.apply_discount_code in request.POST:
-            context['calculation'] = calculation
-            context['discount_code'] = discount_code or 'No discount code'
-
-        if CartActions.buy_tickets in request.POST:
-            order = create_order(
-                for_user=request.user,
-                for_date=timezone.now().date(),
-                fares_info=fares_info,
-                calculation=calculation,
-                coupon=coupon,
-            )
-            return redirect(
-                "cart:step3_add_billing_info", order_uuid=order.uuid
-            )
+            if CartActions.buy_tickets in request.POST:
+                order = create_order(
+                    for_user=request.user,
+                    for_date=timezone.now().date(),
+                    fares_info=fares_info,
+                    calculation=calculation,
+                    coupon=coupon,
+                )
+                return redirect(
+                    "cart:step3_add_billing_info", order_uuid=order.uuid
+                )
 
     return TemplateResponse(
         request, "ep19/bs/cart/step_2_pick_tickets.html", context
@@ -250,6 +254,9 @@ class PersonalBillingForm(forms.ModelForm):
             'address': forms.Textarea(attrs={'rows': 3}),
             'billing_notes': forms.Textarea(attrs={'rows': 3}),
         }
+        labels = {
+            "card_name": "Name of the cardholder",
+        }
 
 
 class BusinessBillingForm(forms.ModelForm):
@@ -269,6 +276,9 @@ class BusinessBillingForm(forms.ModelForm):
         widgets = {
             'address': forms.Textarea(attrs={'rows': 3}),
             'billing_notes': forms.Textarea(attrs={'rows': 3}),
+        }
+        labels = {
+            "card_name": "Name of the cardholder",
         }
 
 

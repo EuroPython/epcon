@@ -16,7 +16,7 @@
                 <table class='table'>
                     {% for item in order.orderitem_set.all %}
                     <tr>
-                        <td>{{ item.description }}</td>
+                        <td>{{ item.ticket }}</td>
                         <td>{{ item.price }} EUR</td>
                     </tr>
                     {% endfor %}{# item in items.all #}
