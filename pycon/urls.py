@@ -1,16 +1,21 @@
-# -*- coding: utf-8 -*-
-
 from django.conf import settings
-from django.conf.urls import include, url
+from django.conf.urls import (
+    include,
+    url,
+)
 from django.contrib import admin
-from django.views import defaults, static
+from django.views import (
+    defaults,
+    static,
+)
 from django.views.generic import RedirectView
-
 from filebrowser.sites import site as fsite
 
 import p3.forms as pforms
 from conference import views as conference_views
 from conference.accounts import urlpatterns as accounts_urls
+from conference.cart import urlpatterns_ep19 as cart19_urls
+from conference.cfp import urlpatterns as cfp_urls
 from conference.debug_panel import urlpatterns as debugpanel_urls
 from conference.homepage import (
     form_testing,
@@ -18,12 +23,9 @@ from conference.homepage import (
     generic_content_page_with_sidebar,
     homepage,
 )
-from conference import views as conference_views
-from conference.homepage import homepage
-from conference.user_panel import urlpatterns as user_panel_urls
-from conference.cfp import urlpatterns as cfp_urls
 from conference.news import news_list
-from conference.cart import urlpatterns_ep19 as cart19_urls
+from conference.talk_voting import urlpatterns as talk_voting_urls
+from conference.user_panel import urlpatterns as user_panel_urls
 
 admin.autodiscover()
 admin.site.index_template = 'p3/admin/index.html'
@@ -37,6 +39,7 @@ urlpatterns = [
     url(r'^user-panel/', include(user_panel_urls, namespace="user_panel")),
     url(r'^accounts/', include(accounts_urls, namespace="accounts")),
     url(r'^cfp/', include(cfp_urls, namespace="cfp")),
+    url(r'^talk-voting/', include(talk_voting_urls, namespace="talk_voting")),
     url(r'^news/', news_list, name="news"),
     url(r'^accounts/', include('assopy.urls')),
     url(r'^admin/filebrowser/', include(fsite.urls)),

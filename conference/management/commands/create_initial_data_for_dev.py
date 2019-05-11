@@ -92,6 +92,15 @@ class Command(BaseCommand):
                     ).generate({})
                 )
 
+        for i in range(20):
+            # Make additional proposals – useful for talk voting
+            talk = TalkFactory(status=TALK_STATUS.proposed)
+            talk.setAbstract("Lorem ipsum abstract")
+            talk.created_by = alice.user
+            talk.save()
+            add_speaker_to_talk(speaker, talk)
+            profile = get_or_create_attendee_profile_for_new_user(user.user)
+
         def new_page(rev_id, title, **kwargs):
             try:
                 page = create_page(
