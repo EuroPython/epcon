@@ -168,7 +168,7 @@ def get_tickets_for_current_conference(user):
 
 def get_invoices_for_current_conference(user):
     return Invoice.objects.filter(
-        # HACK
+        order__user__user=user,
         emit_date__year=Conference.objects.current().conference_start.year
     )
 
