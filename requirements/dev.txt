@@ -41,7 +41,7 @@ django-model-utils==3.1.1
 django-mptt==0.10.0       # via django-filer
 django-paypal==1.0.0
 django-pdb==0.6.2
-django-phonenumber-field==2.3.1
+django-phonenumber-field==2.4.0
 django-polymorphic==2.0.3  # via django-filer
 django-rosetta==0.9.3
 django-sekizai==1.0.0     # via cmsplugin-filer, django-cms
@@ -78,7 +78,9 @@ lxml==4.3.3
 markdown2==2.3.7
 markupsafe==1.1.1         # via jinja2
 mccabe==0.6.1             # via flake8
-mock==3.0.3
+
+mock==3.0.4
+
 more-itertools==7.0.0     # via pytest
 oauthlib==3.0.1           # via requests-oauthlib, social-auth-core
 openpyxl==2.4.8
@@ -86,7 +88,8 @@ packaging==19.0           # via pytest-sugar
 parso==0.4.0              # via jedi
 pdbpp==0.10.0
 pexpect==4.7.0            # via ipython
-phonenumbers==8.10.10
+phonenumbers==8.10.11
+
 pickleshare==0.7.5        # via ipython
 pillow==6.0.0             # via cairosvg, djangocms-text-ckeditor, easy-thumbnails
 pluggy==0.9.0             # via pytest
