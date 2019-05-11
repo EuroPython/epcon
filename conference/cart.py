@@ -2,6 +2,7 @@ import uuid
 from datetime import datetime, date
 
 from django.conf.urls import url
+from django.conf import settings
 from django.contrib import messages
 from django.db import transaction
 from django.contrib.admin.views.decorators import staff_member_required
@@ -135,8 +136,14 @@ def cart_step3_add_billing_info(request, order_uuid):
 
             return redirect("cart:step4_payment", order_uuid=order.uuid)
 
+    # sanity/security check to make sure we don't publish the the wrong key
+    stripe_key = settings.STRIPE_PUBLISHABLE_KEY
+    assert stripe_key.startswith("pk_")
+
     return TemplateResponse(
-        request, "ep19/bs/cart/step_3_add_billing_info.html", {"form": form}
+        request,
+        "ep19/bs/cart/step_3_add_billing_info.html",
+        {"form": form, "stripe_key": stripe_key},
     )
 
 
