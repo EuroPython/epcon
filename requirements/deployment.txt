@@ -19,6 +19,7 @@ coverage==4.5.3           # via pytest-cov
 cssselect2==0.2.1         # via cairosvg, weasyprint
 decorator==4.4.0
 defusedxml==0.6.0         # via cairosvg, python3-openid, social-auth-core
+dj-database-url==0.5.0
 django-appconf==1.0.3     # via cmsplugin-filer
 django-authority==0.13.2
 django-classy-tags==0.8.0

@@ -4,6 +4,7 @@ import os
 import os.path
 import sys
 
+import dj_database_url
 from decouple import config
 
 from django.core.urlresolvers import reverse_lazy
@@ -63,12 +64,10 @@ SITE_DATA_ROOT = DATA_DIR + "/site"
 # DATABASE
 # --------
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': SITE_DATA_ROOT + '/epcon.db',
-    }
+    'default': dj_database_url.config(
+        default='sqlite:///{}/epcon.db'.format(SITE_DATA_ROOT)
+    ),
 }
-
 
 # Email
 # -----

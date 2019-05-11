@@ -165,6 +165,44 @@ def update_proposal(request, talk_uuid):
 
 
 @login_required
+def update_speakers(request, talk_uuid):
+    """
+    Update/Edit proposal's speaker(s) view
+    """
+    talk = get_object_or_404(Talk, uuid=talk_uuid)
+
+    if not talk.created_by == request.user:
+        return HttpResponseForbidden()
+
+    conf = Conference.objects.current()
+    if not conf.cfp():
+        return HttpResponseForbidden()
+
+    speaker_form = UpdateAttendeeProfile(
+        initial=extract_initial_speaker_data_from_user(request.user)
+    )
+
+    if request.method == 'POST':
+        speaker_form = UpdateAttendeeProfile(request.POST)
+        if speaker_form.is_valid():
+            with transaction.atomic():
+                save_information_from_speaker_form(
+                    request.user, speaker_form.cleaned_data
+                )
+
+                messages.success(
+                    request,
+                    "Speaker updated successfully.",
+                )
+                return redirect("cfp:preview", talk_slug=talk.slug)
+
+    return TemplateResponse(request, "ep19/bs/cfp/update_speakers.html", {
+        "talk": talk,
+        "speaker_edit_form": speaker_form,
+    })
+
+
+@login_required
 def preview_proposal(request, talk_slug):
     """
     Preview proposal
@@ -240,7 +278,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
             'email': speaker.user.email,
             'company': ap.company,
             'company_homepage': ap.company_homepage,
-            'bio': ap.getBio().body,
+            'bio': getattr(ap.getBio(), "body", ""),
             'phone': ap.phone,
         })
 
@@ -249,6 +287,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
 
 def save_information_from_speaker_form(user, cleaned_data):
     user.first_name = cleaned_data['users_given_name']
+    user.last_name = ''
     user.save()
 
     ap = user.attendeeprofile
@@ -331,6 +370,10 @@ class AddSpeakerToTalkForm(forms.ModelForm):
             'company',
             'company_homepage',
         ]
+
+
+class UpdateAttendeeProfile(AddSpeakerToTalkForm):
+    pass
 
 
 class ProposalForm(forms.ModelForm):
@@ -432,6 +475,11 @@ urlpatterns = [
         r"^preview/(?P<talk_slug>[\w-]+)/$",
         preview_proposal,
         name="preview",
+    ),
+    url(
+        r"^update/(?P<talk_uuid>[\w-]+)/speakers/$",
+        update_speakers,
+        name="update_speakers",
     ),
     url(
         r"^update/(?P<talk_uuid>[\w-]+)/$",
