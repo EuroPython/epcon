@@ -1,11 +1,8 @@
-
-
-
-
+from django.conf import settings
 from model_utils import Choices
 
 from assopy.models import Vat, VatFare
-from conference.models import Conference, Fare, FARE_TICKET_TYPES
+from conference.models import FARE_TICKET_TYPES, Conference, Fare
 
 
 # due to historical reasons this one is basically hardcoded in various places.
@@ -49,7 +46,11 @@ FARE_CODE_REGEXES = {
 }
 
 
-def available_fare_codes():
+class FareIsNotAvailable(Exception):
+    pass
+
+
+def all_possible_fare_codes():
     fare_codes = {
         "T" + type_code + variant_code + group_code:
         "%s %s %s" % (type_name, variant_name, group_name)
@@ -63,11 +64,31 @@ def available_fare_codes():
     return fare_codes
 
 
-AVAILABLE_FARE_CODES = available_fare_codes()
+ALL_POSSIBLE_FARE_CODES = all_possible_fare_codes()
 
 
 def is_fare_code_valid(fare_code):
-    return fare_code in AVAILABLE_FARE_CODES
+    return fare_code in ALL_POSSIBLE_FARE_CODES
+
+
+def get_available_fares(date):
+    """
+    Returns all fares that where available during a given point in time,
+    regardless of whether they were sold out or not.
+    """
+    return Fare.objects.filter(
+        start_validity__lte=date,
+        end_validity__gte=date,
+    )
+
+
+def get_available_fares_as_dict(date):
+    return {f.code: f for f in get_available_fares(date)}
+
+
+def get_prices_of_available_fares(date):
+    codes_with_prices = get_available_fares(date).values_list('code', 'price')
+    return {f[0]: f[1] for f in codes_with_prices}
 
 
 def create_fare_for_conference(code, conference, price,
@@ -89,13 +110,14 @@ def create_fare_for_conference(code, conference, price,
     # of name.
     conference, _ = Conference.objects.get_or_create(
         code=conference,
-        # There should probably be a spearate setting for a name...
-        name=conference,
     )
+    if not conference.name:
+        conference.name = settings.CONFERENCE_NAME
+        conference.save()
 
     recipient_type = code[3].lower()  # same as lowercase last letter of code
 
-    name = "%s - %s" % (conference.name, AVAILABLE_FARE_CODES[code])
+    name = "%s - %s" % (conference.name, ALL_POSSIBLE_FARE_CODES[code])
     fare, _ = Fare.objects.get_or_create(
         conference=conference.code,
         code=code,
@@ -117,7 +139,7 @@ def pre_create_typical_fares_for_conference(conference, vat_rate,
                                             print_output=False):
     fares = []
 
-    for fare_code in AVAILABLE_FARE_CODES.keys():
+    for fare_code in ALL_POSSIBLE_FARE_CODES.keys():
         fare = create_fare_for_conference(
             code=fare_code,
             conference=conference,
@@ -133,6 +155,8 @@ def pre_create_typical_fares_for_conference(conference, vat_rate,
 
 
 def set_early_bird_fare_dates(conference, start_date, end_date):
+    assert start_date <= end_date
+
     early_birds = Fare.objects.filter(
         conference=conference,
         code__regex=FARE_CODE_REGEXES['types'][FARE_CODE_TYPES.EARLY_BIRD]
@@ -142,6 +166,8 @@ def set_early_bird_fare_dates(conference, start_date, end_date):
 
 
 def set_regular_fare_dates(conference, start_date, end_date):
+    assert start_date <= end_date
+
     fares = Fare.objects.filter(
         conference=conference,
         code__regex=FARE_CODE_REGEXES['types'][FARE_CODE_TYPES.REGULAR]

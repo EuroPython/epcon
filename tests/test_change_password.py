@@ -1,12 +1,14 @@
+from datetime import date
 from pytest import mark
 
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from django_factory_boy import auth as auth_factories
 
 # TODO: clean up this import path
 from assopy.tests.factories.user import AssopyUserFactory
-from conference.models import AttendeeProfile
+from conference.models import AttendeeProfile, Conference
 
 from tests.common_tools import template_used
 
@@ -25,6 +27,13 @@ def test_change_password(client):
     # default password is 'password123' per django_factory_boy
     user = auth_factories.UserFactory(
         email="joedoe@example.com", is_active=True
+    )
+    # Conference is needed for user panel to work properly – because of
+    # proposals and orders
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_CONFERENCE,
+        conference_start=date.today(),
     )
 
     # both are required to access user profile page.

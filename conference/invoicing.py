@@ -20,6 +20,7 @@ from django.db import transaction
 
 from assopy.models import Invoice, Order
 
+from conference.models import Conference
 from conference.currencies import (
     convert_from_EUR_using_latest_exrates,
     normalize_price
@@ -69,7 +70,9 @@ LOCAL_CURRENCY_BY_YEAR = {
     2016: "EUR",
     2017: "EUR",
     2018: "GBP",
-    2019: "CHF",
+    # Using EUR here because we don't need to do conversion to CHF on our own,
+    # nor put it on the invoices.
+    2019: "EUR",
 }
 
 EP_CITY_FOR_YEAR = {
@@ -98,11 +101,6 @@ VAT_NOT_AVAILABLE_PLACEHOLDER = """
 VAT invoices will be generated as soon as we have been issued a VAT ID.
 Please stay tuned.
 """.strip()
-
-# NOTE(artcz)(2018-06-26) – This is a global setting that decides whether we
-# issue placeholders (basically Invoice is normal but it's html is equal to
-# VAT_NOT_AVAILABLE_PLACEHOLDER – or regular invoice with a proper template.
-FORCE_PLACEHOLDER = False
 
 
 def is_real_invoice_code(invoice_code):
@@ -163,7 +161,7 @@ def extract_customer_info(order):
     return '\n'.join(customer)
 
 
-def create_invoices_for_order(order, force_placeholder=False):
+def create_invoices_for_order(order):
     assert isinstance(order, Order)
 
     payment_date = order.payment_date
@@ -223,11 +221,7 @@ def create_invoices_for_order(order, force_placeholder=False):
                     }
                 )
 
-                if force_placeholder:
-                    invoice.html = VAT_NOT_AVAILABLE_PLACEHOLDER
-                else:
-                    invoice.html = render_invoice_as_html(invoice)
-
+                invoice.html = render_invoice_as_html(invoice)
                 invoice.save()
 
                 assert invoice.net_price() == net_price
@@ -236,13 +230,6 @@ def create_invoices_for_order(order, force_placeholder=False):
                 invoices.append(invoice)
 
     return invoices
-
-
-def upgrade_invoice_placeholder_to_real_invoice(invoice):
-    invoice.issuer = ISSUER_BY_YEAR[invoice.emit_date.year]
-    invoice.html = render_invoice_as_html(invoice)
-    invoice.save()
-    return invoice
 
 
 def render_invoice_as_html(invoice):
@@ -254,6 +241,8 @@ def render_invoice_as_html(invoice):
             item['price'] / (1 + invoice.vat.value / 100)
         )
 
+    conference = Conference.objects.current()
+
     # TODO this is copied as-is from assopy/views.py, but can be simplified
     # TODO: also if there are any images included in the invoice make sure to
     # base64 them.
@@ -263,8 +252,7 @@ def render_invoice_as_html(invoice):
     # TODO: why, instead of passing invoice objects, it explicitly passes
     # every attribute?
     ctx = {
-        # TODO: get it from Conference instance
-        'conference_name': "EuroPython 2018",
+        'conference_name': Conference.objects.current().name,
         "conference_location": EP_CITY_FOR_YEAR[invoice.emit_date.year],
         "bank_info": "",
         "currency": invoice.local_currency,
@@ -292,7 +280,10 @@ def render_invoice_as_html(invoice):
         'is_real_invoice': is_real_invoice_code(invoice.code),
         "issuer": invoice.issuer,
         "invoice": invoice,
-        "additional_text": ADDITIONAL_TEXT_FOR_YEAR[invoice.emit_date.year]
+        "additional_text": ADDITIONAL_TEXT_FOR_YEAR[invoice.emit_date.year],
+        "conference_start": conference.conference_start,
+        "conference_end": conference.conference_end,
+
     }
 
     return render_to_string('assopy/invoice.html', ctx)

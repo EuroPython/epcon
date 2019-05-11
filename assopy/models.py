@@ -371,7 +371,16 @@ class Coupon(models.Model):
         else:
             return 'val'
 
+    def price_multiplier(self):
+        """
+        Converts 20% to 0.8
+        """
+        assert self.value.endswith('%')
+        discount = Decimal(self.value[:-1]) / Decimal(100)
+        return Decimal(1) - discount
+
     def valid(self, user=None):
+        # import pdb; pdb.set_trace()
         if self.start_validity and self.end_validity:
             today = date.today()
             if today < self.start_validity or today > self.end_validity:
@@ -479,6 +488,7 @@ class OrderQuerySet(models.QuerySet):
         t = qs.aggregate(t=models.Sum('price'))['t']
         return t if t is not None else 0
 
+    # TODO: deprecate this .create in favor of conference/orders:create_order
     def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, vat_number='', cf_code='', remote=True):
 
         # FIXME/TODO(artcz)(2018-08-20)
@@ -579,7 +589,7 @@ class Vat(models.Model):
     fares = models.ManyToManyField(Fare,
                                    through='VatFare',
                                    null=True, blank=True)
-    value = models.DecimalField(max_digits=2, decimal_places=0)
+    value = models.DecimalField(max_digits=5, decimal_places=2)
     description = models.CharField(null=True, blank=True, max_length=125)
     invoice_notice = models.TextField(null=True, blank=True)
 
@@ -622,6 +632,9 @@ ENABLED_ORDER_PAYMENT = (
 
 
 class Order(models.Model):
+    # TODO(artcz) This should have unique=True as well once we backfill data
+    # for previous orders.
+    uuid = models.CharField(max_length=100, blank=True, default='')
     code = models.CharField(max_length=20, null=True)
     assopy_id = models.CharField(max_length=22, null=True, unique=True, blank=True)
     user = models.ForeignKey(AssopyUser, related_name='orders', on_delete=models.CASCADE)
@@ -704,13 +717,10 @@ class Order(models.Model):
         # This used to generate invoices, currently it just fills payment date,
         # and creates placeholder
         # To avoid ciruclar import
-        from conference.invoicing import (
-            create_invoices_for_order,
-            FORCE_PLACEHOLDER
-        )
+        from conference.invoicing import create_invoices_for_order
         self.payment_date = payment_date
         self.save()
-        create_invoices_for_order(self, force_placeholder=FORCE_PLACEHOLDER)
+        create_invoices_for_order(self)
 
     def total(self, apply_discounts=True):
         if apply_discounts:

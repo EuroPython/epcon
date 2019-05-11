@@ -1,4 +1,10 @@
 <table class='table'>
+    <tr>
+        <th>Title</th>
+        <th>Date of Submission</th>
+        <th>Status</th>
+    </tr>
+
     {% for prop in proposals %}
     <tr>
         <td><a href='{% url "cfp:preview" prop.slug %}'>{{ prop.title }}</a></td>

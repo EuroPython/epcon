@@ -15,12 +15,17 @@ from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse, JsonResponse
 from django.template.response import TemplateResponse
+from django.template.loader import render_to_string
 from django.shortcuts import redirect
 
 from common.http import PdfResponse
 from conference.invoicing import (
     Invoice,
+    ADDITIONAL_TEXT_FOR_YEAR,
     VAT_NOT_AVAILABLE_PLACEHOLDER,
+    EP_CITY_FOR_YEAR,
+    LOCAL_CURRENCY_BY_YEAR,
+    ISSUER_BY_YEAR,
     REAL_INVOICE_PREFIX,
     next_invoice_code_for_year,
     render_invoice_as_html,
@@ -121,6 +126,60 @@ def get_start_end_dates(request):
         end_date = datetime.datetime.strptime(end_date_param, '%Y-%m-%d')
 
     return start_date, end_date
+
+
+@staff_member_required
+def debug_panel_invoice_example(request):
+    """
+    This view is used to render an example of the invoice based on current
+    settings. (in PDF)
+    """
+
+    conference = Conference.objects.current()
+    ctx = {
+        # TODO: get it from Conference instance
+        'conference_name': "EuroPython 2019",
+        "conference_location": EP_CITY_FOR_YEAR[datetime.date.today().year],
+        "bank_info": "",
+        "currency": LOCAL_CURRENCY_BY_YEAR[datetime.date.today().year],
+        'title': "#I/19.12345",
+        'code': "#I/19.12345",
+        'conference_start': conference.conference_start,
+        'conference_end': conference.conference_end,
+        'emit_date': datetime.date.today(),
+        # TODO: possibly we need to stare it as separate date
+        'time_of_supply': datetime.date.today(),
+        'order': {
+            'card_name': "Joe Doe",
+            'address': "Neverland 123",
+            'billing_notes': "Billing notes",
+            'cf_code': "CF code",
+            'vat_number': "EU 123 45 67 89",
+        },
+        'items': [
+            {
+                'code': 'TESP',
+                'description': "Description",
+                'count': 2,
+                'value': 220,
+                'net_price': 200,
+            }
+        ],
+        # 'note': "A note",
+        'price': {'net': "100", 'vat': "120", 'total': "120"},
+        'vat': {'value': '10'},
+        'is_real_invoice': True,
+        "issuer": ISSUER_BY_YEAR[datetime.date.today().year],
+        "invoice": None,
+        "additional_text": ADDITIONAL_TEXT_FOR_YEAR[
+            datetime.date.today().year
+        ],
+    }
+
+    return PdfResponse(
+        filename="Testinovoice.pdf",
+        content=render_to_string('assopy/invoice.html', ctx)
+    )
 
 
 @staff_member_required
@@ -302,4 +361,8 @@ urlpatterns = [
     url(r'^fares/setup/$',
         debugpanel_fares_setup,
         name='debug_panel_fares_setup'),
+
+    url(r'^invoice-example/$',
+        debug_panel_invoice_example,
+        name='debug_panel_invoice_example'),
 ]
