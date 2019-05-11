@@ -107,6 +107,7 @@ def cart_step2_pick_tickets(request, type_of_tickets):
                 for_date=timezone.now().date(),
                 fares_info=fares_info,
                 calculation=calculation,
+                order_type=type_of_tickets,
                 coupon=coupon,
             )
             return redirect(
@@ -127,7 +128,6 @@ def cart_step3_add_billing_info(request, order_uuid):
     if is_business_order(order):
         billing_form = BusinessBillingForm
     else:
-        # TODO: should we have a student billing form?
         billing_form = PersonalBillingForm
 
     form = billing_form(instance=order)
@@ -281,12 +281,11 @@ def get_available_fares_for_type(type_of_tickets):
 class PersonalBillingForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ["card_name", "country", "address", "billing_notes"]
+        fields = ["card_name", "country", "address"]
         widgets = {
             "address": forms.Textarea(attrs={"rows": 3}),
-            "billing_notes": forms.Textarea(attrs={"rows": 3}),
         }
-        labels = {"card_name": "Name of the cardholder"}
+        labels = {"card_name": "Name of the credit card holder"}
 
 
 class BusinessBillingForm(forms.ModelForm):
@@ -307,7 +306,7 @@ class BusinessBillingForm(forms.ModelForm):
             "address": forms.Textarea(attrs={"rows": 3}),
             "billing_notes": forms.Textarea(attrs={"rows": 3}),
         }
-        labels = {"card_name": "Name of the cardholder"}
+        labels = {"card_name": "Name of the credit card holder"}
 
 
 urlpatterns_ep19 = [

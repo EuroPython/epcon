@@ -630,6 +630,13 @@ ENABLED_ORDER_PAYMENT = (
     ('cc', 'Credit Card'),
 )
 
+# This is new for 2019; We can track order type for improved handling of forms
+# in the cart.
+ORDER_TYPE = Choices(
+    ("company", "Company"),
+    ("student", "Student"),
+    ("personal", "Personal"),
+)
 
 class Order(models.Model):
     # TODO(artcz) This should have unique=True as well once we backfill data
@@ -668,6 +675,12 @@ class Order(models.Model):
         help_text="Auto filled by the payments backend",
         blank=True,
         null=True,
+    )
+
+    order_type = models.CharField(
+        choices=ORDER_TYPE,
+        max_length=20,
+        blank=True,
     )
 
     objects = OrderQuerySet.as_manager()
