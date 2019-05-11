@@ -25,7 +25,7 @@
             <h3>{{ talk.sub_title }}</h3>
             <p>{% for t in talk.tags.all %}<span class='badge badge-primary'>{{ t }}</span> {% endfor %}</p>
             <p>{{ talk.abstract_short }}</p>
-            <p>Python level: {{ talk.level }}, Domain level: {{ talk.domain_level }}</p>
+            <p>Type: {{ talk.type }}; Python level: {{ talk.level }}; Domain level: {{ talk.domain_level }}</p>
             </div>
             {% endfor %}{# talk in talks #}
         </div>
