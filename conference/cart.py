@@ -40,9 +40,7 @@ def cart_step1_choose_type_of_order(request):
     This view is not login required because we want to display some summary of
     ticket prices here as well.
     """
-    context = {
-        'show_special': 'special' in TicketType.ALL
-    }
+    context = {"show_special": "special" in TicketType.ALL}
     return TemplateResponse(
         request, "ep19/bs/cart/step_1_choose_type_of_order.html", context
     )
@@ -52,7 +50,7 @@ def cart_step1_choose_type_of_order(request):
 @staff_member_required  # TEMPORARY for testing
 def cart_step2_pick_tickets(request, type_of_tickets):
     """
-    Only submit this form if user is authenticated, otherwise dispaly some
+    Only submit this form if user is authenticated, otherwise display some
     support info.
     """
 
@@ -63,17 +61,17 @@ def cart_step2_pick_tickets(request, type_of_tickets):
         "CartActions": CartActions,
         "available_fares": available_fares,
         "global_max_per_fare_type": GLOBAL_MAX_PER_FARE_TYPE,
-        'calculation': OrderCalculation(0, 0, 0),  # empty calculation
-        'currency': "EUR",
-        'fares_info': {},  # empty fares info
+        "calculation": OrderCalculation(0, 0, 0),  # empty calculation
+        "currency": "EUR",
+        "fares_info": {},  # empty fares info
     }
 
-    if request.method == 'POST':
+    if request.method == "POST":
 
         discount_code, fares_info = extract_order_parameters_from_request(
             request.POST
         )
-        context['fares_info'] = fares_info
+        context["fares_info"] = fares_info
 
         try:
             calculation, coupon = calculate_order_price_including_discount(
@@ -84,14 +82,17 @@ def cart_step2_pick_tickets(request, type_of_tickets):
             )
         except FareIsNotAvailable:
             messages.error(request, "A selected fare is not available")
-            return redirect('.')
+            return redirect(".")
 
         else:
             if CartActions.apply_discount_code in request.POST:
-                context['calculation'] = calculation
-                context['discount_code'] = discount_code or 'No discount code'
+                context["calculation"] = calculation
+                context["discount_code"] = discount_code or "No discount code"
                 if discount_code and not coupon:
-                    messages.warning(request, "The discount code provided expired or is invalid")
+                    messages.warning(
+                        request,
+                        "The discount code provided expired or is invalid",
+                    )
 
             if CartActions.buy_tickets in request.POST:
                 order = create_order(
@@ -124,7 +125,7 @@ def cart_step3_add_billing_info(request, order_uuid):
 
     form = billing_form(instance=order)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = billing_form(data=request.POST, instance=order)
 
         if form.is_valid():
@@ -135,7 +136,7 @@ def cart_step3_add_billing_info(request, order_uuid):
             return redirect("cart:step4_payment", order_uuid=order.uuid)
 
     return TemplateResponse(
-        request, "ep19/bs/cart/step_3_add_billing_info.html", {'form': form}
+        request, "ep19/bs/cart/step_3_add_billing_info.html", {"form": form}
     )
 
 
@@ -144,19 +145,19 @@ def cart_step3_add_billing_info(request, order_uuid):
 def cart_step4_payment(request, order_uuid):
     order = get_object_or_404(Order, uuid=order_uuid)
     total_for_stripe = int(order.total() * 100)
-    payments = order.stripepayment_set.all().order_by('created')
+    payments = order.stripepayment_set.all().order_by("created")
     # TODO: pay attention if order is paid or not, and if paid don't render the
     # payment button in the template
 
-    if request.method == 'POST':
+    if request.method == "POST":
         stripe_payment = StripePayment.objects.create(
             order=order,
             user=request.user,
             uuid=str(uuid.uuid4()),
             amount=order.total(),
-            token=request.POST.get('stripeToken'),
-            token_type=request.POST.get('stripeTokenType'),
-            email=request.POST.get('stripeEmail'),
+            token=request.POST.get("stripeToken"),
+            token_type=request.POST.get("stripeTokenType"),
+            email=request.POST.get("stripeEmail"),
         )
         try:
             # Save the payment information as soon as it goes through to
@@ -170,20 +171,20 @@ def cart_step4_payment(request, order_uuid):
                 # TODO send_confirmation_email()
 
                 return redirect(
-                    'cart:step5_congrats_order_complete', order_uuid=order.uuid
+                    "cart:step5_congrats_order_complete", order_uuid=order.uuid
                 )
         except PaymentError:
             # Redirect to the same page, show information about failed
             # payment(s) and reshow the same Pay with Card button
-            return redirect('.')
+            return redirect(".")
 
     return TemplateResponse(
         request,
         "ep19/bs/cart/step_4_payment.html",
         {
-            'order': order,
-            'payments': payments,
-            'total_for_stripe': total_for_stripe,
+            "order": order,
+            "payments": payments,
+            "total_for_stripe": total_for_stripe,
         },
     )
 
@@ -195,7 +196,7 @@ def cart_step5_congrats_order_complete(request, order_uuid):
     return TemplateResponse(
         request,
         "ep19/bs/cart/step_5_congrats_order_complete.html",
-        {'order': order},
+        {"order": order},
     )
 
 
@@ -204,7 +205,7 @@ def extract_order_parameters_from_request(post_data):
     fares_info = {}
 
     for k, v in post_data.items():
-        if k == 'discount_code':
+        if k == "discount_code":
             discount_code = v
 
         elif is_available_fare(k):
@@ -221,16 +222,16 @@ def is_available_fare(fare_code):
 
 
 class TicketType:
-    personal = 'personal'
-    company = 'company'
-    student = 'student'
+    personal = "personal"
+    company = "company"
+    student = "student"
 
     ALL = [personal, company, student]
 
 
 class CartActions:
-    apply_discount_code = 'apply_discount_code'
-    buy_tickets = 'buy_tickets'
+    apply_discount_code = "apply_discount_code"
+    buy_tickets = "buy_tickets"
 
 
 # TODO: move to fares
@@ -254,14 +255,12 @@ def get_available_fares_for_type(type_of_tickets):
 class PersonalBillingForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['card_name', 'country', 'address', 'billing_notes']
+        fields = ["card_name", "country", "address", "billing_notes"]
         widgets = {
-            'address': forms.Textarea(attrs={'rows': 3}),
-            'billing_notes': forms.Textarea(attrs={'rows': 3}),
+            "address": forms.Textarea(attrs={"rows": 3}),
+            "billing_notes": forms.Textarea(attrs={"rows": 3}),
         }
-        labels = {
-            "card_name": "Name of the cardholder",
-        }
+        labels = {"card_name": "Name of the cardholder"}
 
 
 class BusinessBillingForm(forms.ModelForm):
@@ -272,40 +271,38 @@ class BusinessBillingForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = [
-            'card_name',
-            'country',
-            'address',
-            'billing_notes',
-            'vat_number',
+            "card_name",
+            "country",
+            "address",
+            "billing_notes",
+            "vat_number",
         ]
         widgets = {
-            'address': forms.Textarea(attrs={'rows': 3}),
-            'billing_notes': forms.Textarea(attrs={'rows': 3}),
+            "address": forms.Textarea(attrs={"rows": 3}),
+            "billing_notes": forms.Textarea(attrs={"rows": 3}),
         }
-        labels = {
-            "card_name": "Name of the cardholder",
-        }
+        labels = {"card_name": "Name of the cardholder"}
 
 
 urlpatterns_ep19 = [
-    url(r'^$', cart_step1_choose_type_of_order, name="step1_choose_type"),
+    url(r"^$", cart_step1_choose_type_of_order, name="step1_choose_type"),
     url(
-        r'^(?P<type_of_tickets>\w+)/$',
+        r"^(?P<type_of_tickets>\w+)/$",
         cart_step2_pick_tickets,
         name="step2_pick_tickets",
     ),
     url(
-        r'^add-billing/(?P<order_uuid>[\w-]+)/$',
+        r"^add-billing/(?P<order_uuid>[\w-]+)/$",
         cart_step3_add_billing_info,
         name="step3_add_billing_info",
     ),
     url(
-        r'^payment/(?P<order_uuid>[\w-]+)/$',
+        r"^payment/(?P<order_uuid>[\w-]+)/$",
         cart_step4_payment,
         name="step4_payment",
     ),
     url(
-        r'^thanks/(?P<order_uuid>[\w-]+)/$',
+        r"^thanks/(?P<order_uuid>[\w-]+)/$",
         cart_step5_congrats_order_complete,
         name="step5_congrats_order_complete",
     ),
