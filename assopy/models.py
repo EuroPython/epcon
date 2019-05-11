@@ -773,6 +773,10 @@ class Order(models.Model):
             item.delete()
         super(Order, self).delete(**kwargs)
 
+    def is_complete(self):
+        """Wrapper on _complete that can be used in templates"""
+        return self._complete
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)

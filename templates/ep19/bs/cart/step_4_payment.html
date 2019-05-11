@@ -19,6 +19,7 @@
         <div class='col-md-12'>
             {% include "ep19/bs/cart/_order_summary.html" %}
 
+            {% if not order.is_complete %}
             <form action="." method="POST" class='form' style='margin-top: 5em'>
                 {% csrf_token %}
                 <script
@@ -27,7 +28,7 @@
                              data-key="{{ stripe_key }}"
                              data-amount="{{ total_for_stripe }}"
                              data-currency='eur'
-                             data-label="Finalise order and pay now"
+                             data-label="Finalize order and pay now"
                              data-name="Stripe.com"
                              data-description="EuroPython Order {{ order.code }}"
                              data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
@@ -35,6 +36,10 @@
                              data-zip-code="false">
                 </script>
             </form>
+            {% else %}
+            This order was paid in full on {{ order.payment_date|date:"Y-m-d" }}
+            <a href='{% url "cart:step5_congrats_order_complete" order.uuid %}'>See the confirmation page</a>
+            {% endif %}{# order.is_complete #}
 
             {% if payments %}
             <h4 style='margin-top: 2em'>Payment history</h4>
