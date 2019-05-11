@@ -186,7 +186,6 @@ def cart_step4_payment(request, order_uuid):
 
     # sanity/security check to make sure we don't publish the the wrong key
     stripe_key = settings.STRIPE_PUBLISHABLE_KEY
-    print(stripe_key)
     assert stripe_key.startswith("pk_")
 
     return TemplateResponse(
