@@ -485,6 +485,7 @@ SESSION_COOKIE_NAME = 'sid'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 CONFERENCE_CONFERENCE = 'ep2019'
+CONFERENCE_NAME = "EuroPython 2019"
 CONFERENCE_SEND_EMAIL_TO = ["helpdesk@europython.eu"]
 CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL = []
 CONFERENCE_VOTING_DISALLOWED = 'https://ep2019.europython.eu/en/talk-voting/'

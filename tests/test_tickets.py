@@ -28,7 +28,7 @@ from email_template.models import Email
 from tests.common_tools import make_user
 
 
-DEFAULT_VAT_RATE = "0.2"  # 20%
+DEFAULT_VAT_RATE = "20"  # 20%
 
 # TODO - this should be defined somewhere around the models.
 DEFAULT_SHIRT_SIZE        = 'l'
@@ -38,30 +38,33 @@ DEFAULT_PYTHON_EXPERIENCE = 0
 
 def make_basic_fare_setup():
     assert Fare.objects.all().count() == 0
-    conference_str = settings.CONFERENCE_CONFERENCE
 
     Conference.objects.get_or_create(
-        code=conference_str,
-        name=conference_str,
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_NAME,
         # using 2018 dates
         # those dates are required for Tickets to work.
         # (for setting up/rendering attendance days)
         conference_start=date(2018, 7, 23),
-        conference_end  =date(2018, 7, 29)
+        conference_end=date(2018, 7, 29),
     )
     default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
-    pre_create_typical_fares_for_conference(conference_str, default_vat_rate)
+    pre_create_typical_fares_for_conference(
+        settings.CONFERENCE_CONFERENCE, default_vat_rate
+    )
 
     # Using some totally random dates just to test early vs regular in cart
-    set_early_bird_fare_dates(conference_str,
-                              date(2018, 3, 10), date(2018, 3, 12))
+    set_early_bird_fare_dates(
+        settings.CONFERENCE_CONFERENCE, date(2018, 3, 10), date(2018, 3, 12)
+    )
 
-    set_regular_fare_dates(conference_str,
-                           date(2018, 3, 20), date(2018, 6, 30))
+    set_regular_fare_dates(
+        settings.CONFERENCE_CONFERENCE, date(2018, 3, 20), date(2018, 6, 30)
+    )
 
     SOCIAL = Fare.objects.get(code=SOCIAL_EVENT_FARE_CODE)
     SOCIAL.start_validity = date(2018, 6, 20)
-    SOCIAL.end_validity   = date(2018, 7, 30)
+    SOCIAL.end_validity = date(2018, 7, 30)
     SOCIAL.save()
     assert Fare.objects.all().count() == 28  # 3**3 + social event
 

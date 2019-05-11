@@ -84,6 +84,8 @@ def cart_step2_pick_tickets(request, type_of_tickets):
             )
         except FareIsNotAvailable:
             messages.error(request, "A selected fare is not available")
+            return redirect('.')
+
         else:
             if CartActions.apply_discount_code in request.POST:
                 context['calculation'] = calculation

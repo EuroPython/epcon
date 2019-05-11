@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from pytest import mark, raises
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.contrib.messages import constants as messages_constants
 from tests.common_tools import redirects_to, template_used
 from assopy.models import Order
 from conference.models import Conference, Ticket
@@ -13,20 +14,24 @@ from conference.fares import (
 from assopy.models import Vat
 from conference.cart import CartActions
 
-DEFAULT_VAT_RATE = "0.2"  # 20%
+DEFAULT_VAT_RATE = "20"  # 20%
 
 
 def test_first_step_of_cart_is_available_without_auth(db, client):
     url = reverse("cart:step1_choose_type")
     response = client.get(url)
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/cart/step_1_choose_type_of_order.html")
+    assert template_used(
+        response, "ep19/bs/cart/step_1_choose_type_of_order.html"
+    )
 
 
 def test_first_step_has_links_to_second_step(db, client):
     url = reverse("cart:step1_choose_type")
     second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
-    second_step_personal = reverse("cart:step2_pick_tickets", args=["personal"])
+    second_step_personal = reverse(
+        "cart:step2_pick_tickets", args=["personal"]
+    )
     second_step_student = reverse("cart:step2_pick_tickets", args=["student"])
 
     response = client.get(url)
@@ -45,35 +50,48 @@ def test_cart_second_step_requires_auth(db, client):
     assert redirects_to(response, "/accounts/login/")
 
 
-def test_second_step_doesnt_work_with_unkown_ticket_type(db, user_client):
+def test_second_step_doesnt_work_with_unkown_ticket_type(db, ep_admin_client):
+    # NOTE: this is using admin_client because of @staff_member_required in the
+    # testing period. Later the fixture should be changed back to user_client
     second_step_unkown = reverse("cart:step2_pick_tickets", args=["unkown"])
 
     with raises(AssertionError):
-        user_client.get(second_step_unkown)
+        ep_admin_client.get(second_step_unkown)
 
 
-def test_cant_see_any_tickets_if_fares_are_not_available(db, user_client):
+def test_cant_see_any_tickets_if_fares_are_not_available(db, ep_admin_client):
+    # NOTE: this is using admin_client because of @staff_member_required in the
+    # testing period. Later the fixture should be changed back to user_client
     _setup()
     second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
 
-    response = user_client.get(second_step_company)
+    response = ep_admin_client.get(second_step_company)
 
     assert "No tickets available" in response.content.decode()
 
 
-def test_cant_buy_any_tickets_if_fares_are_not_available(db, user_client):
+def test_cant_buy_any_tickets_if_fares_are_not_available(db, ep_admin_client):
+    # NOTE: this is using admin_client because of @staff_member_required in the
+    # testing period. Later the fixture should be changed back to user_client
     _setup()
     second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
 
-    response = user_client.post(second_step_company, {
-        "TESP": 10,
-        CartActions.buy_tickets: True,
-    })
+    response = ep_admin_client.post(
+        second_step_company, {"TESP": 10, CartActions.buy_tickets: True},
+        follow=True,
+    )
 
-    assert response.status_code == 403
+    # Following the response to check if the message is correctly showed
+    messages = list(response.context['messages'])
+    assert len(messages) == 1
+    assert messages[0].level == messages_constants.ERROR
+    assert messages[0].message == "A selected fare is not available"
+    assert Order.objects.all().count() == 0
 
 
-def test_can_buy_tickets_if_fare_is_available(db, user_client):
+def test_can_buy_tickets_if_fare_is_available(db, ep_admin_client):
+    # NOTE: this is using admin_client because of @staff_member_required in the
+    # testing period. Later the fixture should be changed back to user_client
     _setup()
     set_early_bird_fare_dates(
         settings.CONFERENCE_CONFERENCE,
@@ -82,36 +100,38 @@ def test_can_buy_tickets_if_fare_is_available(db, user_client):
     )
     second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
 
-    response = user_client.post(second_step_company, {
-        "TESP": 10,
-        CartActions.buy_tickets: True,
-    })
+    response = ep_admin_client.post(
+        second_step_company, {"TESP": 10, CartActions.buy_tickets: True}
+    )
 
     assert response.status_code == 302
     order = Order.objects.get()
     assert redirects_to(
-        response, reverse('cart:step3_add_billing_info', args=[order.uuid])
+        response, reverse("cart:step3_add_billing_info", args=[order.uuid])
     )
     # Tickets are pre-created already even if we don't complete the order.
     assert Ticket.objects.all().count() == 10
 
 
-def test_user_can_add_billing_info(db, user_client):
+def test_user_can_add_billing_info(db, ep_admin_client):
+    # NOTE: this is using admin_client because of @staff_member_required in the
+    # testing period. Later the fixture should be changed back to user_client
     _setup()
     ...
 
 
 def test_user_cant_see_or_assign_tickets_for_non_completed_orders(
-    db, user_client
+    db, ep_admin_client
 ):
+    # NOTE: this is using admin_client because of @staff_member_required in the
+    # testing period. Later the fixture should be changed back to user_client
     ...
 
 
 def _setup(start=date(2019, 7, 8), end=date(2019, 7, 14)):
-    conference_str = settings.CONFERENCE_CONFERENCE
     Conference.objects.get_or_create(
-        code=conference_str,
-        name=conference_str,
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_NAME,
         # using 2018 dates
         # those dates are required for Tickets to work.
         # (for setting up/rendering attendance days)
@@ -119,7 +139,10 @@ def _setup(start=date(2019, 7, 8), end=date(2019, 7, 14)):
         conference_end=end,
     )
     default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
-    pre_create_typical_fares_for_conference(conference_str, default_vat_rate)
+    pre_create_typical_fares_for_conference(
+        settings.CONFERENCE_CONFERENCE,
+        default_vat_rate
+    )
 
 
 def test_third_step_redirects_to_step_four(db):

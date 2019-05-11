@@ -70,7 +70,8 @@ class TicketConference(models.Model):
 
     name = models.CharField(
         max_length=255,
-        help_text="What name should appear on the badge?"
+        help_text="What name should appear on the badge?",
+        blank=True,
     )
 
     shirt_size = models.CharField(

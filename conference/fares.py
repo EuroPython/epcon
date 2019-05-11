@@ -1,7 +1,8 @@
+from django.conf import settings
 from model_utils import Choices
 
 from assopy.models import Vat, VatFare
-from conference.models import Conference, Fare, FARE_TICKET_TYPES
+from conference.models import FARE_TICKET_TYPES, Conference, Fare
 
 
 # due to historical reasons this one is basically hardcoded in various places.
@@ -109,9 +110,10 @@ def create_fare_for_conference(code, conference, price,
     # of name.
     conference, _ = Conference.objects.get_or_create(
         code=conference,
-        # There should probably be a spearate setting for a name...
-        name=conference,
     )
+    if not conference.name:
+        conference.name = settings.CONFERENCE_NAME
+        conference.save()
 
     recipient_type = code[3].lower()  # same as lowercase last letter of code
 

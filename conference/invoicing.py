@@ -224,8 +224,11 @@ def create_invoices_for_order(order):
                 invoice.html = render_invoice_as_html(invoice)
                 invoice.save()
 
-                assert invoice.net_price() == net_price
-                assert invoice.vat_value() == vat_price
+                try:
+                    assert invoice.net_price() == net_price
+                    assert invoice.vat_value() == vat_price
+                except AssertionError:
+                    import pdb; pdb.set_trace()
 
                 invoices.append(invoice)
 

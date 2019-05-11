@@ -11,6 +11,7 @@ help:
 	@echo "pip-tools - install pip and pip-tools"
 	@echo "\n[TEST]"
 	@echo "test - run all tests"
+	@echo "test-last-failed - rerun tests that failed last time"
 	@echo "test-no-warnings - run tests without printing warning messages"
 	@echo "test-no-django-20-warnings - only disable django 20 deprecation warnings"
 	@echo "\n[RUN]"
@@ -68,6 +69,9 @@ redo_db: drop_db db
 
 test:
 	pytest -n auto
+
+test-last-failed:
+	pytest -n auto --last-failed
 
 test-no-warnings:
 	pytest --disable-warnings -n auto
