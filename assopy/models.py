@@ -777,6 +777,9 @@ class Order(models.Model):
         """Wrapper on _complete that can be used in templates"""
         return self._complete
 
+    def total_vat_amount(self):
+        return sum(item.vat_value() for item in self.orderitem_set.all())
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -801,6 +804,13 @@ class OrderItem(models.Model):
             return Invoice.objects.get(order=self.order_id, vat=self.vat_id)
         except Invoice.DoesNotExist:
             return None
+
+    def net_price(self):
+        """This is ugly workaround because we use gross prices for Fares"""
+        return normalize_price(self.price / (1 + self.vat.value / 100))
+
+    def vat_value(self):
+        return self.price - self.net_price()
 
     def get_readonly_fields(self, request, obj=None):
 	    # Make fields read-only if an invoice for the order already exists
