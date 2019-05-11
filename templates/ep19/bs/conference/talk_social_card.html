@@ -1,0 +1,72 @@
+{% load static %}
+
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <style>
+    @import url(https://fonts.googleapis.com/css?family=Quicksand:200,300,400,700);
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      box-sizing: border-box;
+    }
+
+    *, *:before, *:after {
+      box-sizing: inherit;
+    }
+
+    @page {
+      width: 1200px;
+      height: 630px;
+      margin: 0;
+    }
+
+    #container {
+      width: 1200px;
+      height: 630px;
+      background-color: #337888;
+      color: white;
+      padding: 55px 65px;
+      font-family: Quicksand;
+      position: relative;
+    }
+
+    h2 {
+      font-size: 30px;
+    }
+
+    h1 {
+      font-weight: normal;
+      font-size: 50px;
+    }
+
+    img {
+      width: 594px;
+      height: auto;
+
+      position: absolute;
+      top: 412px;
+      left: 65px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="container">
+  <h2>{{ subtitle }}</h2>
+  <h1>{{ title }}</h1>
+
+  <img src="{% static "img/logo-social-card.png" %}" />
+</div>
+
+
+</body>
+</html>

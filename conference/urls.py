@@ -55,6 +55,10 @@ urlpatterns = [
         conf_views.talk_preview,
         name='conference-talk-preview'),
 
+    url(r'^talks/(?P<slug>[\w-]+)/social-card.png$',
+        conf_views.talk_social_card_png,
+        name='conference-talk-social-card-ong'),
+
     url(r'^sponsors/(?P<sponsor>.*)',
         conf_views.sponsor_json,
         name='conference-sponsor-json'),
