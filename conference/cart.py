@@ -139,14 +139,10 @@ def cart_step3_add_billing_info(request, order_uuid):
 
             return redirect("cart:step4_payment", order_uuid=order.uuid)
 
-    # sanity/security check to make sure we don't publish the the wrong key
-    stripe_key = settings.STRIPE_PUBLISHABLE_KEY
-    assert stripe_key.startswith("pk_")
-
     return TemplateResponse(
         request,
         "ep19/bs/cart/step_3_add_billing_info.html",
-        {"form": form, "stripe_key": stripe_key},
+        {"form": form, 'order': order},
     )
 
 
@@ -188,12 +184,18 @@ def cart_step4_payment(request, order_uuid):
             # payment(s) and reshow the same Pay with Card button
             return redirect(".")
 
+    # sanity/security check to make sure we don't publish the the wrong key
+    stripe_key = settings.STRIPE_PUBLISHABLE_KEY
+    print(stripe_key)
+    assert stripe_key.startswith("pk_")
+
     return TemplateResponse(
         request,
         "ep19/bs/cart/step_4_payment.html",
         {
             "order": order,
             "payments": payments,
+            "stripe_key": stripe_key,
             "total_for_stripe": total_for_stripe,
         },
     )

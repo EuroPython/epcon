@@ -9,49 +9,17 @@
 
 <div class='container page'>
     <div class='row'>
-        <div class='col-md-8'>
+        <div class='col-md-12'>
             <h1>Step 4: Payment</h1>
-            <div>
-                <h4>Order summary</h4>
-                <table class='table'>
-                    {% for item in order.orderitem_set.all %}
-                    <tr>
-                        <td>{{ item.ticket }}</td>
-                        <td>{{ item.price }} EUR</td>
-                    </tr>
-                    {% endfor %}{# item in items.all #}
-                </table>
+        </div>
+    </div>
 
-                <p style='font-size: 1.5em; font-weight: bold; margin-top: 2em'>Total to pay: {{ order.total }} EUR</p>
+    <div class='row'>
 
-                {% if payments %}
-                <h4 style='margin-top: 2em'>Payment history</h4>
-                <table class='table'>
-                    <tr>
-                        <th>id</th>
-                        <th>status</th>
-                        <th>created</th>
-                    </tr>
+        <div class='col-md-12'>
+            {% include "ep19/bs/cart/_order_summary.html" %}
 
-                    {% for payment in payments %}
-                    <tr>
-                        <td>{{ payment.uuid }}</td>
-                        <td>{{ payment.get_status_display }}
-                            {% if payment.get_status_display == payment.STATUS_CHOICES.FAILED %}
-                            <p class='text-danger'>
-                            {{ payment.message }}
-                            </p>
-                            {% endif %}
-                        </td>
-                        <td title="{{ payment.created }}">{{ payment.created|timesince }} ago</td>
-                    </tr>
-                    {% endfor %}
-                </table>
-                {% endif %}
-
-            </div>
-
-            <form action="." method="POST" class='form'>
+            <form action="." method="POST" class='form' style='margin-top: 5em'>
                 {% csrf_token %}
                 <script
                              src="https://checkout.stripe.com/checkout.js"
@@ -67,6 +35,30 @@
                 </script>
             </form>
 
+            {% if payments %}
+            <h4 style='margin-top: 2em'>Payment history</h4>
+            <table class='table'>
+                <tr>
+                    <th>id</th>
+                    <th>status</th>
+                    <th>created</th>
+                </tr>
+
+                {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.uuid }}</td>
+                    <td>{{ payment.get_status_display }}
+                        {% if payment.get_status_display == payment.STATUS_CHOICES.FAILED %}
+                        <p class='text-danger'>
+                        {{ payment.message }}
+                        </p>
+                        {% endif %}
+                    </td>
+                    <td title="{{ payment.created }}">{{ payment.created|timesince }} ago</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
 
         </div>
     </div>

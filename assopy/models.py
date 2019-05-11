@@ -784,6 +784,9 @@ class OrderItem(models.Model):
     # o venire copiato da conference
     vat = models.ForeignKey(Vat, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'{self.code} {self.description} -- {self.price}'
+
     def invoice(self):
         """
         Ritorna, se esiste, la fattura collegata all'order_item
