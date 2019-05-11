@@ -24,7 +24,7 @@
             <h2>{{ talk.title }}</h2>
             <h3>{{ talk.sub_title }}</h3>
             <p>{{ talk.abstract_short }}</p>
-            <p>{% for t in talk.tags.all %}<span class='btn btn-outline-primary btn-sm'>{{ t }}</span> {% endfor %}</p>
+            <p>{% for t in talk.tags.all %}<span class='badge badge-primary'>{{ t }}</span> {% endfor %}</p>
             </div>
             {% endfor %}{# talk in talks #}
         </div>
