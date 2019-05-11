@@ -28,7 +28,7 @@ from email_template.models import Email
 from tests.common_tools import make_user
 
 
-DEFAULT_VAT_RATE = "20"  # 20%
+DEFAULT_VAT_RATE = "7.7"  # 7.7%
 
 # TODO - this should be defined somewhere around the models.
 DEFAULT_SHIRT_SIZE        = 'l'
