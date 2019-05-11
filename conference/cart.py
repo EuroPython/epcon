@@ -74,6 +74,10 @@ def cart_step2_pick_tickets(request, type_of_tickets):
         )
         context["fares_info"] = fares_info
 
+        if sum(fares_info.values()) == 0:
+            messages.error(request, "Please select some tickets :)")
+            return redirect('.')
+
         try:
             calculation, coupon = calculate_order_price_including_discount(
                 for_user=request.user,
@@ -85,27 +89,26 @@ def cart_step2_pick_tickets(request, type_of_tickets):
             messages.error(request, "A selected fare is not available")
             return redirect(".")
 
-        else:
-            if CartActions.apply_discount_code in request.POST:
-                context["calculation"] = calculation
-                context["discount_code"] = discount_code or "No discount code"
-                if discount_code and not coupon:
-                    messages.warning(
-                        request,
-                        "The discount code provided expired or is invalid",
-                    )
+        if CartActions.apply_discount_code in request.POST:
+            context["calculation"] = calculation
+            context["discount_code"] = discount_code or "No discount code"
+            if discount_code and not coupon:
+                messages.warning(
+                    request,
+                    "The discount code provided expired or is invalid",
+                )
 
-            if CartActions.buy_tickets in request.POST:
-                order = create_order(
-                    for_user=request.user,
-                    for_date=timezone.now().date(),
-                    fares_info=fares_info,
-                    calculation=calculation,
-                    coupon=coupon,
-                )
-                return redirect(
-                    "cart:step3_add_billing_info", order_uuid=order.uuid
-                )
+        if CartActions.buy_tickets in request.POST:
+            order = create_order(
+                for_user=request.user,
+                for_date=timezone.now().date(),
+                fares_info=fares_info,
+                calculation=calculation,
+                coupon=coupon,
+            )
+            return redirect(
+                "cart:step3_add_billing_info", order_uuid=order.uuid
+            )
 
     return TemplateResponse(
         request, "ep19/bs/cart/step_2_pick_tickets.html", context

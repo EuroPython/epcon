@@ -134,16 +134,18 @@ class CommaStringMultipleChoiceField(forms.MultipleChoiceField):
 class TicketConfigurationForm(forms.ModelForm):
 
     days = CommaStringMultipleChoiceField(
-        label="Days of attendance", widget=forms.CheckboxSelectMultiple(), required=False
+        label="Days of attendance",
+        widget=forms.CheckboxSelectMultiple(),
+        required=False,
     )
 
     class Meta:
         model = TicketConference
-        fields = ['name', 'diet', 'shirt_size', 'tagline', 'days']
+        fields = ["name", "diet", "shirt_size", "tagline", "days"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['days'].choices = self.conference_days()
+        self.fields["days"].choices = self.conference_days()
 
     def conference_days(self):
         conference = Conference.objects.current()
@@ -156,8 +158,11 @@ class TicketConfigurationForm(forms.ModelForm):
 
 
 def get_tickets_for_current_conference(user):
+    conference = Conference.objects.current()
     return Ticket.objects.filter(
-        Q(orderitem__order___complete=True) & Q(user=user)
+        Q(fare__conference=conference.code)
+        & Q(orderitem__order___complete=True)
+        & Q(user=user)
     )
 
 
