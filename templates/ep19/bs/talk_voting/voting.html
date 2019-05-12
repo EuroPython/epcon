@@ -21,14 +21,14 @@
         <div class="col-md-12">
             {% for talk in talks %}
             <div class='voting-proposal'>
-            <h2>{{ talk.title }}</h2>
-            <h4>{{ talk.sub_title }}</h4>
-            <h5>{% for speaker in talk.get_all_speakers %}{{ speaker.user.assopy_user.name }}{% endfor %}</h5>
-            <p>{% for t in talk.tags.all %}<span class='badge badge-primary'>{{ t }}</span> {% endfor %}</p>
-            <p>{{ talk.abstract_short }}</p>
-            <p>Type: {{ talk.get_type_display }}; Python level: {{ talk.get_level_display }}; Domain level: {{ talk.get_domain_level_display }}</p>
+                <h2>{{ talk.title }}</h2>
+                <h4>{{ talk.sub_title }}</h4>
+                <h5>{% for speaker in talk.get_all_speakers %}{{ speaker.user.assopy_user.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</h5>
+                <p>{% for t in talk.tags.all %}<span class='badge badge-primary'>{{ t }}</span> {% endfor %}</p>
+                <p>{{ talk.abstract_short }}</p>
+                <p>Type: {{ talk.get_type_display }}; Python level: {{ talk.get_level_display }}; Domain level: {{ talk.get_domain_level_display }}</p>
 
-            {% include "ep19/bs/talk_voting/_voting_form.html" with talk=talk VotingOptions=VotingOptions %}
+                {% include "ep19/bs/talk_voting/_voting_form.html" with talk=talk VotingOptions=VotingOptions db_vote=talk.votes.0 %}
             </div>
             {% endfor %}{# talk in talks #}
         </div>
@@ -39,29 +39,29 @@
 
 {% block morejs %}
 <script type="text/javascript">
-$('button[name=vote]').on('click', function() {
-    var form = $(this).parent('form')[0];
-    console.log($(this));
-    console.log(form.action);
-    csrf_token = $(form).find('[name=csrfmiddlewaretoken]').attr('value');
-    vote = $(this).attr("value");
-    console.log(csrf_token, vote);
+    $(document).on('click', 'button[name=vote]', function() {
+        var form = $(this).parent('form')[0];
+        console.log($(this));
+        console.log(form.action);
+        csrf_token = $(form).find('[name=csrfmiddlewaretoken]').attr('value');
+        vote = $(this).attr("value");
+        console.log(csrf_token, vote);
 
-    body = 'csrfmiddlewaretoken=' + csrf_token + '&vote=' + vote;
-    fetch(form.action, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: body,
-        headers: {
-            "X-CSRFToken": csrf_token,
-            'Content-Type': 'application/x-www-form-urlencoded',
-        }
-    }).then(
-        (response) => response.text()
-    ).then(
-        (data) => $(form).replaceWith(data)
-    )
-    return false;
-})
+        body = 'csrfmiddlewaretoken=' + csrf_token + '&vote=' + vote;
+        fetch(form.action, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: body,
+            headers: {
+                "X-CSRFToken": csrf_token,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        }).then(
+            (response) => response.text()
+        ).then(
+            (data) => $(form).replaceWith(data)
+        )
+        return false;
+    })
 </script>
 {% endblock %}

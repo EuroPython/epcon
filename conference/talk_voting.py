@@ -1,7 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from django.http import HttpResponse
+from django.db.models import Q, Prefetch
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
@@ -13,9 +12,19 @@ def talk_voting(request):
 
     # TODO: check if voting is open
     current_conference = Conference.objects.current()
-    talks = Talk.objects.filter(
-        Q(conference=current_conference.code) & ~Q(created_by=request.user)
-    ).order_by("?")
+    talks = (
+        Talk.objects.filter(
+            Q(conference=current_conference.code) & ~Q(created_by=request.user)
+        )
+        # .order_by("?")
+        .prefetch_related(
+            Prefetch(
+                "vototalk_set",
+                queryset=VotoTalk.objects.filter(user=request.user),
+                to_attr="votes",
+            )
+        )
+    )
 
     return TemplateResponse(
         request,
@@ -44,17 +53,31 @@ def vote_on_a_talk(request, talk_uuid):
         except VotoTalk.DoesNotExist:
 
             if vote == VotingOptions.no_vote:
-                return HttpResponse("")
+                return TemplateResponse(
+                    request,
+                    "ep19/bs/talk_voting/_voting_form.html",
+                    {
+                        "talk": talk,
+                        "db_vote": None,
+                        "VotingOptions": VotingOptions,
+                    },
+                )
 
             db_vote = VotoTalk.objects.create(
-                user=request.user,
-                talk=talk,
-                vote=vote,
+                user=request.user, talk=talk, vote=vote
             )
 
         if vote == VotingOptions.no_vote:
             db_vote.delete()
-            return HttpResponse("")
+            return TemplateResponse(
+                request,
+                "ep19/bs/talk_voting/_voting_form.html",
+                {
+                    "talk": talk,
+                    "db_vote": None,
+                    "VotingOptions": VotingOptions,
+                },
+            )
 
         db_vote.vote = vote
         db_vote.save()
