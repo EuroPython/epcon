@@ -374,7 +374,7 @@ class VotoTalkAdmin(admin.ModelAdmin):
         url = reverse(
             "conference-profile", kwargs={"slug": o.user.attendeeprofile.slug}
         )
-        return '<a href="%s">%s %s</a>' % (url, o.user.assopy_user.name())
+        return '<a href="%s">%s</a>' % (url, o.user.assopy_user.name())
 
     _name.allow_tags = True
     _name.admin_order_field = "user__first_name"
