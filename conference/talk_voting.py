@@ -1,11 +1,11 @@
 from django.conf.urls import url
-from django.db.models import Q
-
-from django.http import HttpResponse
-from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
 
-from conference.models import Conference, Talk
+from conference.models import Conference, Talk, VotoTalk
 
 
 @login_required
@@ -18,16 +18,65 @@ def talk_voting(request):
     ).order_by("?")
 
     return TemplateResponse(
-        request, "ep19/bs/talk_voting/voting.html", {"talks": talks}
+        request,
+        "ep19/bs/talk_voting/voting.html",
+        {"talks": talks, "VotingOptions": VotingOptions},
     )
 
 
+@login_required
 def vote_on_a_talk(request, talk_uuid):
+    talk = get_object_or_404(Talk, uuid=talk_uuid)
+
+    try:
+        db_vote = VotoTalk.objects.get(user=request.user, talk=talk)
+    except VotoTalk.DoesNotExist:
+        db_vote = None
 
     if request.method == "POST":
-        ...
+        print(request.POST)
+        vote = int(request.POST.get("vote"))
+        assert vote in VotingOptions.ALL
 
-    return HttpResponse(f"Vote on {talk_uuid}")
+        try:
+            db_vote = VotoTalk.objects.get(user=request.user, talk=talk)
+
+        except VotoTalk.DoesNotExist:
+
+            if vote == VotingOptions.no_vote:
+                return HttpResponse("")
+
+            db_vote = VotoTalk.objects.create(
+                user=request.user,
+                talk=talk,
+                vote=vote,
+            )
+
+        if vote == VotingOptions.no_vote:
+            db_vote.delete()
+            return HttpResponse("")
+
+        db_vote.vote = vote
+        db_vote.save()
+
+    return TemplateResponse(
+        request,
+        "ep19/bs/talk_voting/_voting_form.html",
+        {"talk": talk, "db_vote": db_vote, "VotingOptions": VotingOptions},
+    )
 
 
-urlpatterns = [url("^$", talk_voting)]
+class VotingOptions:
+    no_vote = -1
+    not_interested = 0
+    maybe = 3
+    want_to_see = 7
+    must_see = 10
+
+    ALL = [no_vote, not_interested, maybe, want_to_see, must_see]
+
+
+urlpatterns = [
+    url(r"^$", talk_voting),
+    url(r"^vote-on/(?P<talk_uuid>[\w]+)/$", vote_on_a_talk, name="vote"),
+]

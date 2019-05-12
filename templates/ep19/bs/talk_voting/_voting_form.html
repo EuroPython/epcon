@@ -1,0 +1,8 @@
+<form method="POST" class='form' action="{% url "talk_voting:vote" talk.uuid %}">
+    {% csrf_token %}
+    <button name="vote" class='btn btn-{% if db_vote.vote != VotingOptions.no_vote %}outline-{% endif %}primary' value="{{ VotingOptions.no_vote }}" >No vote</button>
+    <button name="vote" class='btn btn-{% if db_vote.vote != VotingOptions.not_interested%}outline-{% endif %}primary' value="{{ VotingOptions.not_interested }}">Not Interested</button>
+    <button name="vote" class='btn btn-{% if db_vote.vote != VotingOptions.maybe %}outline-{% endif %}primary' value="{{ VotingOptions.maybe }}">Maybe</button>
+    <button name="vote" class='btn btn-{% if db_vote.vote != VotingOptions.want_to_see %}outline-{% endif %}primary' value="{{ VotingOptions.want_to_see }}">Want to see</button>
+    <button name="vote" class='btn btn-{% if db_vote.vote != VotingOptions.must_see%}outline-{% endif %}primary' value="{{ VotingOptions.must_see }}">Must see</button>
+</form>
