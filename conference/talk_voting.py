@@ -43,7 +43,6 @@ def vote_on_a_talk(request, talk_uuid):
         db_vote = None
 
     if request.method == "POST":
-        print(request.POST)
         vote = int(request.POST.get("vote"))
         assert vote in VotingOptions.ALL
 
