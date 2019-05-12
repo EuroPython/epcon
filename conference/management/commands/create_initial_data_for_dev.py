@@ -49,6 +49,9 @@ class Command(BaseCommand):
             cfp_end=timezone.now() + timedelta(days=3),
             conference_start=date(2019, 7, 8),
             conference_end=date(2019, 7, 14),
+            # For easier testing also start with open voting
+            voting_start=timezone.now() - timedelta(days=3),
+            voting_end=timezone.now() + timedelta(days=3),
         )
         ExchangeRate.objects.create(
             datestamp=date.today(), currency="CHF", rate="1.0"
@@ -91,6 +94,15 @@ class Command(BaseCommand):
                         "sentence", nb_words=20, variable_nb_words=True
                     ).generate({})
                 )
+
+        for i in range(20):
+            # Make additional proposals – useful for talk voting
+            talk = TalkFactory(status=TALK_STATUS.proposed)
+            talk.setAbstract("Lorem ipsum abstract")
+            talk.created_by = alice.user
+            talk.save()
+            add_speaker_to_talk(speaker, talk)
+            profile = get_or_create_attendee_profile_for_new_user(user.user)
 
         def new_page(rev_id, title, **kwargs):
             try:

@@ -67,9 +67,9 @@ urlpatterns = [
         conf_views.cfp_thank_you_for_proposal,
         name='cfp-thank-you-for-proposal'),
 
-    url(r'^voting/$',
-        conf_views.voting,
-        name='conference-voting'),
+    # url(r'^voting/$',
+        # conf_views.voting,
+        # name='conference-voting'),
 ]
 
 urlpatterns += [

@@ -51,7 +51,8 @@ def submit_proposal_step1_talk_info(request):
                 talk = proposal_form.save(request.user)
                 messages.success(
                     request,
-                    "Proposal added, now please add information about the speaker",
+                    "Proposal added, "
+                    "now please add information about the speaker",
                 )
                 send_talk_details_to_backup_email(talk)
                 return redirect("cfp:step2_add_speakers", talk_uuid=talk.uuid)
@@ -256,31 +257,38 @@ def dump_all_talks_for_conference_to_dict(conference: Conference):
 def dump_relevant_talk_information_to_dict(talk: Talk):
 
     output = {
-        'title': talk.title,
-        'uuid': talk.uuid,
-        'slug': talk.slug,
-        'type': talk.type,
-        'type_display': talk.get_type_display(),
-        'subtitle': talk.sub_title,
-        'abstract_short': talk.abstract_short,
-        'abstract': talk.getAbstract().body,
-        'abstract_extra': talk.abstract_extra,
-        'python_level': talk.get_level_display(),
-        'domain_level': talk.get_domain_level_display(),
+        "title": talk.title,
+        "uuid": talk.uuid,
+        "slug": talk.slug,
+        "type": talk.type,
+        "type_display": talk.get_type_display(),
+        "subtitle": talk.sub_title,
+        "abstract_short": talk.abstract_short,
+        "abstract": talk.getAbstract().body,
+        "abstract_extra": talk.abstract_extra,
+        "python_level": talk.get_level_display(),
+        "domain_level": talk.get_domain_level_display(),
+        "created": talk.created,
+        "modified": talk.modified,
+        "admin_type": talk.admin_type,
+        "status": talk.status,
         "tags": [t.name for t in talk.tags.all()],
-        'speakers': [],
+        "speakers": [],
     }
 
     for speaker in talk.get_all_speakers():
         ap = speaker.user.attendeeprofile
-        output['speakers'].append({
-            'name': speaker.user.assopy_user.name(),
-            'email': speaker.user.email,
-            'company': ap.company,
-            'company_homepage': ap.company_homepage,
-            'bio': getattr(ap.getBio(), "body", ""),
-            'phone': ap.phone,
-        })
+        output["speakers"].append(
+            {
+                "id": speaker.user.id,
+                "name": speaker.user.assopy_user.name(),
+                "email": speaker.user.email,
+                "company": ap.company,
+                "company_homepage": ap.company_homepage,
+                "bio": getattr(ap.getBio(), "body", ""),
+                "phone": ap.phone,
+            }
+        )
 
     return output
 
