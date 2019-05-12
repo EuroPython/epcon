@@ -43,11 +43,8 @@
 <script type="text/javascript">
     $(document).on('click', 'button[name=vote]', function() {
         var form = $(this).parent('form')[0];
-        console.log($(this));
-        console.log(form.action);
         csrf_token = $(form).find('[name=csrfmiddlewaretoken]').attr('value');
         vote = $(this).attr("value");
-        console.log(csrf_token, vote);
 
         body = 'csrfmiddlewaretoken=' + csrf_token + '&vote=' + vote;
         fetch(form.action, {
