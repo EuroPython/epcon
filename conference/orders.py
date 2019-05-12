@@ -105,7 +105,7 @@ def create_order(
                 # coupon=coupon,  # TODO
                 ticket=None,
                 code=coupon.code,
-                description=f"Discount according to {coupon.code}",
+                description=f"Discount coupon {coupon.code}",
                 price=Decimal(-1) * calculation.total_discount,
                 # TODO/FIXME for now assuming all tickets are VAT-ed the same
                 # and the discount should be VATed with the same amount as well
