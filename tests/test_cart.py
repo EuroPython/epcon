@@ -14,7 +14,7 @@ from conference.fares import (
 from assopy.models import Vat
 from conference.cart import CartActions
 
-DEFAULT_VAT_RATE = "20"  # 20%
+DEFAULT_VAT_RATE = "7.7"  # 7.7%
 
 
 def test_first_step_of_cart_is_available_without_auth(db, client):

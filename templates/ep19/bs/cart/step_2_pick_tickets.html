@@ -8,6 +8,24 @@
 {% endblock %}
 
 {% block content %}
+<style type="text/css">
+.cart-input {
+    border: 1px solid #aaa;
+    padding: .5em;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
+}
+
+input[type=number] {
+    -moz-appearance:textfield;
+}
+</style>
 <div id="cart_step2_page" class="container page">
     <div class="row">
         <div class='col-md-12'>
@@ -16,7 +34,7 @@
 
             <form method='POST' action='.' style='margin-top: 5em'>
                 {% csrf_token %}
-                <table cellspacing=0 class='table'>
+                <table cellspacing=0 class='table table-hover'>
                     {% for fare in available_fares %}
                     <tr>
                         <td>
@@ -24,8 +42,8 @@
                             <p>{{ fare.description }}</p>
                         </td>
                         <td width='20%' class='text-right'>
-                            {{ fare.price }} EUR<br>
-                            <input type=number min=0 max="{{ global_max_per_fare_type }}" class='fare form-control text-right' data-price="{{ fare.price }}" name="{{ fare.code }}" value="{{ fares_info|get_item:fare.code }}">
+                            <strong style='font-size: 1.3em'>&euro; {{ fare.price|floatformat:2 }}</strong> x
+                            <input type=number min=0 max="{{ global_max_per_fare_type }}" class='fare text-right cart-input' placeholder=0 style='width: 3em; margin-left: .5em' data-price="{{ fare.price }}" name="{{ fare.code }}" value="{{ fares_info|get_item:fare.code }}">
                         </td>
                     </tr>
                     {% empty %}
