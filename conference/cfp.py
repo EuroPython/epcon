@@ -280,6 +280,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
         ap = speaker.user.attendeeprofile
         output["speakers"].append(
             {
+                "id": speaker.user.id,
                 "name": speaker.user.assopy_user.name(),
                 "email": speaker.user.email,
                 "company": ap.company,
