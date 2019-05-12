@@ -16,7 +16,7 @@ def talk_voting(request):
         Talk.objects.filter(
             Q(conference=current_conference.code) & ~Q(created_by=request.user)
         )
-        # .order_by("?")
+        .order_by("?")
         .prefetch_related(
             Prefetch(
                 "vototalk_set",
