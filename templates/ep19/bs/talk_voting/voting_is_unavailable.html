@@ -1,0 +1,14 @@
+{% extends "ep19/bs/base.html" %}
+
+{% load cms_tags %}
+
+{% block content %}
+<div class="container page" id="voting_page">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Sorry, you can't vote yet. :(</h1>
+            <p>Only users how have tickets assigned to them either for this conference or one of the previous EuroPythons (since 2015+) can vote on the talks. If you'd like to take part in our current voting that ends on {{ conference.voting_end|date }} you can buy the ticket <a href='{% page_url 'tickets' %}'>here</a>.</p>
+        </div>
+    </div>
+</div>
+{% endblock content %}

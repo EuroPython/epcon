@@ -1,19 +1,21 @@
-# coding: utf-8
-
-from datetime import timedelta
+from datetime import date, timedelta
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import timezone
-
 from django_factory_boy import auth as auth_factories
 
 from assopy.tests.factories.user import AssopyUserFactory
-from conference.tests.factories.talk import TalkFactory, TalkSpeakerFactory
-from conference.tests.factories.speaker import SpeakerFactory
+from assopy.stripe.tests.factories import TicketFactory
 from conference.models import Conference
+from conference.tests.factories.speaker import SpeakerFactory
+from conference.tests.factories.talk import (
+    TalkFactory,
+    TalkSpeakerFactory,
+)
 from p3.tests.factories.talk import P3TalkFactory
+from tests.common_tools import template_used, redirects_to
 
 
 class TestTalkVoting(TestCase):
@@ -55,3 +57,48 @@ class TestTalkVoting(TestCase):
         assert response.status_code == 200
         self.assertTemplateUsed(response, "conference/talk.xml")
         assert response._headers['content-type'][1] == 'application/xml'
+
+
+def test_new_talk_voting_is_inaccessible_to_unauthenticated_users(db, client):
+    url = reverse("talk_voting:talks")
+    response = client.get(url)
+
+    assert response.status_code == 302
+    assert redirects_to(response, "/accounts/login/")
+
+
+def test_new_talk_voting_is_unavailable_to_user_without_tickets(
+    db, user_client
+):
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_NAME,
+        voting_start=date.today() - timedelta(days=1),
+        voting_end=date.today() + timedelta(days=1),
+    )
+    url = reverse("talk_voting:talks")
+
+    response = user_client.get(url)
+    assert response.status_code == 200
+    assert template_used(
+        response, "ep19/bs/talk_voting/voting_is_unavailable.html"
+    )
+
+
+def test_new_talk_voting_can_be_access_with_user_who_has_tickets(
+    db, user_client
+):
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_NAME,
+        voting_start=date.today() - timedelta(days=1),
+        voting_end=date.today() + timedelta(days=1),
+    )
+    url = reverse("talk_voting:talks")
+    TicketFactory(user=user_client.user)
+
+    response = user_client.get(url)
+    assert response.status_code == 200
+    assert template_used(
+        response, "ep19/bs/talk_voting/voting.html"
+    )

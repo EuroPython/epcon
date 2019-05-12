@@ -10,8 +10,20 @@ from conference.models import Conference, Talk, VotoTalk
 @login_required
 def talk_voting(request):
 
-    # TODO: check if voting is open
     current_conference = Conference.objects.current()
+
+    if not current_conference.voting():
+        return TemplateResponse(
+            request, "ep19/bs/talk_voting/voting_is_closed.html"
+        )
+
+    if not is_user_allowed_to_vote(request.user):
+        return TemplateResponse(
+            request, "ep19/bs/talk_voting/voting_is_unavailable.html", {
+                'conference': current_conference,
+            }
+        )
+
     talks = (
         Talk.objects.filter(
             Q(conference=current_conference.code) & ~Q(created_by=request.user)
@@ -31,6 +43,15 @@ def talk_voting(request):
         "ep19/bs/talk_voting/voting.html",
         {"talks": talks, "VotingOptions": VotingOptions},
     )
+
+
+def is_user_allowed_to_vote(user):
+    """
+    Checks if user is allowed to vote at the moment of accessing this function
+    This usually means checking if they have at least one ticket associated
+    with their account (either for this or any of the past years
+    """
+    return user.ticket_set.all().exists()
 
 
 @login_required
@@ -99,6 +120,6 @@ class VotingOptions:
 
 
 urlpatterns = [
-    url(r"^$", talk_voting),
+    url(r"^$", talk_voting, name="talks"),
     url(r"^vote-on/(?P<talk_uuid>[\w]+)/$", vote_on_a_talk, name="vote"),
 ]
