@@ -4,7 +4,7 @@ from django.db.models import Q, Prefetch
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
-from conference.models import Conference, Talk, VotoTalk
+from conference.models import Conference, Talk, VotoTalk, TALK_STATUS
 
 
 @login_required
@@ -35,6 +35,7 @@ def talk_voting(request):
     talks = (
         Talk.objects.filter(
             Q(conference=current_conference.code) & ~Q(created_by=request.user)
+            & Q(admin_type='') & Q(status=TALK_STATUS.proposed)
         ).filter(
             *extra_filters
         ).order_by("?")
