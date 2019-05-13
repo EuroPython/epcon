@@ -34,8 +34,10 @@ def talk_voting(request):
 
     talks = (
         Talk.objects.filter(
-            Q(conference=current_conference.code) & ~Q(created_by=request.user)
-            & Q(admin_type='') & Q(status=TALK_STATUS.proposed)
+            Q(conference=current_conference.code)
+            & ~Q(created_by=request.user)
+            & Q(admin_type="")
+            & Q(status=TALK_STATUS.proposed)
         ).filter(
             *extra_filters
         ).order_by("?")
