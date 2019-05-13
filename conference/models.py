@@ -813,6 +813,15 @@ class Talk(models.Model, UrlMixin):
             self, "abstracts", language
         )
 
+    def get_abstract(self, language=None):
+        abstract = MultilingualContent.objects.getContent(
+            self, "abstracts", language
+        )
+        if abstract:
+            return abstract.body
+        else:
+            return self.abstract_short
+
 
 class TalkSpeaker(models.Model):
     talk = models.ForeignKey(Talk, on_delete=models.CASCADE)
