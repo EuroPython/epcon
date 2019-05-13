@@ -4,30 +4,44 @@ from django.db.models import Q, Prefetch
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
-from conference.models import Conference, Talk, VotoTalk
+from conference.models import Conference, Talk, VotoTalk, TALK_STATUS
 
 
 @login_required
 def talk_voting(request):
-
     current_conference = Conference.objects.current()
 
     if not current_conference.voting():
-        return TemplateResponse(
-            request, "ep19/bs/talk_voting/voting_is_closed.html"
-        )
+        return TemplateResponse(request, "ep19/bs/talk_voting/voting_is_closed.html")
 
     if not is_user_allowed_to_vote(request.user):
         return TemplateResponse(
-            request, "ep19/bs/talk_voting/voting_is_unavailable.html", {
-                'conference': current_conference,
-            }
+            request,
+            "ep19/bs/talk_voting/voting_is_unavailable.html",
+            {"conference": current_conference},
         )
+
+    filter = request.GET.get("filter")
+    if filter == "voted":
+        extra_filters = [
+            Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id"))
+        ]
+    elif filter == "not-voted":
+        extra_filters = [
+            ~Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id"))
+        ]
+    else:
+        filter = "all"
+        extra_filters = []
 
     talks = (
         Talk.objects.filter(
-            Q(conference=current_conference.code) & ~Q(created_by=request.user)
+            Q(conference=current_conference.code)
+            & ~Q(created_by=request.user)
+            & Q(admin_type="")
+            & Q(status=TALK_STATUS.proposed)
         )
+        .filter(*extra_filters)
         .order_by("?")
         .prefetch_related(
             Prefetch(
@@ -41,7 +55,7 @@ def talk_voting(request):
     return TemplateResponse(
         request,
         "ep19/bs/talk_voting/voting.html",
-        {"talks": talks, "VotingOptions": VotingOptions},
+        {"talks": talks, "VotingOptions": VotingOptions, "filter": filter},
     )
 
 
@@ -76,27 +90,17 @@ def vote_on_a_talk(request, talk_uuid):
                 return TemplateResponse(
                     request,
                     "ep19/bs/talk_voting/_voting_form.html",
-                    {
-                        "talk": talk,
-                        "db_vote": None,
-                        "VotingOptions": VotingOptions,
-                    },
+                    {"talk": talk, "db_vote": None, "VotingOptions": VotingOptions},
                 )
 
-            db_vote = VotoTalk.objects.create(
-                user=request.user, talk=talk, vote=vote
-            )
+            db_vote = VotoTalk.objects.create(user=request.user, talk=talk, vote=vote)
 
         if vote == VotingOptions.no_vote:
             db_vote.delete()
             return TemplateResponse(
                 request,
                 "ep19/bs/talk_voting/_voting_form.html",
-                {
-                    "talk": talk,
-                    "db_vote": None,
-                    "VotingOptions": VotingOptions,
-                },
+                {"talk": talk, "db_vote": None, "VotingOptions": VotingOptions},
             )
 
         db_vote.vote = vote

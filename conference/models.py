@@ -809,9 +809,20 @@ class Talk(models.Model, UrlMixin):
         )
 
     def getAbstract(self, language=None):
+        # TODO: this method should always return the contents body
+        #   and the get_abstract method should be retired
         return MultilingualContent.objects.getContent(
             self, "abstracts", language
         )
+
+    def get_abstract(self, language=None):
+        abstract = MultilingualContent.objects.getContent(
+            self, "abstracts", language
+        )
+        if abstract:
+            return abstract.body
+        else:
+            return self.abstract_short
 
 
 class TalkSpeaker(models.Model):
