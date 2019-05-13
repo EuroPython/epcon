@@ -5,11 +5,11 @@ from p3 import views as p3_views
 
 
 urlpatterns = [
-    url(r'^cart/$', p3_views.cart, name='p3-cart'),
-    url(r'^cart/calculator/$', p3_views.calculator, name='p3-calculator'),
-    url(r'^billing/$', p3_views.billing, name='p3-billing'),
-    url(r'^tickets/$', p3_views.tickets, name='p3-tickets'),
-    url(r'^tickets/(?P<tid>\d+)/$', p3_views.ticket, name='p3-ticket'),
+    # url(r'^cart/$', p3_views.cart, name='p3-cart'),
+    # url(r'^cart/calculator/$', p3_views.calculator, name='p3-calculator'),
+    # url(r'^billing/$', p3_views.billing, name='p3-billing'),
+    # url(r'^tickets/$', p3_views.tickets, name='p3-tickets'),
+    # url(r'^tickets/(?P<tid>\d+)/$', p3_views.ticket, name='p3-ticket'),
     url(r'^user/(?P<token>.{36})/$', p3_views.user, name='p3-user'),
 
     url(r'^p/profile/(?P<slug>[\w-]+)/$', p3_views.p3_profile, name='p3-profile'),

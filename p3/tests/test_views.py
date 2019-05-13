@@ -1,5 +1,7 @@
 import unittest
 
+import pytest
+
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test import override_settings
@@ -48,6 +50,7 @@ class TestView(TestCase):
         AttendeeProfileFactory(user=self.user)
         self.assertTrue(is_logged)
 
+    @pytest.mark.skip('superseded by new cart')
     def test_p3_billing_with_no_user_cart(self):
         # p3-billing -> p3.views.cart.billing
         url = reverse('p3-billing')
@@ -55,12 +58,14 @@ class TestView(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('p3-cart'), fetch_redirect_response=False)
 
+    @pytest.mark.skip('superseded by new cart')
     def test_p3_billing_no_ticket(self):
         # p3-billing -> p3.views.cart.billing
         url = reverse('p3-billing')
         response = self.client.get(url)
         self.assertRedirects(response, reverse('p3-cart'), fetch_redirect_response=False)
 
+    @pytest.mark.skip('superseded by new cart')
     @override_settings(DEBUG=False)
     def test_p3_calculator_get_default_values(self):
         # p3-calculator -> p3.views.cart.calculator

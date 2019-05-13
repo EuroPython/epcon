@@ -69,6 +69,7 @@ def make_basic_fare_setup():
     assert Fare.objects.all().count() == 28  # 3**3 + social event
 
 
+@mark.skip('superseded by new cart')
 @mark.django_db
 def test_basic_fare_setup(client):
     make_user()
@@ -128,6 +129,7 @@ class TestBuyingTickets(TestCase):
             rsps.add(responses.GET, DAILY_ECB_URL, body=EXAMPLE_ECB_DAILY_XML)
             fetch_and_store_latest_ecb_exrates()
 
+    @mark.skip('superseded by new cart')
     def test_buying_early_bird_only_during_early_bird_window(self):
 
         assert Ticket.objects.all().count() == 0
@@ -310,10 +312,12 @@ class TestTicketManagementScenarios(TestCase):
         """
         return "t%s-%s" % (self.ticket.id, fieldname)
 
+    @mark.skip('superseded by new cart')
     def test_simple_GET(self):
         response = self.client.get(self.ticket_url)
         self.assertTemplateUsed(response, "p3/fragments/render_ticket.html")
 
+    @mark.skip('superseded by new cart')
     def test_assign_ticket_to_another_user(self):
         response = self.client.post(self.ticket_url, {
             # This is the only field we're interested in
@@ -346,6 +350,7 @@ class TestTicketManagementScenarios(TestCase):
         assert self.tc.shirt_size        == DEFAULT_SHIRT_SIZE
         assert self.tc.python_experience == DEFAULT_PYTHON_EXPERIENCE
 
+    @mark.skip('superseded by new cart')
     def test_assign_ticket_to_another_user_case_insensitive(self):
         # we need to confirm the order for the tickets to display in the
         # profile
@@ -406,6 +411,7 @@ class TestTicketManagementScenarios(TestCase):
         assert self.tc.shirt_size        == 'fm'
         assert self.tc.python_experience == 5
 
+    @mark.skip('superseded by new cart')
     def test_reclaim_ticket(self):
         assert self.tc.assigned_to == self.MAIN_USER_EMAIL
         self.client.post(self.ticket_url, {
@@ -432,6 +438,7 @@ class TestTicketManagementScenarios(TestCase):
         self.tc.refresh_from_db()
         assert self.tc.assigned_to == self.MAIN_USER_EMAIL
 
+    @mark.skip('superseded by new cart')
     def test_modify_your_ticket(self):
         # defaults
         assert self.tc.assigned_to       == self.MAIN_USER_EMAIL
@@ -472,6 +479,7 @@ class TestTicketManagementScenarios(TestCase):
         assert self.tc.shirt_size        == DEFAULT_SHIRT_SIZE
         assert self.tc.python_experience == DEFAULT_PYTHON_EXPERIENCE
 
+    @mark.skip('superseded by new cart')
     def test_invalid_data_returns_an_error(self):
         # reassign to someone else and it *will* reset the ticket.
         # even if the keys are present in the POST. beware.
@@ -497,6 +505,7 @@ class TestTicketManagementScenarios(TestCase):
         assert self.tc.shirt_size        == DEFAULT_SHIRT_SIZE
         assert self.tc.python_experience == DEFAULT_PYTHON_EXPERIENCE
 
+    @mark.skip('superseded by new cart')
     def test_refund_tickets(self):
         assert Refund.objects.all().count() == 0
         assert not self.ticket.frozen
