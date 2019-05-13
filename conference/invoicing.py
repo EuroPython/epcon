@@ -157,6 +157,8 @@ def extract_customer_info(order):
         customer.append(order.vat_number)
     if order.billing_notes:
         customer.append(order.billing_notes)
+    if order.country:
+        customer.append(order.country.name)
 
     return '\n'.join(customer)
 
@@ -185,7 +187,7 @@ def create_invoices_for_order(order):
                 )
 
                 gross_price = vat_item['price']
-                vat_rate    = normalize_price(1 + vat_item['vat'].value / 100)
+                vat_rate    = 1 + vat_item['vat'].value / 100
                 net_price   = normalize_price(vat_item['price'] / vat_rate)
                 vat_price   = vat_item['price'] - net_price
 

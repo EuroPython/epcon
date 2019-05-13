@@ -10,9 +10,13 @@
 {% block content %}
 <div id="cart_step3_page" class="container page">
     <div class="row">
-        <div class='col-md-6'>
-            <h1>Step 3: Add billing info</h1>
+        <div class="col-md-12">
+            <h1>Step 3: Add billing info for {{ order.code }}</h1>
+        </div>
+    </div>
 
+    <div class="row" style='margin-top: 2em'>
+        <div class='col-md-6'>
             <form method='POST' action='.' class='form'>
                 {% csrf_token %}
 
@@ -24,6 +28,11 @@
 
 
         </div>
+        <div class='col-md-6'>
+            {% include "ep19/bs/cart/_order_summary.html" %}
+        </div>
+
+
     </div>
 </div>
 {% endblock %}

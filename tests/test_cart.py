@@ -14,7 +14,7 @@ from conference.fares import (
 from assopy.models import Vat
 from conference.cart import CartActions
 
-DEFAULT_VAT_RATE = "20"  # 20%
+DEFAULT_VAT_RATE = "7.7"  # 7.7%
 
 
 def test_first_step_of_cart_is_available_without_auth(db, client):
@@ -50,33 +50,27 @@ def test_cart_second_step_requires_auth(db, client):
     assert redirects_to(response, "/accounts/login/")
 
 
-def test_second_step_doesnt_work_with_unkown_ticket_type(db, ep_admin_client):
-    # NOTE: this is using admin_client because of @staff_member_required in the
-    # testing period. Later the fixture should be changed back to user_client
+def test_second_step_doesnt_work_with_unkown_ticket_type(db, user_client):
     second_step_unkown = reverse("cart:step2_pick_tickets", args=["unkown"])
 
     with raises(AssertionError):
-        ep_admin_client.get(second_step_unkown)
+        user_client.get(second_step_unkown)
 
 
-def test_cant_see_any_tickets_if_fares_are_not_available(db, ep_admin_client):
-    # NOTE: this is using admin_client because of @staff_member_required in the
-    # testing period. Later the fixture should be changed back to user_client
+def test_cant_see_any_tickets_if_fares_are_not_available(db, user_client):
     _setup()
     second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
 
-    response = ep_admin_client.get(second_step_company)
+    response = user_client.get(second_step_company)
 
     assert "No tickets available" in response.content.decode()
 
 
-def test_cant_buy_any_tickets_if_fares_are_not_available(db, ep_admin_client):
-    # NOTE: this is using admin_client because of @staff_member_required in the
-    # testing period. Later the fixture should be changed back to user_client
+def test_cant_buy_any_tickets_if_fares_are_not_available(db, user_client):
     _setup()
     second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
 
-    response = ep_admin_client.post(
+    response = user_client.post(
         second_step_company, {"TESP": 10, CartActions.buy_tickets: True},
         follow=True,
     )
@@ -89,9 +83,7 @@ def test_cant_buy_any_tickets_if_fares_are_not_available(db, ep_admin_client):
     assert Order.objects.all().count() == 0
 
 
-def test_can_buy_tickets_if_fare_is_available(db, ep_admin_client):
-    # NOTE: this is using admin_client because of @staff_member_required in the
-    # testing period. Later the fixture should be changed back to user_client
+def test_can_buy_tickets_if_fare_is_available(db, user_client):
     _setup()
     set_early_bird_fare_dates(
         settings.CONFERENCE_CONFERENCE,
@@ -100,7 +92,7 @@ def test_can_buy_tickets_if_fare_is_available(db, ep_admin_client):
     )
     second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
 
-    response = ep_admin_client.post(
+    response = user_client.post(
         second_step_company, {"TESP": 10, CartActions.buy_tickets: True}
     )
 
@@ -113,18 +105,14 @@ def test_can_buy_tickets_if_fare_is_available(db, ep_admin_client):
     assert Ticket.objects.all().count() == 10
 
 
-def test_user_can_add_billing_info(db, ep_admin_client):
-    # NOTE: this is using admin_client because of @staff_member_required in the
-    # testing period. Later the fixture should be changed back to user_client
+def test_user_can_add_billing_info(db, user_client):
     _setup()
     ...
 
 
 def test_user_cant_see_or_assign_tickets_for_non_completed_orders(
-    db, ep_admin_client
+    db, user_client
 ):
-    # NOTE: this is using admin_client because of @staff_member_required in the
-    # testing period. Later the fixture should be changed back to user_client
     ...
 
 

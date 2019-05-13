@@ -1,39 +1,42 @@
 import uuid
-from datetime import datetime, date
+from datetime import date, datetime
 
-from django.conf.urls import url
-from django.conf import settings
-from django.contrib import messages
-from django.db import transaction
-from django.contrib.admin.views.decorators import staff_member_required
-from django.template.response import TemplateResponse
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect
-from django.utils import timezone
 from django import forms
+from django.conf import settings
+from django.conf.urls import url
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
+from django.core.urlresolvers import reverse
+from django.db import transaction
+from django.shortcuts import get_object_or_404, redirect
+from django.template.loader import render_to_string
+from django.template.response import TemplateResponse
+from django.utils import timezone
 
 from conference.models import StripePayment
 
-from .invoicing import create_invoices_for_order
-
-from .orders import (
-    create_order,
-    calculate_order_price_including_discount,
-    is_business_order,
-    Order,
-    OrderCalculation,
-)
 from .fares import (
     FARE_CODE_GROUPS,
     FARE_CODE_REGEXES,
-    get_available_fares,
     FareIsNotAvailable,
+    get_available_fares,
+    is_fare_code_valid,
 )
-
-from .payments import charge_for_payment, PaymentError
+from .invoicing import create_invoices_for_order
+from .orders import (
+    Order,
+    OrderCalculation,
+    calculate_order_price_including_discount,
+    create_order,
+    is_business_order,
+)
+from .payments import PaymentError, charge_for_payment
 
 
 GLOBAL_MAX_PER_FARE_TYPE = 6
+ORDER_CONFIRMATION_EMAIL_SUBJECT = "EuroPython2019: Order confirmation"
 
 
 def cart_step1_choose_type_of_order(request):
@@ -48,7 +51,6 @@ def cart_step1_choose_type_of_order(request):
 
 
 @login_required
-@staff_member_required  # TEMPORARY for testing
 def cart_step2_pick_tickets(request, type_of_tickets):
     """
     Only submit this form if user is authenticated, otherwise display some
@@ -74,6 +76,10 @@ def cart_step2_pick_tickets(request, type_of_tickets):
         )
         context["fares_info"] = fares_info
 
+        if sum(fares_info.values()) == 0:
+            messages.error(request, "Please select some tickets :)")
+            return redirect(".")
+
         try:
             calculation, coupon = calculate_order_price_including_discount(
                 for_user=request.user,
@@ -85,27 +91,26 @@ def cart_step2_pick_tickets(request, type_of_tickets):
             messages.error(request, "A selected fare is not available")
             return redirect(".")
 
-        else:
-            if CartActions.apply_discount_code in request.POST:
-                context["calculation"] = calculation
-                context["discount_code"] = discount_code or "No discount code"
-                if discount_code and not coupon:
-                    messages.warning(
-                        request,
-                        "The discount code provided expired or is invalid",
-                    )
+        if CartActions.apply_discount_code in request.POST:
+            context["calculation"] = calculation
+            context["discount_code"] = discount_code or "No discount code"
+            if discount_code and not coupon:
+                messages.warning(
+                    request, "The discount code provided expired or is invalid"
+                )
 
-            if CartActions.buy_tickets in request.POST:
-                order = create_order(
-                    for_user=request.user,
-                    for_date=timezone.now().date(),
-                    fares_info=fares_info,
-                    calculation=calculation,
-                    coupon=coupon,
-                )
-                return redirect(
-                    "cart:step3_add_billing_info", order_uuid=order.uuid
-                )
+        if CartActions.buy_tickets in request.POST:
+            order = create_order(
+                for_user=request.user,
+                for_date=timezone.now().date(),
+                fares_info=fares_info,
+                calculation=calculation,
+                order_type=type_of_tickets,
+                coupon=coupon,
+            )
+            return redirect(
+                "cart:step3_add_billing_info", order_uuid=order.uuid
+            )
 
     return TemplateResponse(
         request, "ep19/bs/cart/step_2_pick_tickets.html", context
@@ -113,7 +118,6 @@ def cart_step2_pick_tickets(request, type_of_tickets):
 
 
 @login_required
-@staff_member_required  # TEMPORARY for testing
 def cart_step3_add_billing_info(request, order_uuid):
 
     order = get_object_or_404(Order, uuid=order_uuid)
@@ -121,7 +125,6 @@ def cart_step3_add_billing_info(request, order_uuid):
     if is_business_order(order):
         billing_form = BusinessBillingForm
     else:
-        # TODO: should we have a student billing form?
         billing_form = PersonalBillingForm
 
     form = billing_form(instance=order)
@@ -131,30 +134,20 @@ def cart_step3_add_billing_info(request, order_uuid):
 
         if form.is_valid():
             form.save()
-            # TODO(artcz)
-            # if form billing notes then create custom helpdesk case?
-
             return redirect("cart:step4_payment", order_uuid=order.uuid)
-
-    # sanity/security check to make sure we don't publish the the wrong key
-    stripe_key = settings.STRIPE_PUBLISHABLE_KEY
-    assert stripe_key.startswith("pk_")
 
     return TemplateResponse(
         request,
         "ep19/bs/cart/step_3_add_billing_info.html",
-        {"form": form, "stripe_key": stripe_key},
+        {"form": form, "order": order},
     )
 
 
 @login_required
-@staff_member_required  # TEMPORARY for testing
 def cart_step4_payment(request, order_uuid):
     order = get_object_or_404(Order, uuid=order_uuid)
     total_for_stripe = int(order.total() * 100)
     payments = order.stripepayment_set.all().order_by("created")
-    # TODO: pay attention if order is paid or not, and if paid don't render the
-    # payment button in the template
 
     if request.method == "POST":
         stripe_payment = StripePayment.objects.create(
@@ -175,7 +168,8 @@ def cart_step4_payment(request, order_uuid):
 
             with transaction.atomic():
                 create_invoices_for_order(order)
-                # TODO send_confirmation_email()
+                current_site = get_current_site(request)
+                send_order_confirmation_email(order, current_site)
 
                 return redirect(
                     "cart:step5_congrats_order_complete", order_uuid=order.uuid
@@ -185,19 +179,23 @@ def cart_step4_payment(request, order_uuid):
             # payment(s) and reshow the same Pay with Card button
             return redirect(".")
 
+    # sanity/security check to make sure we don't publish the the wrong key
+    stripe_key = settings.STRIPE_PUBLISHABLE_KEY
+    assert stripe_key.startswith("pk_")
+
     return TemplateResponse(
         request,
         "ep19/bs/cart/step_4_payment.html",
         {
             "order": order,
             "payments": payments,
+            "stripe_key": stripe_key,
             "total_for_stripe": total_for_stripe,
         },
     )
 
 
 @login_required
-@staff_member_required  # TEMPORARY for testing
 def cart_step5_congrats_order_complete(request, order_uuid):
     order = get_object_or_404(Order, uuid=order_uuid)
     return TemplateResponse(
@@ -215,7 +213,7 @@ def extract_order_parameters_from_request(post_data):
         if k == "discount_code":
             discount_code = v
 
-        elif is_available_fare(k):
+        elif is_fare_code_valid(k):
             try:
                 fares_info[k] = int(v)
             except ValueError:
@@ -224,8 +222,22 @@ def extract_order_parameters_from_request(post_data):
     return discount_code, fares_info
 
 
-def is_available_fare(fare_code):
-    return True
+def send_order_confirmation_email(order: Order, current_site) -> None:
+
+    user_panel_path = reverse("user_panel:dashboard")
+    user_panel_url = f"https://{current_site.domain}{user_panel_path}"
+
+    content = render_to_string(
+        "ep19/emails/order_confirmation_email.txt",
+        {"order": order, "user_panel_url": user_panel_url},
+    )
+
+    send_mail(
+        subject=ORDER_CONFIRMATION_EMAIL_SUBJECT,
+        message=content,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[order.user.user.email],
+    )
 
 
 class TicketType:
@@ -249,8 +261,10 @@ def get_available_fares_for_type(type_of_tickets):
 
     if type_of_tickets == TicketType.personal:
         regex_group = FARE_CODE_GROUPS.PERSONAL
+
     if type_of_tickets == TicketType.company:
         regex_group = FARE_CODE_GROUPS.COMPANY
+
     if type_of_tickets == TicketType.student:
         regex_group = FARE_CODE_GROUPS.STUDENT
 
@@ -262,12 +276,11 @@ def get_available_fares_for_type(type_of_tickets):
 class PersonalBillingForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ["card_name", "country", "address", "billing_notes"]
+        fields = ["card_name", "country", "address"]
         widgets = {
             "address": forms.Textarea(attrs={"rows": 3}),
-            "billing_notes": forms.Textarea(attrs={"rows": 3}),
         }
-        labels = {"card_name": "Name of the cardholder"}
+        labels = {"card_name": "Name of the credit card holder"}
 
 
 class BusinessBillingForm(forms.ModelForm):
@@ -288,7 +301,7 @@ class BusinessBillingForm(forms.ModelForm):
             "address": forms.Textarea(attrs={"rows": 3}),
             "billing_notes": forms.Textarea(attrs={"rows": 3}),
         }
-        labels = {"card_name": "Name of the cardholder"}
+        labels = {"card_name": "Name of the credit card holder"}
 
 
 urlpatterns_ep19 = [

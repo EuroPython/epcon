@@ -11,16 +11,8 @@
     <div class='row'>
         <div class='col-md-12'>
             <h1>Congrats! Order #{{ order.code }} complete.</h1>
-            <h4 style='margin-top: 2em'>Summary:</h4>
-            <table class='table'>
-                {% for item in order.orderitem_set.all %}
-                <tr>
-                    <td>{{ item.description }}</td>
-                    <td>&euro; {{ item.price }}</td>
-                </tr>
-                {% endfor %}{# item in items.all #}
-            </table>
-            <h5>Total: &euro; {{ order.total }}</h5>
+
+            {% include "ep19/bs/cart/_order_summary.html" %}
 
             <p style='margin-top: 5em'>
             You can now manage your tickets in your <a href='{% url "user_panel:dashboard" %}'>user panel</a>.

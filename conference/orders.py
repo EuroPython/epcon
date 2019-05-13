@@ -6,7 +6,7 @@ from django.db.models import Max
 from django.db import transaction
 from django.utils import timezone
 
-from assopy.models import Order, OrderItem, Coupon
+from assopy.models import Order, OrderItem, Coupon, ORDER_TYPE
 from conference.models import Ticket, Conference
 
 from .fares import get_available_fares_as_dict, FareIsNotAvailable
@@ -19,7 +19,7 @@ ORDER_CODE_TEMPLATE = "O/%(year_two_digits)s.%(sequential_id)s"
 def increment_order_code(code):
     NUMBER_OF_DIGITS_WITH_PADDING = 4
 
-    prefix_with_year, number = code.split('.')
+    prefix_with_year, number = code.split(".")
     number = str(int(number) + 1).zfill(NUMBER_OF_DIGITS_WITH_PADDING)
     return "{}.{}".format(prefix_with_year, number)
 
@@ -32,11 +32,10 @@ def latest_order_code_for_year(year):
     assert 2016 <= year <= 2020, year
 
     orders = Order.objects.filter(
-        code__startswith=ORDER_CODE_PREFIX,
-        created__year=year,
+        code__startswith=ORDER_CODE_PREFIX, created__year=year
     )
 
-    return orders.aggregate(max=Max('code'))['max']
+    return orders.aggregate(max=Max("code"))["max"]
 
 
 def next_order_code_for_year(year):
@@ -49,10 +48,12 @@ def next_order_code_for_year(year):
 
     # if there are no current codes, return the first one
     template = ORDER_CODE_TEMPLATE
-    return template % {'year_two_digits': year % 1000, 'sequential_id': '0001'}
+    return template % {"year_two_digits": year % 1000, "sequential_id": "0001"}
 
 
-def create_order(for_user, for_date, fares_info, calculation, coupon=None):
+def create_order(
+    for_user, for_date, fares_info, calculation, order_type, coupon=None
+):
     """
     We assume that the data passed to this function is already sanitised,
     ie. we assume that the calculation of discount is correct, and we just
@@ -72,7 +73,8 @@ def create_order(for_user, for_date, fares_info, calculation, coupon=None):
         order = Order(
             uuid=str(uuid.uuid4()),
             user=for_user.assopy_user,
-            code=next_order_code_for_year(timezone.now().year)
+            code=next_order_code_for_year(timezone.now().year),
+            order_type=order_type,
             # create a shell of an order without details
         )
         order.save()
@@ -85,16 +87,13 @@ def create_order(for_user, for_date, fares_info, calculation, coupon=None):
                 # This is a relict of the past we should at some point reverse
                 # the relationship and create tickets from orderitems, not the
                 # other way around.
-                ticket = Ticket.objects.create(
-                    user=for_user,
-                    fare=fare,
-                )
+                ticket = Ticket.objects.create(user=for_user, fare=fare)
 
                 OrderItem.objects.create(
                     order=order,
                     code=fare_code,
                     ticket=ticket,
-                    description=f'{fare.description} {i+1}/{ticket_count}',
+                    description=f"{fare.description} {i+1}/{ticket_count}",
                     # full price here, apply full discount as another OrderItem
                     price=fare.price,
                     vat=vat,
@@ -106,7 +105,7 @@ def create_order(for_user, for_date, fares_info, calculation, coupon=None):
                 # coupon=coupon,  # TODO
                 ticket=None,
                 code=coupon.code,
-                description=f'Discount according to {coupon.code}',
+                description=f"Discount coupon {coupon.code}",
                 price=Decimal(-1) * calculation.total_discount,
                 # TODO/FIXME for now assuming all tickets are VAT-ed the same
                 # and the discount should be VATed with the same amount as well
@@ -117,7 +116,7 @@ def create_order(for_user, for_date, fares_info, calculation, coupon=None):
 
 
 OrderCalculation = namedtuple(
-    'OrderCalculation', 'final_price full_price total_discount'
+    "OrderCalculation", "final_price full_price total_discount"
 )
 
 
@@ -157,7 +156,7 @@ def calculate_order_price_including_discount(
     times_per_order = coupon.items_per_usage or INFINITE_AMOUNT
 
     coupon_applicable_fares = set(
-        coupon.fares.all().values_list('code', flat=True)
+        coupon.fares.all().values_list("code", flat=True)
     )
 
     for fare_code, amount_of_tickets in fares_info.items():
@@ -176,12 +175,15 @@ def calculate_order_price_including_discount(
                     full_price = fares[fare_code].price
                     discounted_total += full_price
 
-    return OrderCalculation(
-        discounted_total, full_total, full_total - discounted_total
-    ), coupon
+    return (
+        OrderCalculation(
+            discounted_total, full_total, full_total - discounted_total
+        ),
+        coupon,
+    )
 
 
 def is_business_order(order):
     assert isinstance(order, Order)
-    # FIXME check order type here, or maybe put it in the Order obj itself
-    return True
+
+    return order.order_type == ORDER_TYPE.company

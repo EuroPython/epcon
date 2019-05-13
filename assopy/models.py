@@ -630,6 +630,13 @@ ENABLED_ORDER_PAYMENT = (
     ('cc', 'Credit Card'),
 )
 
+# This is new for 2019; We can track order type for improved handling of forms
+# in the cart.
+ORDER_TYPE = Choices(
+    ("company", "Company"),
+    ("student", "Student"),
+    ("personal", "Personal"),
+)
 
 class Order(models.Model):
     # TODO(artcz) This should have unique=True as well once we backfill data
@@ -668,6 +675,12 @@ class Order(models.Model):
         help_text="Auto filled by the payments backend",
         blank=True,
         null=True,
+    )
+
+    order_type = models.CharField(
+        choices=ORDER_TYPE,
+        max_length=20,
+        blank=True,
     )
 
     objects = OrderQuerySet.as_manager()
@@ -773,6 +786,13 @@ class Order(models.Model):
             item.delete()
         super(Order, self).delete(**kwargs)
 
+    def is_complete(self):
+        """Wrapper on _complete that can be used in templates"""
+        return self._complete
+
+    def total_vat_amount(self):
+        return sum(item.vat_value() for item in self.orderitem_set.all())
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -784,6 +804,9 @@ class OrderItem(models.Model):
     # o venire copiato da conference
     vat = models.ForeignKey(Vat, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'{self.code} {self.description} -- {self.price}'
+
     def invoice(self):
         """
         Ritorna, se esiste, la fattura collegata all'order_item
@@ -794,6 +817,13 @@ class OrderItem(models.Model):
             return Invoice.objects.get(order=self.order_id, vat=self.vat_id)
         except Invoice.DoesNotExist:
             return None
+
+    def net_price(self):
+        """This is ugly workaround because we use gross prices for Fares"""
+        return normalize_price(self.price / (1 + self.vat.value / 100))
+
+    def vat_value(self):
+        return self.price - self.net_price()
 
     def get_readonly_fields(self, request, obj=None):
 	    # Make fields read-only if an invoice for the order already exists
