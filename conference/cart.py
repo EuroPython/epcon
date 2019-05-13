@@ -68,7 +68,6 @@ def cart_step2_pick_tickets(request, type_of_tickets):
         "currency": "EUR",
         "fares_info": {},  # empty fares info
     }
-
     if request.method == "POST":
 
         discount_code, fares_info = extract_order_parameters_from_request(
@@ -158,6 +157,7 @@ def cart_step4_payment(request, order_uuid):
             token=request.POST.get("stripeToken"),
             token_type=request.POST.get("stripeTokenType"),
             email=request.POST.get("stripeEmail"),
+            description=f"payment for order {order.pk} by {request.user.email}",
         )
         try:
             # Save the payment information as soon as it goes through to

@@ -1,18 +1,21 @@
 from datetime import date, timedelta
 
 from pytest import mark, raises
+
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib.messages import constants as messages_constants
-from tests.common_tools import redirects_to, template_used
+
 from assopy.models import Order
+from assopy.models import Vat
+from assopy.tests.factories.order import CouponFactory
+from conference.cart import CartActions
 from conference.models import Conference, Ticket
 from conference.fares import (
     pre_create_typical_fares_for_conference,
     set_early_bird_fare_dates,
 )
-from assopy.models import Vat
-from conference.cart import CartActions
+from tests.common_tools import redirects_to, template_used
 
 DEFAULT_VAT_RATE = "7.7"  # 7.7%
 
@@ -103,6 +106,35 @@ def test_can_buy_tickets_if_fare_is_available(db, user_client):
     )
     # Tickets are pre-created already even if we don't complete the order.
     assert Ticket.objects.all().count() == 10
+
+
+def test_can_apply_personal_ticket_coupon(db, user_client):
+    _setup()
+    set_early_bird_fare_dates(
+        settings.CONFERENCE_CONFERENCE,
+        date.today(),
+        date.today() + timedelta(days=1),
+    )
+    second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
+    coupon = CouponFactory(user=user_client.user.assopy_user)
+
+    order_ticket_count = 10
+    response = user_client.post(
+        second_step_company,
+        {"TESP": order_ticket_count, CartActions.buy_tickets: True, 'discount_code': coupon.code}
+    )
+
+    assert response.status_code == 302
+    order = Order.objects.get()
+    assert redirects_to(
+        response, reverse("cart:step3_add_billing_info", args=[order.uuid])
+    )
+
+    # Tickets are pre-created already even if we don't complete the order.
+    assert Ticket.objects.all().count() == order_ticket_count
+    # Order includes the coupon item with the coupon code
+    assert order.orderitem_set.count() == order_ticket_count + 1
+    assert order.orderitem_set.filter(code=coupon.code).exists()
 
 
 def test_user_can_add_billing_info(db, user_client):

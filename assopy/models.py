@@ -380,7 +380,6 @@ class Coupon(models.Model):
         return Decimal(1) - discount
 
     def valid(self, user=None):
-        # import pdb; pdb.set_trace()
         if self.start_validity and self.end_validity:
             today = date.today()
             if today < self.start_validity or today > self.end_validity:
