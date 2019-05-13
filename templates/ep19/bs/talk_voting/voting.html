@@ -1,5 +1,7 @@
 {% extends "ep19/bs/base.html" %}
 
+{% load cms_tags %}
+
 {% block content %}
 <style type="text/css">
 .voting-proposal {
@@ -13,6 +15,11 @@
     <div class="row">
         <div class="col-md-12">
             <h1>Talk Voting</h1>
+            <h4>Filter
+                <a class='btn btn-{% if filter != "all" %}outline-{% endif %}success' href="{% url 'talk_voting:talks' %}?filter=all" >All talks</a>
+                <a class='btn btn-{% if filter != "not-voted" %}outline-{% endif %}success' href="{% url 'talk_voting:talks' %}?filter=not-voted" >Not voted</a>
+                <a class='btn btn-{% if filter != "voted" %}outline-{% endif %}success' href="{% url 'talk_voting:talks' %}?filter=voted" >Voted</a>
+            </h4>
             <p>Below you can see all proposals for EP2019. They are in random order</p>
         </div>
     </div>

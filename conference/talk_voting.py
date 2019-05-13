@@ -9,7 +9,6 @@ from conference.models import Conference, Talk, VotoTalk
 
 @login_required
 def talk_voting(request):
-
     current_conference = Conference.objects.current()
 
     if not current_conference.voting():
@@ -24,11 +23,21 @@ def talk_voting(request):
             }
         )
 
+    filter = request.GET.get('filter')
+    if filter == 'voted':
+        extra_filters = [Q(id__in=VotoTalk.objects.filter(user=request.user).values('talk_id'))]
+    elif filter == 'not-voted':
+        extra_filters = [~Q(id__in=VotoTalk.objects.filter(user=request.user).values('talk_id'))]
+    else:
+        filter = 'all'
+        extra_filters = []
+
     talks = (
         Talk.objects.filter(
             Q(conference=current_conference.code) & ~Q(created_by=request.user)
-        )
-        .order_by("?")
+        ).filter(
+            *extra_filters
+        ).order_by("?")
         .prefetch_related(
             Prefetch(
                 "vototalk_set",
@@ -41,7 +50,7 @@ def talk_voting(request):
     return TemplateResponse(
         request,
         "ep19/bs/talk_voting/voting.html",
-        {"talks": talks, "VotingOptions": VotingOptions},
+        {"talks": talks, "VotingOptions": VotingOptions, "filter": filter},
     )
 
 

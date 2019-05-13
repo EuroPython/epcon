@@ -23,7 +23,7 @@ from conference.models import (
     Speaker,
     ExchangeRate,
 )
-from conference.tests.factories.fare import SponsorIncomeFactory
+from conference.tests.factories.fare import SponsorIncomeFactory, TicketFactory
 from conference.tests.factories.talk import TalkFactory
 from conference.cfp import add_speaker_to_talk
 from conference.accounts import get_or_create_attendee_profile_for_new_user
@@ -78,6 +78,11 @@ class Command(BaseCommand):
             password="europython",
             active=True,
         )
+
+        print("Creating tickets to allow users to vote")
+        # Leaving Cesar out from voting
+        for assopy_user in (admin, alice, bob):
+            TicketFactory(user=assopy_user.user, frozen=False)
 
         print("Making some talk proposals")
         for user in alice, bob, cesar:
