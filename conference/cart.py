@@ -5,7 +5,6 @@ from django import forms
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
@@ -52,7 +51,6 @@ def cart_step1_choose_type_of_order(request):
 
 
 @login_required
-@staff_member_required  # TEMPORARY for testing
 def cart_step2_pick_tickets(request, type_of_tickets):
     """
     Only submit this form if user is authenticated, otherwise display some
@@ -120,7 +118,6 @@ def cart_step2_pick_tickets(request, type_of_tickets):
 
 
 @login_required
-@staff_member_required  # TEMPORARY for testing
 def cart_step3_add_billing_info(request, order_uuid):
 
     order = get_object_or_404(Order, uuid=order_uuid)
@@ -147,7 +144,6 @@ def cart_step3_add_billing_info(request, order_uuid):
 
 
 @login_required
-@staff_member_required  # TEMPORARY for testing
 def cart_step4_payment(request, order_uuid):
     order = get_object_or_404(Order, uuid=order_uuid)
     total_for_stripe = int(order.total() * 100)
@@ -200,7 +196,6 @@ def cart_step4_payment(request, order_uuid):
 
 
 @login_required
-@staff_member_required  # TEMPORARY for testing
 def cart_step5_congrats_order_complete(request, order_uuid):
     order = get_object_or_404(Order, uuid=order_uuid)
     return TemplateResponse(
