@@ -1,3 +1,5 @@
+import pytest
+
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django_factory_boy import auth as auth_factories
@@ -14,6 +16,7 @@ class TestCartView(TestCase):
         AttendeeProfileFactory(user=self.user)
         self.assertTrue(is_logged)
 
+    @pytest.mark.skip('superseded by new cart')
     def test_p3_cart(self):
         url = reverse('p3-cart')
 
