@@ -134,7 +134,7 @@ def calculate_order_price_including_discount(
             end_validity__gte=timezone.now().date(),
         )
 
-        if not coupon.valid(user=for_user):
+        if not coupon.valid(user=for_user.assopy_user):
             coupon = None
 
     except Coupon.DoesNotExist:
