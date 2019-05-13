@@ -10,7 +10,7 @@
     {% for item in order.orderitem_set.all %}
     <tr>
         <td>{{ item.code }}</td>
-        <td>{{ item.ticket }}</td>
+        <td>{% if item.ticket %}{{ item.ticket }}{% else %}{{ item.description }}{% endif %}</td>
         <td class='text-right'>{{ item.price }}</td>
     </tr>
     {% endfor %}

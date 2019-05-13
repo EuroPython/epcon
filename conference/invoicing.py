@@ -157,6 +157,8 @@ def extract_customer_info(order):
         customer.append(order.vat_number)
     if order.billing_notes:
         customer.append(order.billing_notes)
+    if order.country:
+        customer.append(order.country.name)
 
     return '\n'.join(customer)
 
