@@ -137,15 +137,17 @@ def test_can_apply_personal_ticket_coupon(db, user_client):
     assert order.orderitem_set.filter(code=coupon.code).exists()
 
 
+@mark.xfail
 def test_user_can_add_billing_info(db, user_client):
     _setup()
-    ...
+    assert False
 
 
+@mark.xfail
 def test_user_cant_see_or_assign_tickets_for_non_completed_orders(
     db, user_client
 ):
-    ...
+    assert False
 
 
 def _setup(start=date(2019, 7, 8), end=date(2019, 7, 14)):
@@ -165,37 +167,45 @@ def _setup(start=date(2019, 7, 8), end=date(2019, 7, 14)):
     )
 
 
+@mark.xfail
 def test_third_step_redirects_to_step_four(db):
-    ...
+    assert False
 
 
+@mark.xfail
 def test_fourth_step_redirects_to_step_five(db):
-    ...
+    assert False
 
 
+@mark.xfail
 def test_cart_third_step_requires_auth(db):
-    ...
+    assert False
 
 
+@mark.xfail
 def test_cart_fourth_step(db):
-    ...
+    assert False
 
 
+@mark.xfail
 def test_cart_only_shows_correct_ticket_types(db):
     # Parametrise with ticket type
-    ...
+    assert False
 
 
+@mark.xfail
 def test_cart_only_allows_to_buy_less_than_max_number_of_tickets(db):
-    ...
+    assert False
 
 
+@mark.xfail
 def test_cart_computes_discounts_correctly(db):
-    ...
+    assert False
 
 
+@mark.xfail
 def test_cart_applies_discounts_correctly(db):
-    ...
+    assert False
 
 
 @mark.parametrize(
