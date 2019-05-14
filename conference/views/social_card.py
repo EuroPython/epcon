@@ -7,9 +7,18 @@ from weasyprint import HTML
 
 @talk_access
 def talk_social_card_png(request, slug, talk, full_access):
+    subtitle = ", ".join(
+        [
+            speaker.user.assopy_user.name()
+            for speaker in talk.speakers.all().select_related(
+                "user__assopy_user"
+            )
+        ]
+    )
+
     content = render_to_string(
         "ep19/bs/conference/talk_social_card.html",
-        {"title": talk.title, "subtitle": "Patrick"},
+        {"title": talk.title, "subtitle": subtitle},
     )
 
     data = HTML(
