@@ -22,23 +22,21 @@ def talk_voting(request):
         )
 
     filter = request.GET.get("filter")
-    user_speaker = getattr(request.user, 'speaker', None)
+    user_speaker = getattr(request.user, "speaker", None)
     if filter == "voted":
         extra_filters = [
             ~Q(created_by=request.user),
             ~Q(speakers__in=[user_speaker]),
-            Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id"))
+            Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id")),
         ]
     elif filter == "not-voted":
         extra_filters = [
             ~Q(created_by=request.user),
             ~Q(speakers__in=[user_speaker]),
-            ~Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id"))
+            ~Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id")),
         ]
     elif filter == "mine":
-        extra_filters = [
-            Q(created_by=request.user) | Q(speakers__in=[user_speaker]),
-        ]
+        extra_filters = [Q(created_by=request.user) | Q(speakers__in=[user_speaker])]
     else:
         filter = "all"
         extra_filters = []
@@ -57,7 +55,8 @@ def talk_voting(request):
                 queryset=VotoTalk.objects.filter(user=request.user),
                 to_attr="votes",
             )
-        ).annotate(
+        )
+        .annotate(
             can_vote=Case(
                 When(created_by=request.user, then=Value(False)),
                 When(speakers__in=[user_speaker], then=Value(False)),
@@ -82,7 +81,9 @@ def is_user_allowed_to_vote(user):
     """
     is_allowed = (
         user.ticket_set.all().exists()
-        or Talk.objects.proposed().filter(created_by=user, conference=Conference.objects.current().code).exists()
+        or Talk.objects.proposed()
+        .filter(created_by=user, conference=Conference.objects.current().code)
+        .exists()
     )
     return is_allowed
 
@@ -92,7 +93,10 @@ def vote_on_a_talk(request, talk_uuid):
     talk = get_object_or_404(Talk, uuid=talk_uuid)
 
     # Users can't vote on their own talks.
-    if talk.created_by == request.user or talk.speakers.filter(pk=request.user.pk).exists():
+    if (
+        talk.created_by == request.user
+        or talk.speakers.filter(pk=request.user.pk).exists()
+    ):
         return TemplateResponse(
             request,
             "ep19/bs/talk_voting/_voting_form.html",
