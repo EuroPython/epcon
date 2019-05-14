@@ -17,6 +17,7 @@
                 <a class='btn btn-{% if filter != "all" %}outline-{% endif %}success' href="{% url 'talk_voting:talks' %}?filter=all" >All talks</a>
                 <a class='btn btn-{% if filter != "not-voted" %}outline-{% endif %}success' href="{% url 'talk_voting:talks' %}?filter=not-voted" >Not voted</a>
                 <a class='btn btn-{% if filter != "voted" %}outline-{% endif %}success' href="{% url 'talk_voting:talks' %}?filter=voted" >Voted</a>
+                <a class='btn btn-{% if filter != "mine" %}outline-{% endif %}success' href="{% url 'talk_voting:talks' %}?filter=mine" >My talks</a>
             </h4>
             <p>Below you can see all proposals for EP2019. They are in random order</p>
         </div>
@@ -35,7 +36,9 @@
                 <code>Type: {{ talk.get_type_display }}; Python level: {{ talk.get_level_display }}; Domain level: {{ talk.get_domain_level_display }}</code>
                 </p>
 
-                {% include "ep19/bs/talk_voting/_voting_form.html" with talk=talk VotingOptions=VotingOptions db_vote=talk.votes.0 %}
+                {% if talk.can_vote %}
+                    {% include "ep19/bs/talk_voting/_voting_form.html" with talk=talk VotingOptions=VotingOptions db_vote=talk.votes.0 %}
+                {% endif %}
             </div>
             {% endfor %}{# talk in talks #}
         </div>

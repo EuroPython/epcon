@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, Prefetch
+from django.db.models import Q, Prefetch, Case, When, Value, BooleanField
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
@@ -24,11 +24,17 @@ def talk_voting(request):
     filter = request.GET.get("filter")
     if filter == "voted":
         extra_filters = [
+            ~Q(created_by=request.user),
             Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id"))
         ]
     elif filter == "not-voted":
         extra_filters = [
+            ~Q(created_by=request.user),
             ~Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id"))
+        ]
+    elif filter == "mine":
+        extra_filters = [
+            Q(created_by=request.user),
         ]
     else:
         filter = "all"
@@ -37,7 +43,6 @@ def talk_voting(request):
     talks = (
         Talk.objects.filter(
             Q(conference=current_conference.code)
-            & ~Q(created_by=request.user)
             & Q(admin_type="")
             & Q(status=TALK_STATUS.proposed)
         )
@@ -48,6 +53,12 @@ def talk_voting(request):
                 "vototalk_set",
                 queryset=VotoTalk.objects.filter(user=request.user),
                 to_attr="votes",
+            )
+        ).annotate(
+            can_vote=Case(
+                When(created_by=request.user, then=Value(False)),
+                default=Value(True),
+                output_field=BooleanField(),
             )
         )
     )

@@ -1588,4 +1588,3 @@ def conference_js_data(tags=None):
     }
 
     return mark_safe('window.conference = {};'.format(json_dumps(data)))
-
