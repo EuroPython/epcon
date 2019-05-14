@@ -22,21 +22,20 @@ def talk_voting(request):
         )
 
     filter = request.GET.get("filter")
-    user_speaker = getattr(request.user, "speaker", None)
     if filter == "voted":
         extra_filters = [
             ~Q(created_by=request.user),
-            ~Q(speakers__in=[user_speaker]),
+            ~Q(speakers__user__in=[request.user]),
             Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id")),
         ]
     elif filter == "not-voted":
         extra_filters = [
             ~Q(created_by=request.user),
-            ~Q(speakers__in=[user_speaker]),
+            ~Q(speakers__user__in=[request.user]),
             ~Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id")),
         ]
     elif filter == "mine":
-        extra_filters = [Q(created_by=request.user) | Q(speakers__in=[user_speaker])]
+        extra_filters = [Q(created_by=request.user) | Q(speakers__user__in=[request.user])]
     else:
         filter = "all"
         extra_filters = []
@@ -59,7 +58,7 @@ def talk_voting(request):
         .annotate(
             can_vote=Case(
                 When(created_by=request.user, then=Value(False)),
-                When(speakers__in=[user_speaker], then=Value(False)),
+                When(speakers__user__in=[request.user], then=Value(False)),
                 default=Value(True),
                 output_field=BooleanField(),
             )
