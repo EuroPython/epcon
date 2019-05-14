@@ -22,19 +22,22 @@ def talk_voting(request):
         )
 
     filter = request.GET.get("filter")
+    user_speaker = getattr(request.user, 'speaker', None)
     if filter == "voted":
         extra_filters = [
             ~Q(created_by=request.user),
+            ~Q(speakers__in=[user_speaker]),
             Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id"))
         ]
     elif filter == "not-voted":
         extra_filters = [
             ~Q(created_by=request.user),
+            ~Q(speakers__in=[user_speaker]),
             ~Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id"))
         ]
     elif filter == "mine":
         extra_filters = [
-            Q(created_by=request.user),
+            Q(created_by=request.user) | Q(speakers__in=[user_speaker]),
         ]
     else:
         filter = "all"
@@ -57,6 +60,7 @@ def talk_voting(request):
         ).annotate(
             can_vote=Case(
                 When(created_by=request.user, then=Value(False)),
+                When(speakers__in=[user_speaker], then=Value(False)),
                 default=Value(True),
                 output_field=BooleanField(),
             )
@@ -88,7 +92,7 @@ def vote_on_a_talk(request, talk_uuid):
     talk = get_object_or_404(Talk, uuid=talk_uuid)
 
     # Users can't vote on their own talks.
-    if talk.speakers.filter(pk=request.user.pk).exists():
+    if talk.created_by == request.user or talk.speakers.filter(pk=request.user.pk).exists():
         return TemplateResponse(
             request,
             "ep19/bs/talk_voting/_voting_form.html",

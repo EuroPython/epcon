@@ -27,7 +27,7 @@ def _setup(start=date(2019, 7, 8), end=date(2019, 7, 14)):
 
 
 def _create_talk_for_user(user):
-    talk = TalkFactory(status=TALK_STATUS['proposed'])
+    talk = TalkFactory(status=TALK_STATUS['proposed'], created_by=user)
     speaker = SpeakerFactory(user=user)
     TalkSpeakerFactory(talk=talk, speaker=speaker)
     return talk
@@ -35,17 +35,17 @@ def _create_talk_for_user(user):
 
 @pytest.mark.xfail
 def test_talk_voting_unavailable_if_not_enabled():
-    assert True == False
+    assert False
 
 
 @pytest.mark.xfail
 def test_talk_voting_unavailable_without_a_ticket():
-    assert True == False
+    assert False
 
 
 @pytest.mark.xfail
 def test_talk_voting_available_with_ticket():
-    assert True == False
+    assert False
 
 
 def test_talk_voting_available_with_proposal(user_client):
@@ -60,17 +60,17 @@ def test_talk_voting_available_with_proposal(user_client):
 
 @pytest.mark.xfail
 def test_talk_voting_filters():
-    assert True == False
+    assert False
 
 
 @pytest.mark.xfail
 def test_talk_voting_hides_admin_talks():
-    assert True == False
+    assert False
 
 
 @pytest.mark.xfail
 def test_talk_voting_hides_approved_talks():
-    assert True == False
+    assert False
 
 
 def test_vote_submission(user_client):
@@ -84,9 +84,23 @@ def test_vote_submission(user_client):
     assert VotoTalk.objects.count() == 1
 
 
-def test_vote_submission_not_allowed_for_own_talk(user_client):
+def test_vote_submission_not_allowed_for_talk_created_by_user(user_client):
     _setup()
-    talk = _create_talk_for_user(user=user_client.user)
+    # User is speaker but did not create the talk
+    talk = TalkFactory(status=TALK_STATUS['proposed'])
+    speaker = SpeakerFactory(user=user_client.user)
+    TalkSpeakerFactory(talk=talk, speaker=speaker)
+
+    url = reverse("talk_voting:vote", kwargs={'talk_uuid': talk.uuid})
+
+    user_client.post(url, data={'vote': VotingOptions.maybe})
+
+    assert VotoTalk.objects.count() == 0
+
+
+def test_vote_submission_not_allowed_for_talk_where_user_is_speaker(user_client):
+    _setup()
+    talk = TalkFactory(status=TALK_STATUS['proposed'], created_by=user_client.user)
 
     url = reverse("talk_voting:vote", kwargs={'talk_uuid': talk.uuid})
 
