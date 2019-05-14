@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load cms_tags sekizai_tags static %}
+{% load cms_tags sekizai_tags static meta %}
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -13,11 +13,11 @@
     <link rel="alternate" type="application/rss+xml" title="EuroPython Blog RSS Feed" href="http://blog.europython.eu/rss" />
     {# end of copied #}
 
-    <meta name="description" content="">
-    <meta name="author" content="EuroPython">
     <link rel="shortcut icon" type="image/png" href="{% static "img/ep2019favico.png" %}">
 
-    <title>{% block title %}{% endblock %} &middot; EuroPython 2019 &middot; Basel, Switzerland, 8-14 July 2019</title>
+    {% block meta %}
+    {% render_meta %}
+    {% endblock meta %}
 
     {# TODO: make it local link to boostrap #}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">

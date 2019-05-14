@@ -1,6 +1,3 @@
-
-
-
 import os.path
 import random
 from datetime import date
@@ -8,6 +5,7 @@ from decimal import Decimal
 
 from django import forms, http
 from django.conf import settings as dsettings
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
@@ -102,9 +100,13 @@ def talk(request, slug, talk, full_access, talk_form=None):
             return HttpResponseRedirectSeeOther(reverse('conference-talk', kwargs={'slug': talk.slug}))
     else:
         form = talk_form(instance=talk)
+
     return {
         'form': form,
         'full_access': full_access,
+        'social_image_url': request.build_absolute_uri(
+            reverse("conference-talk-social-card-png", kwargs={'slug': talk.slug})
+        ),
         'talk': talk,
         'cfp': conf.cfp(),
         'voting': conf.voting(),

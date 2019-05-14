@@ -1,6 +1,10 @@
 {% extends "ep19/bs/base.html" %}
 
-{% block title %}Cannot find the request page{% endblock title %}
+{% load meta %}
+
+{% block meta %}
+{% render_meta title="Cannot find the request page" %}
+{% endblock meta %}
 
 {% load cms_tags %}
 
