@@ -65,7 +65,11 @@ def is_user_allowed_to_vote(user):
     This usually means checking if they have at least one ticket associated
     with their account (either for this or any of the past years
     """
-    return user.ticket_set.all().exists()
+    is_allowed = (
+        user.ticket_set.all().exists()
+        or Talk.objects.proposed().filter(created_by=user, conference=Conference.objects.current().code).exists()
+    )
+    return is_allowed
 
 
 @login_required
