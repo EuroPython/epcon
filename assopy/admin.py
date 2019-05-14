@@ -419,7 +419,7 @@ class AuthUserAdmin(UserAdmin):
         auth.login(request, user)
         request.session['doppelganger'] = udata
 
-        return http.HttpResponseRedirect(urlresolvers.reverse('assopy-tickets'))
+        return http.HttpResponseRedirect(urlresolvers.reverse('user_panel:dashboard'))
 
     def kill_doppelganger(self, request):
         uid = request.session.pop('doppelganger')[0]
