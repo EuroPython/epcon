@@ -1455,7 +1455,7 @@ class VotoTalk(models.Model):
     talk = models.ForeignKey(Talk, on_delete=models.CASCADE)
     vote = models.DecimalField(max_digits=5, decimal_places=2)
     created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
+    modified = models.DateTimeField(auto_now=True, null=True)
 
     class Meta:
         unique_together = (('user', 'talk'),)

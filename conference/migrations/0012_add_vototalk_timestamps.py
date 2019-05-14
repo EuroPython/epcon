@@ -3,19 +3,6 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-from django.db.models import Q
-from django.utils import timezone
-
-
-def populate_vototalk_created_and_modified(apps, schema_editor):
-    vototalk = apps.get_model('conference', 'VotoTalk')
-    for instance in vototalk.objects.filter(Q(created=None) | Q(modified=None)).all():
-        if not instance.created:
-            instance.created = timezone.now()
-        if not instance.modified:
-            instance.modified = timezone.now()
-
-        instance.save()
 
 
 class Migration(migrations.Migration):
@@ -28,25 +15,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='vototalk',
             name='created',
-            field=models.DateTimeField(auto_now_add=True, null=True),
+            field=models.DateTimeField(auto_now_add=True),
         ),
         migrations.AddField(
             model_name='vototalk',
             name='modified',
             field=models.DateTimeField(auto_now=True, null=True),
-        ),
-        migrations.RunPython(
-            populate_vototalk_created_and_modified,
-            migrations.RunPython.noop,
-        ),
-        migrations.AlterField(
-            model_name='vototalk',
-            name='created',
-            field=models.DateTimeField(auto_now_add=True),
-        ),
-        migrations.AlterField(
-            model_name='vototalk',
-            name='modified',
-            field=models.DateTimeField(auto_now=True),
         ),
     ]
