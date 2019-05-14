@@ -1,3 +1,4 @@
+import pytest
 
 from django.conf import settings
 from tests.common_tools import template_used
@@ -17,16 +18,19 @@ def test_get_homepage(db, client):
     assert b'EuroPython 2019' in response.content
 
 
+@pytest.mark.xfail
 def test_homepage_contains_last_3_news_for_current_conference(db, client):
-    ...
+    assert False
 
 
+@pytest.mark.xfail
 def test_homepage_doesnt_display_news_from_non_current_conference(db, client):
-    ...
+    assert False
 
 
+@pytest.mark.xfail
 def test_homepage_news_supports_html_tags(db, client):
-    ...
+    assert False
 
 
 def test_homepage_doesnt_contain_sponsor_if_no_income(
