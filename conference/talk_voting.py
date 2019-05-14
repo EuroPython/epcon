@@ -72,6 +72,14 @@ def is_user_allowed_to_vote(user):
 def vote_on_a_talk(request, talk_uuid):
     talk = get_object_or_404(Talk, uuid=talk_uuid)
 
+    # Users can't vote on their own talks.
+    if talk.speakers.filter(pk=request.user.pk).exists():
+        return TemplateResponse(
+            request,
+            "ep19/bs/talk_voting/_voting_form.html",
+            {"talk": talk, "db_vote": None, "VotingOptions": VotingOptions},
+        )
+
     try:
         db_vote = VotoTalk.objects.get(user=request.user, talk=talk)
     except VotoTalk.DoesNotExist:
