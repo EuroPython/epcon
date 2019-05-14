@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, Prefetch
+from django.db.models import Q, Prefetch, Case, When, Value, BooleanField
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
@@ -24,12 +24,18 @@ def talk_voting(request):
     filter = request.GET.get("filter")
     if filter == "voted":
         extra_filters = [
-            Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id"))
+            ~Q(created_by=request.user),
+            ~Q(speakers__user__in=[request.user]),
+            Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id")),
         ]
     elif filter == "not-voted":
         extra_filters = [
-            ~Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id"))
+            ~Q(created_by=request.user),
+            ~Q(speakers__user__in=[request.user]),
+            ~Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id")),
         ]
+    elif filter == "mine":
+        extra_filters = [Q(created_by=request.user) | Q(speakers__user__in=[request.user])]
     else:
         filter = "all"
         extra_filters = []
@@ -37,7 +43,6 @@ def talk_voting(request):
     talks = (
         Talk.objects.filter(
             Q(conference=current_conference.code)
-            & ~Q(created_by=request.user)
             & Q(admin_type="")
             & Q(status=TALK_STATUS.proposed)
         )
@@ -48,6 +53,14 @@ def talk_voting(request):
                 "vototalk_set",
                 queryset=VotoTalk.objects.filter(user=request.user),
                 to_attr="votes",
+            )
+        )
+        .annotate(
+            can_vote=Case(
+                When(created_by=request.user, then=Value(False)),
+                When(speakers__user__in=[request.user], then=Value(False)),
+                default=Value(True),
+                output_field=BooleanField(),
             )
         )
     )
@@ -65,12 +78,29 @@ def is_user_allowed_to_vote(user):
     This usually means checking if they have at least one ticket associated
     with their account (either for this or any of the past years
     """
-    return user.ticket_set.all().exists()
+    is_allowed = (
+        user.ticket_set.all().exists()
+        or Talk.objects.proposed()
+        .filter(created_by=user, conference=Conference.objects.current().code)
+        .exists()
+    )
+    return is_allowed
 
 
 @login_required
 def vote_on_a_talk(request, talk_uuid):
     talk = get_object_or_404(Talk, uuid=talk_uuid)
+
+    # Users can't vote on their own talks.
+    if (
+        talk.created_by == request.user
+        or talk.speakers.filter(pk=request.user.pk).exists()
+    ):
+        return TemplateResponse(
+            request,
+            "ep19/bs/talk_voting/_voting_form.html",
+            {"talk": talk, "db_vote": None, "VotingOptions": VotingOptions},
+        )
 
     try:
         db_vote = VotoTalk.objects.get(user=request.user, talk=talk)

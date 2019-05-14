@@ -137,8 +137,7 @@ def debug_panel_invoice_example(request):
 
     conference = Conference.objects.current()
     ctx = {
-        # TODO: get it from Conference instance
-        'conference_name': "EuroPython 2019",
+        'conference_name': conference.name,
         "conference_location": EP_CITY_FOR_YEAR[datetime.date.today().year],
         "bank_info": "",
         "currency": LOCAL_CURRENCY_BY_YEAR[datetime.date.today().year],
