@@ -35,14 +35,30 @@ def talk_voting(request):
             ~Q(id__in=VotoTalk.objects.filter(user=request.user).values("talk_id")),
         ]
     elif filter == "mine":
-        extra_filters = [Q(created_by=request.user) | Q(speakers__user__in=[request.user])]
+        extra_filters = [
+            Q(created_by=request.user) | Q(speakers__user__in=[request.user])
+        ]
     else:
         filter = "all"
         extra_filters = []
 
+    talks = find_talks(request.user, current_conference, extra_filters)
+
+    return TemplateResponse(
+        request,
+        "ep19/bs/talk_voting/voting.html",
+        {"talks": talks, "VotingOptions": VotingOptions, "filter": filter},
+    )
+
+
+def find_talks(user, conference, extra_filters):
+    """
+    This prepares a queryset of Talks with custom data, with an option to pass
+    addtinal filters related to which talks we want to show.
+    """
     talks = (
         Talk.objects.filter(
-            Q(conference=current_conference.code)
+            Q(conference=conference.code)
             & Q(admin_type="")
             & Q(status=TALK_STATUS.proposed)
         )
@@ -51,25 +67,21 @@ def talk_voting(request):
         .prefetch_related(
             Prefetch(
                 "vototalk_set",
-                queryset=VotoTalk.objects.filter(user=request.user),
+                queryset=VotoTalk.objects.filter(user=user),
                 to_attr="votes",
             )
         )
         .annotate(
             can_vote=Case(
-                When(created_by=request.user, then=Value(False)),
-                When(speakers__user__in=[request.user], then=Value(False)),
+                When(created_by=user, then=Value(False)),
+                When(speakers__user__in=[user], then=Value(False)),
                 default=Value(True),
                 output_field=BooleanField(),
             )
         )
+        .distinct()
     )
-
-    return TemplateResponse(
-        request,
-        "ep19/bs/talk_voting/voting.html",
-        {"talks": talks, "VotingOptions": VotingOptions, "filter": filter},
-    )
+    return talks
 
 
 def is_user_allowed_to_vote(user):
