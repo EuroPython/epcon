@@ -59,7 +59,7 @@ urlpatterns = [
     url(
         r"^talks/(?P<slug>[\w-]+)/social-card.png$",
         talk_social_card_png,
-        name="conference-talk-social-card-ong",
+        name="conference-talk-social-card-png",
     ),
     url(
         r"^sponsors/(?P<sponsor>.*)",

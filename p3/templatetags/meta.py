@@ -19,7 +19,10 @@ def render_meta(context, title=""):
         f"{title}EuroPython 2019 &middot; Basel, Switzerland, 8-14 July 2019"
     )
     page_url = context["CURRENT_URL"]
-    image_url = request.build_absolute_uri(static("img/social.png"))
+
+    image_url = context.get("social_image_url") or request.build_absolute_uri(
+        static("img/social.png")
+    )
 
     TEMPLATE = f"""
     <title>{page_title}</title>

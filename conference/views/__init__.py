@@ -100,9 +100,13 @@ def talk(request, slug, talk, full_access, talk_form=None):
             return HttpResponseRedirectSeeOther(reverse('conference-talk', kwargs={'slug': talk.slug}))
     else:
         form = talk_form(instance=talk)
+
     return {
         'form': form,
         'full_access': full_access,
+        'social_image_url': request.build_absolute_uri(
+            reverse("conference-talk-social-card-png", kwargs={'slug': talk.slug})
+        ),
         'talk': talk,
         'cfp': conf.cfp(),
         'voting': conf.voting(),
