@@ -1,6 +1,9 @@
 {% extends "ep19/bs/base.html" %}
+{% load meta %}
 
-{% block title %}User's Panel{% endblock %}
+{% block meta %}
+{% render_meta title="User's Panel" %}
+{% endblock meta %}
 
 {% block content %}
 <div id="user_panel" class='page'>
