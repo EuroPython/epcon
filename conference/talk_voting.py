@@ -23,7 +23,7 @@ def talk_voting(request):
             {"conference": current_conference},
         )
 
-    filter = request.GET.get("filter")
+    filter = request.GET.get("filter", "all")
     if filter == "voted":
         extra_filters = [
             ~Q(created_by=request.user),
@@ -41,15 +41,29 @@ def talk_voting(request):
             Q(created_by=request.user) | Q(speakers__user__in=[request.user])
         ]
     else:
-        filter = "all"
         extra_filters = []
+
+    talk_type = request.GET.get("talk_type", "all")
+    if talk_type == "talk":
+        extra_filters += [Q(type__in=["t_30", "t_45", "t_60"])]
+    if talk_type == "training":
+        extra_filters += [Q(type__in=["r_180"])]
+    if talk_type == "poster":
+        extra_filters += [Q(type__in=["i_60", "p_180", "n_60", "n_90"])]
+    if talk_type == "helpdesk":
+        extra_filters += [Q(type__in=["h_180"])]
 
     talks = find_talks(request.user, current_conference, extra_filters)
 
     return TemplateResponse(
         request,
         "ep19/bs/talk_voting/voting.html",
-        {"talks": talks, "VotingOptions": VotingOptions, "filter": filter},
+        {
+            "talks": talks,
+            "VotingOptions": VotingOptions,
+            "filter": filter,
+            "talk_type": talk_type,
+        },
     )
 
 
