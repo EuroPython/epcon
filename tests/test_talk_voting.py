@@ -110,3 +110,10 @@ def test_new_talk_voting_can_be_access_with_user_who_has_tickets(
     assert template_used(
         response, "ep19/bs/talk_voting/voting.html"
     )
+
+
+@pytest.mark.xfail
+def test_if_talk_voting_doesnt_contain_duplicates_if_there_are_more_speakers(
+    db, user_client
+):
+    return False

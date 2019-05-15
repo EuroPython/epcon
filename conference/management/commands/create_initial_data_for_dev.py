@@ -109,6 +109,13 @@ class Command(BaseCommand):
             add_speaker_to_talk(speaker, talk)
             profile = get_or_create_attendee_profile_for_new_user(user.user)
 
+        # Make proposals with multiple speakers
+        shared_talk = TalkFactory(status=TALK_STATUS.proposed, created_by=bob.user)
+        shared_talk.setAbstract(factory.Faker("sentence", nb_words=40, variable_nb_words=True).generate({}))
+        shared_talk.save()
+        add_speaker_to_talk(bob.user.speaker, shared_talk)
+        add_speaker_to_talk(cesar.user.speaker, shared_talk)
+
         def new_page(rev_id, title, **kwargs):
             try:
                 page = create_page(
