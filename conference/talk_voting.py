@@ -1,3 +1,5 @@
+import random
+
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Prefetch, Case, When, Value, BooleanField
@@ -63,7 +65,6 @@ def find_talks(user, conference, extra_filters):
             & Q(status=TALK_STATUS.proposed)
         )
         .filter(*extra_filters)
-        .order_by("?")
         .prefetch_related(
             Prefetch(
                 "vototalk_set",
@@ -81,7 +82,11 @@ def find_talks(user, conference, extra_filters):
         )
         .distinct()
     )
-    return talks
+    # Ordering by random conflicts with the `distinct` statement in
+    # sqlite as it adds a random number to every row that's used for ordering
+    talks_list = list(talks.all())
+    random.shuffle(talks_list)
+    return talks_list
 
 
 def is_user_allowed_to_vote(user):
