@@ -24,8 +24,7 @@
         </p>
         <form method="POST" action=".">
             {% csrf_token %}
-            {{ privacy_form | crispy }}
-            <input type="submit" class="btn btn-primary" value="Save">
+            {% crispy privacy_form %}
         </form>
     </div>
     <div class="col-md-4">

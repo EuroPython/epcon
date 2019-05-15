@@ -13,13 +13,14 @@ from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Div, Submit, ButtonHolder
 
 from conference.accounts import get_or_create_attendee_profile_for_new_user
-from conference.models import Speaker, TalkSpeaker, Conference, Ticket, AttendeeProfile
+from conference.models import Speaker, TalkSpeaker, Conference, Ticket
 from conference.tickets import assign_ticket_to_user, reset_ticket_settings
 from assopy.models import Invoice, Order
-from p3.models import TicketConference
-from p3.forms import P3ProfileSpamControlForm
+from p3.models import TicketConference, P3Profile
 
 
 @login_required
@@ -114,11 +115,11 @@ def privacy_settings(request):
     p3_profile = attendee_profile.p3_profile
 
     if request.method == 'POST':
-        privacy_form = P3ProfileSpamControlForm(instance=p3_profile, data=request.POST)
+        privacy_form = ProfileSpamControlForm(instance=p3_profile, data=request.POST)
         if privacy_form.is_valid():
             privacy_form.save()
     else:
-        privacy_form = P3ProfileSpamControlForm(instance=p3_profile)
+        privacy_form = ProfileSpamControlForm(instance=p3_profile)
 
     return TemplateResponse(
         request,
@@ -178,6 +179,39 @@ class TicketConfigurationForm(forms.ModelForm):
             choices.append((str(date), date.strftime("%A %d %B %Y")))
             date += timedelta(days=1)
         return choices
+
+
+class ProfileSpamControlForm(forms.ModelForm):
+    spam_recruiting = forms.BooleanField(label='I want to receive a few selected job offers through EuroPython.',
+                                         required=False)
+    spam_user_message = forms.BooleanField(label='I want to receive private messages from other participants.',
+                                           required=False)
+    spam_sms = forms.BooleanField(label='I want to receive SMS during the conference for main communications.',
+                                  required=False)
+    class Meta:
+        model = P3Profile
+        fields = ('spam_recruiting', 'spam_user_message', 'spam_sms')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Div(
+                'spam_recruiting',
+                template='ep19/bs/user_panel/forms/privacy_settings_recruiting.html'
+            ),
+            Div(
+                'spam_user_message',
+                template='ep19/bs/user_panel/forms/privacy_settings_user_messages.html'
+            ),
+            Div(
+                'spam_sms',
+                template='ep19/bs/user_panel/forms/privacy_settings_sms_messages.html'
+            ),
+            ButtonHolder(
+                Submit('update', 'Update', css_class='btn btn-primary')
+            )
+        )
 
 
 def get_tickets_for_current_conference(user):
