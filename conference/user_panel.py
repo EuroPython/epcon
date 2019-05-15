@@ -13,10 +13,13 @@ from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 
-from conference.models import Speaker, TalkSpeaker, Conference, Ticket
+
+from conference.accounts import get_or_create_attendee_profile_for_new_user
+from conference.models import Speaker, TalkSpeaker, Conference, Ticket, AttendeeProfile
 from conference.tickets import assign_ticket_to_user, reset_ticket_settings
 from assopy.models import Invoice, Order
 from p3.models import TicketConference
+from p3.forms import P3ProfileSpamControlForm
 
 
 @login_required
@@ -102,6 +105,26 @@ def assign_ticket(request, ticket_id):
         request,
         "ep19/bs/user_panel/assign_ticket.html",
         {"ticket": ticket, "assignment_form": assignment_form},
+    )
+
+
+@login_required
+def privacy_settings(request):
+    attendee_profile = get_or_create_attendee_profile_for_new_user(user=request.user)
+    p3_profile = attendee_profile.p3_profile
+
+    if request.method == 'POST':
+        privacy_form = P3ProfileSpamControlForm(instance=p3_profile, data=request.POST)
+        if privacy_form.is_valid():
+            privacy_form.save()
+    else:
+        privacy_form = P3ProfileSpamControlForm(instance=p3_profile)
+
+    return TemplateResponse(
+        request,
+        "ep19/bs/user_panel/privacy_settings.html",
+        {"privacy_form": privacy_form}
+
     )
 
 
@@ -210,6 +233,11 @@ urlpatterns = [
         r"^assign-ticket/(?P<ticket_id>\d+)/$",
         assign_ticket,
         name="assign_ticket",
+    ),
+    url(
+        r"^privacy_settings/$",
+        privacy_settings,
+        name="privacy_settings",
     ),
     # Password change, using default django views.
     # TODO(artcz): Those are Removed in Django21 and we should replcethem with
