@@ -14,10 +14,53 @@
         <div class="col-md-12">
             <h1>Talk Voting</h1>
             <h4>Filter
-                <a class='btn btn-{% if filter != "all" %}outline-{% endif %}success' href="{% url 'talk_voting:talks' %}?filter=all" >All talks</a>
-                <a class='btn btn-{% if filter != "not-voted" %}outline-{% endif %}success' href="{% url 'talk_voting:talks' %}?filter=not-voted" >Not voted</a>
-                <a class='btn btn-{% if filter != "voted" %}outline-{% endif %}success' href="{% url 'talk_voting:talks' %}?filter=voted" >Voted</a>
-                <a class='btn btn-{% if filter != "mine" %}outline-{% endif %}success' href="{% url 'talk_voting:talks' %}?filter=mine" >My talks</a>
+                <a class='btn btn-{% if filter != "all" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?filter=all&talk_type={{ talk_type }}"
+                >
+                    All talks
+                </a>
+                <a class='btn btn-{% if filter != "not-voted" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?filter=not-voted&talk_type={{ talk_type }}"
+                >
+                    Not voted
+                </a>
+                <a class='btn btn-{% if filter != "voted" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?filter=voted&talk_type={{ talk_type }}"
+                >
+                    Voted
+                </a>
+                <a class='btn btn-{% if filter != "mine" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?filter=mine&talk_type={{ talk_type }}"
+                >
+                    My talks
+                </a>
+            </h4>
+            <h4>Talk type
+                <a class='btn btn-{% if talk_type != "all" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?talk_type=all&filter={{ filter }}"
+                >
+                    All
+                </a>
+                <a class='btn btn-{% if talk_type != "talk" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?talk_type=talk&filter={{ filter }}"
+                >
+                    Talk
+                </a>
+                <a class='btn btn-{% if talk_type != "training" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?talk_type=training&filter={{ filter }}"
+                >
+                    Training
+                </a>
+                <a class='btn btn-{% if talk_type != "poster" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?talk_type=poster&filter={{ filter }}"
+                >
+                    Poster/Panel/Interactive
+                </a>
+                <a class='btn btn-{% if talk_type != "helpdesk" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?talk_type=helpdesk&filter={{ filter }}"
+                >
+                    Help desk
+                </a>
             </h4>
             <p>Below you can see all proposals for EP2019. They are in random order</p>
         </div>

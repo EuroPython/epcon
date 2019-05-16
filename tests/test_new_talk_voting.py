@@ -59,7 +59,17 @@ def test_talk_voting_available_with_proposal(user_client):
 
 
 @pytest.mark.xfail
-def test_talk_voting_filters():
+def test_talk_voting_vote_filters():
+    assert False
+
+
+@pytest.mark.xfail
+def test_talk_voting_type_filters():
+    assert False
+
+
+@pytest.mark.xfail
+def test_talk_voting_both_filters():
     assert False
 
 
