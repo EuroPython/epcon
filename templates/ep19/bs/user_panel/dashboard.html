@@ -13,6 +13,7 @@
         <a href='{% url "admin:index" %}' class='btn btn-outline-warning'>Admin panel</a>
         {% endif %}
         <a href='{% url "user_panel:password_change" %}' class='btn btn-outline-info'>Change your password</a>
+        <a href='{% url "user_panel:privacy_settings" %}' class='btn btn-outline-info'>Privacy settings</a>
         <a href='{% url "accounts:logout" %}?next=/' class='btn btn-outline-danger' style='float: right'>Log out</a>
     </div>
 </div>

@@ -13,10 +13,14 @@ from django.template.response import TemplateResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Div, Submit, ButtonHolder
+
+from conference.accounts import get_or_create_attendee_profile_for_new_user
 from conference.models import Speaker, TalkSpeaker, Conference, Ticket
 from conference.tickets import assign_ticket_to_user, reset_ticket_settings
 from assopy.models import Invoice, Order
-from p3.models import TicketConference
+from p3.models import TicketConference, P3Profile
 
 
 @login_required
@@ -30,9 +34,9 @@ def user_dashboard(request):
         request,
         "ep19/bs/user_panel/dashboard.html",
         {
-            'proposals': proposals,
-            'orders': orders,
-            'invoices': invoices,
+            "proposals": proposals,
+            "orders": orders,
+            "invoices": invoices,
             "tickets": tickets,
         },
     )
@@ -45,16 +49,13 @@ def manage_ticket(request, ticket_id):
     if ticket.user != request.user:
         return HttpResponse("Can't do", status=403)
 
-    ticket_configuration, _ = TicketConference.objects.get_or_create(
-        ticket=ticket
-    )
+    ticket_configuration, _ = TicketConference.objects.get_or_create(ticket=ticket)
 
     ticket_configuration_form = TicketConfigurationForm(
-        instance=ticket_configuration,
-        initial={'name': request.user.assopy_user.name()},
+        instance=ticket_configuration, initial={"name": request.user.assopy_user.name()}
     )
 
-    if request.method == 'POST':
+    if request.method == "POST":
         ticket_configuration_form = TicketConfigurationForm(
             request.POST, instance=ticket_configuration
         )
@@ -68,10 +69,7 @@ def manage_ticket(request, ticket_id):
     return TemplateResponse(
         request,
         "ep19/bs/user_panel/configure_ticket.html",
-        {
-            "ticket_configuration_form": ticket_configuration_form,
-            'ticket': ticket,
-        },
+        {"ticket_configuration_form": ticket_configuration_form, "ticket": ticket},
     )
 
 
@@ -84,7 +82,7 @@ def assign_ticket(request, ticket_id):
 
     assignment_form = AssignTicketForm()
 
-    if request.method == 'POST':
+    if request.method == "POST":
         assignment_form = AssignTicketForm(request.POST)
 
         if assignment_form.is_valid():
@@ -105,6 +103,25 @@ def assign_ticket(request, ticket_id):
     )
 
 
+@login_required
+def privacy_settings(request):
+    attendee_profile = get_or_create_attendee_profile_for_new_user(user=request.user)
+    p3_profile = attendee_profile.p3_profile
+
+    if request.method == "POST":
+        privacy_form = ProfileSpamControlForm(instance=p3_profile, data=request.POST)
+        if privacy_form.is_valid():
+            privacy_form.save()
+    else:
+        privacy_form = ProfileSpamControlForm(instance=p3_profile)
+
+    return TemplateResponse(
+        request,
+        "ep19/bs/user_panel/privacy_settings.html",
+        {"privacy_form": privacy_form},
+    )
+
+
 class AssignTicketForm(forms.Form):
     email = forms.EmailField()
 
@@ -117,15 +134,15 @@ class AssignTicketForm(forms.Form):
                 "Please ask them to create an account first"
             )
 
-        return self.cleaned_data['email']
+        return self.cleaned_data["email"]
 
     def get_user(self):
-        return User.objects.get(email=self.cleaned_data['email'])
+        return User.objects.get(email=self.cleaned_data["email"])
 
 
 class CommaStringMultipleChoiceField(forms.MultipleChoiceField):
     def to_python(self, value):
-        return [val.rstrip().lstrip() for val in value.split(',')]
+        return [val.rstrip().lstrip() for val in value.split(",")]
 
     def clean(self, value):
         return ",".join([val.rstrip().lstrip() for val in value])
@@ -157,6 +174,44 @@ class TicketConfigurationForm(forms.ModelForm):
         return choices
 
 
+class ProfileSpamControlForm(forms.ModelForm):
+    spam_recruiting = forms.BooleanField(
+        label="I want to receive a few selected job offers through EuroPython.",
+        required=False,
+    )
+    spam_user_message = forms.BooleanField(
+        label="I want to receive private messages from other participants.",
+        required=False,
+    )
+    spam_sms = forms.BooleanField(
+        label="I want to receive SMS during the conference for main communications.",
+        required=False,
+    )
+
+    class Meta:
+        model = P3Profile
+        fields = ("spam_recruiting", "spam_user_message", "spam_sms")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            Div(
+                "spam_recruiting",
+                template="ep19/bs/user_panel/forms/privacy_settings_recruiting.html",
+            ),
+            Div(
+                "spam_user_message",
+                template="ep19/bs/user_panel/forms/privacy_settings_user_messages.html",
+            ),
+            Div(
+                "spam_sms",
+                template="ep19/bs/user_panel/forms/privacy_settings_sms_messages.html",
+            ),
+            ButtonHolder(Submit("update", "Update", css_class="btn btn-primary")),
+        )
+
+
 def get_tickets_for_current_conference(user):
     conference = Conference.objects.current()
     return Ticket.objects.filter(
@@ -169,7 +224,7 @@ def get_tickets_for_current_conference(user):
 def get_invoices_for_current_conference(user):
     return Invoice.objects.filter(
         order__user__user=user,
-        emit_date__year=Conference.objects.current().conference_start.year
+        emit_date__year=Conference.objects.current().conference_start.year,
     )
 
 
@@ -201,16 +256,9 @@ def get_orders_for_current_conference(user):
 
 urlpatterns = [
     url(r"^$", user_dashboard, name="dashboard"),
-    url(
-        r"^manage-ticket/(?P<ticket_id>\d+)/$",
-        manage_ticket,
-        name="manage_ticket",
-    ),
-    url(
-        r"^assign-ticket/(?P<ticket_id>\d+)/$",
-        assign_ticket,
-        name="assign_ticket",
-    ),
+    url(r"^manage-ticket/(?P<ticket_id>\d+)/$", manage_ticket, name="manage_ticket"),
+    url(r"^assign-ticket/(?P<ticket_id>\d+)/$", assign_ticket, name="assign_ticket"),
+    url(r"^privacy_settings/$", privacy_settings, name="privacy_settings"),
     # Password change, using default django views.
     # TODO(artcz): Those are Removed in Django21 and we should replcethem with
     # class based PasswordChange{,Done}View
@@ -219,18 +267,14 @@ urlpatterns = [
         auth_views.password_change,
         kwargs={
             "template_name": "ep19/bs/user_panel/password_change.html",
-            "post_change_redirect": reverse_lazy(
-                "user_panel:password_change_done"
-            ),
+            "post_change_redirect": reverse_lazy("user_panel:password_change_done"),
         },
         name="password_change",
     ),
     url(
         r"^password/change/done/$",
         auth_views.password_change_done,
-        kwargs={
-            "template_name": "ep19/bs/user_panel/password_change_done.html"
-        },
+        kwargs={"template_name": "ep19/bs/user_panel/password_change_done.html"},
         name="password_change_done",
     ),
 ]
