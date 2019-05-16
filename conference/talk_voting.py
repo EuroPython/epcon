@@ -6,7 +6,7 @@ from django.db.models import Q, Prefetch, Case, When, Value, BooleanField
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
-from conference.models import Conference, Talk, VotoTalk, TALK_STATUS
+from conference.models import Conference, Talk, VotoTalk, TALK_STATUS, TALK_TYPE_CHOICES
 
 
 @login_required
@@ -45,13 +45,30 @@ def talk_voting(request):
 
     talk_type = request.GET.get("talk_type", "all")
     if talk_type == "talk":
-        extra_filters += [Q(type__in=["t_30", "t_45", "t_60"])]
+        extra_filters += [
+            Q(
+                type__in=[
+                    TALK_TYPE_CHOICES.t_30,
+                    TALK_TYPE_CHOICES.t_45,
+                    TALK_TYPE_CHOICES.t_60,
+                ]
+            )
+        ]
     if talk_type == "training":
-        extra_filters += [Q(type__in=["r_180"])]
+        extra_filters += [Q(type__in=[TALK_TYPE_CHOICES.r_180])]
     if talk_type == "poster":
-        extra_filters += [Q(type__in=["i_60", "p_180", "n_60", "n_90"])]
+        extra_filters += [
+            Q(
+                type__in=[
+                    TALK_TYPE_CHOICES.i_60,
+                    TALK_TYPE_CHOICES.p_180,
+                    TALK_TYPE_CHOICES.n_60,
+                    TALK_TYPE_CHOICES.n_90,
+                ]
+            )
+        ]
     if talk_type == "helpdesk":
-        extra_filters += [Q(type__in=["h_180"])]
+        extra_filters += [Q(type__in=[TALK_TYPE_CHOICES.h_180])]
 
     talks = find_talks(request.user, current_conference, extra_filters)
 
