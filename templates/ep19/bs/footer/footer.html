@@ -1,11 +1,12 @@
-{% load menu_tags %}
+{% load menu_tags static %}
+
 <div id="footer" style='font-size: .9em'>
     <div class='container'>
         <div class='row'>
             {% show_menu 0 100 100 100 "ep19/bs/footer/_show_menu_in_footer.html" %}
 
             <div class='col-md-2'>
-                <a href='https://www.europython-society.org'><img src="/static/img/epslogo.png"></a>
+                <a href='https://www.europython-society.org'><img src="{% static 'img/epslogo.png' %}"></a>
                 <p style='margin-top: 1em; font-size: .9em' class='text-light'>
                 EuroPython Society (EPS)<br>
                 Norra Ågatan 10<br>
