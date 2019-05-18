@@ -34,15 +34,15 @@ urlpatterns = [
 
 urlpatterns += [
     url(r'^schedule/(?P<conference>[\w-]+)/$', p3_views.schedule, name='p3-schedule'),
-    url(r'^schedule/(?P<conference>[\w-]+).ics$', p3_views.schedule_ics, name='p3-schedule-ics'),
+    # url(r'^schedule/(?P<conference>[\w-]+).ics$', p3_views.schedule_ics, name='p3-schedule-ics'),
 
-    url(r'^schedule/(?P<conference>[\w-]+)/my-schedule/$',
-        p3_views.my_schedule, name='p3-schedule-my-schedule'),
-    url(r'^schedule/(?P<conference>[\w-]+)/my-schedule.ics$',
-        p3_views.schedule_ics, name='p3-schedule-my-schedule-ics', kwargs={'mode': 'my-schedule'}),
+    # url(r'^schedule/(?P<conference>[\w-]+)/my-schedule/$',
+    #     p3_views.my_schedule, name='p3-schedule-my-schedule'),
+    # url(r'^schedule/(?P<conference>[\w-]+)/my-schedule.ics$',
+    #     p3_views.schedule_ics, name='p3-schedule-my-schedule-ics', kwargs={'mode': 'my-schedule'}),
 
-    url(r'^schedule/(?P<conference>[\w-]+)/list/$',
-        p3_views.schedule_list, name='p3-schedule-list'),
+    # url(r'^schedule/(?P<conference>[\w-]+)/list/$',
+    #     p3_views.schedule_list, name='p3-schedule-list'),
 
-    url(r'^my-schedule/$', p3_views.jump_to_my_schedule, name='p3-my-schedule'),
+    # url(r'^my-schedule/$', p3_views.jump_to_my_schedule, name='p3-my-schedule'),
 ]
