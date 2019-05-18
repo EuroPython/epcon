@@ -1,0 +1,44 @@
+{% extends "ep19/bs/base.html" %}
+
+{% block content %}
+
+<div class="container page" id="cfp_page">
+    <div class="row">
+        <div class="col-md-12">
+            <div class='talk'>
+                <h1>{{ talk.title }}</h1>
+                <h3>{{ talk.sub_title }}</h3>
+                <h5>{% for speaker in talk.get_all_speakers %}{{ speaker.user.assopy_user.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</h5>
+                <p>{% for t in talk.tags.all %}<span class='badge badge-secondary'>{{ t }}</span> {% endfor %}</p>
+                <p>{{ talk.get_abstract|linebreaks }}</p>
+                <p>
+                <code>Type: {{ talk.get_type_display }}; Python level: {{ talk.get_level_display }}; Domain level: {{ talk.get_domain_level_display }}</code>
+                </p>
+            </div>
+
+
+            <div>
+            <h4>Speaker information:</h4>
+            {% for speaker in talk_as_dict.speakers %}
+            <ul>
+                <li><b>Name:</b> {{ speaker.name }}</li>
+                <li><b>Company</b> 
+                    {{ speaker.company }}
+                    <br>
+                    {{ speaker.company_homepage }}
+                </li>
+                <li>
+                    <b>Bio</b><br>
+                    {{ speaker.bio|linebreaks }}
+                </li>
+                <li>
+                    <b>Phone</b><br>
+                    {{ speaker.phone }}
+                </li>
+            </ul>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,26 +1,48 @@
 from datetime import timedelta
 
-from django.conf.urls import url
-from django.contrib.auth.models import User
-from django.db.models import Q
-from django.db import transaction
-from django.contrib import messages
-from django import forms
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect
-from django.core.urlresolvers import reverse_lazy
-from django.template.response import TemplateResponse
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import views as auth_views
-
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div, Submit, ButtonHolder
+from crispy_forms.layout import (
+    ButtonHolder,
+    Div,
+    Layout,
+    Submit,
+)
+from django import forms
+from django.conf.urls import url
+from django.contrib import messages
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse_lazy
+from django.db import transaction
+from django.db.models import Q
+from django.http import HttpResponse
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+)
+from django.template.response import TemplateResponse
 
+from assopy.models import (
+    Invoice,
+    Order,
+)
 from conference.accounts import get_or_create_attendee_profile_for_new_user
-from conference.models import Speaker, TalkSpeaker, Conference, Ticket
-from conference.tickets import assign_ticket_to_user, reset_ticket_settings
-from assopy.models import Invoice, Order
-from p3.models import TicketConference, P3Profile
+from conference.models import (
+    TALK_STATUS,
+    Conference,
+    Speaker,
+    TalkSpeaker,
+    Ticket,
+)
+from conference.tickets import (
+    assign_ticket_to_user,
+    reset_ticket_settings,
+)
+from p3.models import (
+    P3Profile,
+    TicketConference,
+)
 
 
 @login_required
@@ -34,6 +56,10 @@ def user_dashboard(request):
         request,
         "ep19/bs/user_panel/dashboard.html",
         {
+            # Because in the template TALK_STATUS.accepted will be expanded to
+            # the verbose name, and therefore comparison in the template will
+            # fail. Putting that in a separate variable.
+            "ACCEPTED_PROPOSAL": TALK_STATUS.accepted,
             "proposals": proposals,
             "orders": orders,
             "invoices": invoices,
