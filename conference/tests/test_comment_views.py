@@ -12,6 +12,7 @@ from tests.common_tools import make_user, redirects_to
 
 
 @mark.django_db
+@mark.skip("There's a new implementation of talks that doesn't support comments")
 def test_view_comments_anonymous(client):
     conference = ConferenceFactory()
     talk = TalkFactory(status="accepted", conference=conference.code)
@@ -33,6 +34,7 @@ def test_view_comments_anonymous(client):
 
 
 @mark.django_db
+@mark.skip("There's a new implementation of talks that doesn't support comments")
 def test_add_comments_anonymous(client):
     conference = ConferenceFactory()
     talk = TalkFactory(status="accepted", conference=conference.code)
@@ -54,6 +56,7 @@ def test_add_comments_anonymous(client):
 
 
 @mark.django_db
+@mark.skip("There's a new implementation of talks that doesn't support comments")
 def test_view_comment_authenticated(client):
     make_user()
     conference = ConferenceFactory()
@@ -71,6 +74,7 @@ def test_view_comment_authenticated(client):
 
 
 @mark.django_db
+@mark.skip("There's a new implementation of talks that doesn't support comments")
 def test_add_comments_authenticated(client, mocker):
     mocker.patch("django_comments.forms.CommentForm.clean_security_hash")
 

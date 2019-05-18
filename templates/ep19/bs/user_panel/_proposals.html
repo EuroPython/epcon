@@ -7,7 +7,12 @@
 
     {% for prop in proposals %}
     <tr>
+        {% if prop.status == ACCEPTED_PROPOSAL %}
+        {# If proposal is accepted link to the proper talk page on the website rather than preview #}
+        <td><a href='{{ prop.get_absolute_url }}'>{{ prop.title }}</a></td>
+        {% else %}
         <td><a href='{% url "cfp:preview" prop.slug %}'>{{ prop.title }}</a></td>
+        {% endif %}
         <td>{{ prop.created }}</td>
         <td>{{ prop.get_status_display }}</td>
     </tr>

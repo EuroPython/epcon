@@ -781,7 +781,7 @@ class Talk(models.Model, UrlMixin):
         )
 
     def get_absolute_url(self):
-        return reverse("conference-talk", args=[self.slug])
+        return reverse("talks:talk", args=[self.slug])
 
     def get_admin_url(self):
         return reverse("admin:conference_talk_change", args=[self.id])

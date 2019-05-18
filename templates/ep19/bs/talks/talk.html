@@ -1,0 +1,58 @@
+{% extends "ep19/bs/base.html" %}
+
+{% block content %}
+<style type="text/css">
+.speakers {
+    margin-top: 2em;
+    padding-top: 2em;
+    border-top: 1px solid #eee;
+}
+.speaker { margin-bottom: 2em; }
+</style>
+
+
+<div class="container page" id="talk_page">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class='breadcrumb-item'><a href="/">Home</a></li>
+            <li class='breadcrumb-item'><a href='#'>Talks</a></li>
+            <li class='breadcrumb-item active'>{{ talk_as_dict.title }}<li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class='talk'>
+                <h1>{{ talk.title }}</h1>
+                <h3>{{ talk.sub_title }}</h3>
+                <h5>{% for speaker in talk_as_dict.speakers %}
+                    {{ speaker.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </h5>
+                <p>
+                    {% for tag in talk_as_dict.tags %}
+                    <span class='badge badge-secondary'>{{ tag }}</span>
+                    {% endfor %}
+                </p>
+                <p>{{ talk_as_dict.abstract|linebreaks }}</p>
+                <p>
+                <code>Type: {{ talk.get_type_display }}; Python level: {{ talk.get_level_display }}; Domain level: {{ talk.get_domain_level_display }}</code>
+                </p>
+            </div>
+
+
+            <div class='speakers'>
+            {% for speaker in talk_as_dict.speakers %}
+            <div class='speaker'>
+            <h3>{{ speaker.name }}</h3>
+            <h4><a href='{{ speaker.company_homepage }}' target="_blank">{{ speaker.company }}</a></h4>
+            <p>
+            {{ speaker.bio|linebreaks }}
+            </p>
+            </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
