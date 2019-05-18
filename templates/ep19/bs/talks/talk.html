@@ -9,6 +9,15 @@
 }
 </style>
 
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class='breadcrumb-item'><a href="/">Home</a></li>
+        <li class='breadcrumb-item'><a href='#'>Talks</a><li>
+        <li class='breadcrumb-item'>{{ talk.title }}<li>
+        {% block breadcrumbs %}{% endblock breadcrumbs %}
+    </ol>
+</nav>
+
 <div class="container page" id="cfp_page">
     <div class="row">
         <div class="col-md-12">
