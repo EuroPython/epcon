@@ -7,6 +7,7 @@ from http.client import (
     FOUND as HTTP_REDIRECT_302
 )
 
+import pytest
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.core import mail
@@ -33,6 +34,11 @@ from taggit.models import Tag
 
 # Using django's TestCase because of assertRedirects
 # however we still run it using pytest
+@pytest.mark.skip(
+    "There's a new implementation of cfp, and this one no longer needs to be"
+    " fully supported. Left as documentation. "
+    "To be removed after it's reviewed in #966"
+)
 class TestCFP(TestCase):
     """
     Test everything related to CFP
