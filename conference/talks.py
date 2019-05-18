@@ -1,10 +1,13 @@
 from django.conf.urls import url
+from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
 from conference.models import Talk
 
 
+# Temporary
+@staff_member_required
 def talk(request, talk_slug):
     """
     Display Talk
