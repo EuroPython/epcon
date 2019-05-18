@@ -16,7 +16,7 @@
         <ol class="breadcrumb">
             <li class='breadcrumb-item'><a href="/">Home</a></li>
             <li class='breadcrumb-item'><a href='#'>Talks</a></li>
-            <li class='breadcrumb-item active'>{{ talk.title }}<li>
+            <li class='breadcrumb-item active'>{{ talk_as_dict.title }}<li>
         </ol>
     </nav>
 
@@ -25,9 +25,16 @@
             <div class='talk'>
                 <h1>{{ talk.title }}</h1>
                 <h3>{{ talk.sub_title }}</h3>
-                <h5>{% for speaker in talk.get_all_speakers %}{{ speaker.user.assopy_user.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</h5>
-                <p>{% for t in talk.tags.all %}<span class='badge badge-secondary'>{{ t }}</span> {% endfor %}</p>
-                <p>{{ talk.get_abstract|linebreaks }}</p>
+                <h5>{% for speaker in talk_as_dict.speakers }
+                    {{ speaker.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </h5>
+                <p>
+                    {% for tag in talk_as_dict.tags %}
+                    <span class='badge badge-secondary'>{{ tag }}</span>
+                    {% endfor %}
+                </p>
+                <p>{{ talk_as_dict.abstract|linebreaks }}</p>
                 <p>
                 <code>Type: {{ talk.get_type_display }}; Python level: {{ talk.get_level_display }}; Domain level: {{ talk.get_domain_level_display }}</code>
                 </p>
