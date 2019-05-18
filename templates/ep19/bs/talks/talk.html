@@ -7,6 +7,7 @@
     padding-top: 2em;
     border-top: 1px solid #eee;
 }
+.speaker { margin-bottom: 2em; }
 </style>
 
 
@@ -35,11 +36,13 @@
 
             <div class='speakers'>
             {% for speaker in talk_as_dict.speakers %}
+            <div class='speaker'>
             <h3>{{ speaker.name }}</h3>
             <h4>{{ speaker.company }} – {{ speaker.company_homepage }}</h4>
-            <p style='margin-bottom: 2em'>
+            <p>
             {{ speaker.bio|linebreaks }}
             </p>
+            </div>
             {% endfor %}
             </div>
         </div>
