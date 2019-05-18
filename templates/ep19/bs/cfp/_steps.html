@@ -1,5 +1,7 @@
-<link rel="stylesheet" href="/static/css/bs-stepper.min.css">
-<script src="/static/js/bs-stepper.min.js"></script>
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/bs-stepper.min.css' %}">
+<script src="{% static 'js/bs-stepper.min.js' %}"></script>
 
 <div class="bs-stepper">
   <div class="bs-stepper-header" role="tablist">
