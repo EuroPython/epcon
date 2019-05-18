@@ -37,7 +37,7 @@
             {% for speaker in talk_as_dict.speakers %}
             <h3>{{ speaker.name }}</h3>
             <h4>{{ speaker.company }} – {{ speaker.company_homepage }}</h4>
-            <p>
+            <p style='margin-bottom: 2em'>
             {{ speaker.bio|linebreaks }}
             </p>
             {% endfor %}
