@@ -25,7 +25,7 @@
             <div class='talk'>
                 <h1>{{ talk.title }}</h1>
                 <h3>{{ talk.sub_title }}</h3>
-                <h5>{% for speaker in talk_as_dict.speakers }
+                <h5>{% for speaker in talk_as_dict.speakers %}
                     {{ speaker.name }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 </h5>
