@@ -64,28 +64,26 @@ assert 'TLK' in COUPON_PREFIXES
 
 class Command(BaseCommand):
 
-    option_list = BaseCommand.option_list + (
-        make_option('--dry-run',
-                    action='store_true',
-                    dest='dry_run',
-                    help='Do everything except create the coupons',
-                    ),
-    )
-
-    args = '<conference>'
-
     # Dry run ?
     dry_run = False
+
+    def add_arguments(self, parser):
+
+        # Positional arguments
+        parser.add_argument('conference')
+
+        # Named (optional) arguments
+        parser.add_argument('--dry-run',
+                            action='store_true',
+                            dest='dry_run',
+                            default=False,
+                            help='Do everything except create the coupons')
 
     @transaction.atomic
     def handle(self, *args, **options):
 
         self.dry_run = options.get('dry_run', False)
-
-        try:
-            conference = cmodels.Conference.objects.get(code=args[0])
-        except IndexError:
-            raise CommandError('conference missing')
+        conference = cmodels.Conference.objects.get(code=options['conference'])
 
         # Find speakers eligible for coupons
         speakers = {}
@@ -220,7 +218,7 @@ class Command(BaseCommand):
             while True:
                 # Codes: SPK-RANDOM
                 code = (coupon_prefix + '-'
-                        + ''.join(random.sample(string.uppercase, 6)))
+                        + ''.join(random.sample(string.ascii_uppercase, 6)))
                 if code not in codes:
                     codes.add(code)
                     break
@@ -262,4 +260,4 @@ class Command(BaseCommand):
         for row in data:
             csv_data = ('"%s"' % (str(x).replace('"', '""'))
                         for x in row)
-            print(','.join(csv_data).encode('utf-8'))
+            print(','.join(csv_data))
