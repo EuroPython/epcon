@@ -106,6 +106,14 @@ class Thread(TimeStampedModel):
     def is_actionable(self):
         return self.status in self.ACTIONABLE_STATUSES
 
+    def is_finaid(self):
+        """
+        This is wrapper for comparing with Choices that's usable in the
+        templates tl;dr in the template Choices would be turned to it's verbose
+        form and thus the simple == will fail
+        """
+        return self.category == self.CATEGORIES.FINAID
+
 
 class Message(TimeStampedModel):
 

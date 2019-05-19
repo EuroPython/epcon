@@ -188,7 +188,7 @@ class UserNewFinaidRequest(forms.Form):
         )
     )
     expectations = forms.CharField(
-        label="What do you expect to obrain form the conference?"
+        label="What do you expect to obtain form the conference?"
     )
     portfolio = forms.CharField(
         help_text=(

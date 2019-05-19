@@ -1,0 +1,28 @@
+
+{% if finaid_requests %}
+<h5>Ongoing requests</h5>
+<table class='table'>
+    <tr>
+        <th>Title</th>
+        <th>Created</th>
+        <th>Status</th>
+    </tr>
+    {% for thread in finaid_requests %}
+    <tr>
+        <td><a href='{{ thread.get_user_url }}'>Finaid: {{ thread.title }}</a></td>
+        <td>{{ thread.created }}</td>
+        <td>{{ thread.finaid_status }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+<p style='margin-top: 2em'>
+<a href='{% url 'user_conversations:new_finaid_request' %}' class='btn btn-outline-primary'>
+    Click here to apply for Finaid
+</a>
+</p>
+
+<p style='margin-top: 3em'>
+<a href='#'>You can learn more about finaid program here</a>
+</p>

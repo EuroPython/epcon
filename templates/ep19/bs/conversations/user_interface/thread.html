@@ -4,12 +4,12 @@
 {# TODO: different extends #}
 
 {% block breadcrumbs %}
-{{ block.super }}
-<li class='breadcrumb-item active'><a href='{{ thread.get_user_url }}'>{{ thread.title }}</a></li>
+{# block.super #}
+<li class='breadcrumb-item active'><a href='{{ thread.get_user_url }}'>{% if thread.is_finaid %}Finaid: {% endif %}{{ thread.title }}</a></li>
 {% endblock breadcrumbs %}
 
 {% block conversations_content %}
-<h2>{{ thread.title }}</h2>
+<h2>{% if thread.is_finaid %}Finaid: {% endif %}{{ thread.title }}</h2>
 
 <p>Status: <span class="status-bg status-bg-{{ thread.status }}">{{ thread.get_status_display }}</span></p>
 started
@@ -56,6 +56,8 @@ by <strong>{{ message.created_by.assopy_user.name }}</strong> <span title="{{ me
 
 
 <hr>
+{% comment %}
+{# NOTE(artcz): Temporarily disabled #}
 <h5>Manage this thread</h5>
 <form method='POST' action='.'>
     <input type='hidden' name='{{ ThreadActions.submit_thread_management }}'>
@@ -70,5 +72,6 @@ by <strong>{{ message.created_by.assopy_user.name }}</strong> <span title="{{ me
     {% endif %}
     <a href='#'>
 </form>
+{% endcomment %}
 
 {% endblock conversations_content %}

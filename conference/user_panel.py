@@ -1,13 +1,9 @@
 from datetime import timedelta
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import (
-    ButtonHolder,
-    Div,
-    Layout,
-    Submit,
-)
+from crispy_forms.layout import ButtonHolder, Div, Layout, Submit
 from django import forms
+from django.conf import settings
 from django.conf.urls import url
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
@@ -17,32 +13,15 @@ from django.core.urlresolvers import reverse_lazy
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import (
-    get_object_or_404,
-    redirect,
-)
+from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 
-from assopy.models import (
-    Invoice,
-    Order,
-)
+from assopy.models import Invoice, Order
 from conference.accounts import get_or_create_attendee_profile_for_new_user
-from conference.models import (
-    TALK_STATUS,
-    Conference,
-    Speaker,
-    TalkSpeaker,
-    Ticket,
-)
-from conference.tickets import (
-    assign_ticket_to_user,
-    reset_ticket_settings,
-)
-from p3.models import (
-    P3Profile,
-    TicketConference,
-)
+from conference.models import TALK_STATUS, Conference, Speaker, TalkSpeaker, Ticket
+from conference.tickets import assign_ticket_to_user, reset_ticket_settings
+from conversations.models import Thread
+from p3.models import P3Profile, TicketConference
 
 
 @login_required
@@ -51,6 +30,8 @@ def user_dashboard(request):
     orders = get_orders_for_current_conference(request.user)
     invoices = get_invoices_for_current_conference(request.user)
     tickets = get_tickets_for_current_conference(request.user)
+    finaid = True
+    finaid_requests = get_finaid_requests_for_current_conference(request.user)
 
     return TemplateResponse(
         request,
@@ -64,7 +45,20 @@ def user_dashboard(request):
             "orders": orders,
             "invoices": invoices,
             "tickets": tickets,
+            "finaid": finaid,
+            "finaid_requests": finaid_requests,
         },
+    )
+
+
+def get_finaid_requests_for_current_conference(user):
+    """
+    Custom wrapper for user_panel, since we're going to deploy just finaid part of the helpdesk
+    """
+    return Thread.objects.filter(
+        created_by=user,
+        conference__code=settings.CONFERENCE_CONFERENCE,
+        category=Thread.CATEGORIES.FINAID
     )
 
 
