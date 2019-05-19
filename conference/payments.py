@@ -19,7 +19,7 @@ def charge_for_payment(stripe_payment):
     stripe.api_key = settings.STRIPE_SECRET_KEY
 
     try:
-        stripe.Charge.create(
+        charge = stripe.Charge.create(
             amount=stripe_payment.amount_for_stripe(),
             currency=STRIPE_PAYMENTS_CURRENCY,
             card=stripe_payment.token,
@@ -31,7 +31,7 @@ def charge_for_payment(stripe_payment):
                 'stripe_payment_uuid': stripe_payment.uuid
             }
         )
-
+        stripe_payment.charge_id = charge.id
         stripe_payment.status = stripe_payment.STATUS_CHOICES.SUCCESSFUL
         stripe_payment.save()
 

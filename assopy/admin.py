@@ -25,7 +25,7 @@ from assopy import forms as assopy_forms
 from assopy import models
 from assopy import stats
 from conference import admin as cadmin
-from conference.models import Conference, Fare
+from conference.models import Conference, Fare, StripePayment
 from conference.settings import CONFERENCE
 
 
@@ -67,6 +67,19 @@ class OrderItemInlineAdmin(admin.TabularInline):
         return super(OrderItemInlineAdmin, self).get_formset(request, obj, **kwargs)
 
 
+class StripePaymentInline(admin.TabularInline):
+    model = StripePayment
+    extra = 0
+    can_delete = False
+    fields = ('status', 'created', 'modified', 'charge_id', 'amount', 'uuid')
+
+    def get_readonly_fields(self, request, obj=None):
+        return self.fields
+
+    def has_add_permission(self, request):
+        return False
+
+
 class OrderAdminForm(forms.ModelForm):
     method = forms.ChoiceField(choices=(
         ('admin', 'Admin'),
@@ -102,7 +115,6 @@ class OrderAdmin(admin.ModelAdmin):
         '_created', 'method',
         '_items', '_complete', '_invoice',
         '_total_nodiscount', '_discount', '_total_payed',
-        'stripe_charge_id'
     )
     list_select_related = True
     list_filter = ('method', '_complete',)
@@ -120,6 +132,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     inlines = (
         OrderItemInlineAdmin,
+        StripePaymentInline,
     )
 
     def has_delete_permission(self, request, obj=None):
