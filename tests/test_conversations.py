@@ -2,18 +2,28 @@
 This module contains tests related to helpdesk, finaid, etc.
 """
 
-from django.core.urlresolvers import reverse
+from datetime import date
+
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 from conference.models import Conference
-from conversations.models import Thread
 from conversations.common_actions import ThreadActions
+from conversations.models import Thread
 from conversations.user_interface import UserNewFinaidRequest
 from tests.common_tools import make_user, redirects_to, template_used
 
 
-def _setup(client):
-    Conference.objects.create(code=settings.CONFERENCE_CONFERENCE)
+def _setup(client, start=date(2019, 7, 8), end=date(2019, 7, 14)):
+    """
+    Setup using 2019 dates for conference
+    """
+    Conference.objects.get_or_create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_NAME,
+        conference_start=start,
+        conference_end=end,
+    )
     make_user(email="joe@example.com", password="foobar")
     client.login(email="joe@example.com", password="foobar")
 
