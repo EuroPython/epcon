@@ -36,7 +36,10 @@ cmsplugin-filer
 django-filebrowser-no-grappelli~=3.6
 
 django-markitup~=3.0
+
+# django settings enhancements
 python-decouple
+dj-database-url
 
 # phone numbers
 django-phonenumber-field

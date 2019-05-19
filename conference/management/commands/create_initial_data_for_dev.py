@@ -1,8 +1,10 @@
 import csv
 import random
+from datetime import date
 from datetime import timedelta
 from io import StringIO
 
+import factory
 from cms.api import add_plugin, create_page, publish_page
 from django.conf import settings
 from django.core.exceptions import FieldError
@@ -19,14 +21,16 @@ from conference.models import (
     News,
     TALK_STATUS,
     Speaker,
+    ExchangeRate,
 )
 from conference.tests.factories.fare import SponsorIncomeFactory
 from conference.tests.factories.talk import TalkFactory
 from conference.cfp import add_speaker_to_talk
 from conference.accounts import get_or_create_attendee_profile_for_new_user
+from conference.fares import set_early_bird_fare_dates
 
 
-DEFAULT_VAT_RATE = "0.2"  # 20%
+DEFAULT_VAT_RATE = "20"  # 20%
 
 
 class Command(BaseCommand):
@@ -39,10 +43,15 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         conference, _ = Conference.objects.get_or_create(
             code=settings.CONFERENCE_CONFERENCE,
-            name=settings.CONFERENCE_CONFERENCE,
+            name="Europython 2019",
             # For easier testing open CFP
             cfp_start=timezone.now() - timedelta(days=3),
             cfp_end=timezone.now() + timedelta(days=3),
+            conference_start=date(2019, 7, 8),
+            conference_end=date(2019, 7, 14),
+        )
+        ExchangeRate.objects.create(
+            datestamp=date.today(), currency="CHF", rate="1.0"
         )
 
         print("Creating an admin user")
@@ -75,7 +84,13 @@ class Command(BaseCommand):
             talk.created_by = user.user
             talk.save()
             add_speaker_to_talk(speaker, talk)
-            get_or_create_attendee_profile_for_new_user(user.user)
+            profile = get_or_create_attendee_profile_for_new_user(user.user)
+            if not profile.getBio():
+                profile.setBio(
+                    factory.Faker(
+                        "sentence", nb_words=20, variable_nb_words=True
+                    ).generate({})
+                )
 
         def new_page(rev_id, title, **kwargs):
             try:
@@ -110,7 +125,6 @@ class Command(BaseCommand):
         program_page = new_page("faq", "FAQ")
         for rev_id, title in [
             ("tickets", "Buy Tickets"),
-            ("submit-proposal", "Submit Proposal"),
             ("tips-for-attendees", "Tips for Attendees"),
             ("volunteers", "Volunteers"),
             ("sign-up-as-session-chair", "Sign up as Session Chair"),
@@ -121,6 +135,7 @@ class Command(BaseCommand):
 
         program_page = new_page("program", "Program")
         for rev_id, title in [
+            ("submit-proposal", "Submit Proposal"),
             ("workshops", "Workshops"),
             ("trainings", "Trainings"),
             ("schedule", "Schedule"),
@@ -197,6 +212,12 @@ class Command(BaseCommand):
         default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
         pre_create_typical_fares_for_conference(
             settings.CONFERENCE_CONFERENCE, default_vat_rate, print_output=True
+        )
+
+        set_early_bird_fare_dates(
+            conference,
+            date.today(),
+            date.today() + timedelta(days=7)
         )
 
         # News

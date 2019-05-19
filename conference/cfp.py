@@ -1,15 +1,17 @@
 from django import forms
+from django.conf import settings
 from django.conf.urls import url
-from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse_lazy
-from django.views.generic import RedirectView
+from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.core.urlresolvers import reverse_lazy
 from django.db import transaction
-from django.http import JsonResponse, HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
+from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import slugify
 from django.template.response import TemplateResponse
-from django.contrib import messages
-from django.shortcuts import redirect, get_object_or_404
+from django.views.generic import RedirectView
 
 from taggit.forms import TagField
 from taggit_labels.widgets import LabelWidget
@@ -49,13 +51,39 @@ def submit_proposal_step1_talk_info(request):
                 talk = proposal_form.save(request.user)
                 messages.success(
                     request,
-                    "Proposal added, now add information about speaker",
+                    "Proposal added, now please add information about the speaker",
                 )
+                send_talk_details_to_backup_email(talk)
                 return redirect("cfp:step2_add_speakers", talk_uuid=talk.uuid)
 
     return TemplateResponse(request, "ep19/bs/cfp/step1_talk_info.html", {
         "proposal_form": proposal_form,
     })
+
+
+def send_talk_details_to_backup_email(talk: Talk):
+    """
+    This is just to double check if we're not loosing any proposals, based on
+    the feedback we've seen on telegram
+    """
+    SEND_CFP_BACKUP_TO = ['web-wg@europython.eu']
+
+    content = f"""
+    title: {talk.title}
+    author: {talk.created_by.id}
+    type_display: {talk.get_type_display()}
+    subtitle: {talk.sub_title},
+    abstract_short: {talk.abstract_short}
+    abstract: {talk.getAbstract().body}
+    abstract_extra: {talk.abstract_extra}
+    """
+
+    send_mail(
+        subject=f"New Proposal for EP CFP #{talk.id}",
+        message=content,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=SEND_CFP_BACKUP_TO,
+    )
 
 
 @login_required
@@ -81,7 +109,7 @@ def submit_proposal_step2_add_speakers(request, talk_uuid):
 
                 messages.success(
                     request,
-                    "Added speaker",
+                    "Speaker added successfully.",
                 )
                 return redirect("cfp:step3_thanks", talk_uuid=talk.uuid)
 
@@ -133,6 +161,44 @@ def update_proposal(request, talk_uuid):
     return TemplateResponse(request, "ep19/bs/cfp/update_proposal.html", {
         "talk": talk,
         "proposal_edit_form": proposal_edit_form,
+    })
+
+
+@login_required
+def update_speakers(request, talk_uuid):
+    """
+    Update/Edit proposal's speaker(s) view
+    """
+    talk = get_object_or_404(Talk, uuid=talk_uuid)
+
+    if not talk.created_by == request.user:
+        return HttpResponseForbidden()
+
+    conf = Conference.objects.current()
+    if not conf.cfp():
+        return HttpResponseForbidden()
+
+    speaker_form = UpdateAttendeeProfile(
+        initial=extract_initial_speaker_data_from_user(request.user)
+    )
+
+    if request.method == 'POST':
+        speaker_form = UpdateAttendeeProfile(request.POST)
+        if speaker_form.is_valid():
+            with transaction.atomic():
+                save_information_from_speaker_form(
+                    request.user, speaker_form.cleaned_data
+                )
+
+                messages.success(
+                    request,
+                    "Speaker updated successfully.",
+                )
+                return redirect("cfp:preview", talk_slug=talk.slug)
+
+    return TemplateResponse(request, "ep19/bs/cfp/update_speakers.html", {
+        "talk": talk,
+        "speaker_edit_form": speaker_form,
     })
 
 
@@ -212,7 +278,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
             'email': speaker.user.email,
             'company': ap.company,
             'company_homepage': ap.company_homepage,
-            'bio': ap.getBio().body,
+            'bio': getattr(ap.getBio(), "body", ""),
             'phone': ap.phone,
         })
 
@@ -221,6 +287,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
 
 def save_information_from_speaker_form(user, cleaned_data):
     user.first_name = cleaned_data['users_given_name']
+    user.last_name = ''
     user.save()
 
     ap = user.attendeeprofile
@@ -305,6 +372,10 @@ class AddSpeakerToTalkForm(forms.ModelForm):
         ]
 
 
+class UpdateAttendeeProfile(AddSpeakerToTalkForm):
+    pass
+
+
 class ProposalForm(forms.ModelForm):
 
     type = forms.ChoiceField(
@@ -376,7 +447,6 @@ def validate_tags(tags):
     ).values_list("name", flat=True)
 
     tags_limited = valid_tags[:5]
-    tags = ", ".join(tags_limited)
 
     return tags_limited
 
@@ -405,6 +475,11 @@ urlpatterns = [
         r"^preview/(?P<talk_slug>[\w-]+)/$",
         preview_proposal,
         name="preview",
+    ),
+    url(
+        r"^update/(?P<talk_uuid>[\w-]+)/speakers/$",
+        update_speakers,
+        name="update_speakers",
     ),
     url(
         r"^update/(?P<talk_uuid>[\w-]+)/$",

@@ -4,6 +4,7 @@ import os
 import os.path
 import sys
 
+import dj_database_url
 from decouple import config
 
 from django.core.urlresolvers import reverse_lazy
@@ -63,12 +64,10 @@ SITE_DATA_ROOT = DATA_DIR + "/site"
 # DATABASE
 # --------
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': SITE_DATA_ROOT + '/epcon.db',
-    }
+    'default': dj_database_url.config(
+        default='sqlite:///{}/epcon.db'.format(SITE_DATA_ROOT)
+    ),
 }
-
 
 # Email
 # -----
@@ -469,6 +468,15 @@ DJANGOCMS_GRID_CONFIG = {
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
+# Override the message class to get it to work with bootstrap styles.
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}
+# TODO umgelurgel: this is only required for ep2019;
+#  remove this after ep2019 and before ep2020
+MESSAGE_STORAGE = 'conference.messages.CustomFallbackStorage'
+
 
 #
 # Session management
@@ -477,6 +485,7 @@ SESSION_COOKIE_NAME = 'sid'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 CONFERENCE_CONFERENCE = 'ep2019'
+CONFERENCE_NAME = "EuroPython 2019"
 CONFERENCE_SEND_EMAIL_TO = ["helpdesk@europython.eu"]
 CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL = []
 CONFERENCE_VOTING_DISALLOWED = 'https://ep2019.europython.eu/en/talk-voting/'

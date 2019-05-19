@@ -63,3 +63,7 @@ GRAPH_MODELS = {
     'all_applications': True,
     'group_models': True,
 }
+
+
+STRIPE_SECRET_KEY = "sk_test_4eC39HqLyjWDarjtT1zdp7dc"
+STRIPE_PUBLISHABLE_KEY = "pk_test_TYooMQauvdEDq54NiTphI7jx"

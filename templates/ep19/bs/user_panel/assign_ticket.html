@@ -1,0 +1,28 @@
+{% extends "ep19/bs/user_panel/base.html" %}
+
+{% load cms_tags crispy_forms_tags %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+
+<li class='breadcrumb-item'>
+    <a href=".">Assign ticket</a>
+</li>
+{% endblock breadcrumbs %}
+
+{% block user_content %}
+<div class='row' style='margin-top: 3em'>
+
+    <div class="col-md-8">
+        <h1>(re)Assign ticket #{{ ticket.id }}</h1>
+
+        <form method="POST" action=".">
+            {% csrf_token %}
+            {{ assignment_form | crispy }}
+            <input type="submit" class="btn btn-primary" value="Save">
+        </form>
+    </div>
+    <div class="col-md-4">
+    </div>
+</div>
+{% endblock %}

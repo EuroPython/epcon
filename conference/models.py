@@ -852,10 +852,10 @@ FARE_PAYMENT_TYPE = (
     ('d', 'Deposit'),
 )
 
-FARE_TYPES = (
-    ('c', 'Company'),
-    ('s', 'Student'),
-    ('p', 'Personal'),
+FARE_TYPES = Choices(
+    ('c', 'company', 'Company'),
+    ('p', 'personal', 'Personal'),
+    ('s', 'student', 'Student'),
 )
 class Fare(models.Model):
     conference = models.CharField(help_text='Conference code', max_length=20)
@@ -865,7 +865,11 @@ class Fare(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2)
     start_validity = models.DateField(null=True, blank=True)
     end_validity = models.DateField(null=True, blank=True)
-    recipient_type = models.CharField(max_length=1, choices=FARE_TYPES, default='p')
+    recipient_type = models.CharField(
+        max_length=1,
+        choices=FARE_TYPES,
+        default=FARE_TYPES.personal,
+    )
     ticket_type = models.CharField(max_length=10, choices=FARE_TICKET_TYPES, default='conference', db_index=True)
     payment_type = models.CharField(max_length=1, choices=FARE_PAYMENT_TYPE, default='p')
     blob = models.TextField(blank=True)
@@ -1554,3 +1558,42 @@ class News(TimeStampedModel):
 
     def __str__(self):
         return self.title
+
+
+# ========================================
+# StripePayment
+# TODO: split conference/models.py to multiple files and put it this model in a
+# separate file.
+# ========================================
+
+
+class StripePayment(models.Model):
+
+    STATUS_CHOICES = Choices(
+        ('NEW', 'New'),
+        ('SUCCESSFUL', 'Successful'),
+        ('FAILED', 'Failed'),
+    )
+
+    uuid = models.CharField(max_length=40, unique=True)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    token = models.CharField(max_length=100)
+    token_type = models.CharField(max_length=20)
+    email = models.CharField(max_length=255)
+
+    user = models.ForeignKey(get_user_model())
+    order = models.ForeignKey('assopy.Order')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.CharField(max_length=255)
+
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    message = models.CharField(max_length=255, blank=True, default='')
+
+    def __str__(self):
+        return f'StripePayment(uuid={self.uuid}, status={self.status})'
+
+    def amount_for_stripe(self):
+        # 9.99 becomes 999
+        return int(self.amount * 100)
+

@@ -53,6 +53,7 @@ class ReadOnlyWidget(forms.widgets.HiddenInput):
 class OrderItemInlineAdmin(admin.TabularInline):
     model = models.OrderItem
     raw_id_fields = ('ticket',)
+    extra = 0
     readonly_fields = ('ticket', 'price', 'vat', 'code', 'description')
 
     def get_formset(self, request, obj=None, **kwargs):

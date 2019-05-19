@@ -14,8 +14,9 @@ from conference.cfp import (
 
 from tests.common_tools import redirects_to, template_used
 
+pytestmark = mark.django_db
 
-@mark.django_db
+
 @mark.parametrize(
     "url",
     [
@@ -23,6 +24,8 @@ from tests.common_tools import redirects_to, template_used
         # using some random uuid because we just need to resolve url
         reverse("cfp:step2_add_speakers", args=["ABCDEFI"]),
         reverse("cfp:step3_thanks", args=["ABCDEFI"]),
+        reverse("cfp:update", args=["ABCDEFI"]),
+        reverse("cfp:update_speakers", args=["ABCDEFI"]),
     ],
 )
 def test_if_cfp_pages_are_login_required(client, url):
@@ -32,7 +35,6 @@ def test_if_cfp_pages_are_login_required(client, url):
     assert redirects_to(response, "/accounts/login/")
 
 
-@mark.django_db
 def test_if_cfp_pages_are_unavailable_if_cfp_is_undefined(user_client):
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
@@ -45,7 +47,6 @@ def test_if_cfp_pages_are_unavailable_if_cfp_is_undefined(user_client):
     assert template_used(response, "ep19/bs/cfp/cfp_is_closed.html")
 
 
-@mark.django_db
 def test_if_cfp_pages_are_unavailable_if_cfp_is_in_the_future(user_client):
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
@@ -59,7 +60,6 @@ def test_if_cfp_pages_are_unavailable_if_cfp_is_in_the_future(user_client):
     assert template_used(response, "ep19/bs/cfp/cfp_is_closed.html")
 
 
-@mark.django_db
 def test_if_cfp_pages_are_unavailable_if_cfp_is_in_the_past(user_client):
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
@@ -74,7 +74,6 @@ def test_if_cfp_pages_are_unavailable_if_cfp_is_in_the_past(user_client):
     assert template_used(response, "ep19/bs/cfp/cfp_is_closed.html")
 
 
-@mark.django_db
 def test_if_cfp_pages_are_available_if_cfp_is_active(user_client):
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
@@ -89,7 +88,6 @@ def test_if_cfp_pages_are_available_if_cfp_is_active(user_client):
     assert template_used(response, "ep19/bs/cfp/step1_talk_info.html")
 
 
-@mark.django_db
 def test_validation_errors_are_handled_on_step1(user_client):
     """
     NOTE(artcz)
@@ -108,7 +106,6 @@ def test_validation_errors_are_handled_on_step1(user_client):
     assert template_used(response, "ep19/bs/cfp/step1_talk_info.html")
 
 
-@mark.django_db
 def test_if_user_can_submit_talk_details_and_is_redirect_to_step2(user_client):
     STEP1_CORRECT_REDIRECT_302 = 302
 
@@ -154,7 +151,6 @@ def test_if_user_can_submit_talk_details_and_is_redirect_to_step2(user_client):
     )
 
 
-@mark.django_db
 def test_validation_errors_are_handled_on_step2(user_client):
     """
     NOTE(artcz)
@@ -174,7 +170,6 @@ def test_validation_errors_are_handled_on_step2(user_client):
     assert template_used(response, "ep19/bs/cfp/step2_add_speaker.html")
 
 
-@mark.django_db
 def test_if_user_can_add_a_speaker_to_a_proposal(user_client):
     create_conference_with_open_cfp()
     STEP2_CORRECT_REDIRECT_302 = 302
@@ -213,7 +208,6 @@ def test_if_user_can_add_a_speaker_to_a_proposal(user_client):
     )
 
 
-@mark.django_db
 def test_if_correct_thanks_page_is_rendered(user_client):
     create_conference_with_open_cfp()
     talk = TalkFactory()
@@ -223,7 +217,6 @@ def test_if_correct_thanks_page_is_rendered(user_client):
     assert template_used(response, "ep19/bs/cfp/step3_thanks.html")
 
 
-@mark.django_db
 def test_thanks_page_contains_link_to_preview_proposal(user_client):
     create_conference_with_open_cfp()
     talk = TalkFactory()
@@ -235,7 +228,6 @@ def test_thanks_page_contains_link_to_preview_proposal(user_client):
     assert preview_link in response.content.decode()
 
 
-@mark.django_db
 def test_preview_page_renders_correct_content(user_client):
     create_conference_with_open_cfp()
     talk = TalkFactory()
@@ -250,8 +242,7 @@ def test_preview_page_renders_correct_content(user_client):
     assert talk.abstract_extra in response.content.decode()
 
 
-@mark.django_db
-def test_preview_page_contains_edit_link_if_cfp_is_open_and_user_is_author(
+def test_preview_page_contains_edit_links_if_cfp_is_open_and_user_is_author(
     user_client
 ):
     create_conference_with_open_cfp()
@@ -261,13 +252,14 @@ def test_preview_page_contains_edit_link_if_cfp_is_open_and_user_is_author(
     talk.save()
     preview_url = reverse("cfp:preview", args=[talk.slug])
     edit_link = reverse("cfp:update", args=[talk.uuid])
+    speaker_edit_link = reverse("cfp:update_speakers", args=[talk.uuid])
 
     response = user_client.get(preview_url)
 
     assert edit_link in response.content.decode()
+    assert speaker_edit_link in response.content.decode()
 
 
-@mark.django_db
 def test_preview_page_doesnt_contain_edit_link_if_cfp_is_open_but_user_is_not_author(  # NOQA
     user_client
 ):
@@ -276,13 +268,14 @@ def test_preview_page_doesnt_contain_edit_link_if_cfp_is_open_but_user_is_not_au
     talk.setAbstract("some abstract")
     preview_url = reverse("cfp:preview", args=[talk.slug])
     edit_link = reverse("cfp:update", args=[talk.uuid])
+    speaker_edit_link = reverse("cfp:update_speakers", args=[talk.uuid])
 
     response = user_client.get(preview_url)
 
     assert edit_link not in response.content.decode()
+    assert speaker_edit_link not in response.content.decode()
 
 
-@mark.django_db
 def test_preview_page_doesnt_contain_edit_link_if_cfp_is_closed_and_user_is_author(  # NOQA
     user_client
 ):
@@ -296,13 +289,14 @@ def test_preview_page_doesnt_contain_edit_link_if_cfp_is_closed_and_user_is_auth
     talk.setAbstract("some abstract")
     preview_url = reverse("cfp:preview", args=[talk.slug])
     edit_link = reverse("cfp:update", args=[talk.uuid])
+    speaker_edit_link = reverse("cfp:update_speakers", args=[talk.uuid])
 
     response = user_client.get(preview_url)
 
     assert edit_link not in response.content.decode()
+    assert speaker_edit_link not in response.content.decode()
 
 
-@mark.django_db
 def test_regular_user_cant_access_program_wg_download(user_client):
     LOGIN_REQUIRED_302 = 302
     Conference.objects.create(
@@ -315,7 +309,6 @@ def test_regular_user_cant_access_program_wg_download(user_client):
     assert redirects_to(response, "/admin/login/")
 
 
-@mark.django_db
 def test_admin_user_can_access_program_wg_download(admin_client):
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
@@ -327,35 +320,46 @@ def test_admin_user_can_access_program_wg_download(admin_client):
     assert response.json() == {"talks": []}
 
 
-@mark.django_db
-def test_update_page_works_if_cfp_is_open_and_user_is_author(user_client):
+@mark.parametrize(
+    "page_name, template",
+    [
+        ("cfp:update", "ep19/bs/cfp/update_proposal.html"),
+        ("cfp:update_speakers", "ep19/bs/cfp/update_speakers.html"),
+    ],
+)
+def test_update_pages_work_if_cfp_is_open_and_user_is_author(user_client, page_name, template):
     create_conference_with_open_cfp()
     talk = TalkFactory()
     talk.setAbstract("some abstract")
     talk.created_by = user_client.user
     talk.save()
-    edit_url = reverse("cfp:update", args=[talk.uuid])
+    edit_url = reverse(page_name, args=[talk.uuid])
 
     response = user_client.get(edit_url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/cfp/update_proposal.html")
+    assert template_used(response, template)
 
 
-@mark.django_db
-def test_update_page_doesnt_work_if_cfp_is_open_but_user_is_not_author(
-    user_client
+@mark.parametrize(
+    "page_name",
+    [
+        "cfp:update",
+        "cfp:update_speakers",
+    ],
+)
+def test_update_pages_dont_work_if_cfp_is_open_but_user_is_not_author(
+    user_client, page_name,
 ):
     create_conference_with_open_cfp()
     talk = TalkFactory()
     talk.setAbstract("some abstract")
-    edit_url = reverse("cfp:update", args=[talk.uuid])
+    edit_url = reverse(page_name, args=[talk.uuid])
 
     response = user_client.get(edit_url)
     assert response.status_code == 403
 
 
-@mark.django_db
 def test_preview_page_doesnt_work_if_cfp_is_closed_and_user_is_author(
     user_client
 ):
@@ -375,7 +379,6 @@ def test_preview_page_doesnt_work_if_cfp_is_closed_and_user_is_author(
     assert response.status_code == 403
 
 
-@mark.django_db
 def test_validation_errors_are_handled_on_update_proposal(user_client):
     """
     NOTE(artcz)
@@ -399,7 +402,6 @@ def test_validation_errors_are_handled_on_update_proposal(user_client):
     assert template_used(response, "ep19/bs/cfp/update_proposal.html")
 
 
-@mark.django_db
 def test_update_proposal_updates_proposal(user_client):
     create_conference_with_open_cfp()
     talk = TalkFactory()
@@ -441,8 +443,75 @@ def test_update_proposal_updates_proposal(user_client):
     assert talk_dict["speakers"] == []
 
 
+def test_update_speaker_updated_speaker(user_client):
+    create_conference_with_open_cfp()
+    talk = TalkFactory()
+    talk.setAbstract("some abstract")
+    talk.created_by = user_client.user
+    talk.save()
+
+    edit_url = reverse("cfp:update_speakers", args=[talk.uuid])
+    speaker_data = dict(
+        users_given_name="new name",
+        is_minor=True,
+        job_title="goat",
+        phone="+48123456789",
+        gender="yes",
+        company="widgets inc",
+        company_homepage="www.widgets.inc",
+        bio="this is my bio",
+    )
+
+    response = user_client.post(edit_url, speaker_data)
+
+    assert response.status_code == 302
+    assert redirects_to(response, reverse("cfp:preview", args=[talk.slug]))
+
+    user = user_client.user
+    user.refresh_from_db()
+    attendee_profile = user.attendeeprofile
+    attendee_profile.refresh_from_db()
+    assert user.assopy_user.name() == speaker_data["users_given_name"]
+    assert attendee_profile.phone == speaker_data["phone"]
+    assert attendee_profile.is_minor == speaker_data["is_minor"]
+    assert attendee_profile.job_title == speaker_data["job_title"]
+    assert attendee_profile.gender == speaker_data["gender"]
+    assert attendee_profile.company == speaker_data["company"]
+    assert speaker_data["company_homepage"] in attendee_profile.company_homepage
+    assert attendee_profile.getBio().body == speaker_data["bio"]
+
+
+def test_update_speaker_updated_speaker_name(user_client):
+    create_conference_with_open_cfp()
+    talk = TalkFactory()
+    talk.setAbstract("some abstract")
+    talk.created_by = user_client.user
+    talk.save()
+
+    user = user_client.user
+    user.first_name = "John"
+    user.last_name = "Doe"
+    user.save()
+
+    edit_url = reverse("cfp:update_speakers", args=[talk.uuid])
+    speaker_data = dict(
+        users_given_name="new name",
+        phone="+48123456789",
+        bio="this is my bio",
+    )
+
+    response = user_client.post(edit_url, speaker_data)
+
+    assert response.status_code == 302
+    assert redirects_to(response, reverse("cfp:preview", args=[talk.slug]))
+
+    user.refresh_from_db()
+    attendee_profile = user.attendeeprofile
+    attendee_profile.refresh_from_db()
+    assert user.assopy_user.name() == speaker_data["users_given_name"]
+
+
 # Mark with django db only because AddSpeakerToTalkForm is a ModelForm
-@mark.django_db
 @mark.parametrize(
     "valid_phone", ["+48123456789", "+44 7 123 456 789", "+1 858 712 8966"]
 )
@@ -459,7 +528,6 @@ def test_speaker_form_accepts_valid_international_mobile_numbers(valid_phone):
 
 
 # Mark with django db only because AddSpeakerToTalkForm is a ModelForm
-@mark.django_db
 @mark.parametrize(
     "invalid_phone",
     ["SOME RANODM TEXT", "+4471343956789", "+4412445367"],

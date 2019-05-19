@@ -1,0 +1,21 @@
+<h3 style='margin-top: 3em'>Your orders from this year</h3>
+
+<table class='table'>
+    <tr>
+        <th>ID</th>
+        <th>Invoices</th>
+    </tr>
+
+    {% for order in orders %}
+    <tr>
+        <td>{{ order.code }}</a></td>
+        <td>
+            {% for invoice in order.invoices.all %}
+            <a href='{{ invoice.get_pdf_url }}' class='btn btn-outline-info'>
+                <i class='fa fa-pdf'></i> Invoice #{{ invoice.code }}
+            </a>
+            {% endfor %}
+        </td>
+    </tr>
+    {% endfor %}{# order in orders #}
+</table>

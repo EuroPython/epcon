@@ -1,0 +1,15 @@
+<table class='table'>
+    <tr>
+        <th>Title</th>
+        <th>Date</th>
+        <th></th>
+    </tr>
+
+    {% for invoice in invoices %}
+    <tr>
+        <td><a href='{% url "assopy-invoice-pdf" invoice.order.code invoice.code %}'>{{ invoice.code }}</a></td>
+        <td>{{ invoice.payment_date }}</td>
+        <td class='text-right'><a class='btn btn-outline-primary' href='{% url "assopy-invoice-pdf" invoice.order.code invoice.code %}'><i class='fa fa-file-pdf'></i> Download as PDF</a></td>
+    </tr>
+    {% endfor %}{# invoice in invoices #}
+</table>

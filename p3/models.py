@@ -67,6 +67,13 @@ class TicketConference(models.Model):
         Ticket,
         related_name='p3_conference',
         on_delete=models.CASCADE)
+
+    name = models.CharField(
+        max_length=255,
+        help_text="What name should appear on the badge?",
+        blank=True,
+    )
+
     shirt_size = models.CharField(
         max_length=5,
         choices=TICKET_CONFERENCE_SHIRT_SIZES,
@@ -95,7 +102,7 @@ class TicketConference(models.Model):
                     "Don't use a very large image, 250x250 should be fine."))
     assigned_to = models.EmailField(
         blank=True,
-        help_text=_("EMail of the attendee for whom this ticket was bought."))
+        help_text=_("Email of the attendee for whom this ticket was bought."))
 
     objects = TicketConferenceQuerySet.as_manager()
 
@@ -158,14 +165,12 @@ class P3Profile(models.Model):
 
     def public_profile_image_url(self):
         """ Like `profile_image_url` but takes into account the visibility rules of the profile."""
-        # import pdb; pdb.set_trace()
         if self.profile.visibility != 'x':
             url = self.profile_image_url()
             if url == self.image_url:
                 return reverse('p3-profile-avatar', kwargs={'slug': self.profile.slug})
             return url
         return dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR
-
 
     def send_user_message(self, from_, subject, message):
         from conference.models import Conference, AttendeeLink
