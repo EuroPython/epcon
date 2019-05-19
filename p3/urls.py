@@ -34,6 +34,7 @@ urlpatterns = [
 
 urlpatterns += [
     url(r'^schedule/(?P<conference>[\w-]+)/$', p3_views.schedule, name='p3-schedule'),
+    url(r'^schedule/(?P<conference>[\w-]+)/(?P<day>\d+)-(?P<month>\w+)$', p3_views.schedule, name='p3-schedule'),
     # url(r'^schedule/(?P<conference>[\w-]+).ics$', p3_views.schedule_ics, name='p3-schedule-ics'),
 
     # url(r'^schedule/(?P<conference>[\w-]+)/my-schedule/$',

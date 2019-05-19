@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, date
 
 from conference.models import Event, Schedule
 from conference.utils import TimeTable2
@@ -20,19 +20,53 @@ def _get_time_indexes(start_time, end_time, times):
     return start, end
 
 
-def _build_timetable(schedule):
-    return
-
-
-def schedule(request, conference):
-    # TODO: filter by day
-    sids = Schedule.objects.filter(conference=conference).values_list(
-        "id", flat=True
-    )
-
+def schedule(request, conference, day=None, month=None):
     from conference.dataaccess import schedules_data
 
-    schedule_data = schedules_data(sids)[0]
+    months = [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+    ]
+
+    if month:
+        try:
+            month_index = months.index(month) + 1
+        except ValueError:
+            ...
+
+    print(day, month, month_index)
+
+    # TODO: filter by day
+    schedules = Schedule.objects.filter(conference=conference).values(
+        "id", "date"
+    )
+
+    days = [schedule["date"] for schedule in schedules]
+    selected_date = date(days[0].year, month_index, int(day))
+
+    current_schedule = next(
+        (
+            schedule
+            for schedule in schedules
+            if schedule["date"] == selected_date
+        ),
+        None,
+    )
+
+    if current_schedule is None:
+        raise ValueError("lol")
+
+    schedule_data = schedules_data([current_schedule["id"]])[0]
     timetable = TimeTable2.fromSchedule(schedule_data["id"])
 
     starred_talks_ids = []
@@ -128,6 +162,8 @@ def schedule(request, conference):
         grid=Grid(times=grid_times, rows=len(all_times), cols=len(tracks)),
     )
 
-    ctx = {"conference": conference, "schedule": schedule}
+    print(conference)
+
+    ctx = {"conference": conference, "schedule": schedule, "days": days}
 
     return render(request, "ep19/bs/schedule/schedule.html", ctx)
