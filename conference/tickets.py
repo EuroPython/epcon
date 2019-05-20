@@ -38,7 +38,7 @@ def count_number_of_sold_training_tickets_including_combined_tickets():
     qs = Ticket.objects.filter(
         fare__conference=settings.CONFERENCE_CONFERENCE,
         frozen=False,
-        # TODO: make sure we filter tickets from complete orders
+        orderitem__order___complete=True,
     ).filter(
         Q(fare__code__regex=FARE_CODE_REGEXES["variants"][FARE_CODE_VARIANTS.TRAINING])
         | Q(fare__code=FARE_CODE_REGEXES["variants"][FARE_CODE_VARIANTS.COMBINED])
