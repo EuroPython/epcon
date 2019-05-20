@@ -1,12 +1,14 @@
-
 from collections import defaultdict
-from conference.models import Ticket, Speaker, Talk
+
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db.models import Q, Count
+
 from p3 import models
 from conference import models as cmodels
+from conference.models import Ticket, Speaker, Talk
+from conference.tickets import count_number_of_sold_training_tickets_including_combined_tickets
 
 
 def _create_option(id, title, total_qs, **kwargs):
@@ -345,6 +347,11 @@ def ticket_status_for_voupe03_tickets(code, voupe03):
 def ticket_status_no_code(conf, multiple_assignments, orphan_tickets, spam_recruiting, voupe03):
     return [
         _create_option('ticket_sold', 'Sold tickets', _tickets(conf, 'conference')),
+        {
+            'id': 'training_tickets_sold',
+            'title': 'Sold training tickets (including combined)',
+            'total': count_number_of_sold_training_tickets_including_combined_tickets(),
+        },
         _create_option('assigned_tickets', 'Assigned tickets', _assigned_tickets(conf)),
         _create_option('unassigned_tickets', 'Unassigned tickets', _unassigned_tickets(conf)),
         # _create_option('sim_tickets', 'Tickets with SIM card orders', sim_tickets),  # FIXME: remove hotels and sim
