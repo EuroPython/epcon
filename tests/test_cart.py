@@ -183,6 +183,11 @@ def test_can_apply_personal_ticket_coupon(db, user_client):
 
 
 @mark.xfail
+def test_can_apply_coupon_with_null_dates():
+    assert False
+    
+
+@mark.xfail
 def test_user_can_add_billing_info(db, user_client):
     _setup()
     assert False

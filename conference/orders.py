@@ -2,7 +2,7 @@ import uuid
 from collections import namedtuple
 from decimal import Decimal
 
-from django.db.models import Max
+from django.db.models import Max, Q
 from django.db import transaction
 from django.utils import timezone
 
@@ -128,10 +128,10 @@ def calculate_order_price_including_discount(
 
     try:
         coupon = Coupon.objects.get(
-            conference=current_conference,
-            code=discount_code,
-            start_validity__lte=timezone.now().date(),
-            end_validity__gte=timezone.now().date(),
+            Q(conference=current_conference)
+            & Q(code=discount_code)
+            & (Q(start_validity__lte=timezone.now().date()) | Q(start_validity=None))
+            & (Q(end_validity__gte=timezone.now().date()) | Q(end_validity=None))
         )
 
         if not coupon.valid(user=for_user.assopy_user):
