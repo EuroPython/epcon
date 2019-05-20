@@ -22,19 +22,23 @@
             {% if not order.is_complete %}
             <form action="." method="POST" class='form' style='margin-top: 5em'>
                 {% csrf_token %}
-                <script
-                             src="https://checkout.stripe.com/checkout.js"
-                             class="stripe-button"
-                             data-key="{{ stripe_key }}"
-                             data-amount="{{ total_for_stripe }}"
-                             data-currency='eur'
-                             data-label="Finalize order and pay now"
-                             data-name="Stripe.com"
-                             data-description="EuroPython Order {{ order.code }}"
-                             data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
-                             data-locale="auto"
-                             data-zip-code="false">
-                </script>
+                {% if total_for_stripe == 0 %}
+                    <button class="btn btn-primary btn-lg">Confirm Order</button>
+                {% else %}
+                    <script
+                                 src="https://checkout.stripe.com/checkout.js"
+                                 class="stripe-button"
+                                 data-key="{{ stripe_key }}"
+                                 data-amount="{{ total_for_stripe }}"
+                                 data-currency='eur'
+                                 data-label="Finalize order and pay now"
+                                 data-name="Stripe.com"
+                                 data-description="EuroPython Order {{ order.code }}"
+                                 data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+                                 data-locale="auto"
+                                 data-zip-code="false">
+                    </script>
+                {% endif %}
             </form>
             {% else %}
             This order was paid in full on {{ order.payment_date|date:"Y-m-d" }}
