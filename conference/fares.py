@@ -18,6 +18,8 @@ FARE_CODE_TYPES = Choices(
 FARE_CODE_VARIANTS = Choices(
     ("S", "STANDARD", "Standard"),
     ("L", "LIGHT",    "Standard Light (no trainings)"),
+    ("T", "TRAINING", "Trainings (ep2018+)"),
+    ("C", "COMBINED", "Combined (ep2019+)"),
     ("D", "DAYPASS",  "Day Pass"),
 )
 
@@ -163,7 +165,7 @@ def set_early_bird_fare_dates(conference, start_date, end_date):
         conference=conference,
         code__regex=FARE_CODE_REGEXES['types'][FARE_CODE_TYPES.EARLY_BIRD]
     )
-    assert early_birds.count() == 9  # 3**2
+    assert early_birds.count() == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS) == 3 * 5
     early_birds.update(start_validity=start_date, end_validity=end_date)
 
 
@@ -174,5 +176,5 @@ def set_regular_fare_dates(conference, start_date, end_date):
         conference=conference,
         code__regex=FARE_CODE_REGEXES['types'][FARE_CODE_TYPES.REGULAR]
     )
-    assert fares.count() == 9  # 3**2
+    assert fares.count() == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS) == 3 * 5
     fares.update(start_validity=start_date, end_validity=end_date)

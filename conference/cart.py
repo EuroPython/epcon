@@ -149,6 +149,21 @@ def cart_step4_payment(request, order_uuid):
     payments = order.stripepayment_set.all().order_by("created")
 
     if request.method == "POST":
+
+        if total_for_stripe == 0:
+            # For 100% discounted orders/coupons
+            order.payment_date = date.today()
+            order.save()
+
+            with transaction.atomic():
+                create_invoices_for_order(order)
+                current_site = get_current_site(request)
+                send_order_confirmation_email(order, current_site)
+
+            return redirect(
+                "cart:step5_congrats_order_complete", order_uuid=order.uuid
+            )
+
         stripe_payment = StripePayment.objects.create(
             order=order,
             user=request.user,
