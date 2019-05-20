@@ -14,6 +14,7 @@ from conference.models import Conference, Ticket
 from conference.fares import (
     pre_create_typical_fares_for_conference,
     set_early_bird_fare_dates,
+    set_regular_fare_dates,
 )
 from tests.common_tools import redirects_to, template_used
 
@@ -97,6 +98,50 @@ def test_can_buy_tickets_if_fare_is_available(db, user_client):
 
     response = user_client.post(
         second_step_company, {"TESP": 10, CartActions.buy_tickets: True}
+    )
+
+    assert response.status_code == 302
+    order = Order.objects.get()
+    assert redirects_to(
+        response, reverse("cart:step3_add_billing_info", args=[order.uuid])
+    )
+    # Tickets are pre-created already even if we don't complete the order.
+    assert Ticket.objects.all().count() == 10
+
+
+def test_can_buy_training_tickets(db, user_client):
+    _setup()
+    set_regular_fare_dates(
+        settings.CONFERENCE_CONFERENCE,
+        date.today(),
+        date.today() + timedelta(days=1),
+    )
+    second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
+
+    response = user_client.post(
+        second_step_company, {"TRTC": 10, CartActions.buy_tickets: True}
+    )
+
+    assert response.status_code == 302
+    order = Order.objects.get()
+    assert redirects_to(
+        response, reverse("cart:step3_add_billing_info", args=[order.uuid])
+    )
+    # Tickets are pre-created already even if we don't complete the order.
+    assert Ticket.objects.all().count() == 10
+
+
+def test_can_buy_combined_tickets(db, user_client):
+    _setup()
+    set_regular_fare_dates(
+        settings.CONFERENCE_CONFERENCE,
+        date.today(),
+        date.today() + timedelta(days=1),
+    )
+    second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
+
+    response = user_client.post(
+        second_step_company, {"TRCC": 10, CartActions.buy_tickets: True}
     )
 
     assert response.status_code == 302
