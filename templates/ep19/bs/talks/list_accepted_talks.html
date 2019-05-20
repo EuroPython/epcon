@@ -1,0 +1,63 @@
+{% extends "ep19/bs/base.html" %}
+
+{% block content %}
+<style type="text/css">
+.talk {
+    padding: 1.5em 0;
+    border-top: 1px dotted #ddd;
+    border-bottom: 1px dotted #ddd;
+}
+</style>
+
+<div class="container page" id="voting_page">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>List of accepted proposals for EP2019</h1>
+            <h4>Proposal type
+                <a class='btn btn-{% if talk_type != "all" %}outline-{% endif %}success'
+                   href="{% url 'talks:list' %}?talk_type=all&filter={{ filter }}"
+                >
+                    All
+                </a>
+                <a class='btn btn-{% if talk_type != "talk" %}outline-{% endif %}success'
+                   href="{% url 'talks:list' %}?talk_type=talk&filter={{ filter }}"
+                >
+                    Talk
+                </a>
+                <a class='btn btn-{% if talk_type != "training" %}outline-{% endif %}success'
+                   href="{% url 'talks:list' %}?talk_type=training&filter={{ filter }}"
+                >
+                    Training
+                </a>
+                <a class='btn btn-{% if talk_type != "poster" %}outline-{% endif %}success'
+                   href="{% url 'talks:list' %}?talk_type=poster&filter={{ filter }}"
+                >
+                    Poster/Panel/Interactive
+                </a>
+                <a class='btn btn-{% if talk_type != "helpdesk" %}outline-{% endif %}success'
+                   href="{% url 'talks:list' %}?talk_type=helpdesk&filter={{ filter }}"
+                >
+                    Help desk
+                </a>
+            </h4>
+        </div>
+    </div>
+
+    <div class='row'>
+        <div class="col-md-12">
+            {% for talk in talks %}
+            <div class='talk'>
+                <h2>{{ talk.title }}</h2>
+                <h4>{{ talk.sub_title }}</h4>
+                <h5>{% for speaker in talk.get_all_speakers %}{{ speaker.user.assopy_user.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</h5>
+                <p>{% for t in talk.tags.all %}<span class='badge badge-secondary'>{{ t }}</span> {% endfor %}</p>
+                {# <p>{{ talk.get_abstract|linebreaks }}</p> #}
+                <p>
+                <code>Type: {{ talk.get_type_display }}; Python level: {{ talk.get_level_display }}; Domain level: {{ talk.get_domain_level_display }}</code>
+                </p>
+            </div>
+            {% endfor %}{# talk in talks #}
+        </div>
+    </div>
+</div>
+{% endblock %}
