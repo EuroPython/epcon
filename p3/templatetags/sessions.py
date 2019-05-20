@@ -47,8 +47,7 @@ _check_talk_types(TYPE_NAMES)
 def speaker_listing(talk):
     return [{
         'url': profile_url(speaker.user),
-        'fullname': '{} {}'.format(speaker.user.first_name,
-                                   speaker.user.last_name),
+        'fullname': '{}'.format(speaker.user.assopy_user.name()),
     } for speaker in talk.get_all_speakers()]
 
 def speaker_name(speaker):
