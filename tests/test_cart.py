@@ -5,6 +5,7 @@ from pytest import mark, raises
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib.messages import constants as messages_constants
+from django.utils import timezone
 
 from assopy.models import Order
 from assopy.models import Vat
@@ -91,8 +92,8 @@ def test_can_buy_tickets_if_fare_is_available(db, user_client):
     _setup()
     set_early_bird_fare_dates(
         settings.CONFERENCE_CONFERENCE,
-        date.today(),
-        date.today() + timedelta(days=1),
+        timezone.now().date(),
+        timezone.now().date() + timedelta(days=1),
     )
     second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
 
@@ -113,8 +114,8 @@ def test_can_buy_training_tickets(db, user_client):
     _setup()
     set_regular_fare_dates(
         settings.CONFERENCE_CONFERENCE,
-        date.today(),
-        date.today() + timedelta(days=1),
+        timezone.now().date(),
+        timezone.now().date() + timedelta(days=1),
     )
     second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
 
@@ -135,8 +136,8 @@ def test_can_buy_combined_tickets(db, user_client):
     _setup()
     set_regular_fare_dates(
         settings.CONFERENCE_CONFERENCE,
-        date.today(),
-        date.today() + timedelta(days=1),
+        timezone.now().date(),
+        timezone.now().date() + timedelta(days=1),
     )
     second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
 
@@ -157,8 +158,8 @@ def test_can_apply_personal_ticket_coupon(db, user_client):
     _setup()
     set_early_bird_fare_dates(
         settings.CONFERENCE_CONFERENCE,
-        date.today(),
-        date.today() + timedelta(days=1),
+        timezone.now().date(),
+        timezone.now().date() + timedelta(days=1),
     )
     second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
     coupon = CouponFactory(user=user_client.user.assopy_user)
