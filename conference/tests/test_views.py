@@ -171,18 +171,22 @@ class TestView(TestCase):
         self.assertJSONEqual(response.content, result)
 
     def test_conference_talk(self):
+        """
+        Test the view redirects to the new talk detail view.
+        """
         # conference-talk -> conference.views.talk
         conference = ConferenceFactory()
         talk = TalkFactory(conference=conference.code)
-        p3_talk = P3TalkFactory(talk=talk)
 
         url = reverse('conference-talk', kwargs={
             'slug': talk.slug,
         })
-        with override_settings(CONFERENCE_CONFERENCE=conference.code):
-            response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get('content-type'), 'text/html')
+
+        response = self.client.get(url)
+
+        self.assertRedirects(
+            response, reverse('talks:talk', kwargs={'talk_slug': talk.slug}), status_code=301
+        )
 
     def test_conference_talk_xml(self):
         # conference-talk-xml -> conference.views.talk_xml
