@@ -9,7 +9,7 @@ This is the summary of order {{ order.code }}:
 {% endfor %}
 
 
-Your tickets were created and are availalbe on your profile page here:
+Your tickets were created and are available on your profile page here:
 
 {{ user_panel_url }}
 
