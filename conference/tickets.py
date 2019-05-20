@@ -1,4 +1,8 @@
 from p3.models import TicketConference
+from django.conf import settings
+from django.db.models import Q
+from conference.models import Ticket
+from conference.fares import FARE_CODE_REGEXES, FARE_CODE_VARIANTS
 
 
 def assign_ticket_to_user(ticket, user):
@@ -28,3 +32,15 @@ def reset_ticket_settings(ticket):
     tc.days = ''
     tc.save()
     return tc
+
+
+def count_number_of_sold_training_tickets_including_combined_tickets():
+    qs = Ticket.objects.filter(
+        fare__conference=settings.CONFERENCE_CONFERENCE,
+        frozen=False,
+        # TODO: make sure we filter tickets from complete orders
+    ).filter(
+        Q(fare__code__regex=FARE_CODE_REGEXES["variants"][FARE_CODE_VARIANTS.TRAINING])
+        | Q(fare__code=FARE_CODE_REGEXES["variants"][FARE_CODE_VARIANTS.COMBINED])
+    )
+    return qs.count()

@@ -39,6 +39,7 @@ from conference.fares import (
     set_early_bird_fare_dates,
     set_regular_fare_dates,
 )
+from conference.tickets import count_number_of_sold_training_tickets_including_combined_tickets
 
 
 def get_current_commit_hash():
@@ -88,6 +89,8 @@ def debug_panel_index(request):
         ('Django_Version',      django.VERSION),
         ('Python_Version',      platform.python_version()),
         ('Conference_current',  Conference.objects.current()),
+        ('SOLD_TRAINING_TICKETS',
+         count_number_of_sold_training_tickets_including_combined_tickets()),
     ]
 
     allowed_settings = [
