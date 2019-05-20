@@ -38,6 +38,8 @@ FARE_CODE_REGEXES = {
     "variants": {
         FARE_CODE_VARIANTS.STANDARD: "^T.S.$",
         FARE_CODE_VARIANTS.LIGHT:    "^T.L.$",
+        FARE_CODE_VARIANTS.TRAINING: "^T.T.$",
+        FARE_CODE_VARIANTS.COMBINED: "^T.C.$",
         FARE_CODE_VARIANTS.DAYPASS:  "^T.D.$",
     },
     "groups": {
