@@ -131,7 +131,7 @@ def calculate_order_price_including_discount(
             Q(conference=current_conference)
             & Q(code=discount_code)
             & (Q(start_validity__lte=timezone.now().date()) | Q(start_validity=None))
-            & (Q(end_validity__lte=timezone.now().date()) | Q(end_validity=None))
+            & (Q(end_validity__gte=timezone.now().date()) | Q(end_validity=None))
         )
 
         if not coupon.valid(user=for_user.assopy_user):
