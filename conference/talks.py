@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
@@ -15,7 +16,14 @@ def talk(request, talk_slug):
     return TemplateResponse(
         request,
         "ep19/bs/talks/talk.html",
-        {"title": talk.title, "talk": talk, "talk_as_dict": talk_as_dict},
+        {
+            "title": talk.title,
+            "talk": talk,
+            "talk_as_dict": talk_as_dict,
+            "social_image_url": request.build_absolute_uri(
+                reverse("conference-talk-social-card-png", kwargs={"slug": talk.slug})
+            ),
+        },
     )
 
 
