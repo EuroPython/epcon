@@ -156,7 +156,6 @@ class ConferenceAdmin(admin.ModelAdmin):
                 return s
 
     def stats_list(self, request, cid):
-        stats = []
         stats = self.available_stats(cid)
 
         return TemplateResponse(
