@@ -37,7 +37,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
         "type_display": talk.get_type_display(),
         "subtitle": talk.sub_title,
         "abstract_short": talk.abstract_short,
-        "abstract": talk.getAbstract().body,
+        "abstract": talk.get_abstract(),
         "abstract_extra": talk.abstract_extra,
         "python_level": talk.get_level_display(),
         "domain_level": talk.get_domain_level_display(),
