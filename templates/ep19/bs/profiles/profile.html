@@ -38,14 +38,14 @@
                 {% if personal_website %}
                 <dl class="row">
                     <dt class="col-sm-3">Website: </dt>
-                    <dd class="col-sm-9"><a href="{{ personal_website  }}"></a>{{ personal_website }}</dd>
+                    <dd class="col-sm-9"><a href="{{ personal_website  }}">{{ personal_website }}</a></dd>
                 </dl>
                 {% endif %}
 
                 {% if twitter %}
                 <dl class="row">
                     <dt class="col-sm-3">Twitter: </dt>
-                    <dd class="col-sm-9"><a href="https://twitter.com/{{ twitter  }}"></a>{{ twitter }}</dd>
+                    <dd class="col-sm-9"><a href="https://twitter.com/{{ twitter  }}">{{ twitter }}</a></dd>
                 </dl>
                 {% endif %}
 
@@ -70,7 +70,7 @@
                     <dt class="col-sm-3">Company website: </dt>
                     <dd class="col-sm-9">
                     {% if company_website %}
-                        <a href="{{ company_website }}"></a>{{ company_website }}
+                        <a href="{{ company_website }}">{{ company_website }}</a>
                     {% else %}
                         —
                     {% endif %}
