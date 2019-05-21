@@ -22,6 +22,7 @@ from django.shortcuts import (
     get_object_or_404,
     redirect,
 )
+from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 
 from assopy.models import (
@@ -286,23 +287,36 @@ class ProfileSettingsForm(forms.ModelForm):
     twitter = forms.CharField(max_length=80, required=False)
     visibility = forms.ChoiceField(label='', choices=ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect, required=False)
 
+    picture_options = forms.ChoiceField(label='', choices=(
+        ('x', 'Do not show any picture'),
+        ('g', 'Use my Gravatar'),
+        ('u', 'Use this url'),
+        ('f', 'Use this picture'),
+    ), required=False, widget=forms.RadioSelect)
+
+    image_gravatar = forms.BooleanField(required=False, widget=forms.HiddenInput)
+    image_url = forms.URLField(required=False)
+    image = forms.FileField(required=False, widget=forms.FileInput)
+
     class Meta:
         model = AttendeeProfile
         fields = (
+            # first section
             "first_name", "last_name", "is_minor", "phone", "email",
-            "tagline", "twitter", "personal_homepage",
-            "job_title", "company", "company_homepage",
-            "location", "bio",
-
+            # second section
+            # third section
+            "tagline", "twitter", "personal_homepage", "location",
+            "job_title", "company", "company_homepage", "bio",
+            # fourth section
             "visibility",
         )
-
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+
         self.helper.layout = Layout(
-            HTML("<h3>Personal information</h3>"),
+            HTML("<h1>Personal information</h1>"),
             Div(
                 Div('first_name', css_class='col-md-6'),
                 Div('last_name', css_class='col-md-6'),
@@ -317,8 +331,17 @@ class ProfileSettingsForm(forms.ModelForm):
                 Div('is_minor', css_class='col-md-6'),
                 css_class='row'
             ),
-            HTML("<h3>Profile photo</h3>"),
-            HTML("<h3>Profile information</h3>"),
+            HTML("<h1>Profile picture</h1>"),
+            Div(
+                HTML(
+                    render_to_string('ep19/bs/user_panel/forms/profile_settings_picture.html', context={
+                        'selected_opt': 'x',
+                        'profile_image_url': self.instance.p3_profile.profile_image_url(),
+                    }),
+                ),
+                css_class='row',
+            ),
+            HTML("<h1>Profile information</h1>"),
             Div(
                 Div('tagline', css_class='col-md-12'),
                 css_class='row'
@@ -339,12 +362,12 @@ class ProfileSettingsForm(forms.ModelForm):
                 Div('bio', css_class='col-md-12'),
                 css_class='row'
             ),
-            HTML("<h3>Profile page visibility</h3>"),
+            HTML("<h1>Profile page visibility</h1>"),
             Div(
                 Div('visibility', css_class='col-md-4'),
                 css_class="row",
             ),
-            ButtonHolder(Submit("update", "Update", css_class="btn btn-primary")),
+            ButtonHolder(Submit("update", "Update", css_class="btn btn-lg btn-primary")),
         )
 
     def clean_email(self):
