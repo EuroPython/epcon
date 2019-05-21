@@ -366,6 +366,7 @@ def export_invoices_for_payment_reconciliation(start_date, end_date=None):
             'gross': str(invoice.price),
             'order': invoice.order.code,
             'stripe': invoice.order.stripe_charge_id,
+            'date': invoice.emit_date,
         }
 
         yield output

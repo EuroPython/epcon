@@ -747,6 +747,7 @@ def test_export_invoice_accounting_json(client):
     assert decimal.Decimal(data[0]["gross"]) == invoice1.price
     assert data[0]["order"] == invoice1.order.code
     assert data[0]["stripe"] == invoice1.order.stripe_charge_id
+    assert data[0]["date"] == str(invoice1.emit_date)
 
 
 def test_reissue_invoice(admin_client):
