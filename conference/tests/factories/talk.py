@@ -48,6 +48,12 @@ class TalkFactory(factory.django.DjangoModelFactory):
     )
     language = factory.Iterator(TALK_LANGUAGES, getter=lambda x: x[0])
 
+    @factory.post_generation
+    def abstract(self, create, extracted, **kwargs):
+        self.setAbstract(
+            factory.Faker("sentence", nb_words=30, variable_nb_words=True)
+        )
+
 
 class TalkSpeakerFactory(factory.django.DjangoModelFactory):
 

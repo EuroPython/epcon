@@ -88,7 +88,6 @@ class Command(BaseCommand):
         for user in alice, bob, cesar:
             speaker, _ = Speaker.objects.get_or_create(user=user.user)
             talk = TalkFactory(status=TALK_STATUS.proposed)
-            talk.setAbstract("some abstract")
             talk.created_by = user.user
             talk.save()
             add_speaker_to_talk(speaker, talk)
@@ -103,7 +102,6 @@ class Command(BaseCommand):
         for i in range(20):
             # Make additional proposals – useful for talk voting
             talk = TalkFactory(status=TALK_STATUS.proposed)
-            talk.setAbstract("Lorem ipsum abstract")
             talk.created_by = alice.user
             talk.save()
             add_speaker_to_talk(speaker, talk)
@@ -111,7 +109,6 @@ class Command(BaseCommand):
 
         # Make proposals with multiple speakers
         shared_talk = TalkFactory(status=TALK_STATUS.proposed, created_by=bob.user)
-        shared_talk.setAbstract(factory.Faker("sentence", nb_words=40, variable_nb_words=True).generate({}))
         shared_talk.save()
         add_speaker_to_talk(bob.user.speaker, shared_talk)
         add_speaker_to_talk(cesar.user.speaker, shared_talk)
