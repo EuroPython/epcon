@@ -27,36 +27,7 @@ class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
 @speaker_access
 @render_to_template('conference/speaker.html')
 def speaker(request, slug, speaker, talks, full_access, speaker_form=SpeakerForm):
-    if request.method == 'POST':
-        if not full_access:
-            return http.HttpResponseBadRequest()
-        form = speaker_form(data=request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            speaker.activity = data['activity']
-            speaker.activity_homepage = data['activity_homepage']
-            speaker.industry = data['industry']
-            speaker.company = data['company']
-            speaker.company_homepage = data['company_homepage']
-            speaker.save()
-            speaker.setBio(data['bio'])
-            return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))
-    else:
-        form = speaker_form(initial={
-            'activity': speaker.activity,
-            'activity_homepage': speaker.activity_homepage,
-            'industry': speaker.industry,
-            'company': speaker.company,
-            'company_homepage': speaker.company_homepage,
-            'bio': getattr(speaker.getBio(), 'body', ''),
-        })
-    return {
-        'form': form,
-        'full_access': full_access,
-        'speaker': speaker,
-        'talks': talks,
-        'accepted': talks.filter(status='accepted'),
-    }
+    return redirect('speakers:speaker', speaker_slug=slug)
 
 
 @speaker_access
