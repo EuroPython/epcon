@@ -27,6 +27,7 @@ from conference.news import news_list
 from conference.talk_voting import urlpatterns as talk_voting_urls
 from conference.user_panel import urlpatterns as user_panel_urls
 from conference.talks import urlpatterns as talks_urls
+from conference.profiles import urlpatterns as profiles_urls
 
 admin.autodiscover()
 admin.site.index_template = 'p3/admin/index.html'
@@ -41,6 +42,7 @@ urlpatterns = [
     url(r'^accounts/', include(accounts_urls, namespace="accounts")),
     url(r'^cfp/', include(cfp_urls, namespace="cfp")),
     url(r'^talks/', include(talks_urls, namespace="talks")),
+    url(r'^profiles/', include(profiles_urls, namespace="profiles")),
     url(r'^talk-voting/', include(talk_voting_urls, namespace="talk_voting")),
     url(r'^news/', news_list, name="news"),
     url(r'^accounts/', include('assopy.urls')),
