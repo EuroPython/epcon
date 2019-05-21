@@ -53,13 +53,13 @@ def profile_page_visible(profile, for_user):
     """
     conference = Conference.objects.current()
 
-    if profile.pk == for_user.attendeeprofile.pk:
-        return True
-
     if profile.visibility == ATTENDEEPROFILE_VISIBILITY.PUBLIC:
         return True
 
     if for_user.is_authenticated:
+        if profile.pk == for_user.attendeeprofile.pk:
+            return True
+
         if (
             conference.voting()
             and is_user_allowed_to_vote(for_user)
