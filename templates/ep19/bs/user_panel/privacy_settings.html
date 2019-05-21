@@ -13,7 +13,7 @@
 {% block user_content %}
 <div class='row' style='margin-top: 3em'>
 
-    <div class="col-md-8">
+    <div class="col-md-12">
         <h1>Privacy settings</h1>
         <h5>
             We respect your privacy. We never share your personal data with anyone. Have a look at our
@@ -26,8 +26,6 @@
             {% csrf_token %}
             {% crispy privacy_form %}
         </form>
-    </div>
-    <div class="col-md-4">
     </div>
 </div>
 {% endblock %}

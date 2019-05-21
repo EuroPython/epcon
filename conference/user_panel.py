@@ -6,6 +6,7 @@ from crispy_forms.layout import (
     Div,
     Layout,
     Submit,
+    HTML,
 )
 from django import forms
 from django.conf.urls import url
@@ -28,12 +29,15 @@ from assopy.models import (
     Order,
 )
 from conference.accounts import get_or_create_attendee_profile_for_new_user
+from conference.cfp import AddSpeakerToTalkForm
 from conference.models import (
+    AttendeeProfile,
     TALK_STATUS,
     Conference,
     Speaker,
     TalkSpeaker,
     Ticket,
+    ATTENDEEPROFILE_VISIBILITY,
 )
 from conference.tickets import (
     assign_ticket_to_user,
@@ -139,17 +143,30 @@ def privacy_settings(request):
     attendee_profile = get_or_create_attendee_profile_for_new_user(user=request.user)
     p3_profile = attendee_profile.p3_profile
 
+    privacy_form = ProfileSpamControlForm(instance=p3_profile)
+
     if request.method == "POST":
         privacy_form = ProfileSpamControlForm(instance=p3_profile, data=request.POST)
         if privacy_form.is_valid():
             privacy_form.save()
-    else:
-        privacy_form = ProfileSpamControlForm(instance=p3_profile)
 
     return TemplateResponse(
         request,
         "ep19/bs/user_panel/privacy_settings.html",
         {"privacy_form": privacy_form},
+    )
+
+
+@login_required
+def profile_settings(request):
+    attendee_profile = get_or_create_attendee_profile_for_new_user(user=request.user)
+
+    profile_form = ProfileSettingsForm(instance=attendee_profile)
+
+    return TemplateResponse(
+        request,
+        "ep19/bs/user_panel/profile_settings.html",
+        {"profile_form": profile_form}
     )
 
 
@@ -243,6 +260,103 @@ class ProfileSpamControlForm(forms.ModelForm):
         )
 
 
+class ProfileSettingsForm(forms.ModelForm):
+    # TODO move this form and AddSpeakerToTalkForm forms to a separate file
+    #  and define a common ancestor as they share some of the fields
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30)
+    email = forms.EmailField()
+    phone = AddSpeakerToTalkForm.base_fields["phone"]
+    is_minor = AddSpeakerToTalkForm.base_fields["is_minor"]
+
+    job_title = AddSpeakerToTalkForm.base_fields["job_title"]
+    company = AddSpeakerToTalkForm.base_fields["company"]
+    company_homepage = AddSpeakerToTalkForm.base_fields["company_homepage"]
+
+    bio = forms.CharField(
+        label='Compact biography',
+        help_text='Short biography (one or two paragraphs). Do not paste your CV',
+        widget=forms.Textarea,
+        required=False,)
+    tagline = forms.CharField(
+        label='Tagline',
+        help_text='Describe yourself in one line.',
+        required=False,
+    )
+    twitter = forms.CharField(max_length=80, required=False)
+    visibility = forms.ChoiceField(label='', choices=ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect, required=False)
+
+    class Meta:
+        model = AttendeeProfile
+        fields = (
+            "first_name", "last_name", "is_minor", "phone", "email",
+            "tagline", "twitter", "personal_homepage",
+            "job_title", "company", "company_homepage",
+            "location", "bio",
+
+            "visibility",
+        )
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            HTML("<h3>Personal information</h3>"),
+            Div(
+                Div('first_name', css_class='col-md-6'),
+                Div('last_name', css_class='col-md-6'),
+                css_class='row'
+            ),
+            Div(
+                Div('email', css_class='col-md-6'),
+                Div('phone', css_class='col-md-6'),
+                css_class='row'
+            ),
+            Div(
+                Div('is_minor', css_class='col-md-6'),
+                css_class='row'
+            ),
+            HTML("<h3>Profile photo</h3>"),
+            HTML("<h3>Profile information</h3>"),
+            Div(
+                Div('tagline', css_class='col-md-12'),
+                css_class='row'
+            ),
+            Div(
+                Div('personal_homepage', css_class='col-md-4'),
+                Div('twitter', css_class='col-md-4'),
+                Div('location', css_class='col-md-4'),
+                css_class='row'
+            ),
+            Div(
+                Div('job_title', css_class='col-md-4'),
+                Div('company', css_class='col-md-4'),
+                Div('company_homepage', css_class='col-md-4'),
+                css_class='row'
+            ),
+            Div(
+                Div('bio', css_class='col-md-12'),
+                css_class='row'
+            ),
+            HTML("<h3>Profile page visibility</h3>"),
+            Div(
+                Div('visibility', css_class='col-md-4'),
+                css_class="row",
+            ),
+            ButtonHolder(Submit("update", "Update", css_class="btn btn-primary")),
+        )
+
+    def clean_email(self):
+        value = self.cleaned_data['email'].strip()
+        user = self.instance.user
+
+        if value != user.email and User.objects.filter(email__iexact=value).exists():
+            raise forms.ValidationError('Email already registered')
+
+        return value
+
+
 def get_tickets_for_current_conference(user):
     conference = Conference.objects.current()
     return Ticket.objects.filter(
@@ -289,7 +403,8 @@ urlpatterns = [
     url(r"^$", user_dashboard, name="dashboard"),
     url(r"^manage-ticket/(?P<ticket_id>\d+)/$", manage_ticket, name="manage_ticket"),
     url(r"^assign-ticket/(?P<ticket_id>\d+)/$", assign_ticket, name="assign_ticket"),
-    url(r"^privacy_settings/$", privacy_settings, name="privacy_settings"),
+    url(r"^privacy-settings/$", privacy_settings, name="privacy_settings"),
+    url(r"^profile-settings/$", profile_settings, name="profile_settings"),
     # Password change, using default django views.
     # TODO(artcz): Those are Removed in Django21 and we should replcethem with
     # class based PasswordChange{,Done}View
