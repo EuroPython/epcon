@@ -189,13 +189,13 @@ def speakers(conference, filter_types=None):
     speaker_dict = {}
     for talk in talks:
         for speaker in talk.get_all_speakers():
-            name = speaker_name(speaker)
+            name = speaker.user.assopy_user.name()
             if not name:
                 continue
             if name.lower() in ('to be announced', 'tobey announced'):
                 # Skip place holder names
                 continue
-            speaker_dict[speaker_name(speaker)] = speaker
+            speaker_dict[name] = speaker
 
     # Prepare list
     speaker_list = list(speaker_dict.items())
