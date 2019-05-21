@@ -1,5 +1,11 @@
 {% extends "ep19/bs/base.html" %}
 
+{% load meta %}
+
+{% block meta %}
+{% render_meta title=talk.title %}
+{% endblock meta %}
+
 {% block content %}
 <style type="text/css">
 .speakers {

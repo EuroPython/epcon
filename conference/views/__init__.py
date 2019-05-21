@@ -12,13 +12,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from django.template.response import TemplateResponse
-from django.template.loader import render_to_string
 
 from common.decorators import render_to_json
 from common.decorators import render_to_template
 from conference import dataaccess, models, settings, utils
 from conference.decorators import speaker_access, talk_access, profile_access
-from conference.forms import AttendeeLinkDescriptionForm, OptionForm, SpeakerForm, TalkForm
+from conference.forms import AttendeeLinkDescriptionForm, SpeakerForm, TalkForm
 
 
 class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
@@ -69,48 +68,8 @@ def speaker_xml(request, slug, speaker, full_access, talks):
     }
 
 
-@render_to_template('conference/talk.html')
-@talk_access
-def talk(request, slug, talk, full_access, talk_form=None):
-    conf = models.Conference.objects.current()
-    if talk_form is None:
-        talk_form = utils.dotted_import(settings.FORMS['AdditionalPaperSubmission'])
-    if request.method == 'POST':
-        if not full_access:
-            return http.HttpResponseBadRequest()
-        if conf.cfp():
-            data = request.POST
-        else:
-            data = request.POST.copy()
-            data['level'] = talk.level
-            data['duration'] = talk.duration
-            data['language'] = talk.language
-            data['type'] = talk.type
-            data['tags'] = ','.join([ x.name for x in talk.tags.all() ])
-        form = talk_form(data=data, files=request.FILES, instance=talk)
-        if not conf.cfp() and not data['tags'] and 'tags' in form.fields:
-            # The CFP and 'closed and we are editing a talk without tags,
-            # it is not' normally possible since the tags are required;
-            # we're probably editing a talk inserted through admin, and if that
-            # 's the case does not make sense to derail the form validation.
-            form.fields['tags'].required = False
-        if form.is_valid():
-            talk = form.save()
-            messages.info(request, 'Your talk has been modified.')
-            return HttpResponseRedirectSeeOther(reverse('conference-talk', kwargs={'slug': talk.slug}))
-    else:
-        form = talk_form(instance=talk)
-
-    return {
-        'form': form,
-        'full_access': full_access,
-        'social_image_url': request.build_absolute_uri(
-            reverse("conference-talk-social-card-png", kwargs={'slug': talk.slug})
-        ),
-        'talk': talk,
-        'cfp': conf.cfp(),
-        'voting': conf.voting(),
-    }
+def talk(request, slug):
+    return redirect('talks:talk', permanent=True, talk_slug=slug)
 
 
 @render_to_template('conference/talk_preview.html')
@@ -559,27 +518,9 @@ def voting(request):
         return render(request, tpl, ctx)
 
 
-@render_to_template('conference/profile.html')
 @profile_access
 def user_profile(request, slug, profile=None, full_access=False):
-    fc = utils.dotted_import(settings.FORMS['Profile'])
-    if request.method == 'POST':
-        if not full_access:
-            return http.HttpResponseForbidden()
-        form = fc(instance=profile, data=request.POST, files=request.FILES)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirectSeeOther(reverse('conference-profile', kwargs={'slug': profile.slug}))
-    else:
-        if full_access:
-            form = fc(instance=profile)
-        else:
-            form = None
-    return {
-        'form': form,
-        'full_access': full_access,
-        'profile': profile,
-    }
+    return redirect('profiles:profile', profile_slug=slug)
 
 
 @login_required

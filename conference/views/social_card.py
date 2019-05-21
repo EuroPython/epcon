@@ -1,12 +1,15 @@
 from django import http
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 
-from conference.decorators import talk_access
 from weasyprint import HTML
 
+from conference.models import Talk
 
-@talk_access
-def talk_social_card_png(request, slug, talk, full_access):
+
+def talk_social_card_png(request, slug):
+    talk = get_object_or_404(Talk, slug=slug)
+
     subtitle = ", ".join(
         [
             speaker.user.assopy_user.name()

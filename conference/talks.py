@@ -1,13 +1,11 @@
 from django.conf.urls import url
-from django.contrib.admin.views.decorators import staff_member_required
+from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
 from conference.models import Talk
 
 
-# Temporary
-@staff_member_required
 def talk(request, talk_slug):
     """
     Display Talk
@@ -18,7 +16,14 @@ def talk(request, talk_slug):
     return TemplateResponse(
         request,
         "ep19/bs/talks/talk.html",
-        {"title": talk.title, "talk": talk, "talk_as_dict": talk_as_dict},
+        {
+            "title": talk.title,
+            "talk": talk,
+            "talk_as_dict": talk_as_dict,
+            "social_image_url": request.build_absolute_uri(
+                reverse("conference-talk-social-card-png", kwargs={"slug": talk.slug})
+            ),
+        },
     )
 
 
@@ -32,7 +37,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
         "type_display": talk.get_type_display(),
         "subtitle": talk.sub_title,
         "abstract_short": talk.abstract_short,
-        "abstract": talk.getAbstract().body,
+        "abstract": talk.get_abstract(),
         "abstract_extra": talk.abstract_extra,
         "python_level": talk.get_level_display(),
         "domain_level": talk.get_domain_level_display(),
