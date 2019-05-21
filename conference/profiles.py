@@ -12,18 +12,18 @@ from conference.models import (
 from conference.talk_voting import is_user_allowed_to_vote
 
 
-def speaker(request, speaker_slug):
+def profile(request, profile_slug):
     """
-    Display speaker details.
+    Display profile details.
     """
-    speaker_profile = get_object_or_404(AttendeeProfile, slug=speaker_slug)
+    speaker_profile = get_object_or_404(AttendeeProfile, slug=profile_slug)
 
-    if not speaker_page_visible(profile=speaker_profile, for_user=request.user):
-        return TemplateResponse(request, "ep19/bs/speakers/speaker_unavailable.html")
+    if not profile_page_visible(profile=speaker_profile, for_user=request.user):
+        return TemplateResponse(request, "ep19/bs/profiles/profile_unavailable.html")
 
     return TemplateResponse(
         request,
-        "ep19/bs/speakers/speaker.html",
+        "ep19/bs/profiles/profile.html",
         {
             "speaker_name": speaker_profile.user.assopy_user.name(),
             "tagline": speaker_profile.p3_profile.tagline,
@@ -42,7 +42,7 @@ def speaker(request, speaker_slug):
     )
 
 
-def speaker_page_visible(profile, for_user):
+def profile_page_visible(profile, for_user):
     """
     Page should be accessible if:
     * voting is open and current user can vote
@@ -59,8 +59,8 @@ def speaker_page_visible(profile, for_user):
         if (
             conference.voting()
             and is_user_allowed_to_vote(for_user)
-            and Talk.objects.accepted()
-            .proposed(conference=conference.code, speakers__user__in=[profile.user])
+            and Talk.objects.proposed()
+            .filter(conference=conference.code, speakers__user__in=[profile.user])
             .exists()
         ):
             return True
@@ -78,4 +78,4 @@ def speaker_page_visible(profile, for_user):
     return False
 
 
-urlpatterns = [url(r"^(?P<speaker_slug>[\w-]+)/$", speaker, name="speaker")]
+urlpatterns = [url(r"^(?P<profile_slug>[\w-]+)/$", profile, name="profile")]

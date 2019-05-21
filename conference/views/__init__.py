@@ -27,7 +27,7 @@ class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
 @speaker_access
 @render_to_template('conference/speaker.html')
 def speaker(request, slug, speaker, talks, full_access, speaker_form=SpeakerForm):
-    return redirect('speakers:speaker', speaker_slug=slug)
+    return redirect('profiles:profile', speaker_slug=slug)
 
 
 @speaker_access
