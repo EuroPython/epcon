@@ -45,12 +45,16 @@ def profile(request, profile_slug):
 def profile_page_visible(profile, for_user):
     """
     Page should be accessible if:
+    * trying to access own profile
     * voting is open and current user can vote
     * or profile has an accepted talk in current conference
     * or the profile is set as public
     * or profile is set as visible to participants and current user is authenticated
     """
     conference = Conference.objects.current()
+
+    if profile.pk == for_user.attendeeprofile.pk:
+        return True
 
     if profile.visibility == ATTENDEEPROFILE_VISIBILITY.PUBLIC:
         return True
