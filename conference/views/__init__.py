@@ -27,7 +27,36 @@ class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
 @speaker_access
 @render_to_template('conference/speaker.html')
 def speaker(request, slug, speaker, talks, full_access, speaker_form=SpeakerForm):
-    return redirect('profiles:profile', speaker_slug=slug)
+    if request.method == 'POST':
+        if not full_access:
+            return http.HttpResponseBadRequest()
+        form = speaker_form(data=request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            speaker.activity = data['activity']
+            speaker.activity_homepage = data['activity_homepage']
+            speaker.industry = data['industry']
+            speaker.company = data['company']
+            speaker.company_homepage = data['company_homepage']
+            speaker.save()
+            speaker.setBio(data['bio'])
+            return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))
+    else:
+        form = speaker_form(initial={
+            'activity': speaker.activity,
+            'activity_homepage': speaker.activity_homepage,
+            'industry': speaker.industry,
+            'company': speaker.company,
+            'company_homepage': speaker.company_homepage,
+            'bio': getattr(speaker.getBio(), 'body', ''),
+        })
+    return {
+        'form': form,
+        'full_access': full_access,
+        'speaker': speaker,
+        'talks': talks,
+        'accepted': talks.filter(status='accepted'),
+    }
 
 
 @speaker_access
@@ -489,27 +518,9 @@ def voting(request):
         return render(request, tpl, ctx)
 
 
-@render_to_template('conference/profile.html')
 @profile_access
 def user_profile(request, slug, profile=None, full_access=False):
-    fc = utils.dotted_import(settings.FORMS['Profile'])
-    if request.method == 'POST':
-        if not full_access:
-            return http.HttpResponseForbidden()
-        form = fc(instance=profile, data=request.POST, files=request.FILES)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirectSeeOther(reverse('conference-profile', kwargs={'slug': profile.slug}))
-    else:
-        if full_access:
-            form = fc(instance=profile)
-        else:
-            form = None
-    return {
-        'form': form,
-        'full_access': full_access,
-        'profile': profile,
-    }
+    return redirect('profiles:profile', profile_slug=slug)
 
 
 @login_required
