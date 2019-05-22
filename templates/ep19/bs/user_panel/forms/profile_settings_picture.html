@@ -1,0 +1,58 @@
+{% load crispy_forms_tags %}
+
+<div class="col-md-8">
+    <fieldset>
+        <label class="radio row">
+            <div class="col-md-6">
+                <input type="radio" name="picture_options" value="{{ picture_choices.none }}"{% if selected_picture_option == picture_choices.none %} checked="checked"{% endif %}> Do not show any picture
+            </div>
+        </label>
+        <label class="radio row">
+            <div class="col-md-6">
+                <input type="radio" name="picture_options" value="{{ picture_choices.gravatar }}"{% if selected_picture_option == picture_choices.gravatar %} checked="checked"{% endif %}> Use my Gravatar
+            </div>
+        </label>
+        <label class="radio row">
+            <div class="col-md-6 big-line">
+                <input type="radio" name="picture_options" value="{{ picture_choices.url }}"{% if selected_picture_option == picture_choices.url %} checked="checked"{% endif %}> Use this web address:
+            </div>
+            <div class="col-md-6">
+                <div id="div_id_image_url" class="form-group">
+                    <label for="id_image_url" class="col-form-label ">Image url</label>
+                    <div class="">
+                        <input type="url" name="image_url" class="urlinput form-control" id="id_image_url">
+                    </div>
+                </div>
+            </div>
+        </label>
+        <label class="radio row">
+            <div class="col-md-6 big-line">
+                <input type="radio" name="picture_options" value="{{ picture_choices.file }}"{% if selected_picture_option == picture_choices.file %} checked="checked"{% endif %}> Use this picture:
+            </div>
+            <div class="col-md-6">
+                <div id="div_id_image" class="form-group">
+                    <label for="id_image" class="col-form-label ">Image</label>
+                    <div class="">
+                        <input type="file" name="image" class="fileinput fileUpload" id="id_image">
+                    </div>
+                </div>
+            </div>
+        </label>
+    </fieldset>
+</div>
+
+<div class="col-md-4">
+   <img class="speaker_avatar" style="margin-left: 40px" src="{{ profile_image_url }}" alt="Profile picture"/>
+</div>
+
+<style>
+    div.big-line {
+        line-height: 90px;
+    }
+
+    @media (max-width: 768px) {
+        div.big-line {
+            line-height: initial;
+        }
+    }
+</style>

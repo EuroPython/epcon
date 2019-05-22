@@ -33,9 +33,10 @@ def profile(request, profile_slug):
             "company_website": speaker_profile.company_homepage,
             "job_title": speaker_profile.job_title,
             "twitter": speaker_profile.p3_profile.twitter,
-            "bio": speaker_profile.getBio().body,
-            "talks": speaker_profile.user.speaker.talks().filter(
-                conference=settings.CONFERENCE_CONFERENCE
+            "bio": getattr(speaker_profile.getBio(), "body", ""),
+            "talks": Talk.objects.accepted().filter(
+                conference=settings.CONFERENCE_CONFERENCE,
+                speakers__user__in=[speaker_profile.user],
             ),
             "speaker_avatar": speaker_profile.p3_profile.public_profile_image_url,
         },

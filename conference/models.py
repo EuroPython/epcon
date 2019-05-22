@@ -353,9 +353,9 @@ class AttendeeProfileManager(models.Manager):
 
 
 ATTENDEEPROFILE_VISIBILITY = Choices(
-    ('x', "PRIVATE", 'Private (disabled)'),
-    ('m', "PARTICIPANTS_ONLY", 'Participants only'),
-    ('p', "PUBLIC", 'Public'),
+    ('p', "PUBLIC", 'Publicly available'),
+    ('m', "PARTICIPANTS_ONLY", 'Visible to EuroPython attendees'),
+    ('x', "PRIVATE", 'Visible only to you'),
 )
 
 

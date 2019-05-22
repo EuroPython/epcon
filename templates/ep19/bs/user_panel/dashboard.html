@@ -12,8 +12,10 @@
         {% if user.is_staff %}
         <a href='{% url "admin:index" %}' class='btn btn-outline-warning'>Admin panel</a>
         {% endif %}
+        <a href='{% url "user_panel:profile_settings" %}' class='btn btn-outline-info'>Profile settings</a>
         <a href='{% url "user_panel:password_change" %}' class='btn btn-outline-info'>Change your password</a>
         <a href='{% url "user_panel:privacy_settings" %}' class='btn btn-outline-info'>Privacy settings</a>
+        <a href='{% url "profiles:profile" profile_slug=user.attendeeprofile.slug %}' class='btn btn-outline-info'>Your public profile</a>
         <a href='{% url "accounts:logout" %}?next=/' class='btn btn-outline-danger' style='float: right'>Log out</a>
     </div>
 </div>
