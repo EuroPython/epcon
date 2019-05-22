@@ -7,6 +7,7 @@ from crispy_forms.layout import (
     Layout,
     Submit,
     HTML,
+    Field,
 )
 from django import forms
 from django.conf.urls import url
@@ -287,14 +288,14 @@ class ProfileSettingsForm(forms.ModelForm):
     twitter = forms.CharField(max_length=80, required=False)
     visibility = forms.ChoiceField(label='', choices=ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect, required=False)
 
+    # The following fields are rendered manually, not using crispy forms, in
+    # order to have more control over their layout.
     picture_options = forms.ChoiceField(label='', choices=(
         ('x', 'Do not show any picture'),
         ('g', 'Use my Gravatar'),
         ('u', 'Use this url'),
         ('f', 'Use this picture'),
     ), required=False, widget=forms.RadioSelect)
-
-    image_gravatar = forms.BooleanField(required=False, widget=forms.HiddenInput)
     image_url = forms.URLField(required=False)
     image = forms.FileField(required=False, widget=forms.FileInput)
 
@@ -304,6 +305,7 @@ class ProfileSettingsForm(forms.ModelForm):
             # first section
             "first_name", "last_name", "is_minor", "phone", "email",
             # second section
+            'picture_options', 'image_gravatar', 'image_url', 'image',
             # third section
             "tagline", "twitter", "personal_homepage", "location",
             "job_title", "company", "company_homepage", "bio",
@@ -337,6 +339,7 @@ class ProfileSettingsForm(forms.ModelForm):
                     render_to_string('ep19/bs/user_panel/forms/profile_settings_picture.html', context={
                         'selected_opt': 'x',
                         'profile_image_url': self.instance.p3_profile.profile_image_url(),
+                        'image_url_field': Field('image_url'),
                     }),
                 ),
                 css_class='row',
@@ -363,6 +366,9 @@ class ProfileSettingsForm(forms.ModelForm):
                 css_class='row'
             ),
             HTML("<h1>Profile page visibility</h1>"),
+            HTML("<h5>Note that if you are giving a talk or training at this year's conference,"
+                 " this setting will not have any effect as <strong>speaker pages are public by default.</strong></h5>"),
+            HTML("<h5>You can still set your preferences for the following years.</h5>"),
             Div(
                 Div('visibility', css_class='col-md-4'),
                 css_class="row",
