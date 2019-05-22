@@ -75,20 +75,25 @@ def manage_ticket(request, ticket_id):
     if ticket.user != request.user:
         return HttpResponse("Can't do", status=403)
 
-    ticket_configuration, _ = TicketConference.objects.get_or_create(ticket=ticket)
+    ticket_configuration, _ = TicketConference.objects.get_or_create(
+        ticket=ticket,
+        defaults={'name': ticket.name})
 
-    ticket_configuration_form = TicketConfigurationForm(
+    ticket_configuration_form = TicketConferenceConfigForm(
         instance=ticket_configuration, initial={"name": request.user.assopy_user.name()}
     )
 
     if request.method == "POST":
-        ticket_configuration_form = TicketConfigurationForm(
+        ticket_configuration_form = TicketConferenceConfigForm(
             request.POST, instance=ticket_configuration
         )
 
         if ticket_configuration_form.is_valid():
             with transaction.atomic():
                 ticket_configuration_form.save()
+                # copy name
+                ticket.name = ticket_configuration.name
+                ticket.save()
                 messages.success(request, "Ticket configured!")
                 return redirect("user_panel:dashboard")
 
@@ -174,7 +179,7 @@ class CommaStringMultipleChoiceField(forms.MultipleChoiceField):
         return ",".join([val.rstrip().lstrip() for val in value])
 
 
-class TicketConfigurationForm(forms.ModelForm):
+class TicketConferenceConfigForm(forms.ModelForm):
 
     days = CommaStringMultipleChoiceField(
         label="Days of attendance",

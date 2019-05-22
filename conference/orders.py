@@ -87,7 +87,8 @@ def create_order(
                 # This is a relict of the past we should at some point reverse
                 # the relationship and create tickets from orderitems, not the
                 # other way around.
-                ticket = Ticket.objects.create(user=for_user, fare=fare)
+                ticket = Ticket.objects.create(user=for_user, fare=fare,
+                                               name=for_user.assopy_user.name())
 
                 OrderItem.objects.create(
                     order=order,

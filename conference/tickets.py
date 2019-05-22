@@ -7,11 +7,12 @@ from conference.fares import FARE_CODE_REGEXES, FARE_CODE_VARIANTS
 
 def assign_ticket_to_user(ticket, user):
     ticket.user = user
+    ticket.name = user.assopy_user.name()
     ticket.save()
     try:
         ticket.p3_conference
     except TicketConference.DoesNotExist:
-        TicketConference.objects.create(ticket=ticket)
+        TicketConference.objects.create(ticket=ticket, name=ticket.name)
         ticket.refresh_from_db()
 
     ticket.p3_conference.assigned_to = user.email
