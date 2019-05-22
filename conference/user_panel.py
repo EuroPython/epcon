@@ -1,13 +1,7 @@
 from datetime import timedelta
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import (
-    ButtonHolder,
-    Div,
-    Layout,
-    Submit,
-    HTML,
-)
+from crispy_forms.layout import ButtonHolder, Div, Layout, Submit, HTML
 from phonenumber_field.formfields import PhoneNumberField
 
 from django import forms
@@ -20,17 +14,11 @@ from django.core.urlresolvers import reverse_lazy
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import (
-    get_object_or_404,
-    redirect,
-)
+from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 
-from assopy.models import (
-    Invoice,
-    Order,
-)
+from assopy.models import Invoice, Order
 from conference.accounts import get_or_create_attendee_profile_for_new_user
 from conference.cfp import AddSpeakerToTalkForm
 from conference.models import (
@@ -42,14 +30,8 @@ from conference.models import (
     Ticket,
     ATTENDEEPROFILE_VISIBILITY,
 )
-from conference.tickets import (
-    assign_ticket_to_user,
-    reset_ticket_settings,
-)
-from p3.models import (
-    P3Profile,
-    TicketConference,
-)
+from conference.tickets import assign_ticket_to_user, reset_ticket_settings
+from p3.models import P3Profile, TicketConference
 
 
 @login_required
@@ -167,7 +149,9 @@ def profile_settings(request):
     profile_form = ProfileSettingsForm(instance=attendee_profile)
 
     if request.method == "POST":
-        profile_form = ProfileSettingsForm(instance=attendee_profile, data=request.POST, files=request.FILES)
+        profile_form = ProfileSettingsForm(
+            instance=attendee_profile, data=request.POST, files=request.FILES
+        )
 
         if profile_form.is_valid():
             profile_form.save()
@@ -177,7 +161,7 @@ def profile_settings(request):
     return TemplateResponse(
         request,
         "ep19/bs/user_panel/profile_settings.html",
-        {"profile_form": profile_form}
+        {"profile_form": profile_form},
     )
 
 
@@ -296,26 +280,35 @@ class ProfileSettingsForm(forms.ModelForm):
     company_homepage = AddSpeakerToTalkForm.base_fields["company_homepage"]
 
     bio = forms.CharField(
-        label='Compact biography',
-        help_text='Short biography (one or two paragraphs). Do not paste your CV',
+        label="Compact biography",
+        help_text="Short biography (one or two paragraphs). Do not paste your CV",
         widget=forms.Textarea,
-        required=False,)
-    tagline = forms.CharField(
-        label='Tagline',
-        help_text='Describe yourself in one line.',
         required=False,
     )
+    tagline = forms.CharField(
+        label="Tagline", help_text="Describe yourself in one line.", required=False
+    )
     twitter = forms.CharField(max_length=80, required=False)
-    visibility = forms.ChoiceField(label='', choices=ATTENDEEPROFILE_VISIBILITY, widget=forms.RadioSelect, required=False)
+    visibility = forms.ChoiceField(
+        label="",
+        choices=ATTENDEEPROFILE_VISIBILITY,
+        widget=forms.RadioSelect,
+        required=False,
+    )
 
     # The following fields are rendered manually, not using crispy forms, in
     # order to have more control over their layout.
-    picture_options = forms.ChoiceField(label='', choices=(
-        ('none', 'Do not show any picture'),
-        ('gravatar', 'Use my Gravatar'),
-        ('url', 'Use this url'),
-        ('file', 'Use this picture'),
-    ), required=False, widget=forms.RadioSelect)
+    picture_options = forms.ChoiceField(
+        label="",
+        choices=(
+            ("none", "Do not show any picture"),
+            ("gravatar", "Use my Gravatar"),
+            ("url", "Use this url"),
+            ("file", "Use this picture"),
+        ),
+        required=False,
+        widget=forms.RadioSelect,
+    )
     image_url = forms.URLField(required=False)
     image = forms.FileField(required=False, widget=forms.FileInput)
 
@@ -323,12 +316,24 @@ class ProfileSettingsForm(forms.ModelForm):
         model = AttendeeProfile
         fields = (
             # first section
-            "first_name", "last_name", "is_minor", "phone", "email",
+            "first_name",
+            "last_name",
+            "is_minor",
+            "phone",
+            "email",
             # second section
-            'picture_options', 'image_url', 'image',
+            "picture_options",
+            "image_url",
+            "image",
             # third section
-            "tagline", "twitter", "personal_homepage", "location",
-            "job_title", "company", "company_homepage", "bio",
+            "tagline",
+            "twitter",
+            "personal_homepage",
+            "location",
+            "job_title",
+            "company",
+            "company_homepage",
+            "bio",
             # fourth section
             "visibility",
         )
@@ -337,114 +342,109 @@ class ProfileSettingsForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Set the initial values for fields that are not part of AttendeeProfile
         user = self.instance.user
-        self.fields['first_name'].initial = user.first_name
-        self.fields['last_name'].initial = user.last_name
-        self.fields['email'].initial = user.email
+        self.fields["first_name"].initial = user.first_name
+        self.fields["last_name"].initial = user.last_name
+        self.fields["email"].initial = user.email
 
         p3_profile = self.instance.p3_profile
-        self.fields['tagline'].initial = p3_profile.tagline
-        self.fields['twitter'].initial = p3_profile.twitter
+        self.fields["tagline"].initial = p3_profile.tagline
+        self.fields["twitter"].initial = p3_profile.twitter
 
-        self.fields['bio'].initial = getattr(self.instance.getBio(), 'body', '')
+        self.fields["bio"].initial = getattr(self.instance.getBio(), "body", "")
 
         # Determine the value of the image fields
         image_url = self.instance.p3_profile.profile_image_url()
         if self.instance.image:
-            selected_image_option = 'file'
+            selected_image_option = "file"
         elif p3_profile.image_url:
-            selected_image_option = 'url'
+            selected_image_option = "url"
         elif p3_profile.image_gravatar:
-            selected_image_option = 'gravatar'
+            selected_image_option = "gravatar"
         else:
-            selected_image_option = 'none'
+            selected_image_option = "none"
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
             HTML("<h1>Personal information</h1>"),
             Div(
-                Div('first_name', css_class='col-md-6'),
-                Div('last_name', css_class='col-md-6'),
-                css_class='row'
+                Div("first_name", css_class="col-md-6"),
+                Div("last_name", css_class="col-md-6"),
+                css_class="row",
             ),
             Div(
-                Div('email', css_class='col-md-6'),
-                Div('phone', css_class='col-md-6'),
-                css_class='row'
+                Div("email", css_class="col-md-6"),
+                Div("phone", css_class="col-md-6"),
+                css_class="row",
             ),
-            Div(
-                Div('is_minor', css_class='col-md-6'),
-                css_class='row'
-            ),
+            Div(Div("is_minor", css_class="col-md-6"), css_class="row"),
             HTML("<h1>Profile picture</h1>"),
             Div(
                 HTML(
-                    render_to_string('ep19/bs/user_panel/forms/profile_settings_picture.html', context={
-                        'selected_picture_option': selected_image_option,
-                        'profile_image_url': image_url,
-                    }),
+                    render_to_string(
+                        "ep19/bs/user_panel/forms/profile_settings_picture.html",
+                        context={
+                            "selected_picture_option": selected_image_option,
+                            "profile_image_url": image_url,
+                        },
+                    )
                 ),
-                css_class='row',
-            ),
-            HTML("<h1>Profile information</h1>"),
-            Div(
-                Div('tagline', css_class='col-md-12'),
-                css_class='row'
-            ),
-            Div(
-                Div('personal_homepage', css_class='col-md-4'),
-                Div('twitter', css_class='col-md-4'),
-                Div('location', css_class='col-md-4'),
-                css_class='row'
-            ),
-            Div(
-                Div('job_title', css_class='col-md-4'),
-                Div('company', css_class='col-md-4'),
-                Div('company_homepage', css_class='col-md-4'),
-                css_class='row'
-            ),
-            Div(
-                Div('bio', css_class='col-md-12'),
-                css_class='row'
-            ),
-            HTML("<h1>Profile page visibility</h1>"),
-            HTML("<h5><strong>Speaker profile pages are public by default.</strong> If you are giving a talk or"
-                 " training at this year's conference, you can still set your preferences for the following years.</h5>"),
-            Div(
-                Div('visibility', css_class='col-md-4'),
                 css_class="row",
             ),
-            ButtonHolder(Submit("update", "Update", css_class="btn btn-lg btn-primary")),
+            HTML("<h1>Profile information</h1>"),
+            Div(Div("tagline", css_class="col-md-12"), css_class="row"),
+            Div(
+                Div("personal_homepage", css_class="col-md-4"),
+                Div("twitter", css_class="col-md-4"),
+                Div("location", css_class="col-md-4"),
+                css_class="row",
+            ),
+            Div(
+                Div("job_title", css_class="col-md-4"),
+                Div("company", css_class="col-md-4"),
+                Div("company_homepage", css_class="col-md-4"),
+                css_class="row",
+            ),
+            Div(Div("bio", css_class="col-md-12"), css_class="row"),
+            HTML("<h1>Profile page visibility</h1>"),
+            HTML(
+                "<h5><strong>Speaker profile pages are public by default.</strong> If you are giving a talk or"
+                " training at this year's conference, you can still set your preferences for the following years.</h5>"
+            ),
+            Div(Div("visibility", css_class="col-md-4"), css_class="row"),
+            ButtonHolder(
+                Submit("update", "Update", css_class="btn btn-lg btn-primary")
+            ),
         )
 
     def clean_email(self):
-        value = self.cleaned_data['email'].strip()
+        value = self.cleaned_data["email"].strip()
         user = self.instance.user
 
         if value != user.email and User.objects.filter(email__iexact=value).exists():
-            raise forms.ValidationError('Email already registered')
+            raise forms.ValidationError("Email already registered")
 
         return value
 
     def clean_twitter(self):
-        data = self.cleaned_data.get('twitter', '')
-        if data.startswith('@'):
+        data = self.cleaned_data.get("twitter", "")
+        if data.startswith("@"):
             data = data[1:]
         return data
 
     def resolve_image_settings(self, selected_option, image_url, image):
-        if selected_option == 'none':
+        if selected_option == "none":
             image = None
-            image_url = ''
+            image_url = ""
             image_gravatar = False
-        elif selected_option == 'gravatar':
+        elif selected_option == "gravatar":
             image = None
-            image_url = ''
+            image_url = ""
             image_gravatar = True
-        elif selected_option == 'url':
+        elif selected_option == "url":
             image = None
             image_gravatar = False
-        elif selected_option == 'file':
-            image_url = ''
+        elif selected_option == "file":
+            image_url = ""
             image_gravatar = False
 
         return image_gravatar, image_url, image
@@ -454,7 +454,7 @@ class ProfileSettingsForm(forms.ModelForm):
         Since this form updates related models, it does not support commit=False.
         """
         profile = super().save(commit=True)
-        profile.setBio(self.cleaned_data.get('bio', ''))
+        profile.setBio(self.cleaned_data.get("bio", ""))
 
         # Resolve image settings.
         image_gravatar, image_url, image = self.resolve_image_settings(
