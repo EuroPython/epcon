@@ -4,33 +4,38 @@
     <fieldset>
         <label class="radio row">
             <div class="col-md-6">
-                <input type="radio" name="opt" value="x"{% if selected_opt == "x" %} checked="checked"{% endif %}> Do not show any picture
+                <input type="radio" name="picture_options" value="none"{% if selected_picture_option == "none" %} checked="checked"{% endif %}> Do not show any picture
             </div>
         </label>
         <label class="radio row">
             <div class="col-md-6">
-                <input type="radio" name="opt" value="g"{% if selected_opt == "g" %} checked="checked"{% endif %}> Use my Gravatar
-            </div>
-        </label>
-        <label class="radio row">
-            <div class="col-md-6 big-line">
-                <input type="radio" name="opt" value="u"{% if selected_opt == "u" %} checked="checked"{% endif %}> Use this web address:
-            </div>
-            <div class="col-md-6">
-
-                <div id="div_id_image_url" class="form-group"> <label for="id_image_url" class="col-form-label ">
-                Image url
-                </label> <div class=""> <input type="url" name="image_url" class="urlinput form-control" id="id_image_url"> </div> </div>
+                <input type="radio" name="picture_options" value="gravatar"{% if selected_picture_option == "gravatar" %} checked="checked"{% endif %}> Use my Gravatar
             </div>
         </label>
         <label class="radio row">
             <div class="col-md-6 big-line">
-                <input type="radio" name="opt" value="f"{% if selected_opt == "f" %} checked="checked"{% endif %}> Use this picture:
+                <input type="radio" name="picture_options" value="url"{% if selected_picture_option == "url" %} checked="checked"{% endif %}> Use this web address:
             </div>
             <div class="col-md-6">
-                <div id="div_id_image" class="form-group"> <label for="id_image" class="col-form-label ">
-                Image
-            </label> <div class=""> <input type="file" name="image" class="fileinput fileUpload" id="id_image"> </div> </div>
+                <div id="div_id_image_url" class="form-group">
+                    <label for="id_image_url" class="col-form-label ">Image url</label>
+                    <div class="">
+                        <input type="url" name="image_url" class="urlinput form-control" id="id_image_url">
+                    </div>
+                </div>
+            </div>
+        </label>
+        <label class="radio row">
+            <div class="col-md-6 big-line">
+                <input type="radio" name="picture_options" value="file"{% if selected_picture_option == "file" %} checked="checked"{% endif %}> Use this picture:
+            </div>
+            <div class="col-md-6">
+                <div id="div_id_image" class="form-group">
+                    <label for="id_image" class="col-form-label ">Image</label>
+                    <div class="">
+                        <input type="file" name="image" class="fileinput fileUpload" id="id_image">
+                    </div>
+                </div>
             </div>
         </label>
     </fieldset>

@@ -304,10 +304,10 @@ class ProfileSettingsForm(forms.ModelForm):
     # The following fields are rendered manually, not using crispy forms, in
     # order to have more control over their layout.
     picture_options = forms.ChoiceField(label='', choices=(
-        ('x', 'Do not show any picture'),
-        ('g', 'Use my Gravatar'),
-        ('u', 'Use this url'),
-        ('f', 'Use this picture'),
+        ('none', 'Do not show any picture'),
+        ('gravatar', 'Use my Gravatar'),
+        ('url', 'Use this url'),
+        ('file', 'Use this picture'),
     ), required=False, widget=forms.RadioSelect)
     image_url = forms.URLField(required=False)
     image = forms.FileField(required=False, widget=forms.FileInput)
@@ -328,8 +328,30 @@ class ProfileSettingsForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
+        # Set the initial values for fields that are not part of AttendeeProfile
+        user = self.instance.user
+        self.fields['first_name'].initial = user.first_name
+        self.fields['last_name'].initial = user.last_name
+        self.fields['email'].initial = user.email
 
+        p3_profile = self.instance.p3_profile
+        self.fields['tagline'].initial = p3_profile.tagline
+        self.fields['twitter'].initial = p3_profile.twitter
+
+        self.fields['bio'].initial = getattr(self.instance.getBio(), 'body', '')
+
+        # Determine the value of the image fields
+        image_url = self.instance.p3_profile.profile_image_url()
+        if self.instance.image:
+            selected_image_option = 'file'
+        elif p3_profile.image_url:
+            selected_image_option = 'url'
+        elif p3_profile.image_gravatar:
+            selected_image_option = 'gravatar'
+        else:
+            selected_image_option = 'none'
+
+        self.helper = FormHelper()
         self.helper.layout = Layout(
             HTML("<h1>Personal information</h1>"),
             Div(
@@ -350,9 +372,8 @@ class ProfileSettingsForm(forms.ModelForm):
             Div(
                 HTML(
                     render_to_string('ep19/bs/user_panel/forms/profile_settings_picture.html', context={
-                        'selected_opt': 'x',
-                        'profile_image_url': self.instance.p3_profile.profile_image_url(),
-                        'image_url_field': Field('image_url'),
+                        'selected_picture_option': selected_image_option,
+                        'profile_image_url': image_url,
                     }),
                 ),
                 css_class='row',
