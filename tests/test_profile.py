@@ -30,6 +30,11 @@ def test_profile_page_unavailable_template():
 
 
 @pytest.mark.xfail
+def test_profile_page_if_user_has_no_speaker():
+    assert False
+
+
+@pytest.mark.xfail
 def test_profile_page_fields_empty_profile():
     """
     If no additional information is published on the profile page, it will
