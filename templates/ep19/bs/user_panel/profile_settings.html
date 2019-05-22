@@ -13,7 +13,7 @@
 <div class='row' style='margin-top: 3em'>
 
     <div class="col-md-12">
-        <form method="POST" action=".">
+        <form method="POST" action="." enctype="multipart/form-data">
             {% csrf_token %}
             {% crispy profile_form %}
         </form>

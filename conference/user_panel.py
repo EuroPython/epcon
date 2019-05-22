@@ -9,6 +9,8 @@ from crispy_forms.layout import (
     HTML,
     Field,
 )
+from phonenumber_field.formfields import PhoneNumberField
+
 from django import forms
 from django.conf.urls import url
 from django.contrib import messages
@@ -268,7 +270,18 @@ class ProfileSettingsForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
     email = forms.EmailField()
-    phone = AddSpeakerToTalkForm.base_fields["phone"]
+    phone = PhoneNumberField(
+        help_text=(
+            "We require a mobile phone number for all speakers "
+            "for last minute contacts and in case we need "
+            "timely clarification (if no reponse to previous emails).<br>"
+            "Use the international format, eg: +39-055-123456.<br />"
+            "This number will <strong>never</strong> be published."
+        ),
+        max_length=30,
+        required=False,
+    )
+
     is_minor = AddSpeakerToTalkForm.base_fields["is_minor"]
 
     job_title = AddSpeakerToTalkForm.base_fields["job_title"]
@@ -305,7 +318,7 @@ class ProfileSettingsForm(forms.ModelForm):
             # first section
             "first_name", "last_name", "is_minor", "phone", "email",
             # second section
-            'picture_options', 'image_gravatar', 'image_url', 'image',
+            'picture_options', 'image_url', 'image',
             # third section
             "tagline", "twitter", "personal_homepage", "location",
             "job_title", "company", "company_homepage", "bio",
