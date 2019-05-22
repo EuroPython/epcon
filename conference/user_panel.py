@@ -3,6 +3,7 @@ from datetime import timedelta
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import ButtonHolder, Div, Layout, Submit, HTML
 from phonenumber_field.formfields import PhoneNumberField
+from model_utils import Choices
 
 from django import forms
 from django.conf.urls import url
@@ -65,8 +66,8 @@ def manage_ticket(request, ticket_id):
         return HttpResponse("Can't do", status=403)
 
     ticket_configuration, _ = TicketConference.objects.get_or_create(
-        ticket=ticket,
-        defaults={'name': ticket.name})
+        ticket=ticket, defaults={"name": ticket.name}
+    )
 
     ticket_configuration_form = TicketConferenceConfigForm(
         instance=ticket_configuration, initial={"name": request.user.assopy_user.name()}
@@ -255,6 +256,14 @@ class ProfileSpamControlForm(forms.ModelForm):
         )
 
 
+PICTURE_CHOICES = Choices(
+    ("none", "Do not show any picture"),
+    ("gravatar", "Use my Gravatar"),
+    ("url", "Use this url"),
+    ("file", "Use this picture"),
+)
+
+
 class ProfileSettingsForm(forms.ModelForm):
     # TODO move this form and AddSpeakerToTalkForm forms to a separate file
     #  and define a common ancestor as they share some of the fields
@@ -299,15 +308,7 @@ class ProfileSettingsForm(forms.ModelForm):
     # The following fields are rendered manually, not using crispy forms, in
     # order to have more control over their layout.
     picture_options = forms.ChoiceField(
-        label="",
-        choices=(
-            ("none", "Do not show any picture"),
-            ("gravatar", "Use my Gravatar"),
-            ("url", "Use this url"),
-            ("file", "Use this picture"),
-        ),
-        required=False,
-        widget=forms.RadioSelect,
+        label="", choices=PICTURE_CHOICES, required=False, widget=forms.RadioSelect
     )
     image_url = forms.URLField(required=False)
     image = forms.FileField(required=False, widget=forms.FileInput)
@@ -355,13 +356,13 @@ class ProfileSettingsForm(forms.ModelForm):
         # Determine the value of the image fields
         image_url = self.instance.p3_profile.profile_image_url()
         if self.instance.image:
-            selected_image_option = "file"
+            selected_image_option = PICTURE_CHOICES.file
         elif p3_profile.image_url:
-            selected_image_option = "url"
+            selected_image_option = PICTURE_CHOICES.url
         elif p3_profile.image_gravatar:
-            selected_image_option = "gravatar"
+            selected_image_option = PICTURE_CHOICES.gravatar
         else:
-            selected_image_option = "none"
+            selected_image_option = PICTURE_CHOICES.none
 
         self.helper = FormHelper()
         self.helper.layout = Layout(
@@ -385,6 +386,10 @@ class ProfileSettingsForm(forms.ModelForm):
                         context={
                             "selected_picture_option": selected_image_option,
                             "profile_image_url": image_url,
+                            # Creating an enum-type accessible in the template
+                            "picture_choices": dict(
+                                [(x[0], x[0]) for x in PICTURE_CHOICES]
+                            ),
                         },
                     )
                 ),
@@ -432,18 +437,18 @@ class ProfileSettingsForm(forms.ModelForm):
         return data
 
     def resolve_image_settings(self, selected_option, image_url, image):
-        if selected_option == "none":
+        if selected_option == PICTURE_CHOICES.none:
             image = None
             image_url = ""
             image_gravatar = False
-        elif selected_option == "gravatar":
+        elif selected_option == PICTURE_CHOICES.gravatar:
             image = None
             image_url = ""
             image_gravatar = True
-        elif selected_option == "url":
+        elif selected_option == PICTURE_CHOICES.url:
             image = None
             image_gravatar = False
-        elif selected_option == "file":
+        elif selected_option == PICTURE_CHOICES.file:
             image_url = ""
             image_gravatar = False
 

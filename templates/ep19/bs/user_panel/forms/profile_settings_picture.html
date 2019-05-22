@@ -4,17 +4,17 @@
     <fieldset>
         <label class="radio row">
             <div class="col-md-6">
-                <input type="radio" name="picture_options" value="none"{% if selected_picture_option == "none" %} checked="checked"{% endif %}> Do not show any picture
+                <input type="radio" name="picture_options" value="{{ picture_choices.none }}"{% if selected_picture_option == picture_choices.none %} checked="checked"{% endif %}> Do not show any picture
             </div>
         </label>
         <label class="radio row">
             <div class="col-md-6">
-                <input type="radio" name="picture_options" value="gravatar"{% if selected_picture_option == "gravatar" %} checked="checked"{% endif %}> Use my Gravatar
+                <input type="radio" name="picture_options" value="{{ picture_choices.gravatar }}"{% if selected_picture_option == picture_choices.gravatar %} checked="checked"{% endif %}> Use my Gravatar
             </div>
         </label>
         <label class="radio row">
             <div class="col-md-6 big-line">
-                <input type="radio" name="picture_options" value="url"{% if selected_picture_option == "url" %} checked="checked"{% endif %}> Use this web address:
+                <input type="radio" name="picture_options" value="{{ picture_choices.url }}"{% if selected_picture_option == picture_choices.url %} checked="checked"{% endif %}> Use this web address:
             </div>
             <div class="col-md-6">
                 <div id="div_id_image_url" class="form-group">
@@ -27,7 +27,7 @@
         </label>
         <label class="radio row">
             <div class="col-md-6 big-line">
-                <input type="radio" name="picture_options" value="file"{% if selected_picture_option == "file" %} checked="checked"{% endif %}> Use this picture:
+                <input type="radio" name="picture_options" value="{{ picture_choices.file }}"{% if selected_picture_option == picture_choices.file %} checked="checked"{% endif %}> Use this picture:
             </div>
             <div class="col-md-6">
                 <div id="div_id_image" class="form-group">
