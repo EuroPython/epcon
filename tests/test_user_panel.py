@@ -45,24 +45,27 @@ def create_order_and_invoice(assopy_user, fare):
 
 
 def create_order(assopy_user, fare):
-    order = Order(uuid=str(uuid.uuid4()),
-                  user=assopy_user,
-                  code="O/#19.0001",
-                  order_type="student",
+    order = Order(
+        uuid=str(uuid.uuid4()),
+        user=assopy_user,
+        code="O/#19.0001",
+        order_type="student",
     )
     order.save()
 
-    ticket = Ticket.objects.create(user=assopy_user.user, fare=fare,
-                                   name=assopy_user.name())
+    ticket = Ticket.objects.create(
+        user=assopy_user.user, fare=fare, name=assopy_user.name()
+    )
     OrderItem.objects.create(
         order=order,
         code=fare.code,
         ticket=ticket,
         description=f"{fare.description}",
         price=fare.price,
-        vat=fare.vat_set.all()[0]
+        vat=fare.vat_set.all()[0],
     )
     return order
+
 
 @pytest.mark.xfail
 def test_privacy_settings_requires_login():
@@ -77,8 +80,10 @@ def test_privacy_settings_updates_profile():
 @responses.activate
 def test_user_panel_manage_ticket(client):
     Conference.objects.create(
-        code=settings.CONFERENCE_CONFERENCE, name = settings.CONFERENCE_NAME,
-        conference_start = "2019-07-08", conference_end = "2019-07-14"
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_NAME,
+        conference_start="2019-07-08",
+        conference_end="2019-07-14",
     )
     Email.objects.create(code="purchase-complete")
     fare = FareFactory()
@@ -95,7 +100,9 @@ def test_user_panel_manage_ticket(client):
     ticket1 = order.orderitem_set.get().ticket
     assert TicketConference.objects.all().count() == 0
 
-    response = client.get(reverse("user_panel:manage_ticket", kwargs={'ticket_id': ticket1.id}))
+    response = client.get(
+        reverse("user_panel:manage_ticket", kwargs={"ticket_id": ticket1.id})
+    )
 
     ticketconference = TicketConference.objects.get(ticket=ticket1)
     assert ticket1.name == ticketconference.name == user.assopy_user.name()
@@ -104,8 +111,10 @@ def test_user_panel_manage_ticket(client):
 @responses.activate
 def test_user_panel_update_ticket(client):
     Conference.objects.create(
-        code=settings.CONFERENCE_CONFERENCE, name = settings.CONFERENCE_NAME,
-        conference_start = "2019-07-08", conference_end = "2019-07-14"
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_NAME,
+        conference_start="2019-07-08",
+        conference_end="2019-07-14",
     )
     Email.objects.create(code="purchase-complete")
     fare = FareFactory()
@@ -119,24 +128,27 @@ def test_user_panel_update_ticket(client):
     ticketconference = TicketConference.objects.get(ticket=ticket1)
 
     assert ticket1.name == ticketconference.name
-    newname = ticket1.name + ' changed'
+    newname = ticket1.name + " changed"
 
-    response = client.post(reverse("user_panel:manage_ticket", kwargs={'ticket_id': ticket1.id}),
-                           { "name": newname,
-                             "diet": 'other',
-                             "shirt_size": 'xxxl',
-                             "tagline": 'xyz',
-                             "days": "2019-07-10"
-                           })
+    response = client.post(
+        reverse("user_panel:manage_ticket", kwargs={"ticket_id": ticket1.id}),
+        {
+            "name": newname,
+            "diet": "other",
+            "shirt_size": "xxxl",
+            "tagline": "xyz",
+            "days": "2019-07-10",
+        },
+    )
 
     ticket1.refresh_from_db()
     ticketconference.refresh_from_db()
     assert ticket1.name == newname
     assert ticketconference.name == newname
-    assert ticketconference.diet == 'other'
-    assert ticketconference.shirt_size == 'xxxl'
-    assert ticketconference.tagline == 'xyz'
-    assert ticketconference.days == '2019-07-10'
+    assert ticketconference.diet == "other"
+    assert ticketconference.shirt_size == "xxxl"
+    assert ticketconference.tagline == "xyz"
+    assert ticketconference.days == "2019-07-10"
 
 
 @pytest.mark.xfail
