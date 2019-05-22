@@ -1,0 +1,116 @@
+{% extends "ep19/bs/base.html" %}
+
+{% load meta %}
+
+{% block meta %}
+{% render_meta title=speaker_name %}
+{% endblock meta %}
+
+{% block content %}
+<div class="container page" id="speaker_page">
+    <div class="section row">
+        <div class="col-md-12">
+            <h1>{{ speaker_name }}</h1>
+        </div>
+    </div>
+
+    <div class="section row">
+        <div class="col-md-3">
+            <img class="speaker_avatar" src="{{ speaker_avatar }}" alt="{{ speaker_name }}"/>
+        </div>
+        <div class="col-md-9">
+            <div class="speaker">
+                {% if tagline %}
+                <dl class="row">
+                    <dt class="col-sm-3">Tagline: </dt>
+                    <dd class="col-sm-9">{{ tagline }}</dd>
+                </dl>
+                {% endif %}
+
+                {% if personal_website %}
+                <dl class="row">
+                    <dt class="col-sm-3">Website: </dt>
+                    <dd class="col-sm-9"><a href="{{ personal_website  }}">{{ personal_website }}</a></dd>
+                </dl>
+                {% endif %}
+
+                {% if twitter %}
+                <dl class="row">
+                    <dt class="col-sm-3">Twitter: </dt>
+                    <dd class="col-sm-9"><a href="https://twitter.com/{{ twitter  }}">{{ twitter }}</a></dd>
+                </dl>
+                {% endif %}
+
+                {% if location %}
+                <dl class="row">
+                    <dt class="col-sm-3">Location: </dt>
+                    <dd class="col-sm-9">{{ location }}</dd>
+                </dl>
+                {% endif %}
+
+                <dl class="row">
+                    <dt class="col-sm-3">Company: </dt>
+                    <dd class="col-sm-9">{{ company|default:"—" }}</dd>
+                </dl>
+
+                <dl class="row">
+                    <dt class="col-sm-3">Job title: </dt>
+                    <dd class="col-sm-9">{{ job_title|default:"—" }}</dd>
+                </dl>
+
+                <dl class="row">
+                    <dt class="col-sm-3">Company website: </dt>
+                    <dd class="col-sm-9">
+                    {% if company_website %}
+                        <a href="{{ company_website }}">{{ company_website }}</a>
+                    {% else %}
+                        —
+                    {% endif %}
+                    </dd>
+                </dl>
+
+                <dl class="row">
+                    <dt class="col-sm-3">Biography: </dt>
+                    <dd class="col-sm-9">{{ bio|default:"—"|linebreaks }}</dd>
+                </dl>
+
+            </div>
+        </div>
+    </div>
+
+
+    {% if talks %}
+    <div class="section row">
+        <div class="col-md-12">
+            <h2>{{ speaker_name }}'s Talks</h2>
+            <ul>
+            {% for talk in talks %}
+                <li class="talk_elem">
+                    <a href="{{ talk.get_absolute_url }}">{{ talk.title }}</a>
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block morecss %}
+<style>
+.section {
+    padding-bottom: 30px;
+}
+
+.speaker_avatar {
+    width: 200px;
+    height: auto;
+    border-radius: 50%;
+}
+
+.talk_elem {
+    padding-top: 5px;
+}
+
+</style>
+{% endblock %}

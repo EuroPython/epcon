@@ -260,7 +260,7 @@ def talk_title(talk):
 
 def profile_url(user):
     """ Return the URL of the user profile. """
-    return reverse('conference-profile', args=[user.attendeeprofile.slug])
+    return reverse('profiles:profile', args=[user.attendeeprofile.slug])
 
 
 def talk_schedule(talk):
