@@ -70,7 +70,7 @@ def manage_ticket(request, ticket_id):
     )
 
     ticket_configuration_form = TicketConferenceConfigForm(
-        instance=ticket_configuration, initial={"name": request.user.assopy_user.name()}
+        instance=ticket_configuration, initial={"name": ticket.name}
     )
 
     if request.method == "POST":
