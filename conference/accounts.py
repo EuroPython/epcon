@@ -88,13 +88,8 @@ def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
             with transaction.atomic():
                 assopy_user = AssopyUser.objects.create_user(
                     email=data['email'],
-
-                    # Python conferences are on the first name basis, and since
-                    # we want to populate only one field (we don't want to
-                    # replace the builtin User model yet) we populate the first
-                    # name only.
-                    first_name=data['name'],
-
+                    first_name=data['first_name'],
+                    last_name=data['last_name'],
                     password=data['password1'],
                 )
                 get_or_create_attendee_profile_for_new_user(assopy_user.user)
@@ -211,8 +206,8 @@ def handle_verification_token(request, token) -> [404, redirect]:
 
 
 class NewAccountForm(forms.Form):
-
-    name = forms.CharField(max_length=255)
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30)
     email = forms.EmailField()
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
     password2 = forms.CharField(
