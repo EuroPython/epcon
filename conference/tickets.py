@@ -11,7 +11,7 @@ def assign_ticket_to_user(ticket, user):
     try:
         ticket.p3_conference
     except TicketConference.DoesNotExist:
-        TicketConference.objects.create(ticket=ticket)
+        TicketConference.objects.create(ticket=ticket, name=ticket.name)
         ticket.refresh_from_db()
 
     ticket.p3_conference.assigned_to = user.email
