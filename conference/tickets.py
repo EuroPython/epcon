@@ -7,6 +7,7 @@ from conference.fares import FARE_CODE_REGEXES, FARE_CODE_VARIANTS
 
 def assign_ticket_to_user(ticket, user):
     ticket.user = user
+    ticket.name = user.assopy_user.name()
     ticket.save()
     try:
         ticket.p3_conference
