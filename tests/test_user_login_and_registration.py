@@ -63,7 +63,8 @@ def test_user_registration(client):
     response = client.post(
         sign_up_url,
         {
-            "name": "Joe Doe",
+            "first_name": "Joe",
+            "last_name": "Doe",
             "email": "joedoe@example.com",
             "password1": "password",
             "password2": "password",
@@ -79,7 +80,8 @@ def test_user_registration(client):
     response = client.post(
         sign_up_url,
         {
-            "name": "Joe Doe",
+            "first_name": "Joe",
+            "last_name": "Doe",
             "email": "joedoe@example.com",
             "password1": "password",
             "password2": "password",
@@ -141,7 +143,8 @@ def test_393_emails_are_lowercased_and_login_is_case_insensitive(client):
     response = client.post(
         sign_up_url,
         {
-            "name": "Joe Doe",
+            "first_name": "Joe",
+            "last_name": "Doe",
             "email": "JoeDoe@example.com",
             "password1": "password",
             "password2": "password",
@@ -157,7 +160,8 @@ def test_393_emails_are_lowercased_and_login_is_case_insensitive(client):
     response = client.post(
         sign_up_url,
         {
-            "name": "Joe Doe",
+            "first_name": "Joe",
+            "last_name": "Doe",
             "email": "jOEdOE@example.com",
             "password1": "password",
             "password2": "password",
@@ -206,7 +210,8 @@ def test_703_test_captcha_questions(client):
     response = client.post(
         sign_up_url,
         {
-            "name": "Joe Doe",
+            "first_name": "Joe",
+            "last_name": "Doe",
             "email": "JoeDoe@example.com",
             "password1": "password",
             "password2": "password",
@@ -218,7 +223,8 @@ def test_703_test_captcha_questions(client):
     response = client.post(
         sign_up_url,
         {
-            "name": "Joe Doe",
+            "first_name": "Joe",
+            "last_name": "Doe",
             "email": "JoeDoe@example.com",
             "password1": "password",
             "password2": "password",
@@ -234,7 +240,8 @@ def test_703_test_captcha_questions(client):
     response = client.post(
         sign_up_url,
         {
-            "name": "Joe Doe",
+            "first_name": "Joe",
+            "last_name": "Doe",
             "email": "JoeDoe@example.com",
             "password1": "password",
             "password2": "password",
