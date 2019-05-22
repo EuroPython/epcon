@@ -21,6 +21,7 @@ import shortuuid
 
 from assopy.models import AssopyUser, Token
 from conference.models import CaptchaQuestion, AttendeeProfile
+from p3.models import P3Profile
 
 
 LOGIN_TEMPLATE = "ep19/bs/accounts/login.html"
@@ -159,6 +160,11 @@ def get_or_create_attendee_profile_for_new_user(user):
         attendee.save()
         # needed because it creates a separate object in db.
         attendee.setBio('bio')
+
+    if not attendee.p3_profile:
+        p3_profile = P3Profile(profile=attendee)
+        p3_profile.save()
+
     return attendee
 
 

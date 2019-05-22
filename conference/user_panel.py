@@ -7,7 +7,6 @@ from crispy_forms.layout import (
     Layout,
     Submit,
     HTML,
-    Field,
 )
 from phonenumber_field.formfields import PhoneNumberField
 
@@ -166,6 +165,14 @@ def profile_settings(request):
     attendee_profile = get_or_create_attendee_profile_for_new_user(user=request.user)
 
     profile_form = ProfileSettingsForm(instance=attendee_profile)
+
+    if request.method == "POST":
+        profile_form = ProfileSettingsForm(instance=attendee_profile, data=request.POST, files=request.FILES)
+
+        if profile_form.is_valid():
+            profile_form.save()
+            # Read the saved data back to make sure things get saved correctly
+            profile_form = ProfileSettingsForm(instance=attendee_profile)
 
     return TemplateResponse(
         request,
@@ -400,9 +407,8 @@ class ProfileSettingsForm(forms.ModelForm):
                 css_class='row'
             ),
             HTML("<h1>Profile page visibility</h1>"),
-            HTML("<h5>Note that if you are giving a talk or training at this year's conference,"
-                 " this setting will not have any effect as <strong>speaker pages are public by default.</strong></h5>"),
-            HTML("<h5>You can still set your preferences for the following years.</h5>"),
+            HTML("<h5><strong>Speaker profile pages are public by default.</strong> If you are giving a talk or"
+                 " training at this year's conference, you can still set your preferences for the following years.</h5>"),
             Div(
                 Div('visibility', css_class='col-md-4'),
                 css_class="row",
@@ -418,6 +424,63 @@ class ProfileSettingsForm(forms.ModelForm):
             raise forms.ValidationError('Email already registered')
 
         return value
+
+    def clean_twitter(self):
+        data = self.cleaned_data.get('twitter', '')
+        if data.startswith('@'):
+            data = data[1:]
+        return data
+
+    def resolve_image_settings(self, selected_option, image_url, image):
+        if selected_option == 'none':
+            image = None
+            image_url = ''
+            image_gravatar = False
+        elif selected_option == 'gravatar':
+            image = None
+            image_url = ''
+            image_gravatar = True
+        elif selected_option == 'url':
+            image = None
+            image_gravatar = False
+        elif selected_option == 'file':
+            image_url = ''
+            image_gravatar = False
+
+        return image_gravatar, image_url, image
+
+    def save(self, commit=True):
+        """
+        Since this form updates related models, it does not support commit=False.
+        """
+        profile = super().save(commit=True)
+        profile.setBio(self.cleaned_data.get('bio', ''))
+
+        # Resolve image settings.
+        image_gravatar, image_url, image = self.resolve_image_settings(
+            selected_option=self.cleaned_data["picture_options"],
+            image_url=self.cleaned_data.get("image_url"),
+            image=self.cleaned_data.get("image"),
+        )
+        profile.image = image
+        profile.save()
+
+        # Save user fields
+        user = profile.user
+        user.first_name = self.cleaned_data["first_name"]
+        user.last_name = self.cleaned_data["last_name"]
+        user.email = self.cleaned_data["email"]
+        user.save()
+
+        # Save p3 profile fields
+        p3_profile = profile.p3_profile
+        p3_profile.tagline = self.cleaned_data["tagline"]
+        p3_profile.twitter = self.cleaned_data["twitter"]
+        p3_profile.image_gravatar = image_gravatar
+        p3_profile.image_url = image_url
+        p3_profile.save()
+
+        return profile
 
 
 def get_tickets_for_current_conference(user):

@@ -128,7 +128,7 @@ a.nav-link.dropdown-toggle::after {
 /* Show a round photo of the user */
 img.speaker_avatar {
     width: 200px;
-    height: auto;
+    height: 200px;
     border-radius: 50%;
 }
 
