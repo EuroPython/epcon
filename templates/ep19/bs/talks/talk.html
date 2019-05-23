@@ -19,7 +19,7 @@
 
 <div class="container page" id="talk_page">
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+        <ol class="breadcrumb">{# TODO: replace hardcoded paths by generated ones! #}
             <li class="breadcrumb-item"><a href="/">Home</a></li>
             <li class="breadcrumb-item"><a href="/events/sessions/#Talks">Talks</a></li>
             <li class="breadcrumb-item active">{{ talk_as_dict.title }}<li>
@@ -32,7 +32,7 @@
                 <h1>{{ talk.title }}</h1>
                 <h3>{{ talk.sub_title }}</h3>
                 <h5>{% for speaker in talk_as_dict.speakers %}
-                    {{ speaker.name }}{% if not forloop.last %}, {% endif %}
+                    <a href="{% url 'profiles:profile' profile_slug=speaker.slug %}">{{ speaker.name }}</a>{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 </h5>
                 <p>
