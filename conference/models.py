@@ -984,6 +984,13 @@ class Ticket(models.Model):
     def __str__(self):
         return 'Ticket "%s" (%s)' % (self.fare.name, self.fare.code)
 
+    @property
+    def assigned_email(self):
+        if getattr(self, 'p3_conference', None):
+            return self.p3_conference.assigned_to
+
+        return ''
+
 
 class Sponsor(models.Model):
     """

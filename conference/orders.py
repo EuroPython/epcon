@@ -10,7 +10,7 @@ from assopy.models import Order, OrderItem, Coupon, ORDER_TYPE
 from conference.models import Ticket, Conference
 
 from .fares import get_available_fares_as_dict, FareIsNotAvailable
-
+from p3.utils import assign_ticket_to_user
 
 ORDER_CODE_PREFIX = "O/"
 ORDER_CODE_TEMPLATE = "O/%(year_two_digits)s.%(sequential_id)s"
@@ -89,6 +89,7 @@ def create_order(
                 # other way around.
                 ticket = Ticket.objects.create(user=for_user, fare=fare,
                                                name=for_user.assopy_user.name())
+                assign_ticket_to_user(ticket=ticket, user=for_user)
 
                 OrderItem.objects.create(
                     order=order,
