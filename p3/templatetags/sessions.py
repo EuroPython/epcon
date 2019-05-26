@@ -95,14 +95,26 @@ EXAMPLE_ACCEPTEDSESSIONS = """
 {% endfor %}
 """
 
+# Note: Django has problems parsing multiple templatetag arguments if the
+# arguments contain underscores.  It works find with a single argument.
+
 @register.simple_tag
-def acceptedsessions(conference, filter_types=None, filter_community=None):
+def acceptedsessions(conference, filtertypes=None, filtercommunity=None,
+                     filterdomain=None, 
+                     # For b/w compatibility
+                     filter_types=None):
 
     talks = models.Talk.objects.filter(
         conference=conference, status='accepted')
-    if filter_community:
+    if filter_types is not None and filtertypes is None:
+        # For b/w compatibility
+        filtertypes = filter_types
+    if filtercommunity:
         talks = talks.filter(
-            p3_talk__sub_community=filter_community.strip())
+            p3_talk__sub_community=filtercommunity.strip())
+    if filterdomain:
+        talks = talks.filter(
+            domain=filterdomain.strip())
 
     # Group by types
     talk_types = {}
@@ -135,11 +147,11 @@ def acceptedsessions(conference, filter_types=None, filter_community=None):
         else:
             talk_types[type] = [talk]
 
-    if filter_types is not None:
-        filter_types = [x.strip() for x in filter_types.split(',')]
+    if filtertypes is not None:
+        filtertypes = [x.strip() for x in filtertypes.split(',')]
         types = [t 
                  for t in TYPE_NAMES 
-                 if t[0] in filter_types]
+                 if t[0] in filtertypes]
     else:
         types = TYPE_NAMES
 
