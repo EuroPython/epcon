@@ -60,6 +60,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
                 "company_homepage": ap.company_homepage,
                 "bio": getattr(ap.getBio(), "body", ""),
                 "phone": ap.phone,
+                "slug": ap.slug,
             }
         )
 
