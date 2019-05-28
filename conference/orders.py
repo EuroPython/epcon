@@ -152,7 +152,7 @@ def calculate_order_price_including_discount(
     if not coupon:
         return OrderCalculation(full_total, full_total, 0), coupon
 
-    discounted_total = 0
+    discounted_total = full_total
     # TODO: FIXME
     INFINITE_AMOUNT = 9999
     times_per_order = coupon.items_per_usage or INFINITE_AMOUNT
@@ -168,14 +168,10 @@ def calculate_order_price_including_discount(
 
                 if times_per_order > 0:
                     discounted_price = (
-                        fares[fare_code].price * coupon.price_multiplier()
+                        fares[fare_code].price * coupon.discount_multiplier()
                     )
-                    discounted_total += discounted_price
+                    discounted_total -= discounted_price
                     times_per_order -= 1
-
-                else:
-                    full_price = fares[fare_code].price
-                    discounted_total += full_price
 
     return (
         OrderCalculation(

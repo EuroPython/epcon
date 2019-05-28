@@ -371,13 +371,13 @@ class Coupon(models.Model):
         else:
             return 'val'
 
-    def price_multiplier(self):
+    def discount_multiplier(self):
         """
         Converts 20% to 0.8
         """
         assert self.value.endswith('%')
         discount = Decimal(self.value[:-1]) / Decimal(100)
-        return Decimal(1) - discount
+        return discount
 
     def valid(self, user=None):
         if self.start_validity and self.end_validity:
