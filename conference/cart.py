@@ -1,5 +1,5 @@
 import uuid
-from datetime import date, datetime
+from datetime import date
 
 from django import forms
 from django.conf import settings
@@ -272,7 +272,7 @@ class CartActions:
 def get_available_fares_for_type(type_of_tickets):
     assert type_of_tickets in TicketType.ALL
 
-    fares = get_available_fares(datetime.now().date())
+    fares = get_available_fares(timezone.now().date())
 
     if type_of_tickets == TicketType.personal:
         regex_group = FARE_CODE_GROUPS.PERSONAL

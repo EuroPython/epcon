@@ -11,7 +11,7 @@ from assopy.models import Order
 from assopy.models import Vat
 from assopy.tests.factories.order import CouponFactory
 from conference.cart import CartActions
-from conference.models import Conference, Ticket
+from conference.models import Conference, Ticket, Fare
 from conference.fares import (
     pre_create_typical_fares_for_conference,
     set_early_bird_fare_dates,
@@ -210,6 +210,40 @@ def test_can_apply_personal_ticket_coupon(db, user_client):
     # Order includes the coupon item with the coupon code
     assert order.orderitem_set.count() == order_ticket_count + 1
     assert order.orderitem_set.filter(code=coupon.code).exists()
+
+
+def test_cannot_apply_coupon_if_fare_mismatch(db, user_client):
+    _setup()
+    set_early_bird_fare_dates(
+        settings.CONFERENCE_CONFERENCE,
+        timezone.now().date(),
+        timezone.now().date() + timedelta(days=1),
+    )
+    second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
+    coupon_fare = Fare.objects.get(code='TESS')
+    coupon = CouponFactory(
+        user=user_client.user.assopy_user,
+        fares=[coupon_fare],
+    )
+
+    order_ticket_count = 1
+    response = user_client.post(
+        second_step_company,
+        {"TESP": order_ticket_count, CartActions.buy_tickets: True, 'discount_code': coupon.code}
+    )
+    assert response.status_code == 302
+    order = Order.objects.get()
+    assert redirects_to(
+        response, reverse("cart:step3_add_billing_info", args=[order.uuid])
+    )
+
+    # No discount is applied when purchasing fares not covered by coupons.
+    assert order.total() == order_ticket_count * coupon_fare.price
+    # Tickets are pre-created already even if we don't complete the order.
+    assert Ticket.objects.all().count() == order_ticket_count
+    # Order does not include the coupon item with the coupon code
+    assert order.orderitem_set.count() == order_ticket_count
+    assert not order.orderitem_set.filter(code=coupon.code).exists()
 
 
 @mark.xfail
