@@ -7,12 +7,11 @@ from django import forms
 from django import http
 from django.conf import settings as dsettings
 from django.conf.urls import url
-from django.contrib import admin
-from django.contrib import auth
+from django.contrib import admin, auth, messages
 from django.contrib.admin.utils import quote
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from django.core import urlresolvers
+from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.template import Template, Context
@@ -25,6 +24,7 @@ from assopy import forms as assopy_forms
 from assopy import models
 from assopy import stats
 from conference import admin as cadmin
+from conference.invoicing import render_invoice_as_html
 from conference.models import Conference, Fare, StripePayment
 from conference.settings import CONFERENCE
 
@@ -124,7 +124,7 @@ class OrderAdmin(admin.ModelAdmin):
         'user__user__first_name', 'user__user__last_name', 'user__user__email',
         'billing_notes',
     )
-    readonly_fields = ['payment_date']
+    readonly_fields = ['payment_date', 'stripe_charge_id']
     date_hierarchy = 'created'
     actions = ('do_edit_invoices',)
 
@@ -151,7 +151,7 @@ class OrderAdmin(admin.ModelAdmin):
         return actions
 
     def _user(self, o):
-        url = urlresolvers.reverse('admin:auth_user_change', args=(o.user.user_id,))
+        url = reverse('admin:auth_user_change', args=(o.user.user_id,))
         name = '%s %s' % (o.user.user.first_name, o.user.user.last_name)
         html = '<a href="%s">%s</a>' % (url, name)
         if name != o.card_name:
@@ -195,7 +195,7 @@ class OrderAdmin(admin.ModelAdmin):
         else:
             vname = 'assopy-invoice-pdf'
         for i in o.invoices.all():
-            url = urlresolvers.reverse(
+            url = reverse(
                 vname, kwargs={
                     'order_code': quote(o.code),
                     'code': quote(i.code),
@@ -217,8 +217,19 @@ class OrderAdmin(admin.ModelAdmin):
             url(r'^stats/$', admin_view(self.stats), name='assopy-order-stats'),
             url(r'^vouchers/$', admin_view(self.vouchers), name='assopy-order-vouchers'),
             url(r'^vouchers/(?P<conference>[\w-]+)/(?P<fare>[\w-]+)/$', admin_view(self.vouchers_fare), name='assopy-order-vouchers-fare'),
+            url(
+                r'^(?P<order_id>.+)/invoices/latest$',
+                admin_view(self.latest_invoice),
+                name='assopy-order-latest-invoice'
+            ),
         ]
         return my_urls + urls
+
+    def latest_invoice(self, request, order_id):
+        invoice = models.Invoice.objects.filter(
+            order__pk=order_id).order_by('emit_date').last()
+
+        return redirect('admin:assopy_invoice_change', invoice.id)
 
     def vouchers(self, request):
         ctx = {
@@ -240,7 +251,7 @@ class OrderAdmin(admin.ModelAdmin):
     def do_edit_invoices(self, request, queryset):
         ids = [ str(o.id) for o in queryset ]
         if ids:
-            url = urlresolvers.reverse('admin:assopy-edit-invoices') + '?id=' + ','.join(ids)
+            url = reverse('admin:assopy-edit-invoices') + '?id=' + ','.join(ids)
             return redirect(url)
         else:
             self.message_user(request, 'no orders')
@@ -393,7 +404,7 @@ class CouponAdmin(admin.ModelAdmin):
     def _user(self, o):
         if not o.user:
             return ''
-        url = urlresolvers.reverse('admin:auth_user_change', args=(o.user.user_id,))
+        url = reverse('admin:auth_user_change', args=(o.user.user_id,))
         return '<a href="%s">%s</a> (<a href="mailto:%s">email</a>)' % (url, o.user.name(), o.user.user.email)
     _user.short_description = 'user'
     _user.allow_tags = True
@@ -432,7 +443,7 @@ class AuthUserAdmin(UserAdmin):
         auth.login(request, user)
         request.session['doppelganger'] = udata
 
-        return http.HttpResponseRedirect(urlresolvers.reverse('user_panel:dashboard'))
+        return http.HttpResponseRedirect(reverse('user_panel:dashboard'))
 
     def kill_doppelganger(self, request):
         uid = request.session.pop('doppelganger')[0]
@@ -511,7 +522,7 @@ class AuthUserAdmin(UserAdmin):
         return TemplateResponse(request, 'admin/auth/user/new_order.html', ctx)
 
     def _doppelganger(self, o):
-        url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': o.id})
+        url = reverse('admin:auser-create-doppelganger', kwargs={'uid': o.id})
         return '<a href="%s" target="_blank">become this user</a>' % url
     _doppelganger.allow_tags = True
     _doppelganger.short_description = 'Doppelganger'
@@ -554,8 +565,8 @@ class RefundAdmin(admin.ModelAdmin):
             u = data[0].order.user.user
             links = [
                 '%s %s</a> (' % (u.first_name, u.last_name),
-                '<a href="%s" title="user page">U</a>, ' % urlresolvers.reverse('admin:auth_user_change', args=(u.id,)),
-                '<a href="%s" title="doppelganger" target="_blank">D</a>)' % urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id}),
+                '<a href="%s" title="user page">U</a>, ' % reverse('admin:auth_user_change', args=(u.id,)),
+                '<a href="%s" title="doppelganger" target="_blank">D</a>)' % reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id}),
             ]
             return ' '.join(links)
     _user.allow_tags = True
@@ -564,7 +575,7 @@ class RefundAdmin(admin.ModelAdmin):
     def _order(self, o):
         data = self.orderitems[o.id]
         if data:
-            url = urlresolvers.reverse('admin:assopy_order_change', args=(data[0].order.id,))
+            url = reverse('admin:assopy_order_change', args=(data[0].order.id,))
             return '<a href="%s">%s</a> del %s' % (url, data[0].order.code, data[0].order.created.strftime('%Y-%m-%d'))
         else:
             return ''
@@ -574,7 +585,7 @@ class RefundAdmin(admin.ModelAdmin):
         i = o.invoice
         if not i:
             return ''
-        rev = urlresolvers.reverse
+        rev = reverse
         url = rev('admin:assopy_invoice_change', args=(i.id,))
         download = rev('assopy-invoice-pdf', kwargs={'order_code': i.order.code, 'code': i.code})
         return '<a href="%s">%s</a> (<a href="%s">pdf</a>)' % (url, i, download)
@@ -585,7 +596,7 @@ class RefundAdmin(admin.ModelAdmin):
         c = o.credit_note
         if not c:
             return ''
-        rev = urlresolvers.reverse
+        rev = reverse
         download = rev('assopy-credit_note-pdf', kwargs={'order_code': o.invoice.order.code, 'code': c.code})
         return '%s (<a href="%s">pdf</a>)' % (c, download)
     _cnote.allow_tags = True
@@ -691,7 +702,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 
     def _order(self, o):
         order = o.order
-        url = urlresolvers.reverse('admin:assopy_order_change', args=(order.id,))
+        url = reverse('admin:assopy_order_change', args=(order.id,))
         return '<a href="%s">%s</a>' % (url, order.code)
     _order.allow_tags = True
     _order.admin_order_field = 'order'
@@ -699,8 +710,8 @@ class InvoiceAdmin(admin.ModelAdmin):
     def _user(self, o):
         u = o.order.user.user
         name = '%s %s' % (u.first_name, u.last_name)
-        admin_url = urlresolvers.reverse('admin:auth_user_change', args=(u.id,))
-        dopp_url = urlresolvers.reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id})
+        admin_url = reverse('admin:auth_user_change', args=(u.id,))
+        dopp_url = reverse('admin:auser-create-doppelganger', kwargs={'uid': u.id})
         html = '<a href="%s">%s</a> (<a href="%s">D</a>)' % (admin_url, name, dopp_url)
         if o.order.card_name != name:
             html += ' - ' + o.order.card_name
@@ -710,8 +721,8 @@ class InvoiceAdmin(admin.ModelAdmin):
 
     def _invoice(self, i):
         fake = not i.payment_date
-        view = urlresolvers.reverse('assopy-invoice-html', kwargs={'order_code': i.order.code, 'code': i.code})
-        download = urlresolvers.reverse('assopy-invoice-pdf', kwargs={'order_code': i.order.code, 'code': i.code})
+        view = reverse('assopy-invoice-html', kwargs={'order_code': i.order.code, 'code': i.code})
+        download = reverse('assopy-invoice-pdf', kwargs={'order_code': i.order.code, 'code': i.code})
         return '<a href="%s">View</a> - <a href="%s">Download</a> %s' % (view, download, '[Not payed]' if fake else '')
     _invoice.allow_tags = True
     _invoice.short_description = 'Download'
@@ -764,6 +775,47 @@ class InvoiceAdmin(admin.ModelAdmin):
         response['Content-Disposition'] = 'attachment; filename=fatture.csv'
         return response
     do_csv_invoices.short_description = 'Download invoices as csv'
+
+    def get_urls(self):
+        urls = super().get_urls()
+        admin_view = self.admin_site.admin_view
+        my_urls = [
+            url(
+                r'^(?P<invoice_id>.+)/regenerate$',
+                admin_view(self.regenerate_invoice),
+                name='assopy-invoice-regenerate'
+            ),
+            url(
+                r'^(?P<invoice_id>.+)/order',
+                admin_view(self.associated_order),
+                name='assopy-invoice-associated-order'
+            ),
+            url(
+                r'^(?P<invoice_id>.+)/preview',
+                admin_view(self.preview),
+                name='assopy-invoice-preview'
+            ),
+        ]
+        return my_urls + urls
+
+    def regenerate_invoice(self, request, invoice_id):
+        invoice = models.Invoice.objects.get(pk=invoice_id)
+
+        invoice.html = render_invoice_as_html(invoice)
+        invoice.save()
+
+        messages.add_message(request, messages.SUCCESS, 'Invoice regenerated successfully.')
+        return redirect ('.')
+
+    def associated_order(self, request, invoice_id):
+        invoice = models.Invoice.objects.get(pk=invoice_id)
+
+        return redirect('admin:assopy_order_change', invoice.order.id)
+
+    def preview(self, request, invoice_id):
+        invoice = models.Invoice.objects.get(pk=invoice_id)
+
+        return redirect('assopy-invoice-html', order_code=invoice.order.code, code=invoice.code)
 
 
 class InvoiceLogAdmin(admin.ModelAdmin):
