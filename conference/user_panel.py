@@ -70,7 +70,7 @@ def manage_ticket(request, ticket_id):
     )
 
     ticket_configuration_form = TicketConferenceConfigForm(
-        instance=ticket_configuration, initial={"name": request.user.assopy_user.name()}
+        instance=ticket_configuration, initial={"name": ticket.name}
     )
 
     if request.method == "POST":
@@ -101,7 +101,7 @@ def assign_ticket(request, ticket_id):
     if ticket.user != request.user:
         return HttpResponse("Can't do", status=403)
 
-    assignment_form = AssignTicketForm()
+    assignment_form = AssignTicketForm(initial={'email': ticket.assigned_email})
 
     if request.method == "POST":
         assignment_form = AssignTicketForm(request.POST)

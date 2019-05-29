@@ -3,22 +3,7 @@ from django.conf import settings
 from django.db.models import Q
 from conference.models import Ticket
 from conference.fares import FARE_CODE_REGEXES, FARE_CODE_VARIANTS
-
-
-def assign_ticket_to_user(ticket, user):
-    ticket.user = user
-    ticket.name = user.assopy_user.name()
-    ticket.save()
-    try:
-        ticket.p3_conference
-    except TicketConference.DoesNotExist:
-        TicketConference.objects.create(ticket=ticket, name=ticket.name)
-        ticket.refresh_from_db()
-
-    ticket.p3_conference.assigned_to = user.email
-    ticket.p3_conference.save()
-    return ticket
-
+from p3.utils import assign_ticket_to_user
 
 # TODO: Move this somewhere else. Settings maybe(?)
 DEFAULT_SHIRT_SIZE = "l"

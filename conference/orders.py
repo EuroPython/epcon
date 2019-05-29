@@ -10,7 +10,7 @@ from assopy.models import Order, OrderItem, Coupon, ORDER_TYPE
 from conference.models import Ticket, Conference
 
 from .fares import get_available_fares_as_dict, FareIsNotAvailable
-
+from p3.utils import assign_ticket_to_user
 
 ORDER_CODE_PREFIX = "O/"
 ORDER_CODE_TEMPLATE = "O/%(year_two_digits)s.%(sequential_id)s"
@@ -89,6 +89,7 @@ def create_order(
                 # other way around.
                 ticket = Ticket.objects.create(user=for_user, fare=fare,
                                                name=for_user.assopy_user.name())
+                assign_ticket_to_user(ticket=ticket, user=for_user)
 
                 OrderItem.objects.create(
                     order=order,
@@ -151,7 +152,7 @@ def calculate_order_price_including_discount(
     if not coupon:
         return OrderCalculation(full_total, full_total, 0), coupon
 
-    discounted_total = 0
+    discounted_total = full_total
     # TODO: FIXME
     INFINITE_AMOUNT = 9999
     times_per_order = coupon.items_per_usage or INFINITE_AMOUNT
@@ -167,14 +168,10 @@ def calculate_order_price_including_discount(
 
                 if times_per_order > 0:
                     discounted_price = (
-                        fares[fare_code].price * coupon.price_multiplier()
+                        fares[fare_code].price * coupon.discount_multiplier()
                     )
-                    discounted_total += discounted_price
+                    discounted_total -= discounted_price
                     times_per_order -= 1
-
-                else:
-                    full_price = fares[fare_code].price
-                    discounted_total += full_price
 
     return (
         OrderCalculation(

@@ -51,6 +51,7 @@ def assign_ticket_to_user(ticket, user=None):
 
     # Set attendee name on the ticket
     ticket.name = ('%s %s' % (user.first_name, user.last_name)).strip()
+    ticket.user = user
     ticket.save()
     # Also for p3c
     p3c.name = ticket.name
