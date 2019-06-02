@@ -6,8 +6,7 @@ from conference.models import FARE_TICKET_TYPES, Conference, Fare
 
 
 # due to historical reasons this one is basically hardcoded in various places.
-SOCIAL_EVENT_FARE_CODE = 'VOUPE03'
-SPECIAL_CODES = [SOCIAL_EVENT_FARE_CODE]
+SOCIAL_EVENT_FARE_CODE = "VOUPE03"
 
 FARE_CODE_TYPES = Choices(
     ("E", "EARLY_BIRD", "Early Bird"),
@@ -163,9 +162,13 @@ def set_early_bird_fare_dates(conference, start_date, end_date):
 
     early_birds = Fare.objects.filter(
         conference=conference,
-        code__regex=FARE_CODE_REGEXES['types'][FARE_CODE_TYPES.EARLY_BIRD]
+        code__regex=FARE_CODE_REGEXES["types"][FARE_CODE_TYPES.EARLY_BIRD],
     )
-    assert early_birds.count() == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS) == 3 * 5
+    assert (
+        early_birds.count()
+        == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS)
+        == 3 * 5
+    )
     early_birds.update(start_validity=start_date, end_validity=end_date)
 
 
@@ -176,5 +179,9 @@ def set_regular_fare_dates(conference, start_date, end_date):
         conference=conference,
         code__regex=FARE_CODE_REGEXES['types'][FARE_CODE_TYPES.REGULAR]
     )
-    assert fares.count() == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS) == 3 * 5
+    assert (
+        fares.count()
+        == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS)
+        == 3 * 5
+    )
     fares.update(start_validity=start_date, end_validity=end_date)

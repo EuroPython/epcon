@@ -20,6 +20,7 @@ from conference.models import StripePayment
 from .fares import (
     FARE_CODE_GROUPS,
     FARE_CODE_REGEXES,
+    FARE_TICKET_TYPES,
     FareIsNotAvailable,
     get_available_fares,
     is_fare_code_valid,
@@ -31,6 +32,7 @@ from .orders import (
     calculate_order_price_including_discount,
     create_order,
     is_business_order,
+    is_non_conference_ticket_order,
 )
 from .payments import PaymentError, charge_for_payment
 
@@ -121,7 +123,7 @@ def cart_step3_add_billing_info(request, order_uuid):
 
     order = get_object_or_404(Order, uuid=order_uuid)
 
-    if is_business_order(order):
+    if is_business_order(order) or is_non_conference_ticket_order(order):
         billing_form = BusinessBillingForm
     else:
         billing_form = PersonalBillingForm
@@ -256,11 +258,16 @@ def send_order_confirmation_email(order: Order, current_site) -> None:
 
 
 class TicketType:
+    """
+    NOTE(artcz): This should be in sync with assopy/models.py::ORDER_TYPE
+    """
     personal = "personal"
     company = "company"
     student = "student"
 
-    ALL = [personal, company, student]
+    CONFERENCE_OR_TRAINING = [personal, company, student]
+    OTHER = "other"
+    ALL = [personal, company, student, OTHER]
 
 
 class CartActions:
@@ -274,16 +281,25 @@ def get_available_fares_for_type(type_of_tickets):
 
     fares = get_available_fares(timezone.now().date())
 
-    if type_of_tickets == TicketType.personal:
-        regex_group = FARE_CODE_GROUPS.PERSONAL
+    if type_of_tickets in TicketType.CONFERENCE_OR_TRAINING:
 
-    if type_of_tickets == TicketType.company:
-        regex_group = FARE_CODE_GROUPS.COMPANY
+        if type_of_tickets == TicketType.personal:
+            regex_group = FARE_CODE_GROUPS.PERSONAL
 
-    if type_of_tickets == TicketType.student:
-        regex_group = FARE_CODE_GROUPS.STUDENT
+        if type_of_tickets == TicketType.company:
+            regex_group = FARE_CODE_GROUPS.COMPANY
 
-    fares = fares.filter(code__regex=FARE_CODE_REGEXES["groups"][regex_group])
+        if type_of_tickets == TicketType.student:
+            regex_group = FARE_CODE_GROUPS.STUDENT
+
+        fares = fares.filter(
+            code__regex=FARE_CODE_REGEXES["groups"][regex_group]
+        )
+
+    elif type_of_tickets == TicketType.OTHER:
+        fares = fares.exclude(
+            ticket_type=FARE_TICKET_TYPES.conference,
+        )
 
     return fares
 

@@ -635,7 +635,10 @@ ORDER_TYPE = Choices(
     ("company", "Company"),
     ("student", "Student"),
     ("personal", "Personal"),
+    # Other is for social events, sim cards, etc.
+    ("other", "Other"),
 )
+
 
 class Order(models.Model):
     # TODO(artcz) This should have unique=True as well once we backfill data
@@ -657,7 +660,15 @@ class Order(models.Model):
     _complete = models.BooleanField(default=False)
 
     # note libere che l'acquirente può inserire in fattura
-    billing_notes = models.TextField(blank=True)
+    billing_notes = models.TextField(
+        verbose_name="Additional billing notes",
+        help_text=(
+            "Notes that you want to put on the invoice. "
+            "Additional email address, employee name, things required by your "
+            "internal accounting department, etc."
+        ),
+        blank=True
+    )
 
     # Questi dati vengono copiati dallo User al fine di storicizzarli
     card_name = models.CharField(_('Card name'), max_length=200)
