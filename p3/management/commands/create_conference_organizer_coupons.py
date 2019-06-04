@@ -97,7 +97,7 @@ class Command(BaseCommand):
                 code = (
                     coupon_prefix
                     + "-"
-                    + "".join(random.sample(string.uppercase, 6))
+                    + "".join(random.sample(string.ascii_uppercase, 6))
                 )
                 if code not in codes:
                     codes.add(code)
