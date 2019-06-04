@@ -1,4 +1,3 @@
-
 """ Create EPS community discount coupons.
 
     Parameters: <conference> <count>
@@ -13,22 +12,24 @@
 """
 import string
 import random
-from optparse import make_option
+import csv
+import sys
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from conference import models as cmodels
+from conference.fares import FARE_CODE_REGEXES, FARE_CODE_VARIANTS
 from assopy.models import Coupon
 
 
-### Globals
+# ## Globals
 
 # Coupon prefix
-COUPON_PREFIX = 'EPS'
+COUPON_PREFIX = "EPS"
 
 # Discount
-EPS_COMMUNITY_DISCOUNT = '10%'
+EPS_COMMUNITY_DISCOUNT = "10%"
 
 # Max usage per coupon
 COUPON_MAX_USAGE = 50
@@ -38,45 +39,50 @@ COUPON_ITEMS_PER_USAGE = 1
 
 ###
 
+
 class Command(BaseCommand):
-
-    option_list = BaseCommand.option_list + (
-        make_option('--dry-run',
-                    action='store_true',
-                    dest='dry_run',
-                    help='Do everything except create the coupons',
-                    ),
-    )
-
-    args = '<conference> <count>'
 
     # Dry run ?
     dry_run = False
 
+    def add_arguments(self, parser):
+
+        # Positional arguments
+        parser.add_argument("conference")
+        parser.add_argument("count", type=int)
+
+        # Named (optional) arguments
+        parser.add_argument(
+            "--dry-run",
+            action="store_true",
+            dest="dry_run",
+            default=False,
+            help="Do everything except create the coupons",
+        )
+
     @transaction.atomic
     def handle(self, *args, **options):
 
-        self.dry_run = options.get('dry_run', False)
+        self.dry_run = options.get("dry_run", False)
 
-        try:
-            conference = cmodels.Conference.objects.get(code=args[0])
-        except IndexError:
-            raise CommandError('conference missing')
-
-        try:
-            number_of_coupons = int(args[1])
-        except IndexError:
-            raise CommandError('coupon count missing')
+        conference = cmodels.Conference.objects.get(code=options["conference"])
+        number_of_coupons = options["count"]
 
         # Valid fares (conference fares only)
-        fares = cmodels.Fare.objects\
-            .filter(conference=conference.code,
-                    ticket_type='conference')
+        fares = cmodels.Fare.objects.filter(
+            conference=conference.code,
+            code__regex=FARE_CODE_REGEXES["variants"][
+                FARE_CODE_VARIANTS.STANDARD
+            ],
+        )
 
         # Get set of existing codes
-        codes = set(c['code'] for c in Coupon.objects\
-            .filter(conference=conference.code)\
-            .values('code'))
+        codes = set(
+            c["code"]
+            for c in Coupon.objects.filter(conference=conference.code).values(
+                "code"
+            )
+        )
 
         # Create coupons
         data = []
@@ -87,39 +93,37 @@ class Command(BaseCommand):
 
             # Determine a new code
             while True:
-                # Codes: SPK-RANDOM
-                code = (coupon_prefix + '-'
-                        + ''.join(random.sample(string.uppercase, 6)))
+                # Codes: EPS-RANDOM
+                code = (
+                    coupon_prefix
+                    + "-"
+                    + "".join(random.sample(string.ascii_uppercase, 6))
+                )
                 if code not in codes:
                     codes.add(code)
                     break
 
             # Create coupon
-            c = Coupon(conference=conference)
-            c.code = code
-            c.max_usage = COUPON_MAX_USAGE
-            c.items_per_usage = COUPON_ITEMS_PER_USAGE
-            c.value = value
-            c.description = 'EPS Community Discount'
+            c = Coupon(
+                conference=conference,
+                code=code,
+                max_usage=COUPON_MAX_USAGE,
+                items_per_usage=COUPON_ITEMS_PER_USAGE,
+                value=value,
+                description="EPS Community Discount",
+            )
             if not self.dry_run:
                 c.save()
                 c.fares = fares
 
             # Build CSV data
-            data_row = (
-                c.code,
-                c.value,
-                c.max_usage,
-                c.items_per_usage,
-                )
+            data_row = (c.code, c.value, c.max_usage, c.items_per_usage)
             data.append(data_row)
 
-        # Output CSV data, UTF-8 encoded
-        data.insert(0, (
-            # Header
-            'code', 'value', 'max_usage', 'items_per_usage',
-            ))
+        header = "code", "value", "max_usage", "items_per_usage"
+        writer = csv.writer(sys.stdout)
+
+        writer.writerow(header)
+
         for row in data:
-            csv_data = ('"%s"' % (str(x).replace('"', '""'))
-                        for x in row)
-            print(','.join(csv_data).encode('utf-8'))
+            writer.writerow(row)
