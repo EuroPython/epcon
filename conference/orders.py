@@ -101,7 +101,8 @@ def create_order(
                     vat=vat,
                 )
 
-        if coupon:
+        # Don't add coupon to the order if no discount is applied.
+        if coupon and calculation.total_discount != 0:
             OrderItem.objects.create(
                 order=order,
                 # coupon=coupon,  # TODO
