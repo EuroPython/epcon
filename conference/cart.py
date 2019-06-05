@@ -46,7 +46,8 @@ def cart_step1_choose_type_of_order(request):
     This view is not login required because we want to display some summary of
     ticket prices here as well.
     """
-    context = {"show_special": "special" in TicketType.ALL}
+    special_fares = get_available_fares_for_type(TicketType.OTHER)
+    context = {"show_special": bool(special_fares)}
     return TemplateResponse(
         request, "ep19/bs/cart/step_1_choose_type_of_order.html", context
     )
