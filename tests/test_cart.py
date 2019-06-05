@@ -322,6 +322,36 @@ def test_cart_applies_discounts_correctly(db):
     assert False
 
 
+@mark.xfail
+def test_other_fares_button_not_shown_when_other_fares_invalid(db):
+    assert False
+
+
+@mark.xfail
+def test_other_fares_button_shown_when_other_fares_valid(db):
+    assert False
+
+
+@mark.xfail
+def test_other_fares_selection_shows_correct_fare_types(db):
+    assert False
+
+
+@mark.xfail
+def test_other_fares_can_be_added_to_cart(db):
+    assert False
+
+
+@mark.xfail
+def test_other_fares_tickets_cannot_be_reassigned(db):
+    assert False
+
+
+@mark.xfail
+def test_other_fares_tickets_cannot_be_managed(db):
+    assert False
+
+
 @mark.parametrize(
     "url",
     [

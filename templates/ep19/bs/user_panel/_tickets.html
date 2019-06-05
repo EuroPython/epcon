@@ -2,6 +2,7 @@
     <tr>
         <th>ID</th>
         <th>Code</th>
+        <th>Type</th>
         <th>Name</th>
         <th class='text-right'>Manage</th>
 
@@ -11,10 +12,13 @@
     <tr>
         <td>#{{ ticket.id }}</td>
         <td>{{ ticket.fare.code }}</td>
+        <td>{{ ticket.fare.name }}</td>
         <td>{{ ticket.p3_conference.name|default:ticket.user.assopy_user.name }}</td>
         <td class='text-right'>
+            {% if ticket.fare.is_conference %}
             <a class='btn btn-outline-primary' href='{% url "user_panel:manage_ticket" ticket.id %}'>Configure ticket</a>
             <a class='btn btn-outline-primary' href='{% url "user_panel:assign_ticket" ticket.id %}'>Assign ticket</a>
+            {% endif %}
         </td>
     </tr>
     {% endfor %}{# ticket in tickets #}
