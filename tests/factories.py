@@ -17,7 +17,13 @@ from django.utils import timezone
 
 import conference.models
 from assopy.models import Vat, VatFare
-from conference.models import AttendeeProfile, Conference, Ticket, TALK_LANGUAGES, TICKET_TYPE
+from conference.models import (
+    AttendeeProfile,
+    Conference,
+    Ticket,
+    TALK_LANGUAGES,
+    TICKET_TYPE,
+)
 from conference.fares import ALL_POSSIBLE_FARE_CODES
 from p3.models import TICKET_CONFERENCE_SHIRT_SIZES, TICKET_CONFERENCE_DIETS
 
@@ -31,28 +37,30 @@ DEFAULT_VAT_RATE = "20"  # 20%
 
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'auth.User'
+        model = "auth.User"
 
     username = factory.fuzzy.FuzzyText()
     password = factory.PostGenerationMethodCall("set_password", "123456")
     is_active = True
     email = factory.fuzzy.FuzzyText(suffix="@bar.it")
-    assopy_user = factory.RelatedFactory('tests.factories.AssopyUserFactory', 'user')
+    assopy_user = factory.RelatedFactory("tests.factories.AssopyUserFactory", "user")
 
 
 class AssopyUserFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'assopy.AssopyUser'
+        model = "assopy.AssopyUser"
 
-    user = factory.SubFactory(UserFactory, assopy_user=factory.LazyAttribute(lambda assopy_user: assopy_user))
+    user = factory.SubFactory(
+        UserFactory, assopy_user=factory.LazyAttribute(lambda assopy_user: assopy_user)
+    )
 
 
 class CountryFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'assopy.Country'
+        model = "assopy.Country"
 
-    iso = factory.Faker('country_code')
-    name = factory.Faker('country')
+    iso = factory.Faker("country_code")
+    name = factory.Faker("country")
 
 
 class VatFactory(factory.django.DjangoModelFactory):
@@ -111,7 +119,9 @@ class VatFareFactory(factory.django.DjangoModelFactory):
         model = "assopy.VatFare"
 
     vat = factory.SubFactory(VatFactory)
-    fare = factory.SubFactory(FareFactory, vats=factory.LazyAttribute(lambda vat_fare: vat_fare))
+    fare = factory.SubFactory(
+        FareFactory, vats=factory.LazyAttribute(lambda vat_fare: vat_fare)
+    )
 
 
 class TicketFactory(factory.django.DjangoModelFactory):
@@ -130,7 +140,7 @@ class OrderItemFactory(factory.django.DjangoModelFactory):
     vat = factory.SubFactory(VatFactory)
     # NOTE umgelurgel (2018-10-20)
     # As this depends on `OrderFactory` to work independently, this factory is not independent either.
-    order = factory.SubFactory('tests.factories.OrderFactory')
+    order = factory.SubFactory("tests.factories.OrderFactory")
 
 
 class OrderFactory(factory.django.DjangoModelFactory):
@@ -151,35 +161,37 @@ class OrderFactory(factory.django.DjangoModelFactory):
 
     @factory.lazy_attribute
     def address(self):
-        return '\n'.join([fake.address(), self.country.name])
+        return "\n".join([fake.address(), self.country.name])
 
 
 class AssopyUserFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'assopy.AssopyUser'
+        model = "assopy.AssopyUser"
 
     user = factory.SubFactory(auth_factories.UserFactory)
 
 
 class CreditCardOrderFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'assopy.Order'
+        model = "assopy.Order"
 
     user = factory.SubFactory(AssopyUserFactory)
 
-    payment = 'cc' # cc because stripe is a credit card
+    payment = "cc"  # cc because stripe is a credit card
     items = []
 
 
 class CouponFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'assopy.Coupon'
+        model = "assopy.Coupon"
 
     conference = factory.Iterator(conference.models.Conference.objects.all())
-    value = '10%'
+    value = "10%"
     code = factory.LazyAttribute(lambda _: uuid.uuid4().hex)
     start_validity = factory.LazyAttribute(lambda _: timezone.now().date())
-    end_validity = factory.LazyAttribute(lambda _: timezone.now().date() + timedelta(days=1))
+    end_validity = factory.LazyAttribute(
+        lambda _: timezone.now().date() + timedelta(days=1)
+    )
 
     @factory.post_generation
     def fares(self, create, extracted, **kwargs):
@@ -195,10 +207,12 @@ class CouponFactory(factory.django.DjangoModelFactory):
 
 class AttendeeProfileFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'conference.AttendeeProfile'
+        model = "conference.AttendeeProfile"
 
     user = factory.SubFactory(auth_factories.UserFactory)
-    slug = factory.LazyAttribute(lambda a: slugify("%s %s" % (a.user.first_name, a.user.last_name)))
+    slug = factory.LazyAttribute(
+        lambda a: slugify("%s %s" % (a.user.first_name, a.user.last_name))
+    )
 
     @factory.lazy_attribute
     def uuid(self):
@@ -209,64 +223,75 @@ class AttendeeProfileFactory(factory.django.DjangoModelFactory):
 
 class ConferenceTagFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'conference.ConferenceTag'
+        model = "conference.ConferenceTag"
 
-    category = factory.Faker('word')
-    name = factory.Faker('word')
+    category = factory.Faker("word")
+    name = factory.Faker("word")
 
 
 class ConferenceTaggedItemFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'conference.ConferenceTaggedItem'
+        model = "conference.ConferenceTaggedItem"
 
     tag = factory.SubFactory(ConferenceTagFactory)
 
 
 class ConferenceFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'conference.Conference'
+        model = "conference.Conference"
 
     code = settings.CONFERENCE_CONFERENCE
-    name = factory.Faker('sentence', nb_words=6, variable_nb_words=True)
+    name = factory.Faker("sentence", nb_words=6, variable_nb_words=True)
 
-    cfp_start = factory.LazyAttribute(lambda conf: conf.conference_start - datetime.timedelta(days=50))
-    cfp_end = factory.LazyAttribute(lambda conf: conf.cfp_start + datetime.timedelta(days=+20))
+    cfp_start = factory.LazyAttribute(
+        lambda conf: conf.conference_start - datetime.timedelta(days=50)
+    )
+    cfp_end = factory.LazyAttribute(
+        lambda conf: conf.cfp_start + datetime.timedelta(days=+20)
+    )
 
     @factory.lazy_attribute
     def conference_start(self):
         return fake.date_time_this_decade(before_now=True, after_now=True).date()
-    # conference_start = factory.Faker('date_time_this_decade', before_now=True, after_now=True)
-    conference_end = factory.LazyAttribute(lambda conf: (conf.conference_start + datetime.timedelta(days=+5)))
 
-    voting_start = factory.LazyAttribute(lambda conf: conf.cfp_end + datetime.timedelta(days=10))
-    voting_end = factory.LazyAttribute(lambda conf: conf.voting_start + datetime.timedelta(days=5))
+    # conference_start = factory.Faker('date_time_this_decade', before_now=True, after_now=True)
+    conference_end = factory.LazyAttribute(
+        lambda conf: (conf.conference_start + datetime.timedelta(days=+5))
+    )
+
+    voting_start = factory.LazyAttribute(
+        lambda conf: conf.cfp_end + datetime.timedelta(days=10)
+    )
+    voting_end = factory.LazyAttribute(
+        lambda conf: conf.voting_start + datetime.timedelta(days=5)
+    )
 
 
 class TicketFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'conference.Ticket'
+        model = "conference.Ticket"
 
     user = factory.SubFactory(auth_factories.UserFactory)
-    name = factory.Faker('sentence', nb_words=4, variable_nb_words=True)
+    name = factory.Faker("sentence", nb_words=4, variable_nb_words=True)
     fare = factory.SubFactory(FareFactory)
-    frozen = factory.Faker('random_element', elements=(True, False))
+    frozen = factory.Faker("random_element", elements=(True, False))
     ticket_type = Iterator(TICKET_TYPE)
 
 
 class SponsorFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'conference.Sponsor'
+        model = "conference.Sponsor"
 
-    sponsor = factory.Faker('company')
+    sponsor = factory.Faker("company")
     slug = factory.LazyAttribute(lambda sponsor: slugify(sponsor.sponsor))
-    url = factory.Faker('url')
+    url = factory.Faker("url")
     # By default the ImageField will create a mono-colour square.
-    logo = factory.django.ImageField(width=190, height=90, color='green', format='PNG')
+    logo = factory.django.ImageField(width=190, height=90, color="green", format="PNG")
 
 
 class SponsorIncomeFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'conference.SponsorIncome'
+        model = "conference.SponsorIncome"
 
     sponsor = factory.SubFactory(SponsorFactory)
     conference = factory.SubFactory(ConferenceFactory)
@@ -274,7 +299,6 @@ class SponsorIncomeFactory(factory.django.DjangoModelFactory):
 
 
 class TalkFactory(factory.django.DjangoModelFactory):
-
     class Meta:
         model = conference.models.Talk
 
@@ -287,28 +311,14 @@ class TalkFactory(factory.django.DjangoModelFactory):
 
     duration = 30
 
-    uuid = factory.LazyAttribute(
-        lambda t: conference.models.random_shortuuid()
-    )
-    slug = factory.LazyAttribute(
-        (lambda talk: f"{talk.uuid}-{slugify(talk.title)}")
-    )
-    level = factory.Iterator(
-        conference.models.TALK_LEVEL, getter=lambda x: x[0]
-    )
-    abstract_short = factory.Faker(
-        "sentence", nb_words=50, variable_nb_words=True
-    )
-    abstract_extra = factory.Faker(
-        "sentence", nb_words=10, variable_nb_words=True
-    )
-    status = factory.Iterator(
-        conference.models.TALK_STATUS, getter=lambda x: x[0]
-    )
+    uuid = factory.LazyAttribute(lambda t: conference.models.random_shortuuid())
+    slug = factory.LazyAttribute((lambda talk: f"{talk.uuid}-{slugify(talk.title)}"))
+    level = factory.Iterator(conference.models.TALK_LEVEL, getter=lambda x: x[0])
+    abstract_short = factory.Faker("sentence", nb_words=50, variable_nb_words=True)
+    abstract_extra = factory.Faker("sentence", nb_words=10, variable_nb_words=True)
+    status = factory.Iterator(conference.models.TALK_STATUS, getter=lambda x: x[0])
     conference = factory.Iterator(
-        conference.models.Conference.objects.all().values_list(
-            "code", flat=True
-        )
+        conference.models.Conference.objects.all().values_list("code", flat=True)
     )
     language = factory.Iterator(TALK_LANGUAGES, getter=lambda x: x[0])
 
@@ -321,13 +331,12 @@ class TalkFactory(factory.django.DjangoModelFactory):
 
 class SpeakerFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'conference.Speaker'
+        model = "conference.Speaker"
 
     user = factory.SubFactory(auth_factories.UserFactory)
 
 
 class TalkSpeakerFactory(factory.django.DjangoModelFactory):
-
     class Meta:
         model = "conference.TalkSpeaker"
 
@@ -336,7 +345,6 @@ class TalkSpeakerFactory(factory.django.DjangoModelFactory):
 
 
 class CommentFactory(factory.DjangoModelFactory):
-
     class Meta:
         model = "django_comments.Comment"
 
@@ -346,61 +354,69 @@ class CommentFactory(factory.DjangoModelFactory):
 
 
 class MessageFactory(object):
-    subject = factory.Faker('sentence', nb_words=6, variable_nb_words=True, ext_word_list=None)
-    message = factory.Faker('paragraph', nb_sentences=3, variable_nb_sentences=True, ext_word_list=None)
+    subject = factory.Faker(
+        "sentence", nb_words=6, variable_nb_words=True, ext_word_list=None
+    )
+    message = factory.Faker(
+        "paragraph", nb_sentences=3, variable_nb_sentences=True, ext_word_list=None
+    )
 
 
 class P3ProfileFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'p3.P3Profile'
+        model = "p3.P3Profile"
 
     profile = factory.RelatedFactory(AttendeeProfileFactory)
 
 
 class ScheduleFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'conference.Schedule'
+        model = "conference.Schedule"
 
     # NOTE umgelurgel 22-10-2018
     # This assumes the conference exists which can lead to failures during tests
     # Should be replaced with a get_or_create
     conference = factory.Iterator(
-        Conference.objects.all().values_list('code', flat=True)
+        Conference.objects.all().values_list("code", flat=True)
     )
-    slug = factory.LazyAttribute(lambda conference: slugify(fake.sentence(nb_words=6, variable_nb_words=True)[:50]))
+    slug = factory.LazyAttribute(
+        lambda conference: slugify(
+            fake.sentence(nb_words=6, variable_nb_words=True)[:50]
+        )
+    )
 
-    date = factory.Faker('date_time_this_decade', before_now=True, after_now=True)
+    date = factory.Faker("date_time_this_decade", before_now=True, after_now=True)
 
 
 class P3TalkFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'p3.P3Talk'
+        model = "p3.P3Talk"
 
     talk = factory.SubFactory(TalkFactory)
 
 
 class TicketConferenceFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'p3.TicketConference'
+        model = "p3.TicketConference"
 
     ticket = factory.SubFactory(Ticket)
-    diet = factory.Iterator(TICKET_CONFERENCE_DIETS, getter=lambda x:x[0])
+    diet = factory.Iterator(TICKET_CONFERENCE_DIETS, getter=lambda x: x[0])
     shirt_size = factory.Iterator(TICKET_CONFERENCE_SHIRT_SIZES, getter=lambda x: x[0])
 
 
 class TrackFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'conference.Track'
+        model = "conference.Track"
 
     schedule = factory.SubFactory(ScheduleFactory)
 
-    track = factory.Sequence(lambda x: 'track%05d' % x)
+    track = factory.Sequence(lambda x: "track%05d" % x)
     seats = 100
 
 
 class EventFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'conference.Event'
+        model = "conference.Event"
 
     schedule = factory.SubFactory(ScheduleFactory)
     talk = factory.SubFactory(TalkFactory)
@@ -409,12 +425,12 @@ class EventFactory(factory.django.DjangoModelFactory):
 
 class EventTrackFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = 'conference.EventTrack'
+        model = "conference.EventTrack"
 
     track = factory.SubFactory(TrackFactory)
     event = factory.SubFactory(EventFactory)
 
 
 class TrackWithEventsFactory(TrackFactory):
-    event1 = factory.RelatedFactory(EventTrackFactory, 'event')
-    event2 = factory.RelatedFactory(EventTrackFactory, 'event')
+    event1 = factory.RelatedFactory(EventTrackFactory, "event")
+    event2 = factory.RelatedFactory(EventTrackFactory, "event")
