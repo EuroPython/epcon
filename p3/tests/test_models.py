@@ -4,12 +4,15 @@ import mock
 from django.test import TestCase
 from django_factory_boy import auth as auth_factories
 
-from conference.tests.factories.attendee_profile import AttendeeProfileFactory
-from conference.tests.factories.conference import ConferenceFactory
-from conference.tests.factories.fare import TicketFactory, FareFactory
 from p3.models import TicketConference
 from p3.models import P3Profile
-from p3.tests.factories.ticket_conference import TicketConferenceFactory
+from tests.factories import (
+    AttendeeProfileFactory,
+    ConferenceFactory,
+    TicketFactory,
+    FareFactory,
+    TicketConferenceFactory
+)
 
 
 class TicketConferenceModelTestCase(TestCase):

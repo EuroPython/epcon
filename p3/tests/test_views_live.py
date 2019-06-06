@@ -3,13 +3,11 @@ import datetime
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 
-from conference.tests.factories.attendee_profile import AttendeeProfileFactory
-from conference.tests.factories.conference import ConferenceFactory
-
 from django_factory_boy import auth as auth_factories
 
-from p3.tests.factories.schedule import ScheduleFactory
-from p3.tests.factories.track import TrackFactory
+from tests.factories import (
+    AttendeeProfileFactory, ConferenceFactory, ScheduleFactory, TrackFactory,
+)
 
 
 class TestLiveViews(TestCase):

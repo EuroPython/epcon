@@ -6,13 +6,13 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 
 from conference.models import Conference, Talk, TALK_TYPE_CHOICES, TALK_LEVEL
-from conference.tests.factories.talk import TalkFactory
 from conference.cfp import (
     dump_relevant_talk_information_to_dict,
     AddSpeakerToTalkForm,
 )
 
 from tests.common_tools import redirects_to, template_used
+from tests.factories import TalkFactory
 
 pytestmark = mark.django_db
 

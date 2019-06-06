@@ -6,11 +6,8 @@ from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
-
-from assopy.stripe.tests.factories import UserFactory
 from conference.models import TALK_STATUS, TALK_LEVEL
-from conference.tests.factories.talk import TalkFactory
-from conference.tests.factories.conference import ConferenceTagFactory
+from tests.factories import UserFactory, TalkFactory, ConferenceTagFactory
 from tests.common_tools import setup_conference_with_typical_fares, redirects_to, template_used
 
 pytestmark = [pytest.mark.django_db]

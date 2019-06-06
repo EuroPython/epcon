@@ -17,7 +17,7 @@ from django.contrib.auth.models import User
 
 from django_factory_boy import auth as auth_factories
 
-from assopy.tests.factories.user import AssopyUserFactory
+from tests.factories import AssopyUserFactory
 from conference.models import (
     Conference,
     Talk,

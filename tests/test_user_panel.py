@@ -9,10 +9,8 @@ from django.core.urlresolvers import reverse
 import responses
 
 from assopy.models import Invoice, Order, OrderItem
-from assopy.stripe.tests.factories import FareFactory, OrderFactory, UserFactory
 from conference.models import Ticket, Conference, FARE_TICKET_TYPES
 from conference.invoicing import create_invoices_for_order
-from conference.tests.factories.fare import TicketFactory
 from p3.models import TicketConference
 
 from email_template.models import Email
@@ -23,6 +21,7 @@ from conference.currencies import (
 )
 
 from tests.common_tools import make_user, setup_conference_with_typical_fares, create_valid_ticket_for_user_and_fare
+from tests.factories import FareFactory, OrderFactory, TicketFactory, UserFactory
 
 pytestmark = [pytest.mark.django_db]
 

@@ -1,4 +1,5 @@
 import mock
+
 from django.conf import settings
 from django.template import Context
 from django.test import RequestFactory
@@ -7,11 +8,9 @@ from django.test import TestCase
 from conference.templatetags.conference import (
     conference_js_data, _lang, get_deadlines, conference_talks,
 )
-
-from conference.tests.factories.conference import (
-    ConferenceFactory, ConferenceTagFactory,
+from tests.factories import (
+    ConferenceFactory, ConferenceTagFactory, TalkFactory
 )
-from conference.tests.factories.talk import TalkFactory
 
 
 class PrivateFunctionsTestCase(TestCase):

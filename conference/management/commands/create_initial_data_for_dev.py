@@ -14,7 +14,6 @@ from django.utils import lorem_ipsum, timezone
 from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
 from assopy.models import AssopyUser, Country, Vat
-from assopy.stripe.tests.factories import OrderFactory
 from conference.fares import pre_create_typical_fares_for_conference
 from conference.models import (
     Conference,
@@ -25,14 +24,11 @@ from conference.models import (
     Speaker,
     ExchangeRate,
 )
-from conference.tests.factories.fare import SponsorIncomeFactory, TicketFactory
-from conference.tests.factories.talk import TalkFactory
 from conference.cfp import add_speaker_to_talk
 from conference.accounts import get_or_create_attendee_profile_for_new_user
 from conference.fares import set_early_bird_fare_dates, set_other_fares_dates
 
-
-DEFAULT_VAT_RATE = "20"  # 20%
+from tests.factories import SponsorIncomeFactory, TalkFactory, DEFAULT_VAT_RATE, OrderFactory
 
 
 class Command(BaseCommand):

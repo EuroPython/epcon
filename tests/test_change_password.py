@@ -6,11 +6,10 @@ from django.conf import settings
 
 from django_factory_boy import auth as auth_factories
 
-# TODO: clean up this import path
-from assopy.tests.factories.user import AssopyUserFactory
 from conference.models import AttendeeProfile, Conference
 
 from tests.common_tools import template_used
+from tests.factories import AssopyUserFactory
 
 
 @mark.django_db

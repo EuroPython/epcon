@@ -5,9 +5,8 @@ from datetime import timedelta
 from django.conf import settings
 from django.utils import timezone
 from tests.common_tools import template_used
-from conference.models import Conference, News
-from conference.tests.factories.conference import ConferenceFactory
-from conference.tests.factories.fare import SponsorFactory
+from conference.models import News
+from tests.factories import ConferenceFactory, SponsorFactory
 
 
 def test_get_homepage(db, client):

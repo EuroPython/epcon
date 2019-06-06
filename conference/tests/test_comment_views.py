@@ -5,9 +5,9 @@ from pytest import mark
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 
-from conference.tests.factories.conference import ConferenceFactory
-from conference.tests.factories.talk import TalkFactory, CommentFactory
-from p3.tests.factories.talk import P3TalkFactory
+from tests.factories import (
+    ConferenceFactory, TalkFactory, CommentFactory, P3TalkFactory,
+)
 from tests.common_tools import make_user, redirects_to
 
 

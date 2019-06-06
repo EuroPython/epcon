@@ -5,7 +5,7 @@ from mock import patch
 from django_factory_boy import auth as auth_factories
 
 from assopy.models import AssopyUser, Order
-from assopy.tests.factories.order import CreditCardOrderFactory
+from tests.factories import CreditCardOrderFactory
 
 
 class StripeViewTestCase(TestCase):

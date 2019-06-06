@@ -6,8 +6,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django_factory_boy import auth as auth_factories
 
-from conference.tests.factories.attendee_profile import AttendeeProfileFactory
-from p3.tests.factories.message import MessageFactory
+from tests.factories import AttendeeProfileFactory, MessageFactory
 
 
 class TestView(TestCase):

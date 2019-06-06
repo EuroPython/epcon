@@ -1,5 +1,7 @@
+import unittest
 
-
+import pytest
+import stripe
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -9,14 +11,9 @@ from django.utils import timezone
 # from selenium.webdriver.firefox.webdriver import WebDriver
 # from selenium.webdriver.support.wait import WebDriverWait
 
-import stripe
-
 from assopy.models import Order
+from tests import factories as f
 
-from . import factories as f
-
-import unittest
-import pytest
 
 @pytest.mark.skip(reason="Update these tests because do not match the reality")
 @unittest.skip("Update these tests because do not match the reality")
