@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 
+from django_factory_boy.auth import UserFactory
 from pytest import mark, raises
 
 from django.core.urlresolvers import reverse
@@ -17,6 +18,7 @@ from conference.fares import (
     set_early_bird_fare_dates,
     set_regular_fare_dates,
 )
+from conference.tests.factories.fare import TicketFactory
 from p3.models import TicketConference
 from tests.common_tools import redirects_to, template_used
 
@@ -336,3 +338,18 @@ def test_if_cfp_pages_are_login_required(db, client, url):
 
     assert response.status_code == 302
     assert redirects_to(response, "/accounts/login/")
+
+
+def test_assigning_tickets_uses_case_insensitive_email_address(db, user_client):
+    _setup()
+    ticket = TicketFactory(user=user_client.user)
+    target_email = 'MiXeDc4sE@test.tESt'
+    target_user = UserFactory(email=target_email.lower())
+
+    url = reverse('user_panel:assign_ticket', args=[ticket.id])
+    payload = {'email': target_email}
+    response = user_client.post(url, payload, follow=True)
+
+    assert response.status_code == 200
+    ticket.refresh_from_db()
+    assert ticket.user == target_user

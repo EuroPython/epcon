@@ -181,7 +181,7 @@ class AssignTicketForm(forms.Form):
         return self.cleaned_data["email"]
 
     def get_user(self):
-        return User.objects.get(email=self.cleaned_data["email"])
+        return User.objects.get(email__iexact=self.cleaned_data["email"])
 
 
 class CommaStringMultipleChoiceField(forms.MultipleChoiceField):
