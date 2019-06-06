@@ -15,14 +15,18 @@ from django.conf import settings
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
-import conference.models
 from assopy.models import Vat, VatFare
 from conference.models import (
     AttendeeProfile,
     Conference,
+    Fare,
+    Talk,
     Ticket,
     TALK_LANGUAGES,
     TICKET_TYPE,
+    TALK_LEVEL,
+    TALK_STATUS,
+    random_shortuuid,
 )
 from conference.fares import ALL_POSSIBLE_FARE_CODES
 from p3.models import TICKET_CONFERENCE_SHIRT_SIZES, TICKET_CONFERENCE_DIETS
@@ -185,7 +189,7 @@ class CouponFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "assopy.Coupon"
 
-    conference = factory.Iterator(conference.models.Conference.objects.all())
+    conference = factory.Iterator(Conference.objects.all())
     value = "10%"
     code = factory.LazyAttribute(lambda _: uuid.uuid4().hex)
     start_validity = factory.LazyAttribute(lambda _: timezone.now().date())
@@ -202,7 +206,7 @@ class CouponFactory(factory.django.DjangoModelFactory):
             for fare in extracted:
                 self.fares.add(fare)
         else:
-            self.fares.add(*conference.models.Fare.objects.all())
+            self.fares.add(*Fare.objects.all())
 
 
 class AttendeeProfileFactory(factory.django.DjangoModelFactory):
@@ -300,7 +304,7 @@ class SponsorIncomeFactory(factory.django.DjangoModelFactory):
 
 class TalkFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = conference.models.Talk
+        model = Talk
 
     title = factory.LazyAttribute(
         lambda talk: factory.Faker(
@@ -311,14 +315,14 @@ class TalkFactory(factory.django.DjangoModelFactory):
 
     duration = 30
 
-    uuid = factory.LazyAttribute(lambda t: conference.models.random_shortuuid())
+    uuid = factory.LazyAttribute(lambda t: random_shortuuid())
     slug = factory.LazyAttribute((lambda talk: f"{talk.uuid}-{slugify(talk.title)}"))
-    level = factory.Iterator(conference.models.TALK_LEVEL, getter=lambda x: x[0])
+    level = factory.Iterator(TALK_LEVEL, getter=lambda x: x[0])
     abstract_short = factory.Faker("sentence", nb_words=50, variable_nb_words=True)
     abstract_extra = factory.Faker("sentence", nb_words=10, variable_nb_words=True)
-    status = factory.Iterator(conference.models.TALK_STATUS, getter=lambda x: x[0])
+    status = factory.Iterator(TALK_STATUS, getter=lambda x: x[0])
     conference = factory.Iterator(
-        conference.models.Conference.objects.all().values_list("code", flat=True)
+        Conference.objects.all().values_list("code", flat=True)
     )
     language = factory.Iterator(TALK_LANGUAGES, getter=lambda x: x[0])
 
