@@ -40,7 +40,7 @@ class TicketConferenceModelTestCase(TestCase):
         profile = ticket_conference.profile()
         self.assertEqual(attendee_profile, profile)
 
-        ticket = TicketFactory(user=self.user)
+        ticket = TicketFactory(user=self.user, fare=ticket.fare)
         ticket_conference = TicketConferenceFactory(ticket=ticket, assigned_to=self.user.email)
         profile =ticket_conference.profile()
 

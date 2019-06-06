@@ -1,30 +1,42 @@
+import datetime
+import functools
 import random
+import uuid
+from datetime import timedelta
+from random import randint
 
-from django.utils import timezone
-import conference.models
 import factory
-from factory import fuzzy
+import factory.django
+import factory.fuzzy
+from django_factory_boy import auth as auth_factories
 from faker import Faker
 
+from django.conf import settings
+from django.template.defaultfilters import slugify
+from django.utils import timezone
+
+import conference.models
 from assopy.models import Vat, VatFare
-from conference.models import Conference
+from conference.models import AttendeeProfile, Conference, Ticket, TALK_LANGUAGES, TICKET_TYPE
 from conference.fares import ALL_POSSIBLE_FARE_CODES
-
-
-DEFAULT_VAT_RATE = "20"  # 20%
+from p3.models import TICKET_CONFERENCE_SHIRT_SIZES, TICKET_CONFERENCE_DIETS
 
 
 fake = Faker()
+Iterator = functools.partial(factory.Iterator, getter=lambda x: x[0])
+
+
+DEFAULT_VAT_RATE = "20"  # 20%
 
 
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'auth.User'
 
-    username = fuzzy.FuzzyText()
+    username = factory.fuzzy.FuzzyText()
     password = factory.PostGenerationMethodCall("set_password", "123456")
     is_active = True
-    email = fuzzy.FuzzyText(suffix="@bar.it")
+    email = factory.fuzzy.FuzzyText(suffix="@bar.it")
     assopy_user = factory.RelatedFactory('tests.factories.AssopyUserFactory', 'user')
 
 
@@ -142,25 +154,11 @@ class OrderFactory(factory.django.DjangoModelFactory):
         return '\n'.join([fake.address(), self.country.name])
 
 
-import factory
-from django_factory_boy import auth as auth_factories
-
-
 class AssopyUserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'assopy.AssopyUser'
 
     user = factory.SubFactory(auth_factories.UserFactory)
-
-
-from datetime import timedelta
-import uuid
-
-import factory
-
-from django.utils import timezone
-
-import conference.models
 
 
 class CreditCardOrderFactory(factory.django.DjangoModelFactory):
@@ -195,15 +193,6 @@ class CouponFactory(factory.django.DjangoModelFactory):
             self.fares.add(*conference.models.Fare.objects.all())
 
 
-import datetime
-
-import factory
-import factory.fuzzy
-
-from django.template.defaultfilters import slugify
-from django_factory_boy import auth as auth_factories
-
-
 class AttendeeProfileFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'conference.AttendeeProfile'
@@ -213,22 +202,9 @@ class AttendeeProfileFactory(factory.django.DjangoModelFactory):
 
     @factory.lazy_attribute
     def uuid(self):
-        from conference.models import AttendeeProfile
         return AttendeeProfile.objects.randomUUID(6)
 
     birthday = factory.fuzzy.FuzzyDate(start_date=datetime.date(1950, 1, 1))
-
-
-import datetime
-
-import factory
-import factory.django
-import factory.fuzzy
-from faker import Faker
-
-from django.conf import settings
-
-fake = Faker()
 
 
 class ConferenceTagFactory(factory.django.DjangoModelFactory):
@@ -266,36 +242,6 @@ class ConferenceFactory(factory.django.DjangoModelFactory):
     voting_end = factory.LazyAttribute(lambda conf: conf.voting_start + datetime.timedelta(days=5))
 
 
-import factory
-import factory.django
-
-from django.utils import timezone
-
-
-
-
-
-
-import functools
-from decimal import Decimal
-from random import randint
-
-import factory
-import factory.django
-from django.template.defaultfilters import slugify
-from django_factory_boy import auth as auth_factories
-from faker import Faker
-
-import conference.models
-from conference.models import FARE_PAYMENT_TYPE
-from conference.models import FARE_TICKET_TYPES
-from conference.models import FARE_TYPES
-from conference.models import TICKET_TYPE
-
-fake = Faker()
-Iterator = functools.partial(factory.Iterator, getter=lambda x: x[0])
-
-
 class TicketFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'conference.Ticket'
@@ -325,31 +271,6 @@ class SponsorIncomeFactory(factory.django.DjangoModelFactory):
     sponsor = factory.SubFactory(SponsorFactory)
     conference = factory.SubFactory(ConferenceFactory)
     income = factory.LazyAttribute(lambda f: randint(1000, 10000))
-
-
-import factory
-
-
-import factory.django
-
-from django_factory_boy import auth as auth_factories
-
-
-class SpeakerFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = 'conference.Speaker'
-
-    user = factory.SubFactory(auth_factories.UserFactory)
-
-
-import factory
-import factory.django
-import factory.fuzzy
-from django.conf import settings
-from django.template.defaultfilters import slugify
-
-import conference.models
-from conference.models import TALK_LANGUAGES
 
 
 class TalkFactory(factory.django.DjangoModelFactory):
@@ -398,6 +319,13 @@ class TalkFactory(factory.django.DjangoModelFactory):
         )
 
 
+class SpeakerFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = 'conference.Speaker'
+
+    user = factory.SubFactory(auth_factories.UserFactory)
+
+
 class TalkSpeakerFactory(factory.django.DjangoModelFactory):
 
     class Meta:
@@ -417,15 +345,9 @@ class CommentFactory(factory.DjangoModelFactory):
     content_object = factory.SubFactory(TalkFactory)
 
 
-import factory
-
-
 class MessageFactory(object):
     subject = factory.Faker('sentence', nb_words=6, variable_nb_words=True, ext_word_list=None)
     message = factory.Faker('paragraph', nb_sentences=3, variable_nb_sentences=True, ext_word_list=None)
-
-
-import factory
 
 
 class P3ProfileFactory(factory.django.DjangoModelFactory):
@@ -433,15 +355,6 @@ class P3ProfileFactory(factory.django.DjangoModelFactory):
         model = 'p3.P3Profile'
 
     profile = factory.RelatedFactory(AttendeeProfileFactory)
-
-
-import factory
-from django.template.defaultfilters import slugify
-
-from conference.models import Conference
-
-from faker import Faker
-fake = Faker()
 
 
 class ScheduleFactory(factory.django.DjangoModelFactory):
@@ -459,21 +372,11 @@ class ScheduleFactory(factory.django.DjangoModelFactory):
     date = factory.Faker('date_time_this_decade', before_now=True, after_now=True)
 
 
-import factory
-
-
-
 class P3TalkFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'p3.P3Talk'
 
     talk = factory.SubFactory(TalkFactory)
-
-
-import factory
-
-from conference.models import Ticket
-from p3.models import TICKET_CONFERENCE_SHIRT_SIZES, TICKET_CONFERENCE_DIETS
 
 
 class TicketConferenceFactory(factory.django.DjangoModelFactory):
@@ -483,9 +386,6 @@ class TicketConferenceFactory(factory.django.DjangoModelFactory):
     ticket = factory.SubFactory(Ticket)
     diet = factory.Iterator(TICKET_CONFERENCE_DIETS, getter=lambda x:x[0])
     shirt_size = factory.Iterator(TICKET_CONFERENCE_SHIRT_SIZES, getter=lambda x: x[0])
-
-
-import factory
 
 
 class TrackFactory(factory.django.DjangoModelFactory):
