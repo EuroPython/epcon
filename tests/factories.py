@@ -7,6 +7,7 @@ from factory import fuzzy
 from faker import Faker
 
 from assopy.models import Vat, VatFare
+from conference.models import Conference
 from conference.fares import ALL_POSSIBLE_FARE_CODES
 
 
@@ -53,9 +54,16 @@ class FareFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "conference.Fare"
 
-    conference = "testconf"
-    # conference = factory.Iterator(conference.models.Conference.objects.all().values_list('code', flat=True))
     price = 10
+
+    @factory.lazy_attribute
+    def conference(self):
+        # If a conference instance exists, use its code; otherwise, use a hardcoded value
+        conference = Conference.objects.first()
+        if conference:
+            return conference.code
+        else:
+            return "testconf"
 
     @factory.lazy_attribute
     def code(self):

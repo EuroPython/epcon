@@ -130,9 +130,9 @@ def create_fare_for_conference(code, conference, price,
     fare, _ = Fare.objects.get_or_create(
         conference=conference.code,
         code=code,
-        name=name,
         defaults=dict(
             description=name,
+            name=name,
             price=price,
             recipient_type=recipient_type,
             ticket_type=ticket_type,
