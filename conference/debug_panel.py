@@ -90,7 +90,9 @@ def debug_panel_index(request):
         ('Python_Version',      platform.python_version()),
         ('Conference_current',  Conference.objects.current()),
         ('SOLD_TRAINING_TICKETS',
-         count_number_of_sold_training_tickets_including_combined_tickets()),
+         count_number_of_sold_training_tickets_including_combined_tickets(
+             conference_code=settings.CONFERENCE_CONFERENCE,
+         )),
     ]
 
     allowed_settings = [
