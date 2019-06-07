@@ -41,6 +41,22 @@ def _tickets(conf, ticket_type=None, fare_code=None, only_complete=True):
     return qs
 
 
+def _tickets_with_unique_email(conf, ticket_type='conference'):
+    assigned_tickets = _assigned_tickets(conf, ticket_type)
+    email_ids = dict(
+        (ticket.p3_conference.assigned_to, ticket.id)
+        for ticket in assigned_tickets)
+    # MAL 2018-07-31: This is a hack: since most emails will be
+    # unique, the id__in filter does not overflow. Doing the reverse
+    # will cause a SQL error due to too many SQL variables.
+    all_ids = set(ticket.id
+                  for ticket in assigned_tickets)
+    ids = set(email_ids.values())
+    duplicate_email_ids = all_ids - ids
+    return assigned_tickets.filter(
+        ~Q(id__in=duplicate_email_ids))
+
+
 def _assigned_tickets(conf, ticket_type='conference'):
     return _tickets(conf, ticket_type)\
         .exclude(p3_conference=None)\
@@ -164,7 +180,13 @@ def tickets_status(conf, code=None):
         output = ticket_status_no_code(conf, multiple_assignments, orphan_tickets, spam_recruiting, voupe03)
 
     else:
-        if code in ('ticket_sold', 'assigned_tickets', 'unassigned_tickets', 'multiple_assignments', ):
+        if code in (
+                'ticket_sold',
+                'assigned_tickets',
+                'unassigned_tickets',
+                'multiple_assignments',
+                'tickets_with_unique_email'
+        ):
             output = ticket_status_for_un_assigned_sold_tickets(code, conf, multiple_assignments)
 
         elif code in ('orphan_tickets',):
@@ -201,6 +223,8 @@ def ticket_status_for_un_assigned_sold_tickets(code, conf, multiple_assignments)
         qs = _tickets(conf, 'conference') \
             .filter(p3_conference__assigned_to__in=multiple_assignments \
                     .values('p3_conference__assigned_to'))
+    elif code == 'tickets_with_unique_email':
+        qs = _tickets_with_unique_email(conf)
     else:
         raise ValueError('Unsupported stats code: %r' % code)
     qs = qs.select_related('p3_conference', 'user')
@@ -350,15 +374,20 @@ def ticket_status_no_code(conf, multiple_assignments, orphan_tickets, spam_recru
         {
             'id': 'training_tickets_sold',
             'title': 'Sold training tickets (including combined)',
-            'total': count_number_of_sold_training_tickets_including_combined_tickets(),
+            'total': count_number_of_sold_training_tickets_including_combined_tickets(conference_code=conf),
         },
+        _create_option(
+            'tickets_with_unique_email',
+            'Sold tickets with unique email',
+            _tickets_with_unique_email(conf, 'conference')
+        ),
         _create_option('assigned_tickets', 'Assigned tickets', _assigned_tickets(conf)),
         _create_option('unassigned_tickets', 'Unassigned tickets', _unassigned_tickets(conf)),
         # _create_option('sim_tickets', 'Tickets with SIM card orders', sim_tickets),  # FIXME: remove hotels and sim
         _create_option('voupe03_tickets', 'Social event tickets (VOUPE03)', voupe03),
         _create_option('spam_recruiting', 'Recruiting emails (opt-in)', spam_recruiting),
         _create_option('multiple_assignments', 'Tickets assigned to the same person', multiple_assignments),
-        _create_option('orphan_tickets', 'Assigned tickets without user record (orphaned)', orphan_tickets)
+        _create_option('orphan_tickets', 'Assigned tickets without user record (orphaned)', orphan_tickets),
     ]
 
 
