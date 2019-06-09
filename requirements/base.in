@@ -63,3 +63,4 @@ decorator
 
 lxml   # for currencies
 Jinja2
+dataclasses
