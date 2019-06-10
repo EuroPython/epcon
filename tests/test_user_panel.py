@@ -1,6 +1,5 @@
 import pytest
 import uuid
-
 from datetime import date
 
 from django.conf import settings
@@ -8,11 +7,13 @@ from django.utils import timezone
 from django.core.urlresolvers import reverse
 
 import responses
+from django_factory_boy.auth import UserFactory
 
 from assopy.models import Invoice, Order, OrderItem
 from assopy.stripe.tests.factories import FareFactory, OrderFactory
 from conference.models import Ticket, Conference
 from conference.invoicing import create_invoices_for_order
+from conference.tests.factories.fare import TicketFactory
 from p3.models import TicketConference
 
 from email_template.models import Email
@@ -23,7 +24,7 @@ from conference.currencies import (
 )
 
 from tests.common_tools import make_user
-
+from .test_cart import _setup
 
 pytestmark = [pytest.mark.django_db]
 
@@ -149,6 +150,40 @@ def test_user_panel_update_ticket(client):
     assert ticketconference.shirt_size == "xxxl"
     assert ticketconference.tagline == "xyz"
     assert ticketconference.days == "2019-07-10"
+
+
+def test_assigning_tickets_uses_case_insensitive_email_address(db, user_client):
+    _setup()
+    ticket = TicketFactory(user=user_client.user)
+    target_email = 'MiXeDc4sE@test.tESt'
+    target_user = UserFactory(email=target_email.lower())
+
+    url = reverse('user_panel:assign_ticket', args=[ticket.id])
+    payload = {'email': target_email}
+    response = user_client.post(url, payload, follow=True)
+
+    assert response.status_code == 200
+    ticket.refresh_from_db()
+    assert ticket.user == target_user
+
+
+def test_assigning_ticket_to_inactive_user_displays_error(db, user_client):
+    _setup()
+    ticket = TicketFactory(user=user_client.user)
+    target_user = UserFactory(is_active=False)
+    target_email = target_user.email
+
+    url = reverse('user_panel:assign_ticket', args=[ticket.id])
+    payload = {'email': target_email}
+    response = user_client.post(url, payload, follow=True)
+
+    assert response.status_code == 200
+    ticket.refresh_from_db()
+    # The ticket has not been reassigned as the target user is inactive
+    assert ticket.user != target_user
+    assert ticket.user == user_client.user
+    # A warning messages is displayed on the page
+    assert "user does not exist" in response.content.decode()
 
 
 @pytest.mark.xfail
