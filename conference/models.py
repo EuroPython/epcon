@@ -1595,7 +1595,7 @@ class StripePayment(models.Model):
         ('FAILED', 'Failed'),
     )
 
-    uuid = models.CharField(max_length=40, unique=True)
+    uuid = models.CharField(max_length=40, unique=True, default=uuid.uuid4)
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     token = models.CharField(max_length=100)
