@@ -154,7 +154,7 @@ def setup_conference_with_typical_fares(start=date(2019, 7, 8), end=date(2019, 7
     Conference.objects.get_or_create(
         code=settings.CONFERENCE_CONFERENCE,
         name=settings.CONFERENCE_NAME,
-        # using 2018 dates
+        # using 2019 dates
         # those dates are required for Tickets to work.
         # (for setting up/rendering attendance days)
         conference_start=start,
