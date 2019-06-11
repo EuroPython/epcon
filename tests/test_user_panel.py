@@ -20,7 +20,12 @@ from conference.currencies import (
     fetch_and_store_latest_ecb_exrates,
 )
 
-from tests.common_tools import make_user, setup_conference_with_typical_fares, create_valid_ticket_for_user_and_fare
+from tests.common_tools import (
+    make_user,
+    setup_conference_with_typical_fares,
+    create_valid_ticket_for_user_and_fare,
+    get_default_conference,
+)
 from tests.factories import FareFactory, OrderFactory, TicketFactory, UserFactory
 
 pytestmark = [pytest.mark.django_db]
@@ -288,7 +293,7 @@ def test_other_fares_tickets_can_be_reassigned(db, user_client):
 
 
 def test_other_fares_tickets_cannot_be_managed(db, user_client):
-    setup_conference_with_typical_fares()
+    get_default_conference()
     ticket = TicketFactory(user=user_client.user, fare__ticket_type=FARE_TICKET_TYPES.other)
     target_user = UserFactory()
     target_email = target_user.email
