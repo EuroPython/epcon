@@ -17,8 +17,8 @@
         <td class='text-right'>
             {% if ticket.fare.is_conference %}
             <a class='btn btn-outline-primary' href='{% url "user_panel:manage_ticket" ticket.id %}'>Configure ticket</a>
-            <a class='btn btn-outline-primary' href='{% url "user_panel:assign_ticket" ticket.id %}'>Assign ticket</a>
             {% endif %}
+            <a class='btn btn-outline-primary' href='{% url "user_panel:assign_ticket" ticket.id %}'>Assign ticket</a>
         </td>
     </tr>
     {% endfor %}{# ticket in tickets #}

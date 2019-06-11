@@ -186,6 +186,16 @@ def test_assigning_ticket_to_inactive_user_displays_error(db, user_client):
 
 
 @pytest.mark.xfail
+def test_other_fares_tickets_can_be_reassigned(db):
+    assert False
+
+
+@pytest.mark.xfail
+def test_other_fares_tickets_cannot_be_managed(db):
+    assert False
+
+
+@pytest.mark.xfail
 def test_profile_settings_requires_login():
     assert False
 

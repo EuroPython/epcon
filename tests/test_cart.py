@@ -324,16 +324,6 @@ def test_other_fares_can_be_added_to_cart(db):
     assert False
 
 
-@mark.xfail
-def test_other_fares_tickets_cannot_be_reassigned(db):
-    assert False
-
-
-@mark.xfail
-def test_other_fares_tickets_cannot_be_managed(db):
-    assert False
-
-
 @mark.parametrize(
     "url",
     [
