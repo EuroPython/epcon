@@ -224,6 +224,16 @@ def test_frozen_ticket_cannot_managed(db, user_client):
 
 
 @pytest.mark.xfail
+def test_other_fares_tickets_can_be_reassigned(db):
+    assert False
+
+
+@pytest.mark.xfail
+def test_other_fares_tickets_cannot_be_managed(db):
+    assert False
+
+
+@pytest.mark.xfail
 def test_profile_settings_requires_login():
     assert False
 
