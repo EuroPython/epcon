@@ -67,17 +67,31 @@ class OrderItemInlineAdmin(admin.TabularInline):
         return super(OrderItemInlineAdmin, self).get_formset(request, obj, **kwargs)
 
 
+class StripePaymentInlineFormset(forms.models.BaseInlineFormSet):
+    def save_new(self, form, commit=True):
+        payment = super().save_new(form, commit=False)
+        # Order has a relation to assopy user, payment to django user
+        payment.user = self.order.user.user
+
+        if commit:
+            payment.save()
+
+        return payment
+
 class StripePaymentInline(admin.TabularInline):
+    formset = StripePaymentInlineFormset
     model = StripePayment
     extra = 0
     can_delete = False
     fields = ('status', 'created', 'modified', 'charge_id', 'amount', 'uuid')
 
     def get_readonly_fields(self, request, obj=None):
-        return self.fields
+        return ['created', 'modified', 'uuid']
 
-    def has_add_permission(self, request):
-        return False
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        formset.order = obj
+        return formset
 
 
 class OrderAdminForm(forms.ModelForm):
