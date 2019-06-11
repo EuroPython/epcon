@@ -1,6 +1,5 @@
-# coding: utf-8
-
 import http.client
+from datetime import date
 from urllib.parse import urlparse
 
 from wsgiref.simple_server import make_server
@@ -10,11 +9,14 @@ from django.core.cache import cache
 
 from django_factory_boy import auth as auth_factories
 
+from assopy.models import Vat
 from assopy.tests.factories.user import AssopyUserFactory
-from conference.models import AttendeeProfile
+from conference.models import AttendeeProfile, Conference
+from conference.fares import pre_create_typical_fares_for_conference
 
 
 HTTP_OK = 200
+DEFAULT_VAT_RATE = "7.7"  # 7.7%
 
 
 def template_used(response, template_name, http_status=HTTP_OK):
@@ -146,3 +148,20 @@ def is_using_jinja2_template(response):
     res = response.resolve_template(response.template_name)
     assert res.backend.name == "jinja2", res.backed.name
     return True
+
+
+def setup_conference_with_typical_fares(start=date(2019, 7, 8), end=date(2019, 7, 14)):
+    Conference.objects.get_or_create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_NAME,
+        # using 2019 dates
+        # those dates are required for Tickets to work.
+        # (for setting up/rendering attendance days)
+        conference_start=start,
+        conference_end=end,
+    )
+    default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
+    pre_create_typical_fares_for_conference(
+        settings.CONFERENCE_CONFERENCE,
+        default_vat_rate
+    )
