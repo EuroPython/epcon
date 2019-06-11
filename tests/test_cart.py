@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
 from pytest import mark, raises
 
@@ -8,19 +8,19 @@ from django.contrib.messages import constants as messages_constants
 from django.utils import timezone
 
 from assopy.models import Order
-from assopy.models import Vat
 from assopy.tests.factories.order import CouponFactory
 from conference.cart import CartActions
-from conference.models import Conference, Ticket, Fare
+from conference.models import Ticket, Fare
 from conference.fares import (
-    pre_create_typical_fares_for_conference,
     set_early_bird_fare_dates,
     set_regular_fare_dates,
 )
 from p3.models import TicketConference
-from tests.common_tools import redirects_to, template_used
-
-DEFAULT_VAT_RATE = "7.7"  # 7.7%
+from tests.common_tools import (
+    redirects_to,
+    template_used,
+    setup_conference_with_typical_fares,
+)
 
 
 def test_first_step_of_cart_is_available_without_auth(db, client):
@@ -64,7 +64,7 @@ def test_second_step_doesnt_work_with_unkown_ticket_type(db, user_client):
 
 
 def test_cant_see_any_tickets_if_fares_are_not_available(db, user_client):
-    _setup()
+    setup_conference_with_typical_fares()
     second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
 
     response = user_client.get(second_step_company)
@@ -73,7 +73,7 @@ def test_cant_see_any_tickets_if_fares_are_not_available(db, user_client):
 
 
 def test_cant_buy_any_tickets_if_fares_are_not_available(db, user_client):
-    _setup()
+    setup_conference_with_typical_fares()
     second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
 
     response = user_client.post(
@@ -90,7 +90,7 @@ def test_cant_buy_any_tickets_if_fares_are_not_available(db, user_client):
 
 
 def test_can_buy_tickets_if_fare_is_available(db, user_client):
-    _setup()
+    setup_conference_with_typical_fares()
     set_early_bird_fare_dates(
         settings.CONFERENCE_CONFERENCE,
         timezone.now().date(),
@@ -112,7 +112,7 @@ def test_can_buy_tickets_if_fare_is_available(db, user_client):
 
 
 def test_name_assigned_to_bought_tickets(db, user_client):
-    _setup()
+    setup_conference_with_typical_fares()
     set_early_bird_fare_dates(
         settings.CONFERENCE_CONFERENCE,
         timezone.now().date(),
@@ -140,7 +140,7 @@ def test_name_assigned_to_bought_tickets(db, user_client):
 
 
 def test_can_buy_training_tickets(db, user_client):
-    _setup()
+    setup_conference_with_typical_fares()
     set_regular_fare_dates(
         settings.CONFERENCE_CONFERENCE,
         timezone.now().date(),
@@ -162,7 +162,7 @@ def test_can_buy_training_tickets(db, user_client):
 
 
 def test_can_buy_combined_tickets(db, user_client):
-    _setup()
+    setup_conference_with_typical_fares()
     set_regular_fare_dates(
         settings.CONFERENCE_CONFERENCE,
         timezone.now().date(),
@@ -184,7 +184,7 @@ def test_can_buy_combined_tickets(db, user_client):
 
 
 def test_can_apply_personal_ticket_coupon(db, user_client):
-    _setup()
+    setup_conference_with_typical_fares()
     set_early_bird_fare_dates(
         settings.CONFERENCE_CONFERENCE,
         timezone.now().date(),
@@ -213,7 +213,7 @@ def test_can_apply_personal_ticket_coupon(db, user_client):
 
 
 def test_cannot_apply_coupon_if_fare_mismatch(db, user_client):
-    _setup()
+    setup_conference_with_typical_fares()
     set_early_bird_fare_dates(
         settings.CONFERENCE_CONFERENCE,
         timezone.now().date(),
@@ -253,7 +253,6 @@ def test_can_apply_coupon_with_null_dates():
 
 @mark.xfail
 def test_user_can_add_billing_info(db, user_client):
-    _setup()
     assert False
 
 
@@ -262,23 +261,6 @@ def test_user_cant_see_or_assign_tickets_for_non_completed_orders(
     db, user_client
 ):
     assert False
-
-
-def _setup(start=date(2019, 7, 8), end=date(2019, 7, 14)):
-    Conference.objects.get_or_create(
-        code=settings.CONFERENCE_CONFERENCE,
-        name=settings.CONFERENCE_NAME,
-        # using 2018 dates
-        # those dates are required for Tickets to work.
-        # (for setting up/rendering attendance days)
-        conference_start=start,
-        conference_end=end,
-    )
-    default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
-    pre_create_typical_fares_for_conference(
-        settings.CONFERENCE_CONFERENCE,
-        default_vat_rate
-    )
 
 
 @mark.xfail
