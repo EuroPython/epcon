@@ -1004,6 +1004,10 @@ class Ticket(models.Model):
 
         return ''
 
+    @property
+    def buyer(self):
+        return self.orderitem.order.user.user
+
 
 class Sponsor(models.Model):
     """
