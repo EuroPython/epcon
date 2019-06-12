@@ -17,14 +17,9 @@ def talk(request, talk_slug):
     talk = get_object_or_404(Talk, slug=talk_slug)
     talk_as_dict = dump_relevant_talk_information_to_dict(talk)
 
-    can_update_talk = False
-    conf = Conference.objects.current()
-    if (
-        request.user.is_authenticated
-        and talk.created_by == request.user
-        and not conf.has_finished
-    ):
-        can_update_talk = True
+    can_update_talk = request.user.is_authenticated and can_user_update_talk(
+        user=request.user, talk=talk
+    )
 
     return TemplateResponse(
         request,
@@ -48,11 +43,7 @@ def update_talk(request, talk_slug):
     """
     talk = get_object_or_404(Talk, slug=talk_slug)
 
-    if not talk.created_by == request.user or talk.status != TALK_STATUS.accepted:
-        return HttpResponseForbidden()
-
-    conf = Conference.objects.current()
-    if conf.has_finished:
+    if not can_user_update_talk(user=request.user, talk=talk):
         return HttpResponseForbidden()
 
     talk_update_form = TalkUpdateForm(instance=talk)
@@ -64,11 +55,26 @@ def update_talk(request, talk_slug):
             talk_update_form.save(request.user)
             messages.success(request, "Talk details updated")
             return redirect(talk.get_absolute_url())
+        else:
+            messages.error(request, "Please correct the errors below")
 
     return TemplateResponse(
         request,
         "ep19/bs/talks/update_talk.html",
         {"talk": talk, "talk_update_form": talk_update_form},
+    )
+
+
+def can_user_update_talk(user, talk):
+    """
+    Check if the user can update the given talk.
+    """
+    conf = Conference.objects.current()
+
+    return (
+        talk.created_by == user
+        and talk.status == TALK_STATUS.accepted
+        and not conf.has_finished
     )
 
 
