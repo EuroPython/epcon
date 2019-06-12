@@ -51,7 +51,7 @@ class TalkFactory(factory.django.DjangoModelFactory):
     @factory.post_generation
     def abstract(self, create, extracted, **kwargs):
         self.setAbstract(
-            factory.Faker("sentence", nb_words=30, variable_nb_words=True)
+            factory.Faker("sentence", nb_words=30, variable_nb_words=True).generate({})
         )
 
 

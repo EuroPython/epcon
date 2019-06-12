@@ -9,22 +9,17 @@ from django.core.urlresolvers import reverse_lazy
 from django.db import transaction
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
-from django.template.defaultfilters import slugify
 from django.template.response import TemplateResponse
 from django.views.generic import RedirectView
 
-from taggit.forms import TagField
-from taggit_labels.widgets import LabelWidget
 from phonenumber_field.formfields import PhoneNumberField
 
-from conference.forms import TalkBaseForm
+from conference.new_forms import ProposalForm
 from conference.models import (
     Conference,
-    ConferenceTag,
     AttendeeProfile,
     Speaker,
     Talk,
-    TALK_TYPE,
     TalkSpeaker,
 )
 from conference.talks import dump_relevant_talk_information_to_dict
@@ -344,81 +339,6 @@ class AddSpeakerToTalkForm(forms.ModelForm):
 
 class UpdateAttendeeProfile(AddSpeakerToTalkForm):
     pass
-
-
-class ProposalForm(forms.ModelForm):
-
-    type = forms.ChoiceField(
-        label='Type', required=True,
-        choices=TALK_TYPE,
-    )
-
-    # Talk tags
-    tags = TagField(required=True, widget=LabelWidget(model=ConferenceTag))
-
-    title = TalkBaseForm.base_fields["title"]
-    sub_title = TalkBaseForm.base_fields["sub_title"]
-    abstract = TalkBaseForm.base_fields["abstract"]
-    abstract_short = TalkBaseForm.base_fields["abstract_short"]
-    prerequisites = TalkBaseForm.base_fields["prerequisites"]
-    level = TalkBaseForm.base_fields["level"]
-    domain_level = TalkBaseForm.base_fields["domain_level"]
-    abstract_extra = TalkBaseForm.base_fields["abstract_extra"]
-
-    class Meta:
-        model = Talk
-        fields = [
-            'type',
-            'title',
-            'sub_title',
-            'abstract',
-            'abstract_short',
-            'prerequisites',
-            'level',
-            'domain_level',
-            'tags',
-            'abstract_extra',
-        ]
-
-    def __init__(self, *args, **kwargs):
-
-        super().__init__(*args, **kwargs)
-
-        if kwargs.get('instance'):
-            self.fields['abstract'].initial = (
-                kwargs['instance'].getAbstract().body
-            )
-
-    def save(self, user):
-        """
-        We don't support commit=False on this form, because .setAbstract
-        requires an object saved in db.
-        """
-        talk = super().save(commit=False)
-        talk.created_by = user
-        talk.slug = f'{talk.uuid}-{slugify(talk.title)}'
-        talk.conference = Conference.objects.current().code
-        talk.save()
-        talk.setAbstract(self.cleaned_data['abstract'])
-
-        if 'tags' in self.cleaned_data:
-            talk.tags.set(*validate_tags(self.cleaned_data['tags']))
-
-        return talk
-
-
-def validate_tags(tags):
-    """
-    Returns only tags that are already present in the database
-    and limits the results to 5
-    """
-    valid_tags = ConferenceTag.objects.filter(
-        name__in=tags
-    ).values_list("name", flat=True)
-
-    tags_limited = valid_tags[:5]
-
-    return tags_limited
 
 
 urlpatterns = [
