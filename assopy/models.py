@@ -801,7 +801,7 @@ class Order(models.Model):
         return self._complete
 
     def total_vat_amount(self):
-        return sum(item.vat_value() for item in self.orderitem_set.all())
+        return normalize_price(sum(item.raw_vat_value() for item in self.orderitem_set.all()))
 
 
 class OrderItem(models.Model):
@@ -833,7 +833,14 @@ class OrderItem(models.Model):
         return normalize_price(self.price / (1 + self.vat.value / 100))
 
     def vat_value(self):
-        return self.price - self.net_price()
+        return normalize_price(self.raw_vat_value())
+
+    def raw_vat_value(self):
+        """
+        Used when aggregating - leaving the rounding to the calling context;
+        otherwise, this leads to accumulation of rounding errors.
+        """
+        return self.price * self.vat.value / (1 + self.vat.value / 100)
 
     def get_readonly_fields(self, request, obj=None):
 	    # Make fields read-only if an invoice for the order already exists
