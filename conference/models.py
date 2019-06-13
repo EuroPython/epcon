@@ -15,6 +15,7 @@ from django.core.urlresolvers import reverse
 from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
+from django.utils import timezone
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext as _
 from model_utils import Choices
@@ -138,7 +139,7 @@ class Conference(models.Model):
                 raise exceptions.ValidationError('Voting end must be > of voting start')
 
     def cfp(self):
-        today = datetime.date.today()
+        today = timezone.now().date()
         try:
             return self.cfp_start <= today <= self.cfp_end
         except TypeError:
@@ -146,7 +147,7 @@ class Conference(models.Model):
             return False
 
     def voting(self):
-        today = datetime.date.today()
+        today = timezone.now().date()
         try:
             return self.voting_start <= today <= self.voting_end
         except TypeError:
@@ -154,8 +155,13 @@ class Conference(models.Model):
             return False
 
     def conference(self):
-        today = datetime.date.today()
+        today = timezone.now().date()
         return self.conference_start <= today <= self.conference_end
+
+    @property
+    def has_finished(self):
+        today = timezone.now().date()
+        return today > self.conference_end
 
 post_save.connect(ConferenceManager.clear_cache, sender=Conference)
 

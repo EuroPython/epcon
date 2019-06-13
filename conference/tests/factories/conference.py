@@ -15,6 +15,7 @@ class ConferenceTagFactory(factory.django.DjangoModelFactory):
         model = 'conference.ConferenceTag'
 
     category = factory.Faker('word')
+    name = factory.Faker('word')
 
 
 class ConferenceTaggedItemFactory(factory.django.DjangoModelFactory):

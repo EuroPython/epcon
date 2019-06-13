@@ -1,9 +1,13 @@
 from django.conf.urls import url
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404
+from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 
-from conference.models import Talk
+from conference.models import Conference, Talk, TALK_STATUS
+from conference.forms import TalkUpdateForm
 
 
 def talk(request, talk_slug):
@@ -12,6 +16,10 @@ def talk(request, talk_slug):
     """
     talk = get_object_or_404(Talk, slug=talk_slug)
     talk_as_dict = dump_relevant_talk_information_to_dict(talk)
+
+    can_update_talk = request.user.is_authenticated and can_user_update_talk(
+        user=request.user, talk=talk
+    )
 
     return TemplateResponse(
         request,
@@ -23,7 +31,50 @@ def talk(request, talk_slug):
             "social_image_url": request.build_absolute_uri(
                 reverse("conference-talk-social-card-png", kwargs={"slug": talk.slug})
             ),
+            "can_update_talk": can_update_talk,
         },
+    )
+
+
+@login_required
+def update_talk(request, talk_slug):
+    """
+    Update talk if you're the author.
+    """
+    talk = get_object_or_404(Talk, slug=talk_slug)
+
+    if not can_user_update_talk(user=request.user, talk=talk):
+        return HttpResponseForbidden()
+
+    talk_update_form = TalkUpdateForm(instance=talk)
+
+    if request.method == "POST":
+        talk_update_form = TalkUpdateForm(request.POST, instance=talk)
+
+        if talk_update_form.is_valid():
+            talk_update_form.save(request.user)
+            messages.success(request, "Talk details updated")
+            return redirect(talk.get_absolute_url())
+        else:
+            messages.error(request, "Please correct the errors below")
+
+    return TemplateResponse(
+        request,
+        "ep19/bs/talks/update_talk.html",
+        {"talk": talk, "talk_update_form": talk_update_form},
+    )
+
+
+def can_user_update_talk(user, talk):
+    """
+    Check if the user can update the given talk.
+    """
+    conf = Conference.objects.current()
+
+    return (
+        talk.created_by == user
+        and talk.status == TALK_STATUS.accepted
+        and not conf.has_finished
     )
 
 
@@ -67,4 +118,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
     return output
 
 
-urlpatterns = [url(r"^(?P<talk_slug>[\w-]+)/$", talk, name="talk")]
+urlpatterns = [
+    url(r"^(?P<talk_slug>[\w-]+)/update/$", update_talk, name="update_talk"),
+    url(r"^(?P<talk_slug>[\w-]+)/$", talk, name="talk"),
+]

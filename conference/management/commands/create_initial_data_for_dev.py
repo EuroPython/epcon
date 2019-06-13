@@ -87,9 +87,7 @@ class Command(BaseCommand):
         print("Making some talk proposals")
         for user in alice, bob, cesar:
             speaker, _ = Speaker.objects.get_or_create(user=user.user)
-            talk = TalkFactory(status=TALK_STATUS.proposed)
-            talk.created_by = user.user
-            talk.save()
+            talk = TalkFactory(status=TALK_STATUS.proposed, created_by=user.user)
             add_speaker_to_talk(speaker, talk)
             profile = get_or_create_attendee_profile_for_new_user(user.user)
             if not profile.getBio():
@@ -112,6 +110,15 @@ class Command(BaseCommand):
         shared_talk.save()
         add_speaker_to_talk(bob.user.speaker, shared_talk)
         add_speaker_to_talk(cesar.user.speaker, shared_talk)
+
+        print("Making some accepted and waitlisted talks")
+        for user in alice, bob, cesar:
+            speaker, _ = Speaker.objects.get_or_create(user=user.user)
+            accepted_talk = TalkFactory(status=TALK_STATUS.accepted, created_by=user.user)
+            add_speaker_to_talk(speaker, accepted_talk)
+
+            waitlist_talk = TalkFactory(status=TALK_STATUS.waitlist, created_by=user.user)
+            add_speaker_to_talk(speaker, waitlist_talk)
 
         def new_page(rev_id, title, **kwargs):
             try:
