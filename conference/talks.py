@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 
 from conference.models import Conference, Talk, TALK_STATUS
-from conference.new_forms import TalkUpdateForm
+from conference.forms import TalkUpdateForm
 
 
 def talk(request, talk_slug):

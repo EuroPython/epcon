@@ -14,7 +14,7 @@ from django.views.generic import RedirectView
 
 from phonenumber_field.formfields import PhoneNumberField
 
-from conference.new_forms import ProposalForm
+from conference.forms import ProposalForm
 from conference.models import (
     Conference,
     AttendeeProfile,
