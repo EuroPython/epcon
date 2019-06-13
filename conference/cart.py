@@ -312,7 +312,7 @@ class PersonalBillingForm(forms.ModelForm):
         widgets = {
             "address": forms.Textarea(attrs={"rows": 3}),
         }
-        labels = {"card_name": "Name of the credit card holder"}
+        labels = {"card_name": "Name of the buyer"}
 
 
 class BusinessBillingForm(forms.ModelForm):
@@ -333,7 +333,7 @@ class BusinessBillingForm(forms.ModelForm):
             "address": forms.Textarea(attrs={"rows": 3}),
             "billing_notes": forms.Textarea(attrs={"rows": 3}),
         }
-        labels = {"card_name": "Name of the credit card holder"}
+        labels = {"card_name": "Name of the buyer"}
 
 
 urlpatterns_ep19 = [
