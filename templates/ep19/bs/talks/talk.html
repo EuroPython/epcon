@@ -44,6 +44,10 @@
                 <p>
                 <code>Type: {{ talk.get_type_display }}; Python level: {{ talk.get_level_display }}; Domain level: {{ talk.get_domain_level_display }}</code>
                 </p>
+                {% if can_update_talk %}
+                <br />
+                <a href='{% url "talks:update_talk" talk.slug %}' class='btn btn-outline-success'>Update Talk</a>
+                {% endif %}
             </div>
 
 
