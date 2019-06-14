@@ -186,15 +186,3 @@ def is_business_order(order):
     assert isinstance(order, Order)
 
     return order.order_type == ORDER_TYPE.company
-
-
-def is_non_conference_ticket_order(order):
-    """
-    This is a bit hacky way for orders that only contain special fares, like
-    Social Event tickets or sim cards (for 2019).
-    This is used to check which billing form to use, and in case of `other`
-    orders default to business form.
-    """
-    assert isinstance(order, Order)
-
-    return order.order_type == ORDER_TYPE.other
