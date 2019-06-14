@@ -27,7 +27,7 @@ from conference.tests.factories.fare import SponsorIncomeFactory, TicketFactory
 from conference.tests.factories.talk import TalkFactory
 from conference.cfp import add_speaker_to_talk
 from conference.accounts import get_or_create_attendee_profile_for_new_user
-from conference.fares import set_early_bird_fare_dates
+from conference.fares import set_early_bird_fare_dates, set_other_fares_dates
 
 
 DEFAULT_VAT_RATE = "20"  # 20%
@@ -243,6 +243,11 @@ class Command(BaseCommand):
         )
 
         set_early_bird_fare_dates(
+            conference,
+            date.today(),
+            date.today() + timedelta(days=7)
+        )
+        set_other_fares_dates(
             conference,
             date.today(),
             date.today() + timedelta(days=7)

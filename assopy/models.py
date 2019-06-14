@@ -635,7 +635,10 @@ ORDER_TYPE = Choices(
     ("company", "Company"),
     ("student", "Student"),
     ("personal", "Personal"),
+    # Other is for social events, sim cards, etc.
+    ("other", "Other"),
 )
+
 
 class Order(models.Model):
     # TODO(artcz) This should have unique=True as well once we backfill data
@@ -657,7 +660,15 @@ class Order(models.Model):
     _complete = models.BooleanField(default=False)
 
     # note libere che l'acquirente può inserire in fattura
-    billing_notes = models.TextField(blank=True)
+    billing_notes = models.TextField(
+        verbose_name="Additional billing notes",
+        help_text=(
+            "Notes that you want to put on the invoice. "
+            "Additional email address, employee name, things required by your "
+            "internal accounting department, etc."
+        ),
+        blank=True
+    )
 
     # Questi dati vengono copiati dallo User al fine di storicizzarli
     card_name = models.CharField(_('Card name'), max_length=200)
@@ -790,7 +801,7 @@ class Order(models.Model):
         return self._complete
 
     def total_vat_amount(self):
-        return sum(item.vat_value() for item in self.orderitem_set.all())
+        return normalize_price(sum(item.raw_vat_value() for item in self.orderitem_set.all()))
 
 
 class OrderItem(models.Model):
@@ -822,7 +833,14 @@ class OrderItem(models.Model):
         return normalize_price(self.price / (1 + self.vat.value / 100))
 
     def vat_value(self):
-        return self.price - self.net_price()
+        return normalize_price(self.raw_vat_value())
+
+    def raw_vat_value(self):
+        """
+        Used when aggregating - leaving the rounding to the calling context;
+        otherwise, this leads to accumulation of rounding errors.
+        """
+        return self.price * self.vat.value / (1 + self.vat.value / 100)
 
     def get_readonly_fields(self, request, obj=None):
 	    # Make fields read-only if an invoice for the order already exists

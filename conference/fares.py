@@ -1,4 +1,5 @@
 from django.conf import settings
+
 from model_utils import Choices
 
 from assopy.models import Vat, VatFare
@@ -6,8 +7,8 @@ from conference.models import FARE_TICKET_TYPES, Conference, Fare
 
 
 # due to historical reasons this one is basically hardcoded in various places.
-SOCIAL_EVENT_FARE_CODE = 'VOUPE03'
-SPECIAL_CODES = [SOCIAL_EVENT_FARE_CODE]
+SOCIAL_EVENT_FARE_CODE = "VOUPE03"
+SIM_CARD_FARE_CODE = "SIM1"
 
 FARE_CODE_TYPES = Choices(
     ("E", "EARLY_BIRD", "Early Bird"),
@@ -65,6 +66,7 @@ def all_possible_fare_codes():
     }
 
     fare_codes[SOCIAL_EVENT_FARE_CODE] = "Social Event"
+    fare_codes[SIM_CARD_FARE_CODE] = "Sim Card"
     return fare_codes
 
 
@@ -107,6 +109,9 @@ def create_fare_for_conference(code, conference, price,
 
     if code == SOCIAL_EVENT_FARE_CODE:
         ticket_type = FARE_TICKET_TYPES.event
+    elif code == SIM_CARD_FARE_CODE:
+        ticket_type = FARE_TICKET_TYPES.other
+
     else:
         ticket_type = FARE_TICKET_TYPES.conference
 
@@ -158,14 +163,29 @@ def pre_create_typical_fares_for_conference(conference, vat_rate,
     return fares
 
 
+def set_other_fares_dates(conference, start_date, end_date):
+    assert start_date <= end_date
+
+    other_fares = Fare.objects.filter(
+        conference=conference,
+        code__in=[SOCIAL_EVENT_FARE_CODE, SIM_CARD_FARE_CODE],
+    )
+
+    other_fares.update(start_validity=start_date, end_validity=end_date)
+
+
 def set_early_bird_fare_dates(conference, start_date, end_date):
     assert start_date <= end_date
 
     early_birds = Fare.objects.filter(
         conference=conference,
-        code__regex=FARE_CODE_REGEXES['types'][FARE_CODE_TYPES.EARLY_BIRD]
+        code__regex=FARE_CODE_REGEXES["types"][FARE_CODE_TYPES.EARLY_BIRD],
     )
-    assert early_birds.count() == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS) == 3 * 5
+    assert (
+        early_birds.count()
+        == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS)
+        == 3 * 5
+    )
     early_birds.update(start_validity=start_date, end_validity=end_date)
 
 
@@ -176,5 +196,9 @@ def set_regular_fare_dates(conference, start_date, end_date):
         conference=conference,
         code__regex=FARE_CODE_REGEXES['types'][FARE_CODE_TYPES.REGULAR]
     )
-    assert fares.count() == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS) == 3 * 5
+    assert (
+        fares.count()
+        == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS)
+        == 3 * 5
+    )
     fares.update(start_validity=start_date, end_validity=end_date)

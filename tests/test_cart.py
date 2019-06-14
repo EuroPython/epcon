@@ -8,6 +8,7 @@ from django.contrib.messages import constants as messages_constants
 from django.utils import timezone
 
 from assopy.models import Order
+from assopy.stripe.tests.factories import OrderFactory, VatFactory, VatFareFactory
 from assopy.tests.factories.order import CouponFactory
 from conference.cart import CartActions
 from conference.models import Ticket, Fare
@@ -15,6 +16,7 @@ from conference.fares import (
     set_early_bird_fare_dates,
     set_regular_fare_dates,
 )
+from conference.tests.factories.fare import FareFactory
 from p3.models import TicketConference
 from tests.common_tools import (
     redirects_to,
@@ -304,6 +306,26 @@ def test_cart_applies_discounts_correctly(db):
     assert False
 
 
+@mark.xfail
+def test_other_fares_button_not_shown_when_other_fares_invalid(db):
+    assert False
+
+
+@mark.xfail
+def test_other_fares_button_shown_when_other_fares_valid(db):
+    assert False
+
+
+@mark.xfail
+def test_other_fares_selection_shows_correct_fare_types(db):
+    assert False
+
+
+@mark.xfail
+def test_other_fares_can_be_added_to_cart(db):
+    assert False
+
+
 @mark.parametrize(
     "url",
     [
@@ -318,3 +340,24 @@ def test_if_cfp_pages_are_login_required(db, client, url):
 
     assert response.status_code == 302
     assert redirects_to(response, "/accounts/login/")
+
+
+def test_order_aggregate_vat_rounding(db):
+    setup_conference_with_typical_fares()
+    vat = VatFactory(value=20)
+
+    fare_one = FareFactory(price=25)
+    VatFareFactory(vat=vat, fare=fare_one)
+    fare_two = FareFactory(price=13)
+    VatFareFactory(vat=vat, fare=fare_two)
+    fare_three = FareFactory(price=-38)
+    VatFareFactory(vat=vat, fare=fare_three)
+
+    order = OrderFactory(items=[
+        (fare_one, {"qty": 1}),
+        (fare_two, {"qty": 1}),
+        (fare_three, {"qty": 1}),
+    ])
+
+    assert order.total() == 0
+    assert order.total_vat_amount() == 0
