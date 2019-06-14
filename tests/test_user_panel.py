@@ -152,8 +152,7 @@ def test_user_panel_update_ticket(client):
 
 
 def test_assigning_tickets_uses_case_insensitive_email_address(db, user_client):
-    setup_conference_with_typical_fares()
-    ticket = TicketFactory(user=user_client.user)
+    ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
     target_email = 'MiXeDc4sE@test.tESt'
     target_user = UserFactory(email=target_email.lower())
 
@@ -167,8 +166,7 @@ def test_assigning_tickets_uses_case_insensitive_email_address(db, user_client):
 
 
 def test_assigning_ticket_to_inactive_user_displays_error(db, user_client):
-    setup_conference_with_typical_fares()
-    ticket = TicketFactory(user=user_client.user)
+    ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
     target_user = UserFactory(is_active=False)
     target_email = target_user.email
 
@@ -224,8 +222,8 @@ def test_frozen_ticket_cannot_managed(db, user_client):
 
 
 def test_other_fares_tickets_can_be_reassigned(db, user_client):
-    setup_conference_with_typical_fares()
-    ticket = TicketFactory(user=user_client.user, fare__ticket_type=FARE_TICKET_TYPES.other)
+    fare = FareFactory(ticket_type=FARE_TICKET_TYPES.other)
+    ticket = create_valid_ticket_for_user_and_fare(user=user_client.user, fare=fare)
     target_user = UserFactory()
     target_email = target_user.email
 
