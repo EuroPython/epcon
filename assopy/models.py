@@ -840,7 +840,7 @@ class OrderItem(models.Model):
         Used when aggregating - leaving the rounding to the calling context;
         otherwise, this leads to accumulation of rounding errors.
         """
-        return self.price * self.vat.value / (1 + self.vat.value / 100)
+        return (self.price * self.vat.value  / 100) / (1 + self.vat.value / 100)
 
     def get_readonly_fields(self, request, obj=None):
 	    # Make fields read-only if an invoice for the order already exists

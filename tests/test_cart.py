@@ -1,6 +1,7 @@
 from datetime import timedelta
+from decimal import Decimal
 
-from pytest import mark, raises
+from pytest import mark, raises, approx
 
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -361,3 +362,18 @@ def test_order_aggregate_vat_rounding(db):
 
     assert order.total() == 0
     assert order.total_vat_amount() == 0
+
+
+def test_order_aggregate_vat_rounding(db):
+    setup_conference_with_typical_fares()
+    vat = VatFactory(value=Decimal(20))
+
+    fare = FareFactory(price=100)
+    VatFareFactory(vat=vat, fare=fare)
+
+    order = OrderFactory(items=[
+        (fare, {"qty": 1}),
+    ])
+
+    assert order.total_vat_amount() < order.total()
+    assert order.total_vat_amount() == approx((order.total() * vat.value / 100) / (1 + vat.value / 100), abs=0.01)
