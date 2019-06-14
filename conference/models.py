@@ -955,13 +955,6 @@ class Fare(models.Model):
             params['tickets'].append(t)
         return params['tickets']
 
-    @property
-    def is_conference(self):
-        """
-        Whether it's a conference ticket and is configurable.
-        """
-        return self.ticket_type == FARE_TICKET_TYPES.conference
-
 
 class TicketQuerySet(models.QuerySet):
     def conference(self, conference):
