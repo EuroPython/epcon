@@ -13,10 +13,7 @@ from assopy.stripe.tests.factories import OrderFactory, VatFactory, VatFareFacto
 from assopy.tests.factories.order import CouponFactory
 from conference.cart import CartActions
 from conference.models import Ticket, Fare
-from conference.fares import (
-    set_early_bird_fare_dates,
-    set_regular_fare_dates,
-)
+from conference.fares import set_early_bird_fare_dates, set_regular_fare_dates
 from conference.tests.factories.fare import FareFactory
 from p3.models import TicketConference
 from tests.common_tools import (
@@ -354,11 +351,9 @@ def test_order_aggregate_vat_rounding(db):
     fare_three = FareFactory(price=-38)
     VatFareFactory(vat=vat, fare=fare_three)
 
-    order = OrderFactory(items=[
-        (fare_one, {"qty": 1}),
-        (fare_two, {"qty": 1}),
-        (fare_three, {"qty": 1}),
-    ])
+    order = OrderFactory(
+        items=[(fare_one, {"qty": 1}), (fare_two, {"qty": 1}), (fare_three, {"qty": 1})]
+    )
 
     assert order.total() == 0
     assert order.total_vat_amount() == 0
@@ -371,9 +366,11 @@ def test_order_aggregate_vat_rounding(db):
     fare = FareFactory(price=100)
     VatFareFactory(vat=vat, fare=fare)
 
-    order = OrderFactory(items=[
-        (fare, {"qty": 1}),
-    ])
+    order = OrderFactory(items=[(fare, {"qty": 1})])
 
     assert order.total_vat_amount() < order.total()
-    assert order.total_vat_amount() == approx((order.total() * vat.value / 100) / (1 + vat.value / 100), abs=0.01)
+    # The `total_vat_amount` calculation is rounded to two decimal points, while the
+    # manual calculation isn't - hence the need for approximate comparison
+    assert order.total_vat_amount() == approx(
+        (order.total() * vat.value / 100) / (1 + vat.value / 100), abs=0.01
+    )

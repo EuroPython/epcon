@@ -185,7 +185,6 @@ def test_assigning_ticket_to_inactive_user_displays_error(db, user_client):
     assert "user does not exist" in response.content.decode()
 
 
-<<<<<<< HEAD
 def test_frozen_ticket_not_shown_in_dashboard(db, user_client):
     ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
     ticket.frozen = True

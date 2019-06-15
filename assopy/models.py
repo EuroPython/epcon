@@ -830,9 +830,14 @@ class OrderItem(models.Model):
 
     def net_price(self):
         """This is ugly workaround because we use gross prices for Fares"""
+        # TODO(umgelurgel): We should move the rounding away from the model
+        # and into the templates - otherwise, workarounds are needed to
+        # support aggregation.
         return normalize_price(self.price / (1 + self.vat.value / 100))
 
     def vat_value(self):
+        # TODO(umgelurgel): Same as in net_price - we should remove the rounding
+        # logic from the model.
         return normalize_price(self.raw_vat_value())
 
     def raw_vat_value(self):
