@@ -207,7 +207,7 @@ class TimeTable2(object):
         tracks = set(Track.objects\
             .filter(id__in=tids)\
             .values_list('track', flat=True))
-        for t in tt.events.keys():
+        for t in list(tt.events.keys()):
             if t not in tracks:
                 del tt.events[t]
         return tt
