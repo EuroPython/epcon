@@ -7,10 +7,9 @@ from django.utils import timezone
 from django.core.urlresolvers import reverse
 
 import responses
-from django_factory_boy.auth import UserFactory
 
 from assopy.models import Invoice, Order, OrderItem
-from assopy.stripe.tests.factories import FareFactory, OrderFactory
+from assopy.stripe.tests.factories import FareFactory, OrderFactory, UserFactory
 from conference.models import Ticket, Conference, FARE_TICKET_TYPES
 from conference.invoicing import create_invoices_for_order
 from conference.tests.factories.fare import TicketFactory
@@ -149,6 +148,59 @@ def test_user_panel_update_ticket(client):
     assert ticketconference.shirt_size == "xxxl"
     assert ticketconference.tagline == "xyz"
     assert ticketconference.days == "2019-07-10"
+
+
+def test_ticket_buyer_is_shown_assign_ticket_link(db, user_client):
+    ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
+
+    url = reverse('user_panel:dashboard')
+    response = user_client.get(url)
+
+    assert response.status_code == 200
+    # Link to assign ticket is displayed
+    assert "assign ticket" in response.content.decode().lower()
+    assert reverse('user_panel:assign_ticket', args=[ticket.id]) in response.content.decode().lower()
+
+
+def test_ticket_buyer_can_assign_ticket(db, user_client):
+    ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
+    assignee = UserFactory()
+
+    url = reverse('user_panel:assign_ticket', args=[ticket.id])
+    payload = {'email': assignee.email}
+    response = user_client.post(url, data=payload, follow=True)
+
+    assert response.status_code == 200
+
+    # Ticket successfully reassigned
+    ticket.refresh_from_db()
+    assert ticket.user == assignee
+
+
+def test_ticket_assignee_is_not_shown_assign_ticket_link(db, user_client):
+    buyer = UserFactory()
+    ticket = create_valid_ticket_for_user_and_fare(user=buyer)
+    ticket.user = user_client.user
+
+    url = reverse('user_panel:dashboard')
+    response = user_client.get(url)
+
+    assert response.status_code == 200
+    # Link to assign ticket is not displayed since the user is not the ticket buyer
+    assert "assign ticket" not in response.content.decode().lower()
+    assert reverse('user_panel:assign_ticket', args=[ticket.id]) not in response.content.decode().lower()
+
+
+def test_ticket_assignee_cannot_reassign_ticket(db, user_client):
+    buyer = UserFactory()
+    ticket = create_valid_ticket_for_user_and_fare(user=buyer)
+    ticket.user = user_client.user
+
+    url = reverse('user_panel:assign_ticket', args=[ticket.id])
+    payload = {'email': buyer.email}
+    response = user_client.post(url, data=payload, follow=True)
+
+    assert response.status_code == 403
 
 
 def test_assigning_tickets_uses_case_insensitive_email_address(db, user_client):

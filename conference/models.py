@@ -976,7 +976,7 @@ TICKET_TYPE = (
 class Ticket(models.Model):
     user = models.ForeignKey(
         get_user_model(),
-        help_text=_('Buyer of the ticket'),
+        help_text=_('Ticket assignee'),
         on_delete=models.CASCADE
     )
     name = models.CharField(
