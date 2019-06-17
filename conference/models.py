@@ -1008,6 +1008,10 @@ class Ticket(models.Model):
     def buyer(self):
         return self.orderitem.order.user.user
 
+    @property
+    def is_conference(self):
+        return self.fare.ticket_type == FARE_TICKET_TYPES.conference
+
 
 class Sponsor(models.Model):
     """
