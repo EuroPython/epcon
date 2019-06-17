@@ -41,7 +41,7 @@ class TicketFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(auth_factories.UserFactory)
     name = factory.Faker('sentence', nb_words=4, variable_nb_words=True)
     fare = factory.SubFactory(FareFactory)
-    frozen = factory.Faker('random_element', elements=(True, False))
+    frozen = False
     ticket_type = Iterator(TICKET_TYPE)
 
 
