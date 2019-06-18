@@ -62,7 +62,7 @@ def user_dashboard(request):
 def manage_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
 
-    if ticket.user != request.user:
+    if ticket.user != request.user or ticket.frozen:
         return HttpResponse("Can't do", status=403)
 
     ticket_configuration, _ = TicketConference.objects.get_or_create(
@@ -98,7 +98,7 @@ def manage_ticket(request, ticket_id):
 def assign_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
 
-    if ticket.user != request.user:
+    if ticket.user != request.user or ticket.frozen:
         return HttpResponse("Can't do", status=403)
 
     assignment_form = AssignTicketForm(initial={'email': ticket.assigned_email})
@@ -495,6 +495,7 @@ def get_tickets_for_current_conference(user):
     conference = Conference.objects.current()
     return Ticket.objects.filter(
         Q(fare__conference=conference.code)
+        & Q(frozen=False)
         & Q(orderitem__order___complete=True)
         & Q(user=user)
     )

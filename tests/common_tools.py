@@ -9,11 +9,12 @@ from django.core.cache import cache
 
 from django_factory_boy import auth as auth_factories
 
-from assopy.models import Vat
+from assopy.models import Vat, VatFare
+from assopy.stripe.tests.factories import OrderFactory
 from assopy.tests.factories.user import AssopyUserFactory
 from conference.models import AttendeeProfile, Conference
 from conference.fares import pre_create_typical_fares_for_conference
-
+from conference.tests.factories.fare import FareFactory
 
 HTTP_OK = 200
 DEFAULT_VAT_RATE = "7.7"  # 7.7%
@@ -165,3 +166,24 @@ def setup_conference_with_typical_fares(start=date(2019, 7, 8), end=date(2019, 7
         settings.CONFERENCE_CONFERENCE,
         default_vat_rate
     )
+
+
+def create_valid_ticket_for_user_and_fare(user, fare=None):
+    setup_conference_with_typical_fares()
+    default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
+
+    if not fare:
+        conference = Conference.objects.current()
+        fare = FareFactory(code=conference.code)
+    VatFare.objects.get_or_create(vat=default_vat_rate, fare=fare)
+
+    order = OrderFactory(
+        user=user.assopy_user,
+        items=[(fare, {"qty": 1}),],
+    )
+    order._complete=True
+    order.save()
+
+    ticket = order.orderitem_set.first().ticket
+    assert ticket.user == user
+    return ticket

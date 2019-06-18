@@ -23,7 +23,7 @@ from conference.currencies import (
     fetch_and_store_latest_ecb_exrates,
 )
 
-from tests.common_tools import make_user, setup_conference_with_typical_fares
+from tests.common_tools import make_user, setup_conference_with_typical_fares, create_valid_ticket_for_user_and_fare
 
 pytestmark = [pytest.mark.django_db]
 
@@ -183,6 +183,44 @@ def test_assigning_ticket_to_inactive_user_displays_error(db, user_client):
     assert ticket.user == user_client.user
     # A warning messages is displayed on the page
     assert "user does not exist" in response.content.decode()
+
+
+def test_frozen_ticket_not_shown_in_dashboard(db, user_client):
+    ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
+    ticket.frozen = True
+    ticket.save()
+
+    url = reverse('user_panel:dashboard')
+    response = user_client.get(url)
+
+    assert response.status_code == 200
+    # Link to assign ticket is displayed
+    assert "assign ticket" not in response.content.decode().lower()
+    assert reverse('user_panel:assign_ticket', args=[ticket.id]) not in response.content.decode().lower()
+    assert "manage ticket" not in response.content.decode().lower()
+    assert reverse('user_panel:manage_ticket', args=[ticket.id]) not in response.content.decode().lower()
+
+
+def test_frozen_ticket_cannot_be_assigned(db, user_client):
+    ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
+    ticket.frozen = True
+    ticket.save()
+
+    url = reverse('user_panel:assign_ticket', args=[ticket.id])
+    response = user_client.get(url)
+
+    assert response.status_code == 403
+
+
+def test_frozen_ticket_cannot_managed(db, user_client):
+    ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
+    ticket.frozen = True
+    ticket.save()
+
+    url = reverse('user_panel:manage_ticket', args=[ticket.id])
+    response = user_client.get(url)
+
+    assert response.status_code == 403
 
 
 @pytest.mark.xfail
