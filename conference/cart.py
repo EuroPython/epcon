@@ -46,7 +46,7 @@ def cart_step1_choose_type_of_order(request):
     This view is not login required because we want to display some summary of
     ticket prices here as well.
     """
-    special_fares = get_available_fares_for_type(TicketType.OTHER)
+    special_fares = get_available_fares_for_type(TicketType.other)
     context = {"show_special": bool(special_fares)}
     return TemplateResponse(
         request, "ep19/bs/cart/step_1_choose_type_of_order.html", context
@@ -265,10 +265,10 @@ class TicketType:
     personal = "personal"
     company = "company"
     student = "student"
+    other = "other"
 
     CONFERENCE_OR_TRAINING = [personal, company, student]
-    OTHER = "other"
-    ALL = [personal, company, student, OTHER]
+    ALL = [personal, company, student, other]
 
 
 class CartActions:
@@ -297,7 +297,7 @@ def get_available_fares_for_type(type_of_tickets):
             code__regex=FARE_CODE_REGEXES["groups"][regex_group]
         )
 
-    elif type_of_tickets == TicketType.OTHER:
+    elif type_of_tickets == TicketType.other:
         fares = fares.exclude(
             ticket_type=FARE_TICKET_TYPES.conference,
         )
