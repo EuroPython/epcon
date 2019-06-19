@@ -11,7 +11,7 @@ from django_factory_boy.auth import UserFactory
 
 from assopy.models import Invoice, Order, OrderItem
 from assopy.stripe.tests.factories import FareFactory, OrderFactory
-from conference.models import Ticket, Conference
+from conference.models import Ticket, Conference, FARE_TICKET_TYPES
 from conference.invoicing import create_invoices_for_order
 from conference.tests.factories.fare import TicketFactory
 from p3.models import TicketConference
@@ -219,6 +219,34 @@ def test_frozen_ticket_cannot_managed(db, user_client):
 
     url = reverse('user_panel:manage_ticket', args=[ticket.id])
     response = user_client.get(url)
+
+    assert response.status_code == 403
+
+
+def test_other_fares_tickets_can_be_reassigned(db, user_client):
+    setup_conference_with_typical_fares()
+    ticket = TicketFactory(user=user_client.user, fare__ticket_type=FARE_TICKET_TYPES.other)
+    target_user = UserFactory()
+    target_email = target_user.email
+
+    url = reverse('user_panel:assign_ticket', args=[ticket.id])
+    payload = {'email': target_email}
+    response = user_client.post(url, payload, follow=True)
+
+    assert response.status_code == 200
+    ticket.refresh_from_db()
+    assert ticket.user == target_user
+
+
+def test_other_fares_tickets_cannot_be_managed(db, user_client):
+    setup_conference_with_typical_fares()
+    ticket = TicketFactory(user=user_client.user, fare__ticket_type=FARE_TICKET_TYPES.other)
+    target_user = UserFactory()
+    target_email = target_user.email
+
+    url = reverse('user_panel:manage_ticket', args=[ticket.id])
+    payload = {'email': target_email}
+    response = user_client.post(url, payload, follow=True)
 
     assert response.status_code == 403
 
