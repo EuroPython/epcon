@@ -110,9 +110,7 @@ class TestView(TestCase):
     def test_p3_schedule_empty(self):
         # When trying to view the schedule and no schedule exists, expect 404
         conference = ConferenceFactory()
-        url = reverse('p3-schedule', kwargs={
-            'conference': conference.code
-        })
+        url = reverse('schedule:schedule')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
     

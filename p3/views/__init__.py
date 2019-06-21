@@ -356,4 +356,3 @@ def whos_coming(request, conference=None):
 from p3.views.cart import *
 from p3.views.live import *
 from p3.views.profile import *
-from p3.views.schedule import *

@@ -66,10 +66,7 @@ def test_names_are_not_abbreviated(client):
     )
     EventTrack.objects.create(event=event, track=test_track)
 
-    schedule_url = reverse(
-        'p3-schedule',
-        kwargs={'conference': conference.code}
-    )
+    schedule_url = reverse('schedule:schedule')
 
     response = client.get(schedule_url)
     assert response.status_code == HTTP_OK_200

@@ -1205,7 +1205,7 @@ class Schedule(models.Model):
         return '{0}: {1}'.format(self.conference, self.date)
 
     def get_absolute_url(self):
-        return reverse('p3-schedule', kwargs={
+        return reverse('schedule:schedule', kwargs={
             'day': self.date.day,
             'month': self.date.strftime('%B').lower()
         })

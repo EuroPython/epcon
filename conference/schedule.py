@@ -1,13 +1,15 @@
+import typing
 from datetime import timedelta, date
+
+from dataclasses import dataclass
 
 from django import http
 from django.conf import settings
+from django.conf.urls import url
 from django.shortcuts import render
 
 from conference.models import Schedule
 from conference.utils import TimeTable2
-
-from .grid import Grid, GridTime, ScheduleGrid, Talk
 
 
 def _get_time_indexes(start_time, end_time, times):
@@ -180,3 +182,51 @@ def schedule(request, day=None, month=None):
     ctx = {"conference": settings.CONFERENCE_CONFERENCE, "schedule": schedule, "days": days}
 
     return render(request, "ep19/bs/schedule/schedule.html", ctx)
+
+
+@dataclass
+class Talk:
+    title: str
+    id: str
+    starred: bool
+    selected: bool
+    tracks: typing.List[str]
+    start: str
+    end: str
+    slug: typing.Optional[str]
+    language: typing.Optional[str]
+    level: typing.Optional[str]
+    speakers: typing.List[str]
+    can_be_starred: bool
+    start_column: int
+    end_column: int
+    start_row: int
+    end_row: int
+
+
+@dataclass
+class GridTime:
+    time: str
+    start_row: int
+    end_row: int
+
+
+@dataclass
+class Grid:
+    times: str  # TODO: correct type
+    rows: int
+    cols: int
+
+
+@dataclass
+class ScheduleGrid:
+    day: str
+    tracks: typing.List[str]
+    talks: typing.List[Talk]
+    grid: Grid
+
+
+urlpatterns = [
+    url(r'^(?P<day>\d+)-(?P<month>\w+)$', schedule, name='schedule'),
+    url(r'^$', schedule, name='schedule'),
+]
