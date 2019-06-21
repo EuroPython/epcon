@@ -327,7 +327,11 @@ def test_admin_user_can_access_program_wg_download(admin_client):
         ("cfp:update_speakers", "ep19/bs/cfp/update_speakers.html"),
     ],
 )
-def test_update_pages_work_if_cfp_is_open_and_user_is_author(user_client, page_name, template):
+def test_update_pages_work_if_cfp_is_open_and_user_is_author(
+    user_client,
+    page_name,
+    template
+):
     create_conference_with_open_cfp()
     talk = TalkFactory()
     talk.setAbstract("some abstract")
@@ -544,7 +548,10 @@ def test_speaker_form_doesnt_accept_invalid_international_mobile_numbers(
         }
     )
     assert not form.is_valid()
-    assert form.errors["phone"] == ["Enter a valid phone number."]
+    assert (
+        form.errors["phone"]
+        == ["Enter a valid phone number (e.g. +12125552368)."]
+    )
 
 
 def create_conference_with_open_cfp():
