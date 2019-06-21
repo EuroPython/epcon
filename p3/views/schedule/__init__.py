@@ -1,7 +1,7 @@
 from datetime import timedelta, date
 
 from django import http
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from conference.models import Conference, Schedule
 from conference.utils import TimeTable2
@@ -40,13 +40,21 @@ def schedule(request, conference, day=None, month=None):
         "december",
     ]
 
+    # TODO: filter by day
+    schedules = Schedule.objects.filter(conference=conference).values(
+        "id", "date"
+    )
+
+    days = [schedule["date"] for schedule in schedules]
+    if not days:
+        raise http.Http404()
+
     # Handle the case of day or month being not provided - use the
     # first day of the conference
     if not month or not day:
-        conf = Conference.objects.current()
-        conf_start = conf.conference_start
-        month_index = conf_start.month
-        day = conf_start.day
+        first_day = min(days)
+        month_index = first_day.month
+        day = first_day.day
     else:
         try:
             month_index = months.index(month) + 1
@@ -55,14 +63,7 @@ def schedule(request, conference, day=None, month=None):
 
     print(day, month, month_index)
 
-    # TODO: filter by day
-    schedules = Schedule.objects.filter(conference=conference).values(
-        "id", "date"
-    )
-
-    days = [schedule["date"] for schedule in schedules]
     selected_date = date(days[0].year, month_index, int(day))
-
     current_schedule = next(
         (
             schedule
