@@ -219,7 +219,7 @@ div.cms .cms-toolbar {
         <li class="nav-item{% if day == schedule.day %} active{% endif %}">
             <a
                 class="nav-link"
-                href="{% url "p3-schedule" conference=conference day=day.day month=day|date:"F"|lower %}"
+                href="{% url "p3-schedule" day=day.day month=day|date:"F"|lower %}"
             >
                 {{ day }}
             </a>

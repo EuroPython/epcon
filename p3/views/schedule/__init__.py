@@ -1,9 +1,10 @@
 from datetime import timedelta, date
 
 from django import http
-from django.shortcuts import render, get_object_or_404
+from django.conf import settings
+from django.shortcuts import render
 
-from conference.models import Conference, Schedule
+from conference.models import Schedule
 from conference.utils import TimeTable2
 
 from .grid import Grid, GridTime, ScheduleGrid, Talk
@@ -22,7 +23,7 @@ def _get_time_indexes(start_time, end_time, times):
     return start, end
 
 
-def schedule(request, conference, day=None, month=None):
+def schedule(request, day=None, month=None):
     from conference.dataaccess import schedules_data
 
     selected_slug = request.GET.get('selected', None)
@@ -43,7 +44,7 @@ def schedule(request, conference, day=None, month=None):
     ]
 
     # TODO: filter by day
-    schedules = Schedule.objects.filter(conference=conference).values(
+    schedules = Schedule.objects.filter(conference=settings.CONFERENCE_CONFERENCE).values(
         "id", "date"
     )
 
@@ -176,6 +177,6 @@ def schedule(request, conference, day=None, month=None):
         grid=Grid(times=grid_times, rows=len(all_times), cols=len(tracks)),
     )
 
-    ctx = {"conference": conference, "schedule": schedule, "days": days}
+    ctx = {"conference": settings.CONFERENCE_CONFERENCE, "schedule": schedule, "days": days}
 
     return render(request, "ep19/bs/schedule/schedule.html", ctx)
