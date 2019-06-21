@@ -1,8 +1,10 @@
 from datetime import timedelta, date
 
-from conference.models import Event, Schedule
-from conference.utils import TimeTable2
+from django import http
 from django.shortcuts import render
+
+from conference.models import Conference, Schedule
+from conference.utils import TimeTable2
 
 from .grid import Grid, GridTime, ScheduleGrid, Talk
 
@@ -38,11 +40,18 @@ def schedule(request, conference, day=None, month=None):
         "december",
     ]
 
-    if month:
+    # Handle the case of day or month being not provided - use the
+    # first day of the conference
+    if not month or not day:
+        conf = Conference.objects.current()
+        conf_start = conf.conference_start
+        month_index = conf_start.month
+        day = conf_start.day
+    else:
         try:
             month_index = months.index(month) + 1
-        except ValueError:
-            ...
+        except:
+            raise http.Http404()
 
     print(day, month, month_index)
 
@@ -64,21 +73,22 @@ def schedule(request, conference, day=None, month=None):
     )
 
     if current_schedule is None:
-        raise ValueError("lol")
+        raise http.Http404()
 
     schedule_data = schedules_data([current_schedule["id"]])[0]
     timetable = TimeTable2.fromSchedule(schedule_data["id"])
 
+    # Not implemented
     starred_talks_ids = []
-
-    if request.user.is_authenticated():
-        starred_talks_ids = (
-            Event.objects.filter(
-                eventinterest__user=request.user, eventinterest__interest__gt=0
-            )
-            .filter(schedule__conference=conference)
-            .values_list("id", flat=True)
-        )
+    #
+    # if request.user.is_authenticated():
+    #     starred_talks_ids = (
+    #         Event.objects.filter(
+    #             eventinterest__user=request.user, eventinterest__interest__gt=0
+    #         )
+    #         .filter(schedule__conference=conference)
+    #         .values_list("id", flat=True)
+    #     )
 
     times = []
     tracks = timetable._tracks
