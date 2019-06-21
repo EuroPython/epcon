@@ -269,6 +269,7 @@ div.cms .cms-toolbar {
                                 {% endif %}
                             </div>
 
+                            {% comment "the starring behaviour is not fully implemented" %}
                             {% if talk.can_be_starred %}
                             <div class="schedule__day__footer">
                                 <button
@@ -283,6 +284,7 @@ div.cms .cms-toolbar {
                                 </button>
                             </div>
                             {% endif %}
+                            {% endcomment %}
                         </div>
                     </div>
                 {% endfor %}

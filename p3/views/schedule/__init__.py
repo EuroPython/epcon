@@ -172,8 +172,6 @@ def schedule(request, conference, day=None, month=None):
         grid=Grid(times=grid_times, rows=len(all_times), cols=len(tracks)),
     )
 
-    print(conference)
-
     ctx = {"conference": conference, "schedule": schedule, "days": days}
 
     return render(request, "ep19/bs/schedule/schedule.html", ctx)
