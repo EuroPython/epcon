@@ -514,42 +514,42 @@ class AdminSendMailForm(forms.Form):
     def __init__(self, *args, **kw):
         real = kw.pop('real_usage', True)
         super().__init__(*args, **kw)
-        if real:
-            self.fields['send_email'].required = True
 
     def load_emails(self):
         if not settings.ADMIN_TICKETS_STATS_EMAIL_LOG:
             return []
+
+        output = []
         try:
-            f = file(settings.ADMIN_TICKETS_STATS_EMAIL_LOG)
+            with open(settings.ADMIN_TICKETS_STATS_EMAIL_LOG, 'r') as email_log_file:
+                while True:
+                    try:
+                        msg = {
+                            'from_': eval(email_log_file.readline()).strip(),
+                            'subject': eval(email_log_file.readline()).strip(),
+                            'body': eval(email_log_file.readline()).strip(),
+                        }
+                    except:
+                        break
+                    email_log_file.readline()
+                    if msg['from_']:
+                        output.append(msg)
+                    else:
+                        break
         except:
             return []
-        output = []
-        while True:
-            try:
-                msg = {
-                    'from_': eval(f.readline()).strip(),
-                    'subject': eval(f.readline()).strip(),
-                    'body': eval(f.readline()).strip(),
-                }
-            except:
-                break
-            f.readline()
-            if msg['from_']:
-                output.append(msg)
-            else:
-                break
+
         return reversed(output)
 
     def save_email(self):
         if not settings.ADMIN_TICKETS_STATS_EMAIL_LOG:
             return False
         data = self.cleaned_data
-        with file(settings.ADMIN_TICKETS_STATS_EMAIL_LOG, 'a') as f:
-            f.write('%s\n' % repr(data['from_']))
-            f.write('%s\n' % repr(data['subject']))
-            f.write('%s\n' % repr(data['body']))
-            f.write('------------------------------------------\n')
+        with open(settings.ADMIN_TICKETS_STATS_EMAIL_LOG, 'a') as email_log_file:
+            email_log_file.write('%s\n' % repr(data['from_']))
+            email_log_file.write('%s\n' % repr(data['subject']))
+            email_log_file.write('%s\n' % repr(data['body']))
+            email_log_file.write('------------------------------------------\n')
         return True
 
     def preview(self, *uids):
