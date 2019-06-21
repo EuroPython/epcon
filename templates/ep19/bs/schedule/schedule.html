@@ -121,6 +121,9 @@
     background: #EFECDF;
     position: relative;
 }
+.schedule__day__talk.talk-selected {
+    background: #ababab;
+}
 .schedule__day__level_indicator {
     display: block;
     width: 100%;
@@ -254,7 +257,7 @@ div.cms .cms-toolbar {
             <div class="schedule__grid" style="--cols: {{ schedule.grid.cols }}; --rows: {{ schedule.grid.rows }};">
                 {% for talk in schedule.talks %}
                     <div
-                        class="schedule__day__talk {% if talk.level %}talk-level--{{ talk.level }}{% endif %}"
+                        class="schedule__day__talk {% if talk.level %}talk-level--{{ talk.level }}{% endif %} {% if talk.selected %}talk-selected{% endif %}"
                         style="
                             grid-row: {{ talk.start_row }} / {{ talk.end_row }};
                             grid-column: {{ talk.start_column }} / {{ talk.end_column }};

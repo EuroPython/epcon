@@ -25,6 +25,8 @@ def _get_time_indexes(start_time, end_time, times):
 def schedule(request, conference, day=None, month=None):
     from conference.dataaccess import schedules_data
 
+    selected_slug = request.GET.get('selected', None)
+
     months = [
         "january",
         "february",
@@ -135,6 +137,7 @@ def schedule(request, conference, day=None, month=None):
                 title=talk.get("custom", "") or talk.get("name", ""),
                 id=talk["id"],
                 starred=talk["id"] in starred_talks_ids,
+                selected=selected_slug and selected_slug == talk_meta.get("slug", None),
                 tracks=talk["tracks"],
                 start=time,
                 end=talk["end_time"],

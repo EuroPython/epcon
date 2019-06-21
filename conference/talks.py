@@ -98,6 +98,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
         "status": talk.status,
         "tags": [t.name for t in talk.tags.all()],
         "speakers": [],
+        "schedule_url": talk.get_schedule_url(),
     }
 
     for speaker in talk.get_all_speakers():

@@ -7,6 +7,7 @@ class Talk:
     title: str
     id: str
     starred: bool
+    selected: bool
     tracks: typing.List[str]
     start: str
     end: str
