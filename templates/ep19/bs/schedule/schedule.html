@@ -193,24 +193,34 @@ div.cms .cms-toolbar {
 .schedule__time {
     top: 50px;
 }
+
+#days-navbar>.navbar-nav {
+    justify-content: center;
+    width: 100%;
+}
+
+@media (max-width: 991px) {
+    #days-navbar>.navbar-nav {
+        width: auto;
+    }
+}
+
 </style>
 
 {% load cms_tags menu_tags %}
 <nav class="navbar navbar-expand-lg" id="days-navbar">
-    <div class=''>
-         <ul class="navbar-nav mr-auto">
-            {% for day in days %}
-            <li class="nav-item{% if day == schedule.day %} active{% endif %}">
-                <a
-                    class="nav-link"
-                    href="{% url "p3-schedule" conference=conference day=day.day month=day|date:"F"|lower %}"
-                >
-                    {{ day }}
-                </a>
-            </li>
-            {% endfor %}
-            </ul>
-    </div>
+     <ul class="navbar-nav mr-auto">
+        {% for day in days %}
+        <li class="nav-item{% if day == schedule.day %} active{% endif %}">
+            <a
+                class="nav-link"
+                href="{% url "p3-schedule" conference=conference day=day.day month=day|date:"F"|lower %}"
+            >
+                {{ day }}
+            </a>
+        </li>
+        {% endfor %}
+        </ul>
 </nav>
 
 
