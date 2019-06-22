@@ -2,66 +2,61 @@
 """
 Print out a JSON of accepted talks with the abstracts, schedule and speaker tickets status.
 """
-from   django.core.management.base import BaseCommand, CommandError
+import json
+from collections import OrderedDict
 
-from   collections  import OrderedDict
-from   optparse     import make_option
-import json   as json
+from django.core.management.base import BaseCommand, CommandError
 
-from ...utils import(speaker_companies,
-                     speaker_listing,
-                     speaker_emails,
-                     speaker_twitters,
-                     have_tickets,
-                     talk_schedule,
-                     talk_track_title,
-                     talk_votes,
-                     group_all_talks_by_admin_type,
-                     clean_title,
-                     )
+from conference import models
 
-### Globals
-VERBOSE = False
+from ...utils import(
+    speaker_companies,
+    speaker_listing,
+    speaker_emails,
+    speaker_twitters,
+    have_tickets,
+    talk_schedule,
+    talk_track_title,
+    talk_votes,
+    group_all_talks_by_admin_type,
+    clean_title,
+)
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option('--verbose',
-             action='store_true',
-             dest='verbose',
-             help='Will output some warning while running.',
-        ),
-        make_option('--talk_status',
-             action='store',
-             dest='talk_status',
-             default='proposed',
-             choices=['accepted', 'proposed', 'canceled'],
-             help='The status of the talks to be put in the report. '
-                  'Choices: accepted, proposed, canceled',
-        ),
-        make_option('--votes',
-             action='store_true',
-             dest='votes',
-             default=False,
-             help='Add the votes to each talk.',
-        ),
+    args = '<conference>'
 
-        # make_option('--option',
-        #     action='store',
-        #     dest='option_attr',
-        #     default=0,
-        #     type='int',
-        #     help='Help text',
-        # ),
-    )
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('conference')
+
+        # Named (optional) arguments
+        parser.add_argument(
+            '--verbose',
+            action='store_true',
+            dest='verbose',
+            help='Will output some warning while running.',
+        )
+        parser.add_argument(
+            '--talk_status',
+            action='store',
+            dest='talk_status',
+            default='proposed',
+            choices=['accepted', 'proposed', 'canceled'],
+            help='The status of the talks to be put in the report. '
+                 'Choices: accepted, proposed, canceled',
+        )
+        parser.add_argument(
+            '--votes',
+            action='store_true',
+            dest='votes',
+            default=False,
+            help='Add the votes to each talk.',
+        )
 
     def handle(self, *args, **options):
-        try:
-            conference = args[0]
-        except IndexError:
-            raise CommandError('conference not specified')
-
-        VERBOSE = options['verbose']
+        conference = models.Conference.objects.get(code=options['conference'])
+        verbose = options['verbose']
 
         talks = group_all_talks_by_admin_type(conference, options['talk_status'])
 
@@ -78,10 +73,10 @@ class Command(BaseCommand):
             for talk in session_talks:
 
                 schedule = talk_schedule(talk)
-                if not schedule and VERBOSE:
+                if not schedule and verbose:
                     print('ERROR: Talk {} is not scheduled.'.format(talk))
 
-                if len(schedule) > 1 and VERBOSE:
+                if len(schedule) > 1 and verbose:
                     print('ERROR: Talk {} is scheduled more than once: {}'.format(talk, schedule))
 
                 sessions[type_name][talk.id] = {

@@ -4,7 +4,7 @@
 """
 from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
-from conference import models
+from conference import models as cmodels
 
 from optparse import make_option
 
@@ -48,28 +48,33 @@ def speaker_list_key(entry):
 ###
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option('--talk_status',
-             action='store',
-             dest='talk_status',
-             default='accepted',
-             choices=['accepted', 'proposed', 'canceled'],
-             help='The status of the talks to be put in the report. '
-                  'Choices: accepted, proposed, canceled',
-        ),
-    )
 
     args = '<conference>'
 
-    def handle(self, *args, **options):
-        try:
-            conference = args[0]
-        except IndexError:
-            raise CommandError('conference not specified')
+    def add_arguments(self, parser):
 
-        talks = (models.Talk.objects
-                 .filter(conference=conference,
-                         status=options['talk_status']))
+        # Positional arguments
+        parser.add_argument('conference')
+
+        # Named (optional) arguments
+        parser.add_argument(
+            '--talk_status',
+            action='store',
+            dest='talk_status',
+            default='accepted',
+            choices=['accepted', 'proposed', 'canceled'],
+            help='The status of the talks to be put in the report. '
+                 'Choices: accepted, proposed, canceled',
+        )
+
+
+    def handle(self, *args, **options):
+        conference = cmodels.Conference.objects.get(code=options['conference'])
+        talks = (
+            cmodels.Talk.objects.filter(
+                conference=conference.code,
+                status=options['talk_status'])
+        )
 
         # Find all speakers
         speaker_dict = {}

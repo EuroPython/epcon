@@ -7,17 +7,17 @@ from conference import models
 import csv
 import sys
 
-class Command(BaseCommand):
-    """
-    """
 
+class Command(BaseCommand):
     args = '<conference>'
 
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('conference')
+
+
     def handle(self, *args, **options):
-        try:
-            conference = models.Conference.objects.get(code=args[0])
-        except IndexError:
-            raise CommandError('conference missing')
+        conference = models.Conference.objects.get(code=options['conference'])
 
         speakers = set()
         talks = models.Talk.objects.accepted(conference.code)
