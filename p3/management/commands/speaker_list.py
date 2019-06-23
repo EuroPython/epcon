@@ -2,13 +2,10 @@
 """ Print out a listing of speakers.
 
 """
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.core import urlresolvers
+
 from conference import models as cmodels
-
-from optparse import make_option
-
-### Globals
 
 ### Helpers
 
@@ -48,8 +45,6 @@ def speaker_list_key(entry):
 ###
 
 class Command(BaseCommand):
-
-    args = '<conference>'
 
     def add_arguments(self, parser):
 

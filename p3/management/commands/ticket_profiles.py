@@ -1,4 +1,3 @@
-
 """ Print a json file with the participants information for their badges."""
 
 import json
@@ -14,8 +13,6 @@ from ...utils import (
 
 
 class Command(BaseCommand):
-
-    args = '<conference>'
 
     def add_arguments(self, parser):
 
@@ -102,17 +99,17 @@ class Command(BaseCommand):
                 log.error(msg)
 
             title, company = get_profile_company(profile)
-            subj['title'] = title.encode('utf-8')
-            subj['company'] = company.encode('utf-8')
-            subj['name'] = profile.user.first_name.encode('utf-8')
-            subj['surname'] = profile.user.last_name.encode('utf-8')
-            subj['tagline'] = p3_tkt.tagline.encode('utf-8')
+            subj['title'] = title
+            subj['company'] = company
+            subj['name'] = profile.user.first_name
+            subj['surname'] = profile.user.last_name
+            subj['tagline'] = p3_tkt.tagline
             subj['pypower'] = p3_tkt.python_experience
-            subj['tshirt'] = p3_tkt.shirt_size.encode('utf-8')
-            subj['email'] = profile.user.email.encode('utf-8')
-            subj['phone'] = profile.phone.encode('utf-8')
-            subj['compweb'] = profile.company_homepage.encode('utf-8')
-            subj['persweb'] = profile.personal_homepage.encode('utf-8')
+            subj['tshirt'] = p3_tkt.shirt_size
+            subj['email'] = profile.user.email
+            subj['phone'] = profile.phone
+            subj['compweb'] = profile.company_homepage
+            subj['persweb'] = profile.personal_homepage
             subj['id'] = ticket.id
             subj['frozen'] = ticket.frozen
             subj['fare_code'] = ticket.fare.code
