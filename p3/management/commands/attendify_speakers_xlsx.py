@@ -40,6 +40,9 @@ import openpyxl
 # Debug output ?
 _debug = 1
 
+# URL prefix to use in URLs
+URL_PREFIX = settings.DEFAULT_URL_PREFIX or 'https://ep2019.europython.eu'
+
 ### Helpers
 
 def profile_url(user):
@@ -88,7 +91,7 @@ def add_speaker(data, speaker):
     company = profile.company
     position = profile.job_title
     profile_text = ('<a href="%s%s">Profile on EuroPython Website</a>' %
-                    (settings.DEFAULT_URL_PREFIX, profile_url(user)))
+                    (URL_PREFIX, profile_url(user)))
     twitter = p3profile.twitter
     if twitter.startswith(('https://twitter.com/', 'http://twitter.com/')):
         twitter = twitter.split('/')[-1]
@@ -143,7 +146,7 @@ def update_speakers(speakers_xlsx, new_data, updated_xlsx=None):
     print('first line: %r' % ws_data[:1])
     print('last line: %r' % ws_data[-1:])
 
-    # Reconcile UIDs / talks
+    # Reconcile UIDs / speakers
     uids = {}
     for line in ws_data:
         uid = line[SPEAKERS_UID_COLUMN]
@@ -196,27 +199,18 @@ def update_speakers(speakers_xlsx, new_data, updated_xlsx=None):
 ###
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        # make_option('--option',
-        #     action='store',
-        #     dest='option_attr',
-        #     default=0,
-        #     type='int',
-        #     help='Help text',
-        # ),
-    )
 
     args = '<conference> <xlsx-file>'
 
+    def add_arguments(self, parser):
+
+        # Positional arguments
+        parser.add_argument('conference')
+        parser.add_argument('xlsx')
+
     def handle(self, *args, **options):
-        try:
-            conference = args[0]
-        except IndexError:
-            raise CommandError('conference not specified')
-        try:
-            speakers_xlsx = args[1]
-        except IndexError:
-            raise CommandError('XLSX file not specified')
+        conference = options['conference']
+        speakers_xlsx = options['xlsx']
 
         # Get speaker records
         speakers = set()

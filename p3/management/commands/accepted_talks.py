@@ -42,23 +42,16 @@ def speaker_listing(talk):
 ###
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        # make_option('--option',
-        #     action='store',
-        #     dest='option_attr',
-        #     default=0,
-        #     type='int',
-        #     help='Help text',
-        # ),
-    )
     
     args = '<conference>'
     
+    def add_arguments(self, parser):
+
+        # Positional arguments
+        parser.add_argument('conference')
+
     def handle(self, *args, **options):
-        try:
-            conference = args[0]
-        except IndexError:
-            raise CommandError('conference not specified')
+        conference = options['conference']
 
         talks = (models.Talk.objects
                  .filter(conference=conference,
