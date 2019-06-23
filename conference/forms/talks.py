@@ -57,6 +57,16 @@ class TalkUpdateForm(forms.ModelForm):
         return talk
 
 
+class TalkSlidesForm(forms.ModelForm):
+    slides = forms.FileField(required=True)
+
+    class Meta:
+        model = Talk
+        fields = [
+            "slides"
+        ]
+
+
 class ProposalForm(TalkUpdateForm):
     type = forms.ChoiceField(label="Type", required=True, choices=TALK_TYPE)
 

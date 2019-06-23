@@ -127,3 +127,28 @@ def test_update_talk_post(user_client):
     assert set(talk.tags.all().values_list("pk", flat=True)) == set(
         [tag.pk for tag in tags]
     )
+
+
+@pytest.mark.xfail
+def test_anonymous_cannot_get_submit_slides():
+    assert False
+
+
+@pytest.mark.xfail
+def test_not_author_cannot_get_submit_slides():
+    assert False
+
+
+@pytest.mark.xfail
+def test_author_can_get_submit_slides():
+    assert False
+
+
+@pytest.mark.xfail
+def test_author_can_post_submit_slides():
+    assert False
+
+
+@pytest.mark.xfail
+def test_slide_url_on_talk_detail_page():
+    assert False
