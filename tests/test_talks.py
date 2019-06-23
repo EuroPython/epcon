@@ -3,12 +3,15 @@ from datetime import timedelta
 import pytest
 
 from django.core.urlresolvers import reverse
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
+
+from assopy.stripe.tests.factories import UserFactory
 from conference.models import TALK_STATUS, TALK_LEVEL
 from conference.tests.factories.talk import TalkFactory
 from conference.tests.factories.conference import ConferenceTagFactory
-from tests.common_tools import setup_conference_with_typical_fares, redirects_to
+from tests.common_tools import setup_conference_with_typical_fares, redirects_to, template_used
 
 pytestmark = [pytest.mark.django_db]
 
@@ -129,26 +132,100 @@ def test_update_talk_post(user_client):
     )
 
 
-@pytest.mark.xfail
-def test_anonymous_cannot_get_submit_slides():
-    assert False
+def test_anonymous_cannot_get_submit_slides(client):
+    setup_conference_with_typical_fares()
+    talk = TalkFactory(status=TALK_STATUS.accepted)
+
+    url = reverse("talks:submit_slides", args=[talk.slug])
+    response = client.get(url)
+
+    assert redirects_to(response, reverse('accounts:login'))
 
 
-@pytest.mark.xfail
-def test_not_author_cannot_get_submit_slides():
-    assert False
+def test_not_author_cannot_get_submit_slides(user_client):
+    setup_conference_with_typical_fares()
+    talk = TalkFactory(status=TALK_STATUS.accepted)
+
+    url = reverse("talks:submit_slides", args=[talk.slug])
+    response = user_client.get(url)
+
+    assert response.status_code == 403
 
 
-@pytest.mark.xfail
-def test_author_can_get_submit_slides():
-    assert False
+def test_author_can_get_submit_slides(user_client):
+    setup_conference_with_typical_fares()
+    talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
+
+    url = reverse("talks:submit_slides", args=[talk.slug])
+    response = user_client.get(url)
+
+    assert response.status_code == 200
+    assert template_used(response, "ep19/bs/talks/update_talk.html")
 
 
-@pytest.mark.xfail
-def test_author_can_post_submit_slides():
-    assert False
+def test_author_can_post_submit_slides(user_client):
+    setup_conference_with_typical_fares()
+    talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
+    assert not talk.slides
+
+    url = reverse("talks:submit_slides", args=[talk.slug])
+    payload = {"slides": SimpleUploadedFile('slides.pdf', 'pdf content'.encode())}
+    response = user_client.post(url, data=payload)
+
+    assert redirects_to(response, talk.get_absolute_url())
+    talk.refresh_from_db()
+    assert talk.slides
 
 
-@pytest.mark.xfail
-def test_slide_url_on_talk_detail_page():
-    assert False
+def test_submit_slides_url_on_talk_detail_page(client):
+    """
+    The submit slides button only appears if the user is the author of the talk.
+    """
+    setup_conference_with_typical_fares()
+    talk = TalkFactory(created_by=UserFactory(), status=TALK_STATUS.accepted)
+    url = talk.get_absolute_url()
+    submit_slides_url = reverse("talks:submit_slides", args=[talk.slug])
+
+    # URL does not appear for anonymous users
+    response = client.get(url)
+
+    assert 'submit slides' not in response.content.decode().lower()
+    assert submit_slides_url not in response.content.decode()
+
+    # URL does not appear for authenticated users
+    client.force_login(UserFactory())
+    response = client.get(url)
+
+    assert 'submit slides' not in response.content.decode().lower()
+    assert submit_slides_url not in response.content.decode()
+
+    # URL does appear for the talk owner
+    client.force_login(talk.created_by)
+    response = client.get(url)
+
+    assert 'submit slides' in response.content.decode().lower()
+    assert submit_slides_url in response.content.decode()
+
+
+def test_view_slides_url_on_talk_detail_page(client):
+    """
+    The view slides button only appears if the slides have been uploaded.
+    """
+    setup_conference_with_typical_fares()
+    talk = TalkFactory(status=TALK_STATUS.accepted)
+    url = talk.get_absolute_url()
+
+    # Slides URL does not appear when the slides haven't been uploaded
+    response = client.get(url)
+
+    assert not talk.slides
+    assert 'slides' not in response.content.decode()
+
+    # Slides URL does appear when the slides have been uploaded
+    talk.slides = SimpleUploadedFile('slides.pdf', 'pdf content'.encode())
+    talk.save()
+
+    response = client.get(url)
+
+    assert talk.slides
+    assert 'slides' in response.content.decode()
