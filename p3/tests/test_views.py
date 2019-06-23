@@ -75,6 +75,9 @@ class TestView(TestCase):
         self.assertEqual(response.get('content-type'), 'application/json')
         self.assertJSONEqual(response.content, {'tickets': [], 'coupon': 0, 'total': 0})
 
+    # TODO umgelurgel: these views do not exist for ep2019 - we should either
+    #   remove these tests or add back the views
+    @unittest.skip("FIXME")
     @override_settings(CONFERENCE_CONFERENCE='epbeta')
     def test_p3_my_schedule(self):
         # p3-my-schedule -> p3.views.schedule.jump_to_my_schedule
@@ -90,6 +93,9 @@ class TestView(TestCase):
 
         self.assertRedirects(response, redirect_url, fetch_redirect_response=False)
 
+    # TODO umgelurgel: these views do not exist for ep2019 - we should either
+    #   remove these tests or add back the views
+    @unittest.skip("FIXME")
     @override_settings(CONFERENCE_CONFERENCE='epbeta')
     def test_p3_schedule_ics(self):
         # p3-schedule-ics -> p3.views.schedule.schedule_ics
@@ -101,16 +107,16 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    def test_p3_schedule(self):
-        # p3-schedule -> p3.views.schedule.schedule
+    def test_p3_schedule_empty(self):
+        # When trying to view the schedule and no schedule exists, expect 404
         conference = ConferenceFactory()
-        url = reverse('p3-schedule', kwargs={
-            'conference': conference.code
-        })
+        url = reverse('schedule:schedule')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
     
-    # @unittest.skip("FIXME")
+    # TODO umgelurgel: these views do not exist for ep2019 - we should either
+    #   remove these tests or add back the views
+    @unittest.skip("FIXME")
     def test_p3_schedule_list(self):
         # p3-schedule-list -> p3.views.schedule.schedule_list
         conference = ConferenceFactory()
@@ -162,6 +168,9 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+    # TODO umgelurgel: these views do not exist for ep2019 - we should either
+    #   remove these tests or add back the views
+    @unittest.skip("FIXME")
     @override_settings(CONFERENCE_CONFERENCE='epbeta')
     def test_p3_schedule_my_schedule_ics(self):
         # p3-schedule-my-schedule-ics -> p3.views.schedule.schedule_ics
@@ -175,6 +184,9 @@ class TestView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get('content-type'), 'text/calendar')
 
+    # TODO umgelurgel: these views do not exist for ep2019 - we should either
+    #   remove these tests or add back the views
+    @unittest.skip("FIXME")
     @override_settings(CONFERENCE_CONFERENCE='epbeta')
     def test_p3_schedule_my_schedule_ics_error_404(self):
         # p3-schedule-my-schedule-ics -> p3.views.schedule.schedule_ics

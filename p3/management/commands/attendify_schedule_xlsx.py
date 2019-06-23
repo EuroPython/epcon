@@ -38,7 +38,16 @@ import openpyxl
 _debug = 0
 
 # These must match the talk .type or .admin_type
-from .accepted_talks import TYPE_NAMES
+TYPE_NAMES = (
+    ('k', 'Keynotes', ''),
+    ('t', 'Talks', ''),
+    ('r', 'Training sessions', ''),
+    ('p', 'Poster sessions', ''),
+    ('i', 'Interactive sessions', ''),
+    ('n', 'Panels', ''),
+    ('h', 'Help desks', 'Help desks provide slots for attendees to discuss their problems one-on-one with experts from the projects.'),
+    ('m', 'EuroPython sessions', 'The EuroPython sessions are intended for anyone interested in helping with the EuroPython organization in the coming years.'),
+    )
 
 # Special handling of poster sessions
 if 0:
@@ -53,7 +62,7 @@ else:
 
 # Plenary sessions will have 2-3 tracks assigned. We use the
 # plenary room in this case.
-PLENARY_ROOM = 'Smarkets'
+PLENARY_ROOM = 'MongoDB'
 
 # Breaks have more than 3 tracks assigned. Since this changes between
 # the days, we don't set the room name.
@@ -274,27 +283,18 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
 ###
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        # make_option('--option',
-        #     action='store',
-        #     dest='option_attr',
-        #     default=0,
-        #     type='int',
-        #     help='Help text',
-        # ),
-    )
 
     args = '<conference> <xlsx-file>'
 
+    def add_arguments(self, parser):
+
+        # Positional arguments
+        parser.add_argument('conference')
+        parser.add_argument('xlsx')
+
     def handle(self, *args, **options):
-        try:
-            conference = args[0]
-        except IndexError:
-            raise CommandError('conference not specified')
-        try:
-            schedule_xlsx = args[1]
-        except IndexError:
-            raise CommandError('XLSX file not specified')
+        conference = options['conference']
+        schedule_xlsx = options['xlsx']
 
         talks = (models.Talk.objects
                  .filter(conference=conference,
