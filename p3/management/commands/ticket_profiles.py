@@ -51,10 +51,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        try:
-            conference = models.Conference.objects.get(code=options['conference'])
-        except IndexError:
-            raise CommandError('conference not specified')
+        conference = models.Conference.objects.get(code=options['conference'])
 
         if options['status'] not in ('all', 'complete', 'incomplete'):
             raise CommandError('--status should be one of '
@@ -78,7 +75,6 @@ class Command(BaseCommand):
             'tagline': '',
             'company': '',
             'title':   '',
-            'pypower': '0',
             'tshirt':  'l',
             'email':   '',
             'phone':   '',
@@ -104,7 +100,6 @@ class Command(BaseCommand):
             subj['name'] = profile.user.first_name
             subj['surname'] = profile.user.last_name
             subj['tagline'] = p3_tkt.tagline
-            subj['pypower'] = p3_tkt.python_experience
             subj['tshirt'] = p3_tkt.shirt_size
             subj['email'] = profile.user.email
             subj['phone'] = profile.phone
