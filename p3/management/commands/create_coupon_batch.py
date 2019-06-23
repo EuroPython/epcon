@@ -50,33 +50,49 @@ class Command(BaseCommand):
     # Dry run ?
     dry_run = False
 
+    def add_arguments(self, parser):
+
+        # Positional arguments
+        parser.add_argument('conference')
+        parser.add_argument('ticket_code')
+        parser.add_argument('count')
+        parser.add_argument('amount')
+        parser.add_argument('coupon_code')
+
+        # Named (optional) arguments
+        parser.add_argument('--dry-run',
+                            action='store_true',
+                            dest='dry_run',
+                            default=False,
+                            help='Do everything except create the coupons')
+
     @transaction.atomic
     def handle(self, *args, **options):
 
         self.dry_run = options.get('dry_run', False)
 
         try:
-            conference = cmodels.Conference.objects.get(code=args[0])
+            conference = cmodels.Conference.objects.get(code=options['conference'])
         except IndexError:
             raise CommandError('conference missing')
 
         try:
-            ticket_code = str(args[1])
+            ticket_code = str(options['ticket_code'])
         except IndexError:
             raise CommandError('ticket code missing')
 
         try:
-            number_of_coupons = int(args[2])
+            number_of_coupons = int(options['count'])
         except IndexError:
             raise CommandError('coupon count missing')
 
         try:
             amount_per_coupon = str(args[3])
         except IndexError:
-            raise CommandError('coupon discount amount missing')
+            raise CommandError(options['amount'])
 
         try:
-            coupon_prefix = str(args[4])
+            coupon_prefix = str(options['coupon_code'])
         except IndexError:
             coupon_prefix = DEFAULT_PREFIX
 
