@@ -221,7 +221,7 @@ div.cms .cms-toolbar {
                 class="nav-link"
                 href="{% url "schedule:schedule" day=day.day month=day|date:"F"|lower %}"
             >
-                {{ day }}
+                {{ day|date:"l, jS" }}
             </a>
         </li>
         {% endfor %}
