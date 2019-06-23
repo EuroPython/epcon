@@ -179,7 +179,7 @@ def conference2ical(conf, user=None, abstract=False):
     def altf(data, component):
         if component == 'calendar':
             if user is None:
-                url = reverse('p3-schedule', kwargs={'conference': conf})
+                url = reverse('schedule:schedule')
             else:
                 url = reverse('p3-schedule-my-schedule', kwargs={'conference': conf})
             data['uid'] = settings.DEFAULT_URL_PREFIX + url

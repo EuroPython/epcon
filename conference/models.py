@@ -4,6 +4,7 @@ import os
 import os.path
 import uuid
 from collections import defaultdict
+from urllib.parse import urlencode
 
 import shortuuid
 import tagging
@@ -789,6 +790,13 @@ class Talk(models.Model, UrlMixin):
     def get_absolute_url(self):
         return reverse("talks:talk", args=[self.slug])
 
+    def get_schedule_url(self):
+        event = self.get_event()
+        if not event:
+            return None
+
+        return event.schedule.get_absolute_url() + '?' + urlencode({'selected': self.slug})
+
     def get_admin_url(self):
         return reverse("admin:conference_talk_change", args=[self.id])
 
@@ -1203,6 +1211,12 @@ class Schedule(models.Model):
 
     def __str__(self):
         return '{0}: {1}'.format(self.conference, self.date)
+
+    def get_absolute_url(self):
+        return reverse('schedule:schedule', kwargs={
+            'day': self.date.day,
+            'month': self.date.strftime('%B').lower()
+        })
 
     def speakers(self):
         qs = Event.objects\
