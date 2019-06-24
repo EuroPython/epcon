@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 
 from conference.models import Conference, Talk, TALK_STATUS
-from conference.forms import TalkUpdateForm
+from conference.forms import TalkUpdateForm, TalkSlidesForm
 
 
 def talk(request, talk_slug):
@@ -18,6 +18,9 @@ def talk(request, talk_slug):
     talk_as_dict = dump_relevant_talk_information_to_dict(talk)
 
     can_update_talk = request.user.is_authenticated and can_user_update_talk(
+        user=request.user, talk=talk
+    )
+    can_submit_slides = request.user.is_authenticated and can_user_submit_talk_slides(
         user=request.user, talk=talk
     )
 
@@ -32,6 +35,7 @@ def talk(request, talk_slug):
                 reverse("conference-talk-social-card-png", kwargs={"slug": talk.slug})
             ),
             "can_update_talk": can_update_talk,
+            "can_submit_slides": can_submit_slides,
         },
     )
 
@@ -65,6 +69,35 @@ def update_talk(request, talk_slug):
     )
 
 
+@login_required
+def submit_slides(request, talk_slug):
+    """
+    Submit talk slides.
+    """
+    talk = get_object_or_404(Talk, slug=talk_slug)
+
+    if not can_user_submit_talk_slides(user=request.user, talk=talk):
+        return HttpResponseForbidden()
+
+    talk_slides_form = TalkSlidesForm(instance=talk)
+
+    if request.method == "POST":
+        talk_slides_form = TalkSlidesForm(instance=talk, data=request.POST, files=request.FILES)
+
+        if talk_slides_form.is_valid():
+            talk_slides_form.save()
+            messages.success(request, "Slides submitted successfully")
+            return redirect(talk.get_absolute_url())
+        else:
+            messages.error(request, "Please correct the errors below")
+
+    return TemplateResponse(
+        request,
+        "ep19/bs/talks/update_talk.html",
+        {"talk": talk, "talk_update_form": talk_slides_form},
+    )
+
+
 def can_user_update_talk(user, talk):
     """
     Check if the user can update the given talk.
@@ -75,6 +108,16 @@ def can_user_update_talk(user, talk):
         talk.created_by == user
         and talk.status == TALK_STATUS.accepted
         and not conf.has_finished
+    )
+
+
+def can_user_submit_talk_slides(user, talk):
+    """
+    Check if the user can upload talk slides.
+    """
+    return (
+        talk.created_by == user
+        and talk.status == TALK_STATUS.accepted
     )
 
 
@@ -99,6 +142,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
         "tags": [t.name for t in talk.tags.all()],
         "speakers": [],
         "schedule_url": talk.get_schedule_url(),
+        "slides_url": talk.slides,
     }
 
     for speaker in talk.get_all_speakers():
@@ -121,5 +165,6 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
 
 urlpatterns = [
     url(r"^(?P<talk_slug>[\w-]+)/update/$", update_talk, name="update_talk"),
+    url(r"^(?P<talk_slug>[\w-]+)/submit_slides/$", submit_slides, name="submit_slides"),
     url(r"^(?P<talk_slug>[\w-]+)/$", talk, name="talk"),
 ]
