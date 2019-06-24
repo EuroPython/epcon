@@ -51,7 +51,7 @@ def test_if_cfp_pages_are_unavailable_if_cfp_is_in_the_future(user_client):
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
         name=settings.CONFERENCE_CONFERENCE,
-        cfp_start=timezone.now() + timedelta(days=2),
+        cfp_start=timezone.now().date() + timedelta(days=2),
     )
     step1_url = reverse("cfp:step1_submit_proposal")
 
@@ -64,8 +64,8 @@ def test_if_cfp_pages_are_unavailable_if_cfp_is_in_the_past(user_client):
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
         name=settings.CONFERENCE_CONFERENCE,
-        cfp_start=timezone.now() - timedelta(days=2),
-        cfp_end=timezone.now() - timedelta(days=1),
+        cfp_start=timezone.now().date() - timedelta(days=2),
+        cfp_end=timezone.now().date() - timedelta(days=1),
     )
     step1_url = reverse("cfp:step1_submit_proposal")
 
@@ -78,8 +78,8 @@ def test_if_cfp_pages_are_available_if_cfp_is_active(user_client):
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
         name=settings.CONFERENCE_CONFERENCE,
-        cfp_start=timezone.now() - timedelta(days=2),
-        cfp_end=timezone.now() + timedelta(days=1),
+        cfp_start=timezone.now().date() - timedelta(days=2),
+        cfp_end=timezone.now().date() + timedelta(days=1),
     )
     step1_url = reverse("cfp:step1_submit_proposal")
 
@@ -97,8 +97,8 @@ def test_validation_errors_are_handled_on_step1(user_client):
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
         name=settings.CONFERENCE_CONFERENCE,
-        cfp_start=timezone.now() - timedelta(days=2),
-        cfp_end=timezone.now() + timedelta(days=1),
+        cfp_start=timezone.now().date() - timedelta(days=2),
+        cfp_end=timezone.now().date() + timedelta(days=1),
     )
     step1_url = reverse("cfp:step1_submit_proposal")
     response = user_client.post(step1_url, {})
@@ -112,8 +112,8 @@ def test_if_user_can_submit_talk_details_and_is_redirect_to_step2(user_client):
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
         name=settings.CONFERENCE_CONFERENCE,
-        cfp_start=timezone.now() - timedelta(days=2),
-        cfp_end=timezone.now() + timedelta(days=1),
+        cfp_start=timezone.now().date() - timedelta(days=2),
+        cfp_end=timezone.now().date() + timedelta(days=1),
     )
     step1_url = reverse("cfp:step1_submit_proposal")
 
@@ -160,8 +160,8 @@ def test_validation_errors_are_handled_on_step2(user_client):
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
         name=settings.CONFERENCE_CONFERENCE,
-        cfp_start=timezone.now() - timedelta(days=2),
-        cfp_end=timezone.now() + timedelta(days=1),
+        cfp_start=timezone.now().date() - timedelta(days=2),
+        cfp_end=timezone.now().date() + timedelta(days=1),
     )
     talk = TalkFactory()
     step2_url = reverse("cfp:step2_add_speakers", args=[talk.uuid])
@@ -282,8 +282,8 @@ def test_preview_page_doesnt_contain_edit_link_if_cfp_is_closed_and_user_is_auth
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
         name=settings.CONFERENCE_CONFERENCE,
-        cfp_start=timezone.now() - timedelta(days=2),
-        cfp_end=timezone.now() - timedelta(days=1),
+        cfp_start=timezone.now().date() - timedelta(days=2),
+        cfp_end=timezone.now().date() - timedelta(days=1),
     )
     talk = TalkFactory()
     talk.setAbstract("some abstract")
@@ -370,8 +370,8 @@ def test_preview_page_doesnt_work_if_cfp_is_closed_and_user_is_author(
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
         name=settings.CONFERENCE_CONFERENCE,
-        cfp_start=timezone.now() - timedelta(days=2),
-        cfp_end=timezone.now() - timedelta(days=1),
+        cfp_start=timezone.now().date() - timedelta(days=2),
+        cfp_end=timezone.now().date() - timedelta(days=1),
     )
     talk = TalkFactory()
     talk.setAbstract("some abstract")
@@ -392,8 +392,8 @@ def test_validation_errors_are_handled_on_update_proposal(user_client):
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
         name=settings.CONFERENCE_CONFERENCE,
-        cfp_start=timezone.now() - timedelta(days=2),
-        cfp_end=timezone.now() + timedelta(days=1),
+        cfp_start=timezone.now().date() - timedelta(days=2),
+        cfp_end=timezone.now().date() + timedelta(days=1),
     )
     talk = TalkFactory()
     talk.setAbstract("some abstract")
@@ -558,6 +558,6 @@ def create_conference_with_open_cfp():
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
         name=settings.CONFERENCE_CONFERENCE,
-        cfp_start=timezone.now() - timedelta(days=2),
-        cfp_end=timezone.now() + timedelta(days=1),
+        cfp_start=timezone.now().date() - timedelta(days=2),
+        cfp_end=timezone.now().date() + timedelta(days=1),
     )

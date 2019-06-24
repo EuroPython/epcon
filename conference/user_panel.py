@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse_lazy
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Case, When, Value, BooleanField
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -98,7 +98,7 @@ def manage_ticket(request, ticket_id):
 def assign_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
 
-    if ticket.user != request.user or ticket.frozen:
+    if ticket.buyer != request.user or ticket.frozen:
         return HttpResponse("Can't do", status=403)
 
     assignment_form = AssignTicketForm(initial={'email': ticket.assigned_email})
@@ -497,7 +497,13 @@ def get_tickets_for_current_conference(user):
         Q(fare__conference=conference.code)
         & Q(frozen=False)
         & Q(orderitem__order___complete=True)
-        & Q(user=user)
+        & (Q(user=user) | Q(orderitem__order__user__pk=user.assopy_user.pk))
+    ).annotate(
+        is_buyer=Case(
+            When(orderitem__order__user__pk=user.assopy_user.pk, then=Value(True)),
+            default=Value(False),
+            output_field=BooleanField(),
+        )
     )
 
 
