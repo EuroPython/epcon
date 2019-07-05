@@ -229,28 +229,18 @@ def create_app_file(conference, output_file):
 ###
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        # make_option('--output',
-        #      action='store',
-        #      dest='talk_status',
-        #      default='accepted',
-        #      choices=['accepted', 'proposed'],
-        #      help='The status of the talks to be put in the report. '
-        #           'Choices: accepted, proposed',
-        # ),
-    )
 
     args = '<conference> [<output-file>]'
 
+    def add_arguments(self, parser):
+
+        # Positional arguments
+        parser.add_argument('conference')
+        parser.add_argument('output_file', nargs='?',
+                            default='ep-ticket-search-app/index.html')
+
     def handle(self, *args, **options):
-        
-        try:
-            conference = args[0]
-        except IndexError:
-            raise CommandError('conference not specified')
-        try:
-            output_file = args[1]
-        except IndexError:
-            output_file = 'ep-ticket-search-app/index.html'
+        conference = options['conference']
+        output_file = options['output_file']
 
         create_app_file(conference, output_file)
