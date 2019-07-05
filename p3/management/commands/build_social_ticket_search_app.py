@@ -94,24 +94,28 @@ def profile_url(user):
 
 def attendee_name(ticket, profile=None):
 
+    # XXX For EP2019, we have to use the ticket.name, since the profile
+    #     will be referring to the buyer's profile in many cases due
+    #     to a bug in the system.
+    #     See https://github.com/EuroPython/epcon/issues/1055
+
+    # Use ticket name if not set in profile
+    name = ticket.name.strip()
+        
     # Determine user name from profile, if available
-    if profile is not None:
+    if not name and profile is not None:
         name = '%s %s' % (
             profile.user.first_name,
             profile.user.last_name)
-    else:
-        name = ''
+        name = name.strip()
 
-    # Remove whitespace
-    name = name.strip()
-
-    # Use ticket name if not set in profile
-    if not name:
-        name = ticket.name.strip()
-        
     # Convert to title case, if not an email address
     if '@' not in name:
         name = name.title()
+
+    # Use email address if no ticket name set
+    if not name:
+        name = ticket.p3_conference.assigned_to.strip()
 
     return name
 

@@ -47,6 +47,9 @@ TEMPLATE = """\
 .training {
     color: blue;
 }
+.combined {
+    color: green;
+}
 .conference {
     color: red;
 }
@@ -105,21 +108,21 @@ def profile_url(user):
 
 def attendee_name(ticket, profile=None):
 
+    # XXX For EP2019, we have to use the ticket.name, since the profile
+    #     will be referring to the buyer's profile in many cases due
+    #     to a bug in the system.
+    #     See https://github.com/EuroPython/epcon/issues/1055
+
+    # Use ticket name if not set in profile
+    name = ticket.name.strip()
+        
     # Determine user name from profile, if available
-    if profile is not None:
+    if not name and profile is not None:
         name = '%s %s' % (
             profile.user.first_name,
             profile.user.last_name)
-    else:
-        name = ''
+        name = name.strip()
 
-    # Remove whitespace
-    name = name.strip()
-
-    # Use ticket name if not set in profile
-    if not name:
-        name = ticket.name.strip()
-        
     # Convert to title case, if not an email address
     if '@' not in name:
         name = name.title()
@@ -175,6 +178,10 @@ def create_app_file(conference, output_file):
             sys.stderr.write('multiple users accounts for %r\n' %
                              ticket.p3_conference.assigned_to)
             profile = None
+        if ticket.id in attendee_dict:
+            # Duplicate ticket.id; should not happen
+            sys.stderr.write('duplicate ticket.id %r for %r\n' %
+                             (ticket.id, ticket.p3_conference.assigned_to))
         name = attendee_name(ticket, profile)
         attendee_dict[ticket.id] = (
             ticket,
@@ -202,6 +209,8 @@ def create_app_file(conference, output_file):
         code = ticket.fare.code
         if ticket.fare.code.startswith('TRT'):
             ticket_class = 'training'
+        elif ticket.fare.code.startswith('TRC'):
+            ticket_class = 'combined'
         else:
             ticket_class = 'conference'
         l.append(('<tr>'
@@ -218,8 +227,10 @@ def create_app_file(conference, output_file):
     l.extend(['</tbody>',
               '</table>',
               '<p>%i tickets in total. '
-              'Color coding: <span class="training">TID</span> = Training Pass. '
-              '<span class="conference">TID</span> = Conference Ticket.</p>' % len(attendee_list),
+              'Color coding: <span class="training">TID</span> = Training Ticket. '
+              '<span class="combined">TID</span> = Combined Ticket. '
+              '<span class="conference">TID</span> = Conference Ticket.</p>' % 
+              len(attendee_list),
               ])
     output.write((TEMPLATE % {
                       'listing': '\n'.join(l),
