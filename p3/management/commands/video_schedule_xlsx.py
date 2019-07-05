@@ -309,27 +309,18 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
 ###
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        # make_option('--option',
-        #     action='store',
-        #     dest='option_attr',
-        #     default=0,
-        #     type='int',
-        #     help='Help text',
-        # ),
-    )
 
     args = '<conference> <xlsx-file>'
 
+    def add_arguments(self, parser):
+
+        # Positional arguments
+        parser.add_argument('conference')
+        parser.add_argument('xlsx')
+
     def handle(self, *args, **options):
-        try:
-            conference = args[0]
-        except IndexError:
-            raise CommandError('conference not specified')
-        try:
-            schedule_xlsx = args[1]
-        except IndexError:
-            raise CommandError('XLSX file not specified')
+        conference = options['conference']
+        schedule_xlsx = options['xlsx']
 
         talks = (models.Talk.objects
                  .filter(conference=conference,
