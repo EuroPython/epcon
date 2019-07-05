@@ -488,7 +488,7 @@ class OrderQuerySet(models.QuerySet):
         return t if t is not None else 0
 
     # TODO: deprecate this .create in favor of conference/orders:create_order
-    def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, vat_number='', cf_code='', remote=True):
+    def create(self, user, payment, items, billing_notes='', coupons=None, country=None, address=None, vat_number='', cf_code=''):
 
         # FIXME/TODO(artcz)(2018-08-20)
         # Temporary import to avoid ciruclar. To get a smaller PR I want to

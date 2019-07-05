@@ -984,7 +984,7 @@ TICKET_TYPE = (
 class Ticket(models.Model):
     user = models.ForeignKey(
         get_user_model(),
-        help_text=_('Buyer of the ticket'),
+        help_text=_('Ticket assignee'),
         on_delete=models.CASCADE
     )
     name = models.CharField(
@@ -1011,6 +1011,14 @@ class Ticket(models.Model):
             return self.p3_conference.assigned_to
 
         return ''
+
+    @property
+    def buyer(self):
+        return self.orderitem.order.user.user
+
+    @property
+    def is_conference(self):
+        return self.fare.ticket_type == FARE_TICKET_TYPES.conference
 
 
 class Sponsor(models.Model):
