@@ -105,10 +105,18 @@ def can_user_update_talk(user, talk):
     conf = Conference.objects.current()
 
     return (
-        talk.created_by == user
+        (talk.created_by == user or is_user_a_speaker_for_the_talk(user, talk))
         and talk.status == TALK_STATUS.accepted
         and not conf.has_finished
     )
+
+
+def is_user_a_speaker_for_the_talk(user, talk):
+    speakers = talk.get_all_speakers()
+    for speaker in speakers:
+        if speaker.user == user:
+            return True
+    return False
 
 
 def can_user_submit_talk_slides(user, talk):
@@ -116,7 +124,7 @@ def can_user_submit_talk_slides(user, talk):
     Check if the user can upload talk slides.
     """
     return (
-        talk.created_by == user
+        (talk.created_by == user or is_user_a_speaker_for_the_talk(user, talk))
         and talk.status == TALK_STATUS.accepted
     )
 

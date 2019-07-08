@@ -77,6 +77,11 @@ def test_cannot_update_talk_if_talk_status_not_accepted(user_client):
     assert resp.status_code == 403
 
 
+@pytest.mark.xfail
+def test_can_update_if_is_speaker_but_not_owner(user_client):
+    ...
+
+
 def test_cannot_update_talk_if_conference_has_finished(user_client):
     yesterday = timezone.now().date() - timedelta(days=1)
     setup_conference_with_typical_fares(end=yesterday)
