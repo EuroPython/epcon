@@ -108,6 +108,22 @@ a.navbar-brand:hover{
     margin-top: 12px;
 }
 
+/* Display nav menu on hover */
+.dropdown:hover>.dropdown-menu {
+  display: block;
+}
+
+/* Fully expand NAV when using the hamburger menu */
+@media only screen and (max-width: 992px) {
+    .dropdown>.dropdown-menu {
+        display: block;
+    }
+
+    a.nav-link {
+        color: #ffffff;
+    }
+}
+
 /* Highlight selected dropdown item */
 .dropdown-item:hover, .dropdown-item:focus {
     text-decoration: none;
