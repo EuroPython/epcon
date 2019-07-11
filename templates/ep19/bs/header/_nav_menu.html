@@ -2,11 +2,10 @@
 
 {% for child in children %}
 <li class="nav-item {% if child.children %} dropdown {% endif %}">
-	<a class="nav-link {% if child.children %} dropdown-toggle {% endif %}"
+	<a class="nav-link"
 	   {% if child.children %}
 	   href="{{ child.attr.redirect_url|default:child.get_absolute_url }}"
 	   role="button"
-	   data-toggle="dropdown"
 	   aria-haspopup="true"
 	   aria-expanded="false"
 	   {% else %}
