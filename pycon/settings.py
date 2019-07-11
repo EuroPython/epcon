@@ -119,7 +119,7 @@ SECURE_MEDIA_ROOT = DATA_DIR + '/media_private'
 # will not have the read permissions set.
 # https://docs.djangoproject.com/en/1.11/ref/settings/#std:setting-FILE_UPLOAD_PERMISSIONS
 FILE_UPLOAD_PERMISSIONS = config(
-    'FILE_UPLOAD_PERMISSIONS', default=0o644, cast=lambda x: int(x, 8)
+    'FILE_UPLOAD_PERMISSIONS', default='0o644', cast=lambda x: int(x, 8)
 )
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
