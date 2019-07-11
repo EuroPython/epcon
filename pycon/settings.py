@@ -115,6 +115,11 @@ SITE_ID = 1
 MEDIA_ROOT = DATA_DIR + '/media_public'
 SECURE_MEDIA_ROOT = DATA_DIR + '/media_private'
 
+# Set the file upload permissions - otherwise large files
+# will not have the read permissions set.
+# https://docs.djangoproject.com/en/1.11/ref/settings/#std:setting-FILE_UPLOAD_PERMISSIONS
+FILE_UPLOAD_PERMISSIONS = config('FILE_UPLOAD_PERMISSIONS', default=0o644, cast=int)
+
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
