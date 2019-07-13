@@ -491,17 +491,18 @@ MESSAGE_STORAGE = 'conference.messages.CustomFallbackStorage'
 SESSION_COOKIE_NAME = 'sid'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
-CONFERENCE_CONFERENCE = 'ep2019'
-CONFERENCE_NAME = "EuroPython 2019"
+CONFERENCE_CONFERENCE = 'ep2020'
+CONFERENCE_NAME = "EuroPython 2020"
 CONFERENCE_SEND_EMAIL_TO = ["helpdesk@europython.eu"]
 CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL = []
-CONFERENCE_VOTING_DISALLOWED = 'https://ep2019.europython.eu/en/talk-voting/'
+CONFERENCE_VOTING_DISALLOWED = 'https://ep2020.europython.eu/en/talk-voting/'
 CONFERENCE_TALK_VOTING_ELIGIBLE = (
     "ep2015",
     "ep2016",
     "ep2017",
     "ep2018",
     "ep2019",
+    "ep2020",
 )
 
 CONFERENCE_FORMS = {
@@ -791,7 +792,7 @@ ASSOPY_REFUND_EMAIL_ADDRESS = {
 # It is used for generating URLs pointing back to the site
 # in quite a few places.
 #
-DEFAULT_URL_PREFIX = 'https://ep2019.europython.eu'
+DEFAULT_URL_PREFIX = 'https://ep2020.europython.eu'
 LOGIN_REDIRECT_URL = reverse_lazy("user_panel:dashboard")
 
 COMMENTS_APP = 'hcomments'
