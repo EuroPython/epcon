@@ -14,10 +14,12 @@ from django.utils import lorem_ipsum, timezone
 from djangocms_text_ckeditor.cms_plugins import TextPlugin
 
 from assopy.models import AssopyUser, Country, Vat
+from assopy.stripe.tests.factories import OrderFactory
 from conference.fares import pre_create_typical_fares_for_conference
 from conference.models import (
     Conference,
     ConferenceTag,
+    Fare,
     News,
     TALK_STATUS,
     Speaker,
@@ -78,11 +80,6 @@ class Command(BaseCommand):
             password="europython",
             active=True,
         )
-
-        print("Creating tickets to allow users to vote")
-        # Leaving Cesar out from voting
-        for assopy_user in (admin, alice, bob):
-            TicketFactory(user=assopy_user.user, frozen=False)
 
         print("Making some talk proposals")
         for user in alice, bob, cesar:
@@ -252,6 +249,17 @@ class Command(BaseCommand):
             date.today(),
             date.today() + timedelta(days=7)
         )
+
+        print("Creating tickets to allow users to vote")
+        # Leaving Cesar out from voting
+        fare = Fare.objects.first()
+        for assopy_user in (admin, alice, bob):
+            order = OrderFactory(
+                user=assopy_user,
+                items=[(fare, {"qty": 1}), ],
+            )
+            order._complete = True
+            order.save()
 
         # News
 
