@@ -120,3 +120,13 @@ def test_user_new_order_admin(admin_client):
     response = admin_client.get(url)
 
     assert response.status_code == 200
+
+
+@mark.django_db
+def test_user_send_verification_email(admin_client):
+    assopy_user = factories.AssopyUserFactory()
+    url = reverse('admin:auser-send-verification-email', kwargs={'uid': assopy_user.user.id})
+
+    response = admin_client.get(url)
+
+    assert response.status_code == 302
