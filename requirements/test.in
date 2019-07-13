@@ -10,6 +10,9 @@ responses
 factory_boy
 mock
 
+# Required to submit test coverage report to https://coveralls.io
+coveralls
+
 # consider retiring this dependency -- looks unmaintained
 django_factory_boy
 
