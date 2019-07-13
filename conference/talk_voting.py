@@ -94,6 +94,7 @@ def find_talks(user, conference, extra_filters):
             Q(conference=conference.code)
             & Q(admin_type="")
             & Q(status=TALK_STATUS.proposed)
+            & ~Q(speakers=None)
         )
         .filter(*extra_filters)
         .prefetch_related(
@@ -143,6 +144,7 @@ def vote_on_a_talk(request, talk_uuid):
     if (
         talk.created_by == request.user
         or talk.speakers.filter(pk=request.user.pk).exists()
+        or talk.speakers.count() == 0
     ):
         return TemplateResponse(
             request,
