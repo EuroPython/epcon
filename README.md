@@ -4,7 +4,7 @@ README
 ======
 This project (and its dependencies) contains the EuroPython website source code.
 
-The code is used for the EuroPython 2019 website.
+The code is used for the EuroPython 2020 website.
 
 LICENSE
 =======
