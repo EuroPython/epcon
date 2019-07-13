@@ -1,1 +1,4 @@
 gunicorn~=19.5
+
+# Required to submit test coverage report to https://coveralls.io
+coveralls
