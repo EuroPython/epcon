@@ -43,12 +43,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         conference, _ = Conference.objects.get_or_create(
             code=settings.CONFERENCE_CONFERENCE,
-            name="Europython 2019",
+            name="Europython 2020",
             # For easier testing open CFP
             cfp_start=timezone.now() - timedelta(days=3),
             cfp_end=timezone.now() + timedelta(days=3),
-            conference_start=date(2019, 7, 8),
-            conference_end=date(2019, 7, 14),
+            conference_start=date(2020, 7, 8),
+            conference_end=date(2020, 7, 14),
             # For easier testing also start with open voting
             voting_start=timezone.now() - timedelta(days=3),
             voting_end=timezone.now() + timedelta(days=3),
