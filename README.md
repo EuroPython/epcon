@@ -20,6 +20,9 @@ INSTALL & SETUP
 
 Run `provision.sh`. Read it for more details.
 
+If there are any errors when running `provision.sh`, check the script and try running 
+the commands individually, e.g. `make db`.
+
 Edit `pycon/settings_locale.py` to your taste!
 
 ```bash
