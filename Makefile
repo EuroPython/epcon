@@ -59,8 +59,7 @@ pip-tools:
 db:
 	mkdir -p data/site
 	python manage.py migrate
-	python manage.py create_initial_data_for_dev
-
+	DJANGO_SETTINGS_MODULE="pycon.dev_settings" python manage.py create_initial_data_for_dev
 
 drop_db:
 	rm -f data/site/epcon.db
