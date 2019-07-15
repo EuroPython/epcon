@@ -1,7 +1,15 @@
+# VIM
 .vimrc
 tags
-*.pyc
 *.swp
+
+# py.test cache
+.pytest_cache/
+
+# pipenv
+Pipfile*
+
+*.pyc
 settings_locale.py
 Session.vim
 penv/*
@@ -37,6 +45,3 @@ htmlcov/
 coverage.xml
 prof/
 .vagrant
-
-# py.test cache
-.pytest_cache/

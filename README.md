@@ -48,12 +48,12 @@ CONTRIBUTING
 
 1. Make a fork of github.com/europython/epcon
 2. Make changes in your fork (ideally on a feature/bugfix branch)
-3. Make sure your branch is based on latest upstream/dev/ep2019
+3. Make sure your branch is based on latest upstream/dev/ep2020
     (provision.sh adds europython/epcon as upstream)
 4. Push your changes.
-5. Create a pull request to europython/epcon, targeting dev/ep2019 branch.
+5. Create a pull request to europython/epcon, targeting dev/ep2020 branch.
 
-IMPORTANT: all the active development happens on the dev/ep2019 branch, master
+IMPORTANT: all the active development happens on the dev/ep2020 branch, master
 is not up to date.
 
 
