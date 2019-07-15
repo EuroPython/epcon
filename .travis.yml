@@ -15,4 +15,6 @@ python:
 install:
   - make install
 
-script: "py.test -c pytest_ci.ini"
+script:
+  - py.test -c pytest_ci.ini
+  - coveralls
