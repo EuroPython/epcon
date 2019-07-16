@@ -81,7 +81,6 @@ SERVER_EMAIL = config('SERVER_EMAIL', default='noreply@europython.eu')
 # Email sender address used per default for emails to e.g. attendees
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='info@europython.eu')
 
-
 # Timezone and languages
 # -----------------------
 # If you set this to False, Django will make some optimizations so as not
@@ -151,7 +150,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = config('SECRET_KEY', default='your-secret-key')
+SECRET_KEY = config('SECRET_KEY')
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config(
     "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY", default=""
@@ -476,7 +475,7 @@ DJANGOCMS_GRID_CONFIG = {
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 # Override the message class to get it to work with bootstrap styles.
-from django.contrib.messages import constants as messages
+from django.contrib.messages import constants as messages  # noqa
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
@@ -798,7 +797,7 @@ LOGIN_REDIRECT_URL = reverse_lazy("user_panel:dashboard")
 COMMENTS_APP = 'hcomments'
 
 # Disabled until we find out how to use europython-announce for this:
-#P3_NEWSLETTER_SUBSCRIBE_URL = "https://mail.python.org/mailman/subscribe/europython-announce"
+# P3_NEWSLETTER_SUBSCRIBE_URL = "https://mail.python.org/mailman/subscribe/europython-announce"
 P3_NEWSLETTER_SUBSCRIBE_URL = ""
 
 P3_TWITTER_USER = 'europython'
@@ -1037,11 +1036,3 @@ if not os.path.exists(LOGS_DIR):
 
 # TODO: Remove the need for modifying python path in django settings.
 sys.path.insert(0, os.path.join(PROJECT_DIR, 'deps'))
-
-
-try:
-    from pycon.settings_locale import *
-except ImportError as reason:
-    #import sys
-    #sys.stderr.write('Could not import local settings: %s\n' % reason)
-    pass

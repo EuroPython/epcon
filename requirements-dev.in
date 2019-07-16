@@ -1,0 +1,18 @@
+pytest
+pytest-cov
+pytest-django
+pytest-mock
+pytest-xdist
+
+freezegun
+responses
+factory_boy
+django_factory_boy  # consider retiring this dependency
+
+flake8
+black
+
+django-pdb
+pdbpp
+
+pip-tools

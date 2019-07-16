@@ -1,6 +1,6 @@
-before_install:
-  - sudo apt-get install graphviz
-  
+# before_install:
+#   - sudo apt-get install graphviz
+
 language: python
 
 cache: pip
@@ -13,6 +13,6 @@ python:
   - "3.6"
 
 install:
-  - make install
+  - pip install -r requirements-dev.txt
 
-script: "py.test -c pytest_ci.ini"
+script: "pytest -c pytest_ci.ini"

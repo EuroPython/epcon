@@ -1,4 +1,4 @@
-from pycon.settings import *
+from pycon.settings import *  # noqa
 
 # DEFAULT_URL_PREFIX='http://localhost:8000'
 # DEBUG=True
@@ -24,11 +24,11 @@ CACHES = DISABLE_CACHING
 
 PAYPAL_TEST = True
 
-TEMPLATES[0]['OPTIONS']['debug'] = True
+TEMPLATES[0]['OPTIONS']['debug'] = True  # noqa
 
 DATABASES = {
-   'default': {
-       'ENGINE': 'django.db.backends.sqlite3',
-       'NAME': '/tmp/p3.db',
-   }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': '/tmp/p3.db',
+    }
 }

@@ -1,11 +1,12 @@
 import os
 
-from pycon.settings import *  # NOQA
+from pycon.settings import *  # noqa
 
 DEFAULT_URL_PREFIX = 'http://localhost:37266'
 
 DEBUG = True
-LOGGING['loggers']['django.request']['handlers'].append('console')     # NOQA
+
+LOGGING['loggers']['django.request']['handlers'].append('console')  # noqa
 
 # Turn off HTTPS
 if 'HTTPS' in os.environ:
@@ -32,15 +33,15 @@ CACHES = DISABLE_CACHING
 
 PAYPAL_TEST = True
 
-TEMPLATES[0]['OPTIONS']['debug'] = True  # NOQA
+TEMPLATES[0]['OPTIONS']['debug'] = True  # noqa
 
-INSTALLED_APPS = INSTALLED_APPS + (  # NOQA
+INSTALLED_APPS = INSTALLED_APPS + (  # noqa
     'django_extensions',
     'django_pdb',
     # 'devserver',
 )
 
-MIDDLEWARE = MIDDLEWARE + (  # NOQA
+MIDDLEWARE = MIDDLEWARE + (  # noqa
     'django_pdb.middleware.PdbMiddleware',
     # 'devserver.middleware.DevServerMiddleware',
 )
@@ -63,7 +64,6 @@ GRAPH_MODELS = {
     'all_applications': True,
     'group_models': True,
 }
-
 
 STRIPE_SECRET_KEY = "sk_test_4eC39HqLyjWDarjtT1zdp7dc"
 STRIPE_PUBLISHABLE_KEY = "pk_test_TYooMQauvdEDq54NiTphI7jx"
