@@ -94,7 +94,7 @@ def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
                 )
                 get_or_create_attendee_profile_for_new_user(assopy_user.user)
                 current_site = get_current_site(request)
-                send_verification_email(assopy_user, current_site)
+                send_verification_email(assopy_user.user, current_site)
 
                 messages.success(request, "Email verification sent")
 
@@ -112,9 +112,9 @@ def signup_step_2_please_verify_email(request):
     )
 
 
-def send_verification_email(assopy_user, current_site) -> None:
+def send_verification_email(user, current_site) -> None:
 
-    new_token = create_new_email_verification_token(assopy_user.user)
+    new_token = create_new_email_verification_token(user)
     verification_path = reverse(
         "accounts:handle_verification_token", args=[new_token.token]
     )
@@ -129,7 +129,7 @@ def send_verification_email(assopy_user, current_site) -> None:
         subject=EMAIL_VERIFICATION_SUBJECT,
         message=content,
         from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[assopy_user.user.email],
+        recipient_list=[user.email],
     )
 
 
