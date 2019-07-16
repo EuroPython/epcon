@@ -77,7 +77,8 @@ class TicketConference(models.Model):
     shirt_size = models.CharField(
         max_length=5,
         choices=TICKET_CONFERENCE_SHIRT_SIZES,
-        default='l')
+        null=True,
+        default=None)
     python_experience = models.PositiveIntegerField(
         choices=TICKET_CONFERENCE_EXPERIENCES,
         null=True,
@@ -85,7 +86,8 @@ class TicketConference(models.Model):
     diet = models.CharField(
         choices=TICKET_CONFERENCE_DIETS,
         max_length=10,
-        default='omnivorous')
+        null=True,
+        default=None)
     tagline = models.CharField(
         max_length=60,
         blank=True,
