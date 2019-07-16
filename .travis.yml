@@ -13,6 +13,7 @@ python:
   - "3.6"
 
 install:
+  - export SECRET_KEY="secret"
   - pip install -r requirements-dev.txt
 
 script: "pytest -c pytest_ci.ini"
