@@ -262,7 +262,7 @@ def test_frozen_ticket_cannot_be_assigned(db, user_client):
     assert response.status_code == 403
 
 
-def test_frozen_ticket_cannot_managed(db, user_client):
+def test_frozen_ticket_cannot_be_managed(db, user_client):
     ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
     ticket.frozen = True
     ticket.save()
@@ -299,6 +299,24 @@ def test_other_fares_tickets_cannot_be_managed(db, user_client):
     response = user_client.post(url, payload, follow=True)
 
     assert response.status_code == 403
+
+
+def test_assigning_resets_tickets(db, user_client):
+    ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
+    asignee = UserFactory()
+
+    url = reverse('user_panel:assign_ticket', args=[ticket.id])
+    payload = {'email': asignee.email}
+    response = user_client.post(url, payload, follow=True)
+
+    assert response.status_code == 200
+    ticket.refresh_from_db()
+    assert ticket.user == asignee
+    new_tc = TicketConference()  # won't save this, used just to compare with defaults
+    assert ticket.p3_conference.shirt_size == new_tc.shirt_size
+    assert ticket.p3_conference.diet == new_tc.diet
+    assert ticket.p3_conference.tagline == new_tc.tagline
+    assert ticket.p3_conference.days == new_tc.days
 
 
 @pytest.mark.xfail

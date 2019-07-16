@@ -31,8 +31,8 @@ from tests.common_tools import make_user
 DEFAULT_VAT_RATE = "7.7"  # 7.7%
 
 # TODO - this should be defined somewhere around the models.
-DEFAULT_SHIRT_SIZE        = 'l'
-DEFAULT_DIET              = 'omnivorous'
+DEFAULT_SHIRT_SIZE        = None
+DEFAULT_DIET              = None
 DEFAULT_PYTHON_EXPERIENCE = 0
 
 

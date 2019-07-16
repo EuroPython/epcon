@@ -39,6 +39,9 @@ def tickets(request):
     }
 
 def _reset_ticket(ticket):
+    # TODO: this function has been superseeded by conference.tickets.reset_ticket_settings
+    #       and should be removed.
+
     # deleting the name so the ticket will be in the "unfilled tickets" until
     # it's modified.
     ticket.name = ''
