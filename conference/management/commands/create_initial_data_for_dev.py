@@ -196,6 +196,7 @@ class Command(BaseCommand):
             new_page(rev_id, title, parent=about_europython_page)
 
         print("Creating some countries")
+        created_countries = []
         for iso, name in [
             ("PL", "Poland"),
             ("DE", "Germany"),
@@ -204,7 +205,8 @@ class Command(BaseCommand):
             ("IT", "Italy"),
             ("CH", "Switzerland"),
         ]:
-            Country.objects.get_or_create(iso=iso, name=name)
+            country, _created = Country.objects.get_or_create(iso=iso, name=name)
+            created_countries.append(country)
 
         print("Creating sponsors")
         SponsorIncomeFactory(
@@ -243,6 +245,7 @@ class Command(BaseCommand):
             order = OrderFactory(
                 user=assopy_user,
                 items=[(fare, {"qty": 1}), ],
+                country=random.choice(created_countries),
             )
             order._complete = True
             order.save()
