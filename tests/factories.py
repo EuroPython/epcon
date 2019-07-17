@@ -1,8 +1,7 @@
-import datetime
 import functools
 import random
 import uuid
-from datetime import timedelta
+from datetime import date, timedelta
 from random import randint
 
 import factory
@@ -20,6 +19,7 @@ from conference.models import (
     AttendeeProfile,
     Conference,
     Fare,
+    News,
     Talk,
     Ticket,
     TALK_LANGUAGES,
@@ -222,7 +222,7 @@ class AttendeeProfileFactory(factory.django.DjangoModelFactory):
     def uuid(self):
         return AttendeeProfile.objects.randomUUID(6)
 
-    birthday = factory.fuzzy.FuzzyDate(start_date=datetime.date(1950, 1, 1))
+    birthday = factory.fuzzy.FuzzyDate(start_date=date(1950, 1, 1))
 
 
 class ConferenceTagFactory(factory.django.DjangoModelFactory):
@@ -248,10 +248,10 @@ class ConferenceFactory(factory.django.DjangoModelFactory):
     name = factory.Faker("sentence", nb_words=6, variable_nb_words=True)
 
     cfp_start = factory.LazyAttribute(
-        lambda conf: conf.conference_start - datetime.timedelta(days=50)
+        lambda conf: conf.conference_start - timedelta(days=50)
     )
     cfp_end = factory.LazyAttribute(
-        lambda conf: conf.cfp_start + datetime.timedelta(days=+20)
+        lambda conf: conf.cfp_start + timedelta(days=+20)
     )
 
     @factory.lazy_attribute
@@ -260,14 +260,14 @@ class ConferenceFactory(factory.django.DjangoModelFactory):
 
     # conference_start = factory.Faker('date_time_this_decade', before_now=True, after_now=True)
     conference_end = factory.LazyAttribute(
-        lambda conf: (conf.conference_start + datetime.timedelta(days=+5))
+        lambda conf: (conf.conference_start + timedelta(days=+5))
     )
 
     voting_start = factory.LazyAttribute(
-        lambda conf: conf.cfp_end + datetime.timedelta(days=10)
+        lambda conf: conf.cfp_end + timedelta(days=10)
     )
     voting_end = factory.LazyAttribute(
-        lambda conf: conf.voting_start + datetime.timedelta(days=5)
+        lambda conf: conf.voting_start + timedelta(days=5)
     )
 
 
@@ -438,3 +438,14 @@ class EventTrackFactory(factory.django.DjangoModelFactory):
 class TrackWithEventsFactory(TrackFactory):
     event1 = factory.RelatedFactory(EventTrackFactory, "event")
     event2 = factory.RelatedFactory(EventTrackFactory, "event")
+
+
+class NewsFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "conference.News"
+
+    conference = factory.Iterator(Conference.objects.all())
+    title = factory.Faker('sentence', nb_words=4)
+    content = factory.Faker('sentence', nb_words=20)
+    status = News.STATUS.PUBLISHED
+    published_date = factory.LazyFunction(timezone.now)
