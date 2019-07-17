@@ -11,10 +11,10 @@ from django.utils import timezone
 from django_factory_boy import auth as auth_factories
 
 from assopy.models import Vat, VatFare
-from tests.factories import AssopyUserFactory, OrderFactory
-from conference.models import AttendeeProfile, Conference
+from conference.models import AttendeeProfile, Conference, TALK_STATUS
 from conference.fares import pre_create_typical_fares_for_conference
 from conference.tests.factories.fare import FareFactory
+from tests.factories import AssopyUserFactory, OrderFactory, TalkFactory, SpeakerFactory, TalkSpeakerFactory
 
 HTTP_OK = 200
 DEFAULT_VAT_RATE = "7.7"  # 7.7%
@@ -193,15 +193,22 @@ def create_valid_ticket_for_user_and_fare(user, fare=None):
 def get_default_conference():
     conference, _ = Conference.objects.get_or_create(
         code=settings.CONFERENCE_CONFERENCE,
-        name="Europython 2019",
+        name="Europython 2020",
         # For easier testing open CFP
         cfp_start=timezone.now() - timedelta(days=3),
         cfp_end=timezone.now() + timedelta(days=3),
-        conference_start=date(2019, 7, 8),
-        conference_end=date(2019, 7, 14),
+        conference_start=timezone.now() + timedelta(days=30),
+        conference_end=timezone.now() + timedelta(days=35),
         # For easier testing also start with open voting
         voting_start=timezone.now() - timedelta(days=3),
         voting_end=timezone.now() + timedelta(days=3),
     )
 
     return conference
+
+
+def create_talk_for_user(user):
+    talk = TalkFactory(status=TALK_STATUS.proposed, created_by=user)
+    speaker = SpeakerFactory(user=user)
+    TalkSpeakerFactory(talk=talk, speaker=speaker)
+    return talk
