@@ -3,10 +3,9 @@ from pytest import mark
 
 from django.core.urlresolvers import reverse
 
-from conference.tests.factories.conference import ConferenceFactory, ConferenceTagFactory
-from conference.tests.factories.event import EventFactory
-from p3.tests.factories.schedule import ScheduleFactory
-from p3.tests.factories.track import TrackFactory
+from tests.factories import (
+    ConferenceFactory, ConferenceTagFactory, EventFactory, ScheduleFactory, TrackFactory,
+)
 
 
 # /admin/conference/conference/<cid>/schedule/  conference.admin.schedule_view

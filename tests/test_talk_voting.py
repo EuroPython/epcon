@@ -10,18 +10,15 @@ from django.test import TestCase
 from django.utils import timezone
 from django_factory_boy import auth as auth_factories
 
-from assopy.stripe.tests.factories import TicketFactory
-from assopy.tests.factories.user import AssopyUserFactory
 from conference.models import Conference
-from conference.tests.factories.speaker import SpeakerFactory
-from conference.tests.factories.talk import (
-    TalkFactory,
-    TalkSpeakerFactory,
-)
-from p3.tests.factories.talk import P3TalkFactory
+
 from tests.common_tools import (
     redirects_to,
     template_used,
+)
+from tests.factories import (
+    TicketFactory, AssopyUserFactory, SpeakerFactory,
+    TalkFactory, TalkSpeakerFactory, P3TalkFactory,
 )
 
 

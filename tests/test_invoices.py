@@ -1,6 +1,3 @@
-# coding: utf-8
-
-
 import csv
 import decimal
 from datetime import date, datetime, timedelta
@@ -20,8 +17,7 @@ from freezegun import freeze_time
 import responses
 
 from assopy.models import Country, Invoice, Order, Vat
-from assopy.tests.factories.user import AssopyUserFactory
-from assopy.stripe.tests.factories import FareFactory, OrderFactory
+from tests.factories import AssopyUserFactory, FareFactory, OrderFactory
 from conference.models import AttendeeProfile, Ticket, Fare, Conference
 from conference import settings as conference_settings
 from conference.invoicing import (

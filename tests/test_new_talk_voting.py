@@ -6,10 +6,9 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 
-from conference.models import TALK_STATUS, Conference, VotoTalk
+from conference.models import Conference, VotoTalk, TALK_STATUS
 from conference.talk_voting import VotingOptions, find_talks
-from conference.tests.factories.speaker import SpeakerFactory
-from conference.tests.factories.talk import TalkFactory, TalkSpeakerFactory
+from tests.factories import SpeakerFactory, TalkFactory, TalkSpeakerFactory
 from tests.common_tools import make_user
 
 pytestmark = [pytest.mark.django_db]

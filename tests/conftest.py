@@ -1,7 +1,9 @@
 import pytest
+
 from django_factory_boy import auth as auth_factories
-from assopy.tests.factories.user import AssopyUserFactory
+
 from conference.accounts import get_or_create_attendee_profile_for_new_user
+from tests.factories import AssopyUserFactory
 
 
 @pytest.fixture
