@@ -13,13 +13,14 @@ from tests.factories import CouponFactory, OrderFactory, VatFactory, VatFareFact
 from conference.cart import CartActions
 from conference.models import Ticket, Fare
 from conference.fares import set_early_bird_fare_dates, set_regular_fare_dates
-from conference.tests.factories.fare import FareFactory
 from p3.models import TicketConference
 from tests.common_tools import (
     redirects_to,
     template_used,
+    get_default_conference,
     setup_conference_with_typical_fares,
 )
+from tests.factories import FareFactory
 
 
 def test_first_step_of_cart_is_available_without_auth(db, client):
@@ -339,16 +340,13 @@ def test_if_cfp_pages_are_login_required(db, client, url):
     assert redirects_to(response, "/accounts/login/")
 
 
-def test_order_aggregate_vat_rounding(db):
-    setup_conference_with_typical_fares()
+def test_order_aggregate_vat_rounding_with_discount(db):
+    get_default_conference()
     vat = VatFactory(value=20)
 
-    fare_one = FareFactory(price=25)
-    VatFareFactory(vat=vat, fare=fare_one)
-    fare_two = FareFactory(price=13)
-    VatFareFactory(vat=vat, fare=fare_two)
-    fare_three = FareFactory(price=-38)
-    VatFareFactory(vat=vat, fare=fare_three)
+    fare_one = FareFactory(price=25, vat_set=[vat])
+    fare_two = FareFactory(price=13, vat_set=[vat])
+    fare_three = FareFactory(price=-38, vat_set=[vat])
 
     order = OrderFactory(
         items=[(fare_one, {"qty": 1}), (fare_two, {"qty": 1}), (fare_three, {"qty": 1})]
@@ -359,11 +357,9 @@ def test_order_aggregate_vat_rounding(db):
 
 
 def test_order_aggregate_vat_rounding(db):
-    setup_conference_with_typical_fares()
+    get_default_conference()
     vat = VatFactory(value=Decimal(20))
-
-    fare = FareFactory(price=100)
-    VatFareFactory(vat=vat, fare=fare)
+    fare = FareFactory(price=100, vat_set=[vat])
 
     order = OrderFactory(items=[(fare, {"qty": 1})])
 

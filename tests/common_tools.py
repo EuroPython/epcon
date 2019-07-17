@@ -11,10 +11,11 @@ from django.utils import timezone
 from django_factory_boy import auth as auth_factories
 
 from assopy.models import Vat, VatFare
-from conference.models import AttendeeProfile, Conference, TALK_STATUS
+from conference.models import AttendeeProfile, Conference, TALK_STATUS, Fare
 from conference.fares import pre_create_typical_fares_for_conference
-from conference.tests.factories.fare import FareFactory
-from tests.factories import AssopyUserFactory, OrderFactory, TalkFactory, SpeakerFactory, TalkSpeakerFactory
+from tests.factories import (
+    AssopyUserFactory, OrderFactory, TalkFactory, SpeakerFactory, TalkSpeakerFactory,
+)
 
 HTTP_OK = 200
 DEFAULT_VAT_RATE = "7.7"  # 7.7%
@@ -174,8 +175,7 @@ def create_valid_ticket_for_user_and_fare(user, fare=None):
     default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
 
     if not fare:
-        conference = Conference.objects.current()
-        fare = FareFactory(code=conference.code)
+        fare = Fare.objects.first()
     VatFare.objects.get_or_create(vat=default_vat_rate, fare=fare)
 
     order = OrderFactory(
