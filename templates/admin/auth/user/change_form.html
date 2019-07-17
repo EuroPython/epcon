@@ -8,6 +8,9 @@
             <a class="" href="{% url "admin:auser-order" uid=object_id %}">New order</a>
         </li>
         <li>
+	    <a class="" href="{% url "admin:auser-send-verification-email" uid=object_id %}">Send verification email</a>
+        </li>
+        <li>
             <a class="" href="{% url "admin:auser-create-doppelganger" uid=object_id %}">Doppelganger!</a>
         </li>
     </ul>

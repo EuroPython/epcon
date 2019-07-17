@@ -4,13 +4,10 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 from django_factory_boy import auth as auth_factories
 
-from conference.tests.factories.attendee_profile import AttendeeProfileFactory
-from conference.tests.factories.conference import ConferenceFactory
-from conference.tests.factories.fare import SponsorFactory
-from conference.tests.factories.speaker import SpeakerFactory
-from conference.tests.factories.talk import TalkFactory
-from p3.tests.factories.schedule import ScheduleFactory
-from p3.tests.factories.talk import P3TalkFactory
+from tests.factories import (
+    AttendeeProfileFactory, ConferenceFactory, SponsorFactory,
+    SpeakerFactory, TalkFactory, ScheduleFactory,
+)
 
 
 class TestView(TestCase):

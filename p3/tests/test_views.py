@@ -7,9 +7,7 @@ from django.test import TestCase
 from django.test import override_settings
 from django_factory_boy import auth as auth_factories
 
-from conference.tests.factories.attendee_profile import AttendeeProfileFactory
-from conference.tests.factories.conference import ConferenceFactory
-from p3.tests.factories.schedule import ScheduleFactory
+from tests.factories import (AttendeeProfileFactory, ConferenceFactory, ScheduleFactory)
 
 
 class TestWhosComing(TestCase):

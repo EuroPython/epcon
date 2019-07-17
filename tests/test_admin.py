@@ -1,11 +1,12 @@
-
+from unittest import mock
 from pytest import mark
 
 from django.conf import settings
+from django.core import mail
 from django.core.urlresolvers import reverse
+from django_factory_boy import auth as auth_factories
 
-from assopy.stripe.tests import factories
-from conference.tests.factories.conference import ConferenceFactory
+from tests import factories
 
 
 @mark.django_db
@@ -66,7 +67,7 @@ def test_order_invoices_admin(admin_client):
 
 @mark.django_db
 def test_order_stats_admin(admin_client):
-    ConferenceFactory()
+    factories.ConferenceFactory()
     url = reverse('admin:assopy-order-stats')
 
     response = admin_client.get(url)
@@ -120,3 +121,36 @@ def test_user_new_order_admin(admin_client):
     response = admin_client.get(url)
 
     assert response.status_code == 200
+
+
+@mark.django_db
+def test_user_send_verification_email(admin_client):
+    user = auth_factories.UserFactory()
+    
+    user.is_active = False
+    user.save()
+
+    url = reverse('admin:auser-send-verification-email', kwargs={'uid': user.id})
+
+    with mock.patch('assopy.admin.get_current_site') as current_site_mock:
+        with mock.patch('assopy.admin.send_verification_email') as send_mock:
+            response = admin_client.get(url)
+
+    send_mock.assert_called_once_with(user, current_site_mock.return_value)
+    assert response.status_code == 302
+
+
+@mark.django_db
+def test_user_send_verification_email_to_active_user(admin_client):
+    user = auth_factories.UserFactory()
+    
+    user.is_active = True
+    user.save()
+
+    url = reverse('admin:auser-send-verification-email', kwargs={'uid': user.id})
+
+    with mock.patch('assopy.admin.send_verification_email') as send_mock:
+        response = admin_client.get(url)
+
+    assert not send_mock.called
+    assert response.status_code == 302

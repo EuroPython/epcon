@@ -1,5 +1,3 @@
-# coding: utf-8
-
 from http.client import OK as HTTP_OK_200
 
 from django.conf import settings
@@ -20,10 +18,9 @@ from conference.models import (
 
 from django_factory_boy import auth as auth_factories
 
-from assopy.tests.factories.user import AssopyUserFactory
-from conference.tests.factories.talk import TalkFactory, TalkSpeakerFactory
-from conference.tests.factories.speaker import SpeakerFactory
-from p3.tests.factories.talk import P3TalkFactory
+from tests.factories import (
+    AssopyUserFactory, TalkFactory, TalkSpeakerFactory, SpeakerFactory, P3TalkFactory,
+)
 
 
 @mark.django_db

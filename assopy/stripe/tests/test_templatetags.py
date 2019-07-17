@@ -1,14 +1,12 @@
-
-
-
 import unittest
 
 import pytest
+
 from django.core.urlresolvers import reverse
 from django.template import Template, Context
 from django.test import TestCase
 
-from . import factories as f
+from tests import factories as f
 
 
 @pytest.mark.skip(reason="Update these tests because do not match the reality")

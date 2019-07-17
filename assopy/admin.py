@@ -11,6 +11,7 @@ from django.contrib import admin, auth, messages
 from django.contrib.admin.utils import quote
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
@@ -24,6 +25,7 @@ from assopy import forms as assopy_forms
 from assopy import models
 from assopy import stats
 from conference import admin as cadmin
+from conference.accounts import send_verification_email
 from conference.invoicing import render_invoice_as_html
 from conference.models import Conference, Fare, StripePayment
 from conference.settings import CONFERENCE
@@ -441,6 +443,7 @@ class AuthUserAdmin(UserAdmin):
         urls = [
             url(r'^(?P<uid>\d+)/login/$', f(self.create_doppelganger), name='auser-create-doppelganger'),
             url(r'^(?P<uid>\d+)/order/$', f(self.new_order), name='auser-order'),
+            url(r'^(?P<uid>\d+)/send_verification_email$', f(self.send_verification_email), name='auser-send-verification-email'),
             url(r'^kill_doppelganger/$', self.kill_doppelganger, name='auser-kill-doppelganger'),
         ]
         return urls + super(AuthUserAdmin, self).get_urls()
@@ -545,6 +548,17 @@ class AuthUserAdmin(UserAdmin):
         ctx = extra_context or {}
         ctx['user_data'] = assopy_dataaccess.all_user_data(object_id)
         return super().change_view(request, object_id, form_url, ctx)
+
+    def send_verification_email(self, request, uid):
+        user = User.objects.get(pk=uid)
+
+        if not user.is_active:
+            send_verification_email(user, get_current_site(request))
+            messages.add_message(request, messages.SUCCESS, 'Verification email sent successfully.')
+        else:
+            messages.add_message(request, messages.ERROR, 'This user is active!')
+
+        return redirect ('.')
 
 
 class RefundAdminForm(forms.ModelForm):

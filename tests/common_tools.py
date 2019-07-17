@@ -1,17 +1,17 @@
 import http.client
-from datetime import date
+from datetime import date, timedelta
 from urllib.parse import urlparse
 
 from wsgiref.simple_server import make_server
 
 from django.conf import settings
 from django.core.cache import cache
+from django.utils import timezone
 
 from django_factory_boy import auth as auth_factories
 
 from assopy.models import Vat, VatFare
-from assopy.stripe.tests.factories import OrderFactory
-from assopy.tests.factories.user import AssopyUserFactory
+from tests.factories import AssopyUserFactory, OrderFactory
 from conference.models import AttendeeProfile, Conference
 from conference.fares import pre_create_typical_fares_for_conference
 from conference.tests.factories.fare import FareFactory
@@ -168,6 +168,7 @@ def setup_conference_with_typical_fares(start=date(2019, 7, 8), end=date(2019, 7
     )
 
 
+
 def create_valid_ticket_for_user_and_fare(user, fare=None):
     setup_conference_with_typical_fares()
     default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
@@ -187,3 +188,20 @@ def create_valid_ticket_for_user_and_fare(user, fare=None):
     ticket = order.orderitem_set.first().ticket
     assert ticket.user == user
     return ticket
+
+
+def get_default_conference():
+    conference, _ = Conference.objects.get_or_create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name="Europython 2019",
+        # For easier testing open CFP
+        cfp_start=timezone.now() - timedelta(days=3),
+        cfp_end=timezone.now() + timedelta(days=3),
+        conference_start=date(2019, 7, 8),
+        conference_end=date(2019, 7, 14),
+        # For easier testing also start with open voting
+        voting_start=timezone.now() - timedelta(days=3),
+        voting_end=timezone.now() + timedelta(days=3),
+    )
+
+    return conference

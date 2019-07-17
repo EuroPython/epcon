@@ -8,11 +8,9 @@ from django.test import TestCase
 from conference.templatetags.conference import (
     conference_js_data, _lang, get_deadlines, conference_talks,
 )
-
-from conference.tests.factories.conference import (
-    ConferenceFactory, ConferenceTagFactory,
+from tests.factories import (
+    ConferenceFactory, ConferenceTagFactory, TalkFactory
 )
-from conference.tests.factories.talk import TalkFactory
 
 
 class PrivateFunctionsTestCase(TestCase):
@@ -22,6 +20,7 @@ class PrivateFunctionsTestCase(TestCase):
         context = Context({'request': request})
 
         self.assertEqual(_lang(context), settings.LANGUAGE_CODE)
+
 
 class ConferenceTemplateTagsTestCase(TestCase):
     @mock.patch('conference.templatetags.conference._lang', return_value='en')

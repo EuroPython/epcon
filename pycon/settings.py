@@ -540,6 +540,7 @@ CONFERENCE_TALK_DOMAIN = Choices(
 # T-shirt sizes
 # TODO: Make that into Choices
 CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES = (
+    (None, 'Please select your shirt size!'),
     ('fs', 'S (female)'),
     ('fm', 'M (female)'),
     ('fl', 'L (female)'),
@@ -557,6 +558,7 @@ CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES = (
 
 # Available diets
 CONFERENCE_TICKET_CONFERENCE_DIETS = (
+    (None, "Please select your dietary preferences!"),
     ("omnivorous", _("Omnivorous")),
     ("vegetarian", _("Vegetarian")),
     # ('vegan', _('Vegan')),

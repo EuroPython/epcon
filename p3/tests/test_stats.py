@@ -2,18 +2,18 @@ from unittest import mock
 from django.test import TestCase
 from django_factory_boy import auth as auth_factories
 
-from assopy.stripe.tests.factories import (
+from p3.models import TICKET_CONFERENCE_SHIRT_SIZES, TICKET_CONFERENCE_DIETS
+from p3.stats import shirt_sizes, diet_types
+from tests.factories import (
     OrderItemFactory,
     AssopyUserFactory,
-    VatFactory
+    VatFactory,
+    CreditCardOrderFactory,
+    ConferenceFactory,
+    TicketFactory,
+    FareFactory,
+    TicketConferenceFactory,
 )
-from assopy.tests.factories.order import CreditCardOrderFactory
-from conference.tests.factories.conference import ConferenceFactory
-from conference.tests.factories.fare import TicketFactory, FareFactory
-from p3.tests.factories.ticket_conference import TicketConferenceFactory
-from p3.models import TICKET_CONFERENCE_SHIRT_SIZES, TICKET_CONFERENCE_DIETS
-
-from p3.stats import shirt_sizes, diet_types
 
 
 class StatsTestCase(TestCase):
@@ -48,7 +48,7 @@ class StatsTestCase(TestCase):
     @mock.patch('email_template.utils.email')
     @mock.patch('django.core.mail.send_mail')
     def test_shirt_sizes(self, mock_send_email, mock_email):
-        fare = FareFactory(conference=self.conference, ticket_type='conference')
+        fare = FareFactory(conference=self.conference.code, ticket_type='conference')
 
         ticket = TicketFactory(fare=fare, user=self.user, frozen=False)
 
@@ -68,7 +68,7 @@ class StatsTestCase(TestCase):
     @mock.patch('email_template.utils.email')
     @mock.patch('django.core.mail.send_mail')
     def test_diet_types(self, mock_send_email, mock_email):
-        fare = FareFactory(conference=self.conference, ticket_type='conference')
+        fare = FareFactory(conference=self.conference.code, ticket_type='conference')
 
         ticket = TicketFactory(fare=fare, user=self.user, frozen=False)
         ticket_conference = TicketConferenceFactory(ticket=ticket, assigned_to=self.user.email)

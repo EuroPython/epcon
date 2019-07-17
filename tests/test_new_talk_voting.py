@@ -1,20 +1,20 @@
 from datetime import date, timedelta
 
+import mock
 import pytest
-
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 
 from conference.models import Conference, VotoTalk, TALK_STATUS
-from conference.talk_voting import VotingOptions
-from conference.tests.factories.speaker import SpeakerFactory
-from conference.tests.factories.talk import TalkFactory, TalkSpeakerFactory
+from conference.talk_voting import VotingOptions, find_talks
+from tests.factories import SpeakerFactory, TalkFactory, TalkSpeakerFactory
+from tests.common_tools import make_user
 
 pytestmark = [pytest.mark.django_db]
 
 
-def _setup(start=date(2019, 7, 8), end=date(2019, 7, 14)):
+def _setup(start=timezone.now() + timedelta(days=3), end=timezone.now() + timedelta(days=9)):
     # Create a conference with talk voting enabled
     Conference.objects.get_or_create(
         code=settings.CONFERENCE_CONFERENCE,
@@ -27,7 +27,7 @@ def _setup(start=date(2019, 7, 8), end=date(2019, 7, 14)):
 
 
 def _create_talk_for_user(user):
-    talk = TalkFactory(status=TALK_STATUS['proposed'], created_by=user)
+    talk = TalkFactory(status=TALK_STATUS.proposed, created_by=user)
     speaker = SpeakerFactory(user=user)
     TalkSpeakerFactory(talk=talk, speaker=speaker)
     return talk
@@ -86,6 +86,8 @@ def test_talk_voting_hides_approved_talks():
 def test_vote_submission(user_client):
     _setup()
     talk = TalkFactory()
+    speaker = SpeakerFactory(user=make_user())
+    TalkSpeakerFactory(talk=talk, speaker=speaker)
 
     url = reverse("talk_voting:vote", kwargs={'talk_uuid': talk.uuid})
 
@@ -97,7 +99,7 @@ def test_vote_submission(user_client):
 def test_vote_submission_not_allowed_for_talk_created_by_user(user_client):
     _setup()
     # User is speaker but did not create the talk
-    talk = TalkFactory(status=TALK_STATUS['proposed'])
+    talk = TalkFactory(status=TALK_STATUS.proposed)
     speaker = SpeakerFactory(user=user_client.user)
     TalkSpeakerFactory(talk=talk, speaker=speaker)
 
@@ -110,10 +112,65 @@ def test_vote_submission_not_allowed_for_talk_created_by_user(user_client):
 
 def test_vote_submission_not_allowed_for_talk_where_user_is_speaker(user_client):
     _setup()
-    talk = TalkFactory(status=TALK_STATUS['proposed'], created_by=user_client.user)
+    talk = TalkFactory(status=TALK_STATUS.proposed, created_by=user_client.user)
 
     url = reverse("talk_voting:vote", kwargs={'talk_uuid': talk.uuid})
 
     user_client.post(url, data={'vote': VotingOptions.maybe})
 
     assert VotoTalk.objects.count() == 0
+
+
+def test_dont_vote_talks_without_speaker_details(db, user_client):
+    _setup()
+    talk = TalkFactory(status=TALK_STATUS.proposed)
+
+    url = reverse("talk_voting:vote", kwargs={'talk_uuid': talk.uuid})
+
+    user_client.post(url, data={'vote': VotingOptions.maybe})
+
+    assert VotoTalk.objects.count() == 0
+
+
+def test_vote_talks_with_speaker_details(db, user_client):
+    _setup()
+    talk = TalkFactory(status=TALK_STATUS.proposed)
+
+    speaker = SpeakerFactory(user=make_user())
+    TalkSpeakerFactory(talk=talk, speaker=speaker)
+
+    url = reverse("talk_voting:vote", kwargs={'talk_uuid': talk.uuid})
+
+    user_client.post(url, data={'vote': VotingOptions.maybe})
+
+    assert VotoTalk.objects.count() == 1
+
+
+@mock.patch('conference.talk_voting.is_user_allowed_to_vote', return_value=True)
+def test_dont_publish_talks_without_speaker_details(db, user_client, mocker):
+    _setup()
+    talk = TalkFactory(status=TALK_STATUS.proposed, title="DeadBeef")
+    talk2 = TalkFactory(status=TALK_STATUS.proposed, title="TestProposalForTests")
+    speaker = SpeakerFactory(user=make_user())
+    TalkSpeakerFactory(talk=talk2, speaker=speaker)
+
+    url = reverse("talk_voting:talks")
+
+    response = user_client.get(url)
+
+    assert talk.title not in response.content.decode("utf8")
+    assert talk2.title in response.content.decode("utf8")
+
+
+def test_dont_publish_talks_without_speaker_details1(db, user_client, mocker):
+    _setup()
+    talk = TalkFactory(status=TALK_STATUS.proposed, title="DeadBeef")
+    talk2 = TalkFactory(status=TALK_STATUS.proposed, title="TestProposalForTests")
+    speaker = SpeakerFactory(user=make_user())
+    TalkSpeakerFactory(talk=talk2, speaker=speaker)
+
+    talks = find_talks(user_client.user, Conference.objects.current(), [])
+    assert talk not in talks
+
+    assert talk2 in talks
+    # assert False
