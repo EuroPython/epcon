@@ -46,7 +46,7 @@
                 {% if talk_as_dict.slides_url %}
                     <a class="btn btn-primary" href="{% get_media_prefix %}{{ talk_as_dict.slides_url }}">Slides</a>
                 {% endif %}
-                <p>{{ talk_as_dict.abstract|linebreaks }}</p>
+                <p>{{ talk_as_dict.abstract|urlize|linebreaks }}</p>
                 <p>
                 <code>Type: {{ talk.get_type_display }}; Python level: {{ talk.get_level_display }}; Domain level: {{ talk.get_domain_level_display }}</code>
                 </p>
