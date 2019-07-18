@@ -17,7 +17,12 @@ def test_talk_view_as_anonymous(client):
     # TODO: we only need the conference set up, we don't care about the fares;
     # another PR contains a helper that only sets up the conference
     setup_conference_with_typical_fares()
+    original_abstract = "Hello!\nGoto http://example.com"
+    # newlines should become BR, urls should be linked
+    expected_abstract = ('Hello!<br />Goto <a href="http://example.com" rel="nofollow">'
+                         'http://example.com</a>')
     talk = TalkFactory()
+    talk.setAbstract(original_abstract)
     url = reverse("talks:talk", args=[talk.slug])
 
     resp = client.get(url)
@@ -25,7 +30,7 @@ def test_talk_view_as_anonymous(client):
     assert resp.status_code == 200
     assert talk.title in resp.content.decode()
     assert talk.sub_title in resp.content.decode()
-    assert talk.get_abstract() in resp.content.decode()
+    assert expected_abstract in resp.content.decode()
     assert "update talk" not in resp.content.decode().lower()
 
 
