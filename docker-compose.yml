@@ -2,7 +2,6 @@ version: '3.7'
 
 services:
   epcon:
-    stop_signal: SIGINT
     build:
       context: .
     environment:
