@@ -1,6 +1,6 @@
-from datetime import date, timedelta
+from datetime import timedelta
+from unittest import mock
 
-import mock
 import pytest
 from django.conf import settings
 from django.core.urlresolvers import reverse

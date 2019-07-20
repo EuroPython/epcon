@@ -1,4 +1,4 @@
-import mock
+from unittest import mock
 
 from django.conf import settings
 from django.template import Context
@@ -20,6 +20,7 @@ class PrivateFunctionsTestCase(TestCase):
         context = Context({'request': request})
 
         self.assertEqual(_lang(context), settings.LANGUAGE_CODE)
+
 
 class ConferenceTemplateTagsTestCase(TestCase):
     @mock.patch('conference.templatetags.conference._lang', return_value='en')

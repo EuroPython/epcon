@@ -1,5 +1,4 @@
-
-Django~=1.11
+Django>=1.11,<2.0
 
 pyjwkest==1.4.0
 requests
@@ -27,7 +26,7 @@ social-auth-core[openidconnect]
 python-oembed
 markdown2
 
-django-cms~=3.5
+django-cms>=3.6,<3.7
 djangocms-admin-style
 djangocms-text-ckeditor
 djangocms-grid
@@ -61,6 +60,8 @@ openpyxl==2.4.8
 ipython
 decorator
 
-lxml   # for currencies
+lxml  # for currencies
 Jinja2
 dataclasses
+
+gunicorn>=19.9,<20.0

@@ -1,7 +1,7 @@
 import unittest
-
-import mock
+from unittest import mock
 import json
+
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django_factory_boy import auth as auth_factories

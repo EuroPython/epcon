@@ -1,7 +1,7 @@
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from mock import Mock
-from mock import patch
+from unittest.mock import Mock
+from unittest.mock import patch
 from django_factory_boy import auth as auth_factories
 
 from assopy.models import AssopyUser, Order
