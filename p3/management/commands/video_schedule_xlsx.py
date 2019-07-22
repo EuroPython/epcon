@@ -39,7 +39,7 @@ from .accepted_talks import TYPE_NAMES
 LICENSE = """
 
 License: This video is licensed under the CC BY-NC-SA 3.0 license: https://creativecommons.org/licenses/by-nc-sa/3.0/
-Please see our speaker release agreement for details: https://ep2018.europython.eu/en/speaker-release-agreement/
+Please see our speaker release agreement for details: https://ep2019.europython.eu/events/speaker-release-agreement/
 """
 
 # Special handling of poster sessions
