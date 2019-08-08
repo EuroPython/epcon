@@ -150,7 +150,8 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
         "tags": [t.name for t in talk.tags.all()],
         "speakers": [],
         "schedule_url": talk.get_schedule_url(),
-        "slides_url": talk.slides,
+        "slides_file_url": talk.slides,
+        "slides_remote_url": talk.slides_url,
     }
 
     for speaker in talk.get_all_speakers():
