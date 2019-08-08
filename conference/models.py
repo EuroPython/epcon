@@ -702,6 +702,8 @@ class Talk(models.Model, UrlMixin):
     )
 
     slides = models.FileField(upload_to=_fs_upload_to("slides"), blank=True)
+    slides_url = models.URLField(blank=True)
+    repository_url = models.URLField(blank=True)
     video_type = models.CharField(
         max_length=30, choices=VIDEO_TYPE, blank=True
     )
