@@ -20,7 +20,7 @@ def reset_ticket_settings(ticket):
     return tc
 
 
-def count_number_of_sold_training_tickets_including_combined_tickets(conference_code):
+def sold_training_tickets_including_combined_tickets(conference_code):
     qs = Ticket.objects.filter(
         fare__conference=conference_code,
         frozen=False,
@@ -37,4 +37,4 @@ def count_number_of_sold_training_tickets_including_combined_tickets(conference_
             ]
         )
     )
-    return qs.count()
+    return qs
