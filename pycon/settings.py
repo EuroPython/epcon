@@ -65,7 +65,7 @@ SITE_DATA_ROOT = DATA_DIR + "/site"
 # --------
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///{}/epcon.db'.format(SITE_DATA_ROOT)
+        default='sqlite:///{}/epcon_staging.db'.format(SITE_DATA_ROOT)
     ),
 }
 
@@ -715,18 +715,6 @@ def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
             else:
                 return row['total']
     return 0
-
-
-CONFERENCE_ADMIN_ATTENDEE_STATS = (
-    'p3.stats.tickets_status',
-    'p3.stats.conference_speakers',
-    'p3.stats.conference_speakers_day',
-    'p3.stats.speaker_status',
-    'p3.stats.presence_days',
-    'p3.stats.shirt_sizes',
-    'p3.stats.diet_types',
-    'p3.stats.pp_tickets',
-)
 
 
 CONFERENCE_TICKET_BADGE_ENABLED = True
