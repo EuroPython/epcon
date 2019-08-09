@@ -65,7 +65,7 @@ SITE_DATA_ROOT = DATA_DIR + "/site"
 # --------
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///{}/epcon_staging.db'.format(SITE_DATA_ROOT)
+        default='sqlite:///{}/epcon.db'.format(SITE_DATA_ROOT)
     ),
 }
 
