@@ -181,6 +181,31 @@ def test_author_can_post_submit_slides(user_client):
     talk.refresh_from_db()
     assert talk.slides
 
+def test_author_can_post_submit_slides_url(user_client):
+    setup_conference_with_typical_fares()
+    talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
+
+    url = reverse("talks:submit_slides", args=[talk.slug])
+    payload = {"slides_url": "https://ep2019.europython.eu"}
+    response = user_client.post(url, data=payload)
+
+    assert redirects_to(response, talk.get_absolute_url())
+    talk.refresh_from_db()
+    assert talk.slides_url
+
+
+def test_author_can_post_submit_repository_url(user_client):
+    setup_conference_with_typical_fares()
+    talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
+
+    url = reverse("talks:submit_slides", args=[talk.slug])
+    payload = {"repository_url": "https://ep2019.europython.eu"}
+    response = user_client.post(url, data=payload)
+
+    assert redirects_to(response, talk.get_absolute_url())
+    talk.refresh_from_db()
+    assert talk.repository_url
+
 
 def test_submit_slides_url_on_talk_detail_page(client):
     """
@@ -212,9 +237,9 @@ def test_submit_slides_url_on_talk_detail_page(client):
     assert submit_slides_url in response.content.decode()
 
 
-def test_view_slides_url_on_talk_detail_page(client):
+def test_view_slides_file_url_on_talk_detail_page(client):
     """
-    The view slides button only appears if the slides have been uploaded.
+    The download slides button only appears if the slides have been uploaded.
     """
     setup_conference_with_typical_fares()
     talk = TalkFactory(status=TALK_STATUS.accepted)
@@ -224,7 +249,7 @@ def test_view_slides_url_on_talk_detail_page(client):
     response = client.get(url)
 
     assert not talk.slides
-    assert 'slides' not in response.content.decode()
+    assert 'download slides' not in response.content.decode().lower()
 
     # Slides URL does appear when the slides have been uploaded
     talk.slides = SimpleUploadedFile('slides.pdf', 'pdf content'.encode())
@@ -232,5 +257,27 @@ def test_view_slides_url_on_talk_detail_page(client):
 
     response = client.get(url)
 
-    assert talk.slides
-    assert 'slides' in response.content.decode()
+    assert 'download slides' in response.content.decode().lower()
+
+
+def test_view_slides_remote_url_on_talk_detail_page(client):
+    """
+    The view slides button only appears if the slides url has been uploaded.
+    """
+    setup_conference_with_typical_fares()
+    talk = TalkFactory(status=TALK_STATUS.accepted)
+    url = talk.get_absolute_url()
+
+    # Slides URL does not appear when the slides haven't been uploaded
+    response = client.get(url)
+
+    assert not talk.slides_url
+    assert 'view slides' not in response.content.decode().lower()
+
+    # Slides URL does appear when the slides have been uploaded
+    talk.slides_url = "ep2019.europython.eu"
+    talk.save()
+
+    response = client.get(url)
+
+    assert 'view slides' in response.content.decode().lower()
