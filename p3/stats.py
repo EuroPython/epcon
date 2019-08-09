@@ -506,6 +506,7 @@ def conference_speakers(conf, code=None):
             'columns': (
                 ('name', 'Name'),
                 ('email', 'Email'),
+                ('talks', 'Talks'),
             ),
             'data': [],
         }
@@ -514,12 +515,20 @@ def conference_speakers(conf, code=None):
             .select_related('user')\
             .order_by('user__first_name', 'user__last_name')
         for x in qs:
+            talks = x.talks().filter(conference=conf, status=TALK_STATUS.accepted)
+            if code == 'speakers_no_slides':
+                talks = talks.filter(Q(talkspeaker__talk__slides='') & Q(talkspeaker__talk__slides_url=''))
+
             data.append({
                 'name': '<a href="%s">%s %s</a>' % (
                     reverse('admin:auth_user_change', args=(x.user_id,)),
                     x.user.first_name,
                     x.user.last_name),
                 'email': x.user.email,
+                'talks': '<br/>'.join([
+                    f"<a href={reverse('admin:conference_talk_change', args=(talk.id,))}>{talk.title}</a>"
+                    for talk in talks
+                ]),
                 'uid': x.user_id,
             })
     return output
