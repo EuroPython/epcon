@@ -11,7 +11,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('conference', '0014_stripe_charge_default_uuid'),
+        ('conference', '0015_add_talk_url_fields'),
     ]
 
     operations = [
