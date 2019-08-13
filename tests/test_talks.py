@@ -189,7 +189,7 @@ def test_author_can_post_submit_slides(user_client):
     assert talk.slides
 
 def test_author_can_post_submit_slides_url(user_client):
-    setup_conference_with_typical_fares()
+    get_default_conference()
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
 
     url = reverse("talks:submit_slides", args=[talk.slug])
@@ -202,7 +202,7 @@ def test_author_can_post_submit_slides_url(user_client):
 
 
 def test_author_can_post_submit_repository_url(user_client):
-    setup_conference_with_typical_fares()
+    get_default_conference()
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
 
     url = reverse("talks:submit_slides", args=[talk.slug])
@@ -271,7 +271,7 @@ def test_view_slides_remote_url_on_talk_detail_page(client):
     """
     The view slides button only appears if the slides url has been uploaded.
     """
-    setup_conference_with_typical_fares()
+    get_default_conference()
     talk = TalkFactory(status=TALK_STATUS.accepted)
     url = talk.get_absolute_url()
 
