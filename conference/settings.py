@@ -128,8 +128,6 @@ TICKET_BADGE_PREPARE_FUNCTION = getattr(settings, 'CONFERENCE_TICKET_BADGE_PREPA
 
 SCHEDULE_ATTENDEES = getattr(settings, 'CONFERENCE_SCHEDULE_ATTENDEES', lambda schedule, forecast=False: 0)
 
-ADMIN_ATTENDEE_STATS = getattr(settings, 'CONFERENCE_ADMIN_ATTENDEE_STATS', ())
-
 X_SENDFILE = getattr(settings, 'CONFERENCE_X_SENDFILE', None)
 
 TALK_VIDEO_ACCESS = getattr(settings, 'CONFERENCE_TALK_VIDEO_ACCESS', lambda r, t: True)

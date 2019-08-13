@@ -715,18 +715,6 @@ def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
     return 0
 
 
-CONFERENCE_ADMIN_ATTENDEE_STATS = (
-    'p3.stats.tickets_status',
-    'p3.stats.conference_speakers',
-    'p3.stats.conference_speakers_day',
-    'p3.stats.speaker_status',
-    'p3.stats.presence_days',
-    'p3.stats.shirt_sizes',
-    'p3.stats.diet_types',
-    'p3.stats.pp_tickets',
-)
-
-
 CONFERENCE_TICKET_BADGE_ENABLED = True
 CONFERENCE_TICKET_BADGE_PROG_ARGS = ['-e', '0', '-p', 'A4', '-n', '1']
 
