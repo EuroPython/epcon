@@ -58,12 +58,10 @@ class TalkUpdateForm(forms.ModelForm):
 
 
 class TalkSlidesForm(forms.ModelForm):
-    slides = forms.FileField(required=True)
-
     class Meta:
         model = Talk
         fields = [
-            "slides"
+            "slides", "slides_url", "repository_url"
         ]
 
 
