@@ -190,7 +190,10 @@ def create_valid_ticket_for_user_and_fare(user, fare=None):
     return ticket
 
 
-def get_default_conference(end=timezone.now() + timedelta(days=35)):
+def get_default_conference(end=None):
+    if not end:
+        end = timezone.now() + timedelta(days=35)
+
     conference, _ = Conference.objects.get_or_create(
         code=settings.CONFERENCE_CONFERENCE,
         name="Europython 2020",
