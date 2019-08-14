@@ -6,7 +6,8 @@ from django.conf import settings
 from django.utils import timezone
 from tests.common_tools import template_used
 from conference.models import News
-from tests.factories import ConferenceFactory, SponsorFactory
+from tests.factories import ConferenceFactory, SponsorFactory, NewsFactory
+from tests.common_tools import get_default_conference
 
 
 def test_get_homepage(db, client):
@@ -23,71 +24,52 @@ def test_get_homepage(db, client):
 
 
 def test_homepage_contains_last_3_news_for_current_conference(db, client):
-    conference = ConferenceFactory()
+    get_default_conference()
 
-    News.objects.create(
-        conference=conference,
+    first_news = NewsFactory(
         title="First news",
-        content="First news content",
-        status=News.STATUS.PUBLISHED,
         published_date=timezone.now() - timedelta(days=4),
     )
-    News.objects.create(
-        conference=conference,
+    second_news = NewsFactory(
         title="Second news",
-        content="Second news content",
-        status=News.STATUS.PUBLISHED,
         published_date=timezone.now() - timedelta(days=3),
     )
-    News.objects.create(
-        conference=conference,
+    third_news = NewsFactory(
         title="Third news",
-        content="Third news content",
-        status=News.STATUS.PUBLISHED,
         published_date=timezone.now() - timedelta(days=2),
     )
-    News.objects.create(
-        conference=conference,
+    fourth_news = NewsFactory(
         title="Fourth news",
-        content="Fourth news content",
-        status=News.STATUS.PUBLISHED,
         published_date=timezone.now() - timedelta(days=1),
     )
 
     url = "/"
     response = client.get(url)
 
-    assert "First news" not in response.content.decode()
-    assert "Second news" in response.content.decode()
-    assert "Third news content" in response.content.decode()
-    assert "Fourth news" in response.content.decode()
+    assert first_news.title not in response.content.decode()
+    assert second_news.title in response.content.decode()
+    assert third_news.content in response.content.decode()
+    assert fourth_news.title in response.content.decode()
 
 
 def test_homepage_doesnt_display_news_from_non_current_conference(db, client):
-    current_code = settings.CONFERENCE_CONFERENCE
-    current_conf = ConferenceFactory(code=current_code)
+    current_conf = get_default_conference()
     other_conf = ConferenceFactory(code="other")
 
-    News.objects.create(
+    current_news = NewsFactory(
         conference=current_conf,
-        title="Current news",
-        content="Current news content",
-        status=News.STATUS.PUBLISHED,
         published_date=timezone.now() - timedelta(days=2),
     )
-    News.objects.create(
+    old_news = NewsFactory(
         conference=other_conf,
-        title="Old news",
-        content="Old news content",
-        status=News.STATUS.PUBLISHED,
         published_date=timezone.now() - timedelta(days=365),
     )
 
     url = "/"
     response = client.get(url)
 
-    assert "Current news" in response.content.decode()
-    assert "Old news" not in response.content.decode()
+    assert current_news.title in response.content.decode()
+    assert old_news.title not in response.content.decode()
 
 
 @pytest.mark.xfail

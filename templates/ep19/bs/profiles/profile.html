@@ -21,44 +21,44 @@
         <div class="col-md-9">
             <div class="speaker">
                 {% if tagline %}
-                <dl class="row">
+                <dl class="row" id="tagline">
                     <dt class="col-sm-3">Tagline: </dt>
                     <dd class="col-sm-9">{{ tagline }}</dd>
                 </dl>
                 {% endif %}
 
                 {% if personal_website %}
-                <dl class="row">
+                <dl class="row" id="personal-website">
                     <dt class="col-sm-3">Website: </dt>
                     <dd class="col-sm-9"><a href="{{ personal_website  }}">{{ personal_website }}</a></dd>
                 </dl>
                 {% endif %}
 
                 {% if twitter %}
-                <dl class="row">
+                <dl class="row" id="twitter">
                     <dt class="col-sm-3">Twitter: </dt>
                     <dd class="col-sm-9"><a href="https://twitter.com/{{ twitter  }}">{{ twitter }}</a></dd>
                 </dl>
                 {% endif %}
 
                 {% if location %}
-                <dl class="row">
+                <dl class="row" id="location">
                     <dt class="col-sm-3">Location: </dt>
                     <dd class="col-sm-9">{{ location }}</dd>
                 </dl>
                 {% endif %}
 
-                <dl class="row">
+                <dl class="row" id="company">
                     <dt class="col-sm-3">Company: </dt>
                     <dd class="col-sm-9">{{ company|default:"—" }}</dd>
                 </dl>
 
-                <dl class="row">
+                <dl class="row" id="job-title">
                     <dt class="col-sm-3">Job title: </dt>
                     <dd class="col-sm-9">{{ job_title|default:"—" }}</dd>
                 </dl>
 
-                <dl class="row">
+                <dl class="row" id="company-website">
                     <dt class="col-sm-3">Company website: </dt>
                     <dd class="col-sm-9">
                     {% if company_website %}
@@ -69,7 +69,7 @@
                     </dd>
                 </dl>
 
-                <dl class="row">
+                <dl class="row" id="biography">
                     <dt class="col-sm-3">Biography: </dt>
                     <dd class="col-sm-9">{{ bio|default:"—"|linebreaks }}</dd>
                 </dl>
