@@ -47,7 +47,7 @@
                     <a class="btn btn-primary" href="{% get_media_prefix %}{{ talk_as_dict.slides_file_url }}">Download Slides</a>
                 {% endif %}
                 {% if talk_as_dict.slides_remote_url %}
-                    <a class="btn btn-primary" href="{% get_media_prefix %}{{ talk_as_dict.slides_remote_url }}">View Slides</a>
+                    <a class="btn btn-primary" href="{{ talk_as_dict.slides_remote_url }}">View Slides</a>
                 {% endif %}
                 <p>{{ talk_as_dict.abstract|urlize|linebreaks }}</p>
                 <p>

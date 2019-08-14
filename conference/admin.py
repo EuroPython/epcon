@@ -138,7 +138,17 @@ class ConferenceAdmin(admin.ModelAdmin):
 
     def available_stats(self, conf):
         stats = []
-        for path in settings.ADMIN_ATTENDEE_STATS:
+        stats_modules = (
+            'p3.stats.tickets_status',
+            'p3.stats.conference_speakers',
+            'p3.stats.conference_speakers_day',
+            'p3.stats.speaker_status',
+            'p3.stats.presence_days',
+            'p3.stats.shirt_sizes',
+            'p3.stats.diet_types',
+            'p3.stats.pp_tickets',
+        )
+        for path in stats_modules:
             func = utils.dotted_import(path)
             w = {
                 'get_data': self._stat_wrapper(func, conf),
