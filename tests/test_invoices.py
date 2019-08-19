@@ -692,7 +692,7 @@ def test_export_invoice(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse("debug_panel_invoice_export_for_tax_report_2018")
+        reverse("debug_panel_invoice_export_for_tax_report")
         + "?"
         + query_string
     )
