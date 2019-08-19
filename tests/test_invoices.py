@@ -628,6 +628,7 @@ def test_export_invoice_csv(client):
     next(iter_column)  # ignore the address
     assert next(iter_column) == invoice1.order.country.name
     assert next(iter_column) == invoice1.order.vat_number
+    next(iter_column)  # ignore the currency
     assert (
         decimal.Decimal(next(iter_column))
         == invoice1.net_price_in_local_currency
