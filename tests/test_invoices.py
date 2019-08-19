@@ -602,7 +602,7 @@ def test_export_invoice_csv(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse("debug_panel_invoice_export_for_tax_report_2018_csv")
+        reverse("debug_panel_invoice_export_for_tax_report_csv")
         + "?"
         + query_string
     )
@@ -656,7 +656,7 @@ def test_export_invoice_csv_before_period(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse("debug_panel_invoice_export_for_tax_report_2018_csv")
+        reverse("debug_panel_invoice_export_for_tax_report_csv")
         + "?"
         + query_string
     )
