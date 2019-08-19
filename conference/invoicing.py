@@ -291,7 +291,7 @@ def render_invoice_as_html(invoice):
     return render_to_string('assopy/invoice.html', ctx)
 
 
-CSV_2018_REPORT_COLUMNS = [
+CSV_REPORT_COLUMNS = [
     'ID',
     'Emit Date',
     'Buyer Name',
@@ -299,13 +299,16 @@ CSV_2018_REPORT_COLUMNS = [
     'Address',
     'Country',
     'VAT ID',
-    'Net Price in GBP',
-    'VAT in GBP',
-    'Gross Price in GBP',
+    'Currency',
+    'Net Price',
+    'VAT',
+    'Gross Price',
 ]
 
+# For b/w compatibility
+CSV_2018_REPORT_COLUMNS = CSV_REPORT_COLUMNS
 
-def export_invoices_to_2018_tax_report(start_date, end_date=None):
+def export_invoices_to_tax_report(start_date, end_date=None):
     if end_date is None:
         end_date = datetime.date.today()
 
@@ -329,21 +332,22 @@ def export_invoices_to_2018_tax_report(start_date, end_date=None):
             output['Country']   = ""
 
         output['VAT ID']        = invoice.order.vat_number
-        output['Net Price in %s' % invoice.local_currency] =\
+        output['Currency']      = invoice.local_currency
+        output['Net Price'] =\
             invoice.net_price_in_local_currency
-        output['VAT in %s' % invoice.local_currency] =\
+        output['VAT'] =\
             invoice.vat_in_local_currency
-        output['Gross Price in %s' % invoice.local_currency] =\
+        output['Gross Price'] =\
             invoice.price_in_local_currency
 
         yield invoice, output
 
 
-def export_invoices_to_2018_tax_report_csv(fp, start_date, end_date=None):
-    writer = csv.DictWriter(fp, CSV_2018_REPORT_COLUMNS, quoting=csv.QUOTE_ALL)
+def export_invoices_to_tax_report_csv(fp, start_date, end_date=None):
+    writer = csv.DictWriter(fp, CSV_REPORT_COLUMNS, quoting=csv.QUOTE_ALL)
     writer.writeheader()
 
-    for invoice, to_export in export_invoices_to_2018_tax_report(
+    for invoice, to_export in export_invoices_to_tax_report(
         start_date, end_date
     ):
         writer.writerow(to_export)
