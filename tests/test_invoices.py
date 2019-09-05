@@ -602,7 +602,7 @@ def test_export_invoice_csv(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse("debug_panel_invoice_export_for_tax_report_2018_csv")
+        reverse("debug_panel_invoice_export_for_tax_report_csv")
         + "?"
         + query_string
     )
@@ -624,6 +624,7 @@ def test_export_invoice_csv(client):
     next(iter_column)  # ignore the address
     assert next(iter_column) == invoice1.order.country.name
     assert next(iter_column) == invoice1.order.vat_number
+    next(iter_column)  # ignore the currency
     assert (
         decimal.Decimal(next(iter_column))
         == invoice1.net_price_in_local_currency
@@ -656,7 +657,7 @@ def test_export_invoice_csv_before_period(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse("debug_panel_invoice_export_for_tax_report_2018_csv")
+        reverse("debug_panel_invoice_export_for_tax_report_csv")
         + "?"
         + query_string
     )
@@ -692,7 +693,7 @@ def test_export_invoice(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse("debug_panel_invoice_export_for_tax_report_2018")
+        reverse("debug_panel_invoice_export_for_tax_report")
         + "?"
         + query_string
     )
