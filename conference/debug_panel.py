@@ -29,8 +29,8 @@ from conference.invoicing import (
     REAL_INVOICE_PREFIX,
     next_invoice_code_for_year,
     render_invoice_as_html,
-    export_invoices_to_2018_tax_report,
-    export_invoices_to_2018_tax_report_csv,
+    export_invoices_to_tax_report,
+    export_invoices_to_tax_report_csv,
     export_invoices_for_payment_reconciliation,
     extract_customer_info,
 )
@@ -187,9 +187,9 @@ def debug_panel_invoice_example(request):
 
 
 @staff_member_required
-def debug_panel_invoice_export_for_tax_report_2018(request):
+def debug_panel_invoice_export_for_tax_report(request):
     start_date, end_date = get_start_end_dates(request)
-    invoices_and_exported = export_invoices_to_2018_tax_report(
+    invoices_and_exported = export_invoices_to_tax_report(
         start_date, end_date
     )
 
@@ -203,13 +203,13 @@ def debug_panel_invoice_export_for_tax_report_2018(request):
 
 
 @staff_member_required
-def debug_panel_invoice_export_for_tax_report_2018_csv(request):
+def debug_panel_invoice_export_for_tax_report_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] =\
         'attachment; filename="export-invoices.csv"'
 
     start_date, end_date = get_start_end_dates(request)
-    export_invoices_to_2018_tax_report_csv(response, start_date, end_date)
+    export_invoices_to_tax_report_csv(response, start_date, end_date)
 
     return response
 
@@ -274,7 +274,7 @@ def reissue_invoice(request, invoice_id):
             new_invoice.html = render_invoice_as_html(new_invoice)
             new_invoice.save()
 
-            return redirect('debug_panel_invoice_export_for_tax_report_2018')
+            return redirect('debug_panel_invoice_export_for_tax_report')
     else:
         customer = (
             old_invoice.customer
@@ -350,11 +350,11 @@ urlpatterns = [
         debug_panel_invoice_force_preview,
         name="debug_panel_invoice_forcepreview"),
     url(r'^invoices_export/$',
-        debug_panel_invoice_export_for_tax_report_2018,
-        name='debug_panel_invoice_export_for_tax_report_2018'),
+        debug_panel_invoice_export_for_tax_report,
+        name='debug_panel_invoice_export_for_tax_report'),
     url(r'^invoices_export.csv$',
-        debug_panel_invoice_export_for_tax_report_2018_csv,
-        name='debug_panel_invoice_export_for_tax_report_2018_csv'),
+        debug_panel_invoice_export_for_tax_report_csv,
+        name='debug_panel_invoice_export_for_tax_report_csv'),
     url(r'^invoices_export_for_accounting.json$',
         debug_panel_invoice_export_for_payment_reconciliation_json,
         name='debug_panel_invoice_export_for_payment_reconciliation_json'),
