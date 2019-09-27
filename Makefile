@@ -25,9 +25,9 @@ help:
 
 dev-requirements: pip-tools
 	pip-compile --upgrade \
-		requirements/base.in\
-		requirements/test.in\
-		requirements/dev.in\
+		requirements/base.in \
+		requirements/test.in \
+		requirements/dev.in \
 		-o requirements/dev.txt
 
 install-dev: pip-tools

@@ -2,3 +2,4 @@ django-pdb
 flake8
 pdbpp
 black
+google-api-python-client
