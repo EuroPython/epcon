@@ -11,6 +11,7 @@ from django.utils import timezone
 from django_factory_boy import auth as auth_factories
 
 from assopy.models import Vat, VatFare
+from conference.accounts import get_or_create_attendee_profile_for_new_user
 from conference.models import AttendeeProfile, Conference, TALK_STATUS, Fare
 from conference.fares import pre_create_typical_fares_for_conference
 from tests.factories import (
@@ -190,9 +191,15 @@ def create_valid_ticket_for_user_and_fare(user, fare=None):
     return ticket
 
 
-def get_default_conference(end=None):
+def get_default_conference(end=None, voting_start=None, voting_end=None):
     if not end:
         end = timezone.now() + timedelta(days=35)
+
+    if not voting_start:
+        voting_start = timezone.now() - timedelta(days=3)
+
+    if not voting_end:
+        voting_end = timezone.now() + timedelta(days=3)
 
     conference, _ = Conference.objects.get_or_create(
         code=settings.CONFERENCE_CONFERENCE,
@@ -203,15 +210,25 @@ def get_default_conference(end=None):
         conference_start=timezone.now() + timedelta(days=30),
         conference_end=end,
         # For easier testing also start with open voting
-        voting_start=timezone.now() - timedelta(days=3),
-        voting_end=timezone.now() + timedelta(days=3),
+        voting_start=voting_start,
+        voting_end=voting_end,
     )
 
     return conference
 
 
-def create_talk_for_user(user):
-    talk = TalkFactory(status=TALK_STATUS.proposed, created_by=user)
+def create_talk_for_user(user, **kwargs):
+    if user == None:
+        user = create_user()
+
+    talk = TalkFactory(**{'status': TALK_STATUS.proposed, 'created_by': user, **kwargs})
     speaker = SpeakerFactory(user=user)
     TalkSpeakerFactory(talk=talk, speaker=speaker)
     return talk
+
+
+def create_user():
+    user = auth_factories.UserFactory(is_active=True)
+    AssopyUserFactory(user=user)
+    get_or_create_attendee_profile_for_new_user(user)
+    return user

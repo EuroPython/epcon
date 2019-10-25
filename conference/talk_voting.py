@@ -87,7 +87,7 @@ def talk_voting(request):
 def find_talks(user, conference, extra_filters):
     """
     This prepares a queryset of Talks with custom data, with an option to pass
-    addtinal filters related to which talks we want to show.
+    additional filters related to which talks we want to show.
     """
     talks = (
         Talk.objects.filter(
