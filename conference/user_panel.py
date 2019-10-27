@@ -153,7 +153,6 @@ def profile_settings(request):
         profile_form = ProfileSettingsForm(
             instance=attendee_profile, data=request.POST, files=request.FILES
         )
-
         if profile_form.is_valid():
             profile_form.save()
             # Read the saved data back to make sure things get saved correctly
@@ -440,11 +439,7 @@ class ProfileSettingsForm(forms.ModelForm):
         return data
 
     def resolve_image_settings(self, selected_option, image_url, image):
-        if selected_option == PICTURE_CHOICES.none:
-            image = None
-            image_url = ""
-            image_gravatar = False
-        elif selected_option == PICTURE_CHOICES.gravatar:
+        if selected_option == PICTURE_CHOICES.gravatar:
             image = None
             image_url = ""
             image_gravatar = True
@@ -452,6 +447,11 @@ class ProfileSettingsForm(forms.ModelForm):
             image = None
             image_gravatar = False
         elif selected_option == PICTURE_CHOICES.file:
+            image_url = ""
+            image_gravatar = False
+        else:
+            # The default, or when the user selects PICTURE_CHOICES.none
+            image = None
             image_url = ""
             image_gravatar = False
 

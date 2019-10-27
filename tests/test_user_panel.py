@@ -4,6 +4,7 @@ from datetime import date
 
 from django.conf import settings
 from django.utils import timezone
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
 
 import responses
@@ -11,6 +12,7 @@ import responses
 from assopy.models import Invoice, Order, OrderItem
 from conference.models import Ticket, Conference, FARE_TICKET_TYPES
 from conference.invoicing import create_invoices_for_order
+from conference.user_panel import PICTURE_CHOICES
 from p3.models import TicketConference
 
 from email_template.models import Email
@@ -22,9 +24,10 @@ from conference.currencies import (
 
 from tests.common_tools import (
     make_user,
-    setup_conference_with_typical_fares,
     create_valid_ticket_for_user_and_fare,
     get_default_conference,
+    redirects_to,
+    template_used,
 )
 from tests.factories import FareFactory, OrderFactory, TicketFactory, UserFactory
 
@@ -70,14 +73,32 @@ def create_order(assopy_user, fare):
     return order
 
 
-@pytest.mark.xfail
-def test_privacy_settings_requires_login():
-    assert False
+def test_privacy_settings_requires_login(client):
+    url = reverse('user_panel:privacy_settings')
+
+    response = client.get(url)
+
+    assert redirects_to(response, reverse("accounts:login"))
 
 
-@pytest.mark.xfail
-def test_privacy_settings_updates_profile():
-    assert False
+def test_privacy_settings_updates_profile(user_client):
+    url = reverse('user_panel:privacy_settings')
+    profile = user_client.user.attendeeprofile.p3_profile
+    assert not profile.spam_recruiting
+    assert not profile.spam_sms
+    assert not profile.spam_user_message
+
+    response = user_client.post(url, data=dict(
+        spam_recruiting=True,
+        spam_sms=True,
+        spam_user_message=True,
+    ))
+
+    assert response.status_code == 200
+    profile.refresh_from_db()
+    assert profile.spam_recruiting
+    assert profile.spam_sms
+    assert profile.spam_user_message
 
 
 @responses.activate
@@ -323,39 +344,133 @@ def test_assigning_resets_tickets(db, user_client):
     assert ticket.p3_conference.days == new_tc.days
 
 
-@pytest.mark.xfail
-def test_profile_settings_requires_login():
-    assert False
+def test_profile_settings_requires_login(client):
+    url = reverse('user_panel:profile_settings')
+
+    response = client.get(url)
+
+    assert redirects_to(response, reverse("accounts:login"))
 
 
-@pytest.mark.xfail
-def test_profile_settings_gets_initial_data():
-    assert False
+def test_profile_settings_gets_initial_data(user_client):
+    url = reverse('user_panel:profile_settings')
+    user = user_client.user
+    attendee_profile = user.attendeeprofile
+    p3_profile = attendee_profile.p3_profile
+
+    response = user_client.get(url)
+
+    assert response.status_code == 200
+    assert template_used(response, "ep19/bs/user_panel/profile_settings.html")
+    assert user.first_name in response.content.decode()
+    assert user.last_name in response.content.decode()
+    assert user.email in response.content.decode()
+    assert p3_profile.tagline in response.content.decode()
+    assert p3_profile.twitter in response.content.decode()
+    assert attendee_profile.getBio().body in response.content.decode()
 
 
-@pytest.mark.xfail
-def test_profile_settings_updates_user_data():
-    assert False
+def test_profile_settings_updates_user_data(user_client):
+    url = reverse('user_panel:profile_settings')
+    payload = dict(
+        first_name='One',
+        last_name='Two',
+        email='one@two.three',
+        tagline='I am the one',
+        twitter='one',
+        bio='One to the Two',
+    )
+
+    response = user_client.post(url, data=payload)
+
+    assert response.status_code == 200
+    assert template_used(response, "ep19/bs/user_panel/profile_settings.html")
+    assert payload['first_name'] in response.content.decode()
+    assert payload['last_name'] in response.content.decode()
+    assert payload['email'] in response.content.decode()
+    assert payload['tagline'] in response.content.decode()
+    assert payload['twitter'] in response.content.decode()
+    assert payload['bio'] in response.content.decode()
 
 
-@pytest.mark.xfail
-def test_profile_settings_forbids_using_registered_email():
-    assert False
+def test_profile_settings_forbids_using_registered_email(user_client):
+    url = reverse('user_panel:profile_settings')
+    user = user_client.user
+    original_email = user.email
+    another_user = make_user()
+    payload = dict(
+        email=another_user.email,
+    )
+
+    response = user_client.post(url, data=payload)
+
+    assert response.status_code == 200
+    assert template_used(response, "ep19/bs/user_panel/profile_settings.html")
+    user.refresh_from_db()
+    assert user.email == original_email
 
 
-@pytest.mark.xfail
-def test_profile_settings_updates_attendee_profile_data():
-    assert False
-
-
-@pytest.mark.xfail
-def test_profile_settings_updates_p3_profile_data():
-    assert False
-
-
-@pytest.mark.xfail
-def test_profile_settings_updates_image_settings():
+def test_profile_settings_updates_image_settings(user_client):
     """
     4 scenarios to test - show no image, show gravatar, show url, show image.
     """
-    assert False
+    url = reverse('user_panel:profile_settings')
+    user = user_client.user
+    attendee_profile = user.attendeeprofile
+    p3_profile = attendee_profile.p3_profile
+    required_fields = {
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "email": user.email,
+    }
+
+    # Show no image
+    response = user_client.post(url, data=required_fields)
+
+    assert response.status_code == 200
+    attendee_profile.refresh_from_db()
+    p3_profile.refresh_from_db()
+    assert not attendee_profile.image
+    assert p3_profile.image_url == ""
+    assert p3_profile.image_gravatar == False
+
+    # Provide image url
+    response = user_client.post(url, data={
+        **required_fields,
+        "picture_options": PICTURE_CHOICES.url,
+        "image_url": "https://ep2019.europython.eu",
+    })
+
+    assert response.status_code == 200
+    attendee_profile.refresh_from_db()
+    p3_profile.refresh_from_db()
+    assert not attendee_profile.image
+    assert p3_profile.image_url != ""
+    assert p3_profile.image_gravatar == False
+
+    # Use gravatar
+    response = user_client.post(url, data={
+        **required_fields,
+        "picture_options": PICTURE_CHOICES.gravatar
+    })
+
+    assert response.status_code == 200
+    attendee_profile.refresh_from_db()
+    p3_profile.refresh_from_db()
+    assert not attendee_profile.image
+    assert p3_profile.image_url == ""
+    assert p3_profile.image_gravatar == True
+
+    # Upload an image
+    response = user_client.post(url, data={
+        **required_fields,
+        "picture_options": PICTURE_CHOICES.file,
+        "image":SimpleUploadedFile('image.jpg', 'here be images'.encode())
+    })
+
+    assert response.status_code == 200
+    attendee_profile.refresh_from_db()
+    p3_profile.refresh_from_db()
+    assert attendee_profile.image
+    assert p3_profile.image_url == ""
+    assert p3_profile.image_gravatar == False
