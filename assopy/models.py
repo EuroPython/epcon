@@ -181,10 +181,19 @@ class AssopyUserManager(models.Manager):
         )
         return assopy_user
 
-    def create_superuser(self, username, email, password):
+    def create_superuser(
+        self,
+        username,
+        email,
+        password,
+        first_name="",
+        last_name=""
+    ):
         assopy_user = self._create_user(
             email=email,
             password=password,
+            first_name=first_name,
+            last_name=last_name,
             username=username,
             token=False,
             active=True,
@@ -193,8 +202,10 @@ class AssopyUserManager(models.Manager):
         )
 
         log.info(
-            'new admin user "%s" created (%s)',
+            'new admin user "%s" created for "%s %s" (%s)',
             assopy_user.user.username,
+            first_name,
+            last_name,
             email,
         )
 
