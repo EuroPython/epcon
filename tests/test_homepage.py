@@ -5,7 +5,6 @@ from datetime import timedelta
 from django.conf import settings
 from django.utils import timezone
 from tests.common_tools import template_used
-from conference.models import News
 from tests.factories import ConferenceFactory, SponsorFactory, NewsFactory
 from tests.common_tools import get_default_conference
 
@@ -54,7 +53,7 @@ def test_homepage_contains_last_3_news_for_current_conference(db, client):
 
 def test_homepage_doesnt_display_news_from_non_current_conference(db, client):
     current_conf = get_default_conference()
-    other_conf = ConferenceFactory(code="other")
+    other_conf = ConferenceFactory(code="other", name="other conf")
 
     current_news = NewsFactory(
         conference=current_conf,

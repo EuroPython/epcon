@@ -243,32 +243,19 @@ class ConferenceTaggedItemFactory(factory.django.DjangoModelFactory):
 class ConferenceFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "conference.Conference"
+        django_get_or_create = ('code',)
 
+    name = 'EuroPython 2020'
     code = settings.CONFERENCE_CONFERENCE
-    name = factory.Faker("sentence", nb_words=6, variable_nb_words=True)
 
-    cfp_start = factory.LazyAttribute(
-        lambda conf: conf.conference_start - timedelta(days=50)
-    )
-    cfp_end = factory.LazyAttribute(
-        lambda conf: conf.cfp_start + timedelta(days=+20)
-    )
-
-    @factory.lazy_attribute
-    def conference_start(self):
-        return fake.date_time_this_decade(before_now=True, after_now=True).date()
-
-    # conference_start = factory.Faker('date_time_this_decade', before_now=True, after_now=True)
-    conference_end = factory.LazyAttribute(
-        lambda conf: (conf.conference_start + timedelta(days=+5))
-    )
-
-    voting_start = factory.LazyAttribute(
-        lambda conf: conf.cfp_end + timedelta(days=10)
-    )
-    voting_end = factory.LazyAttribute(
-        lambda conf: conf.voting_start + timedelta(days=5)
-    )
+    conference_start = factory.LazyAttribute(lambda obj: timezone.now() + timedelta(days=30))
+    conference_end = factory.LazyAttribute(lambda obj: obj.conference_start + timedelta(days=5))
+    cfp_start = factory.LazyAttribute(lambda obj: obj.conference_start - timedelta(days=33))
+    cfp_end = factory.LazyAttribute(lambda obj: obj.cfp_start + timedelta(days=6))
+    # During a real conference, voting would start after the cfp ends, not run concurrently.
+    # The opposite is the case here to make testing easier.
+    voting_start = factory.LazyAttribute(lambda obj: obj.cfp_start)
+    voting_end = factory.LazyAttribute(lambda obj: obj.cfp_end)
 
 
 class TicketFactory(factory.django.DjangoModelFactory):

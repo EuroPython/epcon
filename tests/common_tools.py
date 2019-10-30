@@ -1,20 +1,20 @@
 import http.client
-from datetime import date, timedelta
+from datetime import date
 from urllib.parse import urlparse
 
 from wsgiref.simple_server import make_server
 
 from django.conf import settings
 from django.core.cache import cache
-from django.utils import timezone
 
 from django_factory_boy import auth as auth_factories
 
 from assopy.models import Vat, VatFare
+from conference.accounts import get_or_create_attendee_profile_for_new_user
 from conference.models import AttendeeProfile, Conference, TALK_STATUS, Fare
 from conference.fares import pre_create_typical_fares_for_conference
 from tests.factories import (
-    AssopyUserFactory, OrderFactory, TalkFactory, SpeakerFactory, TalkSpeakerFactory,
+    AssopyUserFactory, OrderFactory, TalkFactory, SpeakerFactory, TalkSpeakerFactory, ConferenceFactory,
 )
 
 HTTP_OK = 200
@@ -190,28 +190,22 @@ def create_valid_ticket_for_user_and_fare(user, fare=None):
     return ticket
 
 
-def get_default_conference(end=None):
-    if not end:
-        end = timezone.now() + timedelta(days=35)
-
-    conference, _ = Conference.objects.get_or_create(
-        code=settings.CONFERENCE_CONFERENCE,
-        name="Europython 2020",
-        # For easier testing open CFP
-        cfp_start=timezone.now() - timedelta(days=3),
-        cfp_end=timezone.now() + timedelta(days=3),
-        conference_start=timezone.now() + timedelta(days=30),
-        conference_end=end,
-        # For easier testing also start with open voting
-        voting_start=timezone.now() - timedelta(days=3),
-        voting_end=timezone.now() + timedelta(days=3),
-    )
-
-    return conference
+def get_default_conference(**kwargs):
+    return ConferenceFactory(**kwargs)
 
 
-def create_talk_for_user(user):
-    talk = TalkFactory(status=TALK_STATUS.proposed, created_by=user)
+def create_talk_for_user(user, **kwargs):
+    if user is None:
+        user = create_user()
+
+    talk = TalkFactory(**{'status': TALK_STATUS.proposed, 'created_by': user, **kwargs})
     speaker = SpeakerFactory(user=user)
     TalkSpeakerFactory(talk=talk, speaker=speaker)
     return talk
+
+
+def create_user():
+    user = auth_factories.UserFactory(is_active=True)
+    AssopyUserFactory(user=user)
+    get_or_create_attendee_profile_for_new_user(user)
+    return user
