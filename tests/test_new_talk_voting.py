@@ -287,7 +287,7 @@ def test_vote_talks_with_speaker_details(db, user_client):
 
 
 @mock.patch('conference.talk_voting.is_user_allowed_to_vote', return_value=True)
-def test_dont_publish_talks_without_speaker_details(mock_allowed_to_vote, user_client):
+def test_view_talks_without_speaker_details_not_visible(mock_allowed_to_vote, user_client):
     get_default_conference()
     talk = TalkFactory(status=TALK_STATUS.proposed, title="DeadBeef")
     talk2 = TalkFactory(status=TALK_STATUS.proposed, title="TestProposalForTests")
@@ -302,7 +302,7 @@ def test_dont_publish_talks_without_speaker_details(mock_allowed_to_vote, user_c
     assert talk2.title in response.content.decode("utf8")
 
 
-def test_dont_publish_talks_without_speaker_details1(db, user_client):
+def test_helper_query_talks_without_speaker_details_not_visible(db, user_client):
     get_default_conference()
     talk = TalkFactory(status=TALK_STATUS.proposed, title="DeadBeef")
     talk2 = TalkFactory(status=TALK_STATUS.proposed, title="TestProposalForTests")
