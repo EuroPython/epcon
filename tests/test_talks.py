@@ -34,7 +34,7 @@ def test_talk_view_as_anonymous(client):
 
 def test_talk_view_as_owner(user_client):
     tomorrow = timezone.now().date() + timedelta(days=1)
-    get_default_conference(end=tomorrow)
+    get_default_conference(conference_end=tomorrow)
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
     url = reverse("talks:talk", args=[talk.slug])
 
@@ -91,7 +91,7 @@ def test_can_update_if_is_speaker_but_not_owner(user_client):
 
 def test_cannot_update_talk_if_conference_has_finished(user_client):
     yesterday = timezone.now().date() - timedelta(days=1)
-    get_default_conference(end=yesterday)
+    get_default_conference(conference_end=yesterday)
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
     url = reverse("talks:update_talk", args=[talk.slug])
 
@@ -102,7 +102,7 @@ def test_cannot_update_talk_if_conference_has_finished(user_client):
 
 def test_update_talk_get(user_client):
     tomorrow = timezone.now().date() + timedelta(days=1)
-    get_default_conference(end=tomorrow)
+    get_default_conference(conference_end=tomorrow)
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
     url = reverse("talks:update_talk", args=[talk.slug])
 
@@ -113,7 +113,7 @@ def test_update_talk_get(user_client):
 
 def test_update_talk_post(user_client):
     tomorrow = timezone.now().date() + timedelta(days=1)
-    get_default_conference(end=tomorrow)
+    get_default_conference(conference_end=tomorrow)
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
     url = reverse("talks:update_talk", args=[talk.slug])
 
