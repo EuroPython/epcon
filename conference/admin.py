@@ -14,6 +14,7 @@ from django.contrib.contenttypes.fields import (
 from django.core import urlresolvers
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
+from django.utils.safestring import mark_safe
 
 import common.decorators
 from common.jsonify import json_dumps
@@ -977,7 +978,17 @@ class TicketAdmin(admin.ModelAdmin):
     _name.admin_order_field = 'name'
 
     def _buyer(self, o):
-        return '%s %s' % (o.user.first_name, o.user.last_name)
+        """
+        Display clickable link to the buyer of the ticket (buyer can be
+        different than "assigned" person).
+        """
+        buyer_user = o.orderitem.order.user.user
+        if not (buyer_user.first_name or buyer_user.last_name):
+            buyer = buyer_user.email
+        else:
+            buyer = '%s %s' % (buyer_user.first_name, buyer_user.last_name)
+        url = urlresolvers.reverse('admin:auth_user_change', args=(buyer_user.id,))
+        return mark_safe('<a href="%s">%s</a>' % (url, buyer))
     _buyer.admin_order_field = 'user__first_name'
 
     def _conference(self, o):
