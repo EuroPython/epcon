@@ -47,22 +47,32 @@ class Command(BaseCommand):
 
         print("Creating an admin user")
         admin = AssopyUser.objects.create_superuser(
-            username="admin", email="admin@admin.com", password="europython"
+            username="admin",
+            email="admin@admin.com",
+            password="europython",
+            first_name="Joe",
+            last_name="Schmoe",
         )
 
         print("Creating regular users")
         alice = AssopyUser.objects.create_user(
+            first_name="Alice",
+            last_name="Doe",
             email="alice@europython.eu",
             password="europython",
             active=True,
         )
         bob = AssopyUser.objects.create_user(
+            first_name="Bob",
+            last_name="Doe",
             email="bob@europython.eu",
             password="europython",
             active=True,
         )
         cesar = AssopyUser.objects.create_user(
             email="cesar@europython.eu",
+            first_name="Cesar",
+            last_name="Bloggs",
             password="europython",
             active=True,
         )

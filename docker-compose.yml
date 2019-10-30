@@ -2,6 +2,8 @@ version: '3.7'
 
 services:
   epcon:
+    stdin_open: true
+    tty: true
     build:
       context: .
     environment:
