@@ -1,7 +1,6 @@
 """ Print a json file with the participants information for their badges."""
 
 import json
-import logging as log
 
 from django.core.management.base import BaseCommand, CommandError
 from conference import models
@@ -92,7 +91,7 @@ class Command(BaseCommand):
                 profile = p3_tkt.profile()
             except:
                 msg = 'Could not find a profile for ticket_id {}.'.format(ticket.id)
-                log.error(msg)
+                self.stdout.write(msg)
 
             title, company = get_profile_company(profile)
             subj['title'] = title
@@ -113,4 +112,4 @@ class Command(BaseCommand):
 
             profiles.append(subj)
 
-        print(json.dumps(profiles, indent=2, separators=(',', ': ')))
+        self.stdout.write(json.dumps(profiles, indent=2, separators=(',', ': ')))

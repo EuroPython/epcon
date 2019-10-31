@@ -11,7 +11,7 @@ from django_factory_boy import auth as auth_factories
 
 from assopy.models import Vat, VatFare
 from conference.accounts import get_or_create_attendee_profile_for_new_user
-from conference.models import AttendeeProfile, Conference, TALK_STATUS, Fare
+from conference.models import AttendeeProfile, TALK_STATUS, Fare
 from conference.fares import pre_create_typical_fares_for_conference
 from tests.factories import (
     AssopyUserFactory, OrderFactory, TalkFactory, SpeakerFactory, TalkSpeakerFactory, ConferenceFactory,
@@ -153,12 +153,7 @@ def is_using_jinja2_template(response):
 
 
 def setup_conference_with_typical_fares(start=date(2019, 7, 8), end=date(2019, 7, 14)):
-    Conference.objects.get_or_create(
-        code=settings.CONFERENCE_CONFERENCE,
-        name=settings.CONFERENCE_NAME,
-        # using 2019 dates
-        # those dates are required for Tickets to work.
-        # (for setting up/rendering attendance days)
+    get_default_conference(
         conference_start=start,
         conference_end=end,
     )
@@ -167,7 +162,6 @@ def setup_conference_with_typical_fares(start=date(2019, 7, 8), end=date(2019, 7
         settings.CONFERENCE_CONFERENCE,
         default_vat_rate
     )
-
 
 
 def create_valid_ticket_for_user_and_fare(user, fare=None):
