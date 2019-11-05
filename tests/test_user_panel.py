@@ -84,9 +84,9 @@ def test_privacy_settings_requires_login(client):
 def test_privacy_settings_updates_profile(user_client):
     url = reverse('user_panel:privacy_settings')
     profile = user_client.user.attendeeprofile.p3_profile
-    assert profile.spam_recruiting == False
-    assert profile.spam_sms == False
-    assert profile.spam_user_message == False
+    assert profile.spam_recruiting is False
+    assert profile.spam_sms is False
+    assert profile.spam_user_message is False
 
     response = user_client.post(url, data=dict(
         spam_recruiting=True,
@@ -96,9 +96,9 @@ def test_privacy_settings_updates_profile(user_client):
 
     assert response.status_code == 200
     profile.refresh_from_db()
-    assert profile.spam_recruiting == True
-    assert profile.spam_sms == True
-    assert profile.spam_user_message == True
+    assert profile.spam_recruiting is True
+    assert profile.spam_sms is True
+    assert profile.spam_user_message is True
 
 
 @responses.activate
@@ -432,7 +432,7 @@ def test_profile_settings_update_show_no_image(user_client):
     p3_profile.refresh_from_db()
     assert not attendee_profile.image
     assert p3_profile.image_url == ""
-    assert p3_profile.image_gravatar == False
+    assert p3_profile.image_gravatar is False
 
 
 def test_profile_settings_update_show_url_image(user_client):
@@ -458,7 +458,7 @@ def test_profile_settings_update_show_url_image(user_client):
     p3_profile.refresh_from_db()
     assert not attendee_profile.image
     assert p3_profile.image_url != ""
-    assert p3_profile.image_gravatar == False
+    assert p3_profile.image_gravatar is False
 
 
 def test_profile_settings_update_use_gravatar(user_client):
@@ -483,7 +483,7 @@ def test_profile_settings_update_use_gravatar(user_client):
     p3_profile.refresh_from_db()
     assert not attendee_profile.image
     assert p3_profile.image_url == ""
-    assert p3_profile.image_gravatar == True
+    assert p3_profile.image_gravatar is True
 
 
 def test_profile_settings_update_use_uploaded_image(user_client):
@@ -509,4 +509,4 @@ def test_profile_settings_update_use_uploaded_image(user_client):
     p3_profile.refresh_from_db()
     assert attendee_profile.image
     assert p3_profile.image_url == ""
-    assert p3_profile.image_gravatar == False
+    assert p3_profile.image_gravatar is False
