@@ -73,10 +73,10 @@ class Command(BaseCommand):
 
                 schedule = talk_schedule(talk)
                 if not schedule and verbose:
-                    self.stdout.write('ERROR: Talk {} is not scheduled.'.format(talk))
+                    self.stderr.write('ERROR: Talk {} is not scheduled.'.format(talk))
 
                 if len(schedule) > 1 and verbose:
-                    self.stdout.write('ERROR: Talk {} is scheduled more than once: {}'.format(talk, schedule))
+                    self.stderr.write('ERROR: Talk {} is scheduled more than once: {}'.format(talk, schedule))
 
                 sessions[type_name][talk.id] = {
                 'id':             talk.id,

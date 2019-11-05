@@ -91,7 +91,7 @@ class Command(BaseCommand):
                 profile = p3_tkt.profile()
             except:
                 msg = 'Could not find a profile for ticket_id {}.'.format(ticket.id)
-                self.stdout.write(msg)
+                self.stderr.write(msg)
 
             title, company = get_profile_company(profile)
             subj['title'] = title
