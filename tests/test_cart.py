@@ -9,10 +9,10 @@ from django.contrib.messages import constants as messages_constants
 from django.utils import timezone
 
 from assopy.models import Order
-from tests.factories import CouponFactory, OrderFactory, VatFactory, VatFareFactory
+from tests.factories import CouponFactory, OrderFactory, VatFactory
 from conference.cart import CartActions
 from conference.models import Ticket, Fare
-from conference.fares import set_early_bird_fare_dates, set_regular_fare_dates
+from conference.fares import set_early_bird_fare_dates, set_regular_fare_dates, ALL_POSSIBLE_FARE_CODES
 from p3.models import TicketConference
 from tests.common_tools import (
     redirects_to,
@@ -344,9 +344,10 @@ def test_order_aggregate_vat_rounding_with_discount(db):
     get_default_conference()
     vat = VatFactory(value=20)
 
-    fare_one = FareFactory(price=25, vat_set=[vat])
-    fare_two = FareFactory(price=13, vat_set=[vat])
-    fare_three = FareFactory(price=-38, vat_set=[vat])
+    valid_fare_codes = list(ALL_POSSIBLE_FARE_CODES.keys())
+    fare_one = FareFactory(price=25, vat_set=[vat], code=valid_fare_codes[0])
+    fare_two = FareFactory(price=13, vat_set=[vat], code=valid_fare_codes[1])
+    fare_three = FareFactory(price=-38, vat_set=[vat], code=valid_fare_codes[2])
 
     order = OrderFactory(
         items=[(fare_one, {"qty": 1}), (fare_two, {"qty": 1}), (fare_three, {"qty": 1})]
