@@ -87,21 +87,21 @@ class Command(BaseCommand):
         speaker_list.sort(key=speaker_list_key)
 
         # Print list of speakers
-        print ('<h2>Speakers</h2>')
+        self.stdout.write('<h2>Speakers</h2>')
         group = ''
         for entry in speaker_list:
             name, speaker = entry
             sort_name = speaker_list_key(entry)
             if not group:
                 group = sort_name[0]
-                print('<h3>%s ...</h3>' % group)
-                print ('<ul>')
+                self.stdout.write('<h3>%s ...</h3>' % group)
+                self.stdout.write('<ul>')
             elif group != sort_name[0]:
-                print ('</ul>')
+                self.stdout.write('</ul>')
                 group = sort_name[0]
-                print('<h3>%s ...</h3>' % group)
-                print ('<ul>')
-            print('<li><a href="%s">%s</a></li>' % 
+                self.stdout.write('<h3>%s ...</h3>' % group)
+                self.stdout.write('<ul>')
+            self.stdout.write('<li><a href="%s">%s</a></li>' %
                   (profile_url(speaker.user), name))
-        print ('</ul>')
-        print('<p>%i speakers in total.</p>' % len(speaker_list))
+        self.stdout.write('</ul>')
+        self.stdout.write('<p>%i speakers in total.</p>' % len(speaker_list))

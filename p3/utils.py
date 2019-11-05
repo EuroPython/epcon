@@ -350,7 +350,6 @@ def get_all_order_tickets(conference=settings.CONFERENCE_CONFERENCE):
         return conference[-2:]
 
     year = conference_year(conference)
-
     orders = assopy_models.Order.objects.filter(_complete=True)
     conf_orders = (order for order in orders if order.code.startswith('O/{}.'.format(year)))
     tickets = (
