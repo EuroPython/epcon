@@ -86,6 +86,24 @@ def test_talk_voting_lists_proposed_talks(mock_allowed_to_vote, user_client):
 
 
 @mock.patch('conference.talk_voting.is_user_allowed_to_vote', return_value=True)
+def test_if_talk_voting_doesnt_contain_duplicates_if_there_are_more_speakers(
+    mock_allowed_to_vote, user_client,
+):
+    get_default_conference()
+    url = reverse("talk_voting:talks")
+    talk = create_talk_for_user(user=None)
+    SpeakerFactory(user=user_client.user)
+    TalkSpeakerFactory(talk=talk, speaker=user_client.user.speaker)
+
+    response = user_client.get(url)
+
+    assert response.status_code == 200
+    assert template_used(response, "ep19/bs/talk_voting/voting.html")
+    assert talk.speakers.count() == 2
+    assert response.content.decode().count(talk.title) == 1
+
+
+@mock.patch('conference.talk_voting.is_user_allowed_to_vote', return_value=True)
 def test_talk_voting_vote_filters(mock_allowed_to_vote, user_client):
     get_default_conference()
     url = reverse("talk_voting:talks")

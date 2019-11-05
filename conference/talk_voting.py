@@ -107,7 +107,7 @@ def find_talks(user, conference, extra_filters):
         .annotate(
             can_vote=Case(
                 When(created_by=user, then=Value(False)),
-                When(speakers__user__in=[user], then=Value(False)),
+                When(speakers__user__username__exact=[user.username], then=Value(False)),
                 default=Value(True),
                 output_field=BooleanField(),
             )
