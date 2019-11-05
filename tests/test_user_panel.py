@@ -84,9 +84,9 @@ def test_privacy_settings_requires_login(client):
 def test_privacy_settings_updates_profile(user_client):
     url = reverse('user_panel:privacy_settings')
     profile = user_client.user.attendeeprofile.p3_profile
-    assert not profile.spam_recruiting
-    assert not profile.spam_sms
-    assert not profile.spam_user_message
+    assert profile.spam_recruiting == False
+    assert profile.spam_sms == False
+    assert profile.spam_user_message == False
 
     response = user_client.post(url, data=dict(
         spam_recruiting=True,
@@ -96,9 +96,9 @@ def test_privacy_settings_updates_profile(user_client):
 
     assert response.status_code == 200
     profile.refresh_from_db()
-    assert profile.spam_recruiting
-    assert profile.spam_sms
-    assert profile.spam_user_message
+    assert profile.spam_recruiting == True
+    assert profile.spam_sms == True
+    assert profile.spam_user_message == True
 
 
 @responses.activate
@@ -410,7 +410,7 @@ def test_profile_settings_forbids_using_registered_email(user_client):
     assert user.email == original_email
 
 
-def test_profile_settings_updates_image_settings(user_client):
+def test_profile_settings_update_show_no_image(user_client):
     """
     4 scenarios to test - show no image, show gravatar, show url, show image.
     """
@@ -434,6 +434,18 @@ def test_profile_settings_updates_image_settings(user_client):
     assert p3_profile.image_url == ""
     assert p3_profile.image_gravatar == False
 
+
+def test_profile_settings_update_show_url_image(user_client):
+    url = reverse('user_panel:profile_settings')
+    user = user_client.user
+    attendee_profile = user.attendeeprofile
+    p3_profile = attendee_profile.p3_profile
+    required_fields = {
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "email": user.email,
+    }
+
     # Provide image url
     response = user_client.post(url, data={
         **required_fields,
@@ -448,6 +460,18 @@ def test_profile_settings_updates_image_settings(user_client):
     assert p3_profile.image_url != ""
     assert p3_profile.image_gravatar == False
 
+
+def test_profile_settings_update_use_gravatar(user_client):
+    url = reverse('user_panel:profile_settings')
+    user = user_client.user
+    attendee_profile = user.attendeeprofile
+    p3_profile = attendee_profile.p3_profile
+    required_fields = {
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "email": user.email,
+    }
+
     # Use gravatar
     response = user_client.post(url, data={
         **required_fields,
@@ -461,11 +485,23 @@ def test_profile_settings_updates_image_settings(user_client):
     assert p3_profile.image_url == ""
     assert p3_profile.image_gravatar == True
 
+
+def test_profile_settings_update_use_uploaded_image(user_client):
+    url = reverse('user_panel:profile_settings')
+    user = user_client.user
+    attendee_profile = user.attendeeprofile
+    p3_profile = attendee_profile.p3_profile
+    required_fields = {
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "email": user.email,
+    }
+
     # Upload an image
     response = user_client.post(url, data={
         **required_fields,
         "picture_options": PICTURE_CHOICES.file,
-        "image":SimpleUploadedFile('image.jpg', 'here be images'.encode())
+        "image": SimpleUploadedFile('image.jpg', 'here be images'.encode()),
     })
 
     assert response.status_code == 200
