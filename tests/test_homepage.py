@@ -71,9 +71,19 @@ def test_homepage_doesnt_display_news_from_non_current_conference(db, client):
     assert old_news.title not in response.content.decode()
 
 
-@pytest.mark.xfail
 def test_homepage_news_supports_html_tags(db, client):
-    assert False
+    current_conf = get_default_conference()
+
+    current_news = NewsFactory(
+        conference=current_conf,
+        content='<b>This is a test news item</b>'
+    )
+
+    url = "/"
+    response = client.get(url)
+
+    assert current_news.content in response.content.decode()
+    assert '&lt;b&gt;' not in response.content.decode()
 
 
 def test_homepage_doesnt_contain_sponsor_if_no_income(db, client):
