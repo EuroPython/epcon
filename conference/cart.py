@@ -101,7 +101,7 @@ def cart_step2_pick_tickets(request, type_of_tickets):
                     request, "The discount code provided expired or is invalid"
                 )
 
-        if CartActions.buy_tickets in request.POST:
+        elif CartActions.buy_tickets in request.POST:
             order = create_order(
                 for_user=request.user,
                 for_date=timezone.now().date(),
@@ -121,7 +121,6 @@ def cart_step2_pick_tickets(request, type_of_tickets):
 
 @login_required
 def cart_step3_add_billing_info(request, order_uuid):
-
     order = get_object_or_404(Order, uuid=order_uuid)
 
     if is_business_order(order) or is_non_conference_ticket_order(order):
