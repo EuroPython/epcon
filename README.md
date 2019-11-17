@@ -1,3 +1,4 @@
+[![Travis-CI Status](https://travis-ci.org/EuroPython/epcon.svg?branch=default)](https://travis-ci.org/EuroPython/epcon)
 [![Documentation Status](https://readthedocs.org/projects/epcon/badge/?version=latest)](https://readthedocs.org/projects/epcon/?badge=latest)
 
 # README
