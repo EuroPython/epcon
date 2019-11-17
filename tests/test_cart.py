@@ -7,6 +7,7 @@ from pytest import mark, raises, approx
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib.messages import constants as messages_constants
+from django.test import override_settings
 from django.utils import timezone
 
 from assopy.models import Order, ORDER_TYPE
@@ -622,6 +623,7 @@ def test_cart_fourth_step_requires_auth(db, client):
     assert redirects_to(response, reverse('accounts:login'))
 
 
+@override_settings(STRIPE_PUBLISHABLE_KEY='pk_fake')
 def test_cart_fourth_step_renders_correctly(db, user_client):
     _, fares = setup_conference_with_typical_fares()
     order = OrderFactory(items=[(fares[0], {"qty": 1})])

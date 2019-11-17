@@ -78,6 +78,7 @@ class VatFactory(factory.django.DjangoModelFactory):
 class FareFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "conference.Fare"
+        django_get_or_create = ('conference', 'code')
 
     price = 10
 
