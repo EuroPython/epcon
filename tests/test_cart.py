@@ -9,7 +9,7 @@ from django.contrib.messages import constants as messages_constants
 from django.utils import timezone
 
 from assopy.models import Order, ORDER_TYPE
-from conference.cart import CartActions
+from conference.cart import CartActions, ORDER_CONFIRMATION_EMAIL_SUBJECT
 from conference.models import Ticket, Fare, FARE_TICKET_TYPES
 from conference.fares import (
     set_early_bird_fare_dates,
@@ -26,6 +26,7 @@ from tests.common_tools import (
     get_default_conference,
     setup_conference_with_typical_fares,
     contains_message,
+    email_sent_with_subject,
 )
 from tests.factories import CouponFactory, CountryFactory, OrderFactory, VatFactory, FareFactory
 
@@ -123,10 +124,41 @@ def test_cant_buy_any_tickets_if_fares_are_not_available(db, user_client):
     assert Order.objects.all().count() == 0
 
 
-@mark.xfail
-def test_cart_only_shows_correct_ticket_types(db):
-    # Parametrise with ticket type
-    assert False
+@mark.parametrize(
+    "ticket_category, expected_ticket_types",
+    [
+        ('personal', ['TRSP', 'TRLP', 'TRTP', 'TRCP', 'TRDP']),
+        ('company', ['TRSC', 'TRLC', 'TRTC', 'TRCC', 'TRDC']),
+        ('student', ['TRSS', 'TRLS', 'TRTS', 'TRCS', 'TRDS']),
+        ('other', ['SIM1', 'VOUPE03']),
+    ],
+)
+def test_cart_only_shows_correct_ticket_types(db, user_client, ticket_category, expected_ticket_types):
+    setup_conference_with_typical_fares()
+    set_regular_fare_dates(
+        settings.CONFERENCE_CONFERENCE,
+        timezone.now().date(),
+        timezone.now().date() + timedelta(days=1),
+    )
+    set_other_fares_dates(
+        settings.CONFERENCE_CONFERENCE,
+        timezone.now().date(),
+        timezone.now().date() + timedelta(days=1),
+    )
+
+    second_step_url = reverse("cart:step2_pick_tickets", args=[ticket_category])
+    response = user_client.get(second_step_url)
+
+    expected_tickets = Fare.objects.filter(code__in=expected_ticket_types).values('name')
+    expected_names = [ticket['name'] for ticket in expected_tickets]
+    for name in expected_names:
+        assert name in response.content.decode()
+
+
+    unexpected_tickets = Fare.objects.exclude(code__in=expected_ticket_types).values('name')
+    unexpected_names = [ticket['name'] for ticket in unexpected_tickets]
+    for name in unexpected_names :
+        assert name not in response.content.decode()
 
 
 def test_can_buy_tickets_if_fare_is_available(db, user_client):
@@ -281,7 +313,6 @@ def test_step2_invalid_fare_code_for_fares_outside_of_validity_window(db, user_c
     assert contains_message(response, 'A selected fare is not available')
 
 
-@mark.xfail
 def test_step2_apply_discount_with_invalid_coupon(db, user_client):
     setup_conference_with_typical_fares()
     set_regular_fare_dates(
@@ -292,7 +323,12 @@ def test_step2_apply_discount_with_invalid_coupon(db, user_client):
     second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
 
     response = user_client.post(
-        second_step_company, {"TRCC": 1, CartActions.apply_discount_code: True}, follow=True,
+        second_step_company, data=
+        {
+            "TRCC": 1,
+            CartActions.apply_discount_code: True,
+            'discount_code': 'fake code',
+        }, follow=True,
     )
 
     assert response.status_code == 200
@@ -302,9 +338,41 @@ def test_step2_apply_discount_with_invalid_coupon(db, user_client):
     assert contains_message(response, 'The discount code provided expired or is invalid')
 
 
-@mark.xfail
-def test_cart_computes_discounts_correctly(db):
-    assert False
+def test_cart_computes_discounts_correctly(db, user_client):
+    setup_conference_with_typical_fares()
+    set_early_bird_fare_dates(
+        settings.CONFERENCE_CONFERENCE,
+        timezone.now().date(),
+        timezone.now().date() + timedelta(days=1),
+    )
+    second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
+    percent_discount = 25
+    coupon = CouponFactory(user=user_client.user.assopy_user, value=f'{percent_discount}%')
+    coupon_fare = coupon.fares.first()
+    order_ticket_count = 3
+
+    response = user_client.post(
+        second_step_company,
+        {
+            coupon_fare.code: order_ticket_count,
+            CartActions.apply_discount_code: True,
+            'discount_code': coupon.code,
+        }
+    )
+
+    assert response.status_code == 200
+    assert template_used(response, "ep19/bs/cart/step_2_pick_tickets.html")
+
+    # No order or tickets should be created
+    assert not Order.objects.all().exists()
+    assert not Ticket.objects.all().exists()
+    # The calculated discount should exist in the context
+    calculation = response.context['calculation']
+    assert calculation.full_price == order_ticket_count * coupon_fare.price
+    assert (calculation.total_discount
+            == (order_ticket_count * coupon_fare.price) * Decimal(percent_discount/100))
+    assert (calculation.final_price
+            == (order_ticket_count * coupon_fare.price) * Decimal((100 - percent_discount)/100))
 
 
 @mark.xfail
@@ -547,29 +615,58 @@ def test_cart_fourth_step_requires_auth(db, client):
     _, fares = setup_conference_with_typical_fares()
     order = OrderFactory(items=[(fares[0], {"qty": 1})])
 
-    billing_step_url = reverse("cart:step4_payment", args=[order.uuid])
-    response = client.get(billing_step_url)
+    payment_step_url = reverse("cart:step4_payment", args=[order.uuid])
+    response = client.get(payment_step_url)
 
-    assert response.status_code == 302
     assert redirects_to(response, reverse('accounts:login'))
 
 
-@mark.xfail
-def test_cart_payment_with_zero_total(db):
-    assert False
+def test_cart_fourth_step_renders_correctly(db, user_client):
+    _, fares = setup_conference_with_typical_fares()
+    order = OrderFactory(items=[(fares[0], {"qty": 1})])
+
+    payment_step_url = reverse("cart:step4_payment", args=[order.uuid])
+    response = user_client.get(payment_step_url)
+
+    assert response.status_code == 200
+    assert template_used(response, "ep19/bs/cart/step_4_payment.html")
+
+
+def test_cart_payment_with_zero_total(db, user_client):
+    _, fares = setup_conference_with_typical_fares()
+    order = OrderFactory(items=[(fares[0], {"qty": 1})])
+    order.total = 0
+    order.save()
+
+    payment_step_url = reverse("cart:step4_payment", args=[order.uuid])
+    response = user_client.post(payment_step_url)
+
+    order_complete_url = reverse("cart:step5_congrats_order_complete", args=[order.uuid])
+    assert redirects_to(response, order_complete_url)
+
+    order.refresh_from_db()
+    assert order.payment_date == timezone.now().today()
+    assert order.invoice_set.count() == 1
+    assert email_sent_with_subject(ORDER_CONFIRMATION_EMAIL_SUBJECT)
 
 
 @mark.xfail
-def test_cart_payment_with_non_zero_total(db):
-    assert False
+def test_cart_payment_with_non_zero_total(db, user_client):
+    _, fares = setup_conference_with_typical_fares()
+    order = OrderFactory(items=[(fares[0], {"qty": 1})])
+    order.total = 0
+    order.save()
+
+    order_complete_url = reverse("cart:step5_congrats_order_complete", args=[order.uuid])
+    response = user_client.get(order_complete_url)
 
 
 def test_cart_fifth_step_requires_auth(db, client):
     _, fares = setup_conference_with_typical_fares()
     order = OrderFactory(items=[(fares[0], {"qty": 1})])
 
-    billing_step_url = reverse("cart:step5_congrats_order_complete", args=[order.uuid])
-    response = client.get(billing_step_url)
+    order_complete_url = reverse("cart:step5_congrats_order_complete", args=[order.uuid])
+    response = client.get(order_complete_url)
 
     assert response.status_code == 302
     assert redirects_to(response, reverse('accounts:login'))
@@ -579,8 +676,8 @@ def test_cart_fifth_step_renders_correctly(db, user_client):
     _, fares = setup_conference_with_typical_fares()
     order = OrderFactory(items=[(fares[0], {"qty": 1})])
 
-    billing_step_url = reverse("cart:step5_congrats_order_complete", args=[order.uuid])
-    response = user_client.get(billing_step_url)
+    order_complete_url = reverse("cart:step5_congrats_order_complete", args=[order.uuid])
+    response = user_client.get(order_complete_url)
 
     assert response.status_code == 200
     assert template_used(

@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 from wsgiref.simple_server import make_server
 
 from django.conf import settings
+from django.core import mail
 from django.core.cache import cache
 
 from django_factory_boy import auth as auth_factories
@@ -146,6 +147,16 @@ def contains_message(response, message):
     return message in full_message
 
 
+def email_sent_with_subject(subject):
+    """
+    Verify an email was sent with the provided subject.
+    """
+    if len(mail.outbox) != 1:
+        return False
+
+    return mail.outbox[0].subject == subject
+
+
 def make_user(email='joedoe@example.com', **kwargs):
     user = auth_factories.UserFactory(
         email=email, is_active=True,
@@ -192,7 +203,7 @@ def create_valid_ticket_for_user_and_fare(user, fare=None):
         user=user.assopy_user,
         items=[(fare, {"qty": 1}),],
     )
-    order._complete=True
+    order._complete = True
     order.save()
 
     ticket = order.orderitem_set.first().ticket

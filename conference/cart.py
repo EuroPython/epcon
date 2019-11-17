@@ -38,7 +38,7 @@ from .payments import PaymentError, charge_for_payment
 
 
 GLOBAL_MAX_PER_FARE_TYPE = 6
-ORDER_CONFIRMATION_EMAIL_SUBJECT = "EuroPython2019: Order confirmation"
+ORDER_CONFIRMATION_EMAIL_SUBJECT = "EuroPython2020: Order confirmation"
 
 
 def cart_step1_choose_type_of_order(request):
@@ -154,7 +154,7 @@ def cart_step4_payment(request, order_uuid):
 
         if total_for_stripe == 0:
             # For 100% discounted orders/coupons
-            order.payment_date = date.today()
+            order.payment_date = timezone.now().date()
             order.save()
 
             with transaction.atomic():
