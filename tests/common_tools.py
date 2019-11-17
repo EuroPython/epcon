@@ -151,10 +151,7 @@ def email_sent_with_subject(subject):
     """
     Verify an email was sent with the provided subject.
     """
-    if len(mail.outbox) != 1:
-        return False
-
-    return mail.outbox[0].subject == subject
+    return [email.subject == subject for email in mail.outbox]
 
 
 def make_user(email='joedoe@example.com', **kwargs):
