@@ -243,7 +243,6 @@ INSTALLED_APPS = (
     'filebrowser',
 
     'djangocms_admin_style',
-    'django_comments',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -257,7 +256,6 @@ INSTALLED_APPS = (
     'assopy',
     'assopy.stripe',
     'conference',
-    'hcomments',
 
     'djangocms_text_ckeditor',
     'cmsplugin_filer_file',
@@ -783,8 +781,6 @@ ASSOPY_REFUND_EMAIL_ADDRESS = {
 #
 DEFAULT_URL_PREFIX = 'https://ep2020.europython.eu'
 LOGIN_REDIRECT_URL = reverse_lazy("user_panel:dashboard")
-
-COMMENTS_APP = 'hcomments'
 
 # Disabled until we find out how to use europython-announce for this:
 # P3_NEWSLETTER_SUBSCRIBE_URL = "https://mail.python.org/mailman/subscribe/europython-announce"

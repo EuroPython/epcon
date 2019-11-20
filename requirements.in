@@ -7,7 +7,6 @@ shortuuid
 
 django-classy-tags
 django-authority
-django-contrib-comments
 django_extensions
 django-model-utils==3.1.1
 django-crispy-forms

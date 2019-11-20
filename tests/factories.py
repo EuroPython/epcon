@@ -357,15 +357,6 @@ class TalkSpeakerFactory(factory.django.DjangoModelFactory):
     speaker = factory.SubFactory(SpeakerFactory)
 
 
-class CommentFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = "django_comments.Comment"
-
-    comment = factory.Faker("sentence", nb_words=12, variable_nb_words=True)
-    site_id = settings.SITE_ID
-    content_object = factory.SubFactory(TalkFactory)
-
-
 class MessageFactory(object):
     subject = factory.Faker(
         "sentence", nb_words=6, variable_nb_words=True, ext_word_list=None

@@ -8,8 +8,6 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count
 
-import django_comments as comments
-
 from conference import cachef
 from conference import models
 
@@ -205,20 +203,13 @@ def talk_data(tid, preload=None):
     except KeyError:
         event = list(talk.event_set.all().values_list('id', flat=True))
 
-    try:
-        comment_list = preload['comments']
-    except KeyError:
-        comment_list = list(comments.get_model().objects\
-            .filter(content_type__app_label='conference', content_type__model='talk')\
-            .filter(object_pk=tid, is_public=True))
-
     output = _dump_fields(talk)
     output.update({
         'abstract': getattr(abstract, 'body', ''),
         'speakers': speakers,
         'tags': tags,
         'events_id': event,
-        'comments': comment_list,
+        'comments': [],
     })
     return output
 
@@ -227,19 +218,13 @@ def _i_talk_data(sender, **kw):
         tids = [ kw['instance'].id ]
     elif sender is models.Speaker:
         tids = kw['instance'].talks().values('id')
-    elif sender is comments.get_model():
-        o = kw['instance']
-        if o.content_type.app_label == 'conference' and o.content_type.model == 'talk':
-            tids = [ o.object_pk ]
-        else:
-            tids = []
     else:
         tids = [ kw['instance'].talk_id ]
 
     return [ 'talk_data:%s' % x for x in tids ]
 
 talk_data = cache_me(
-    models=(models.Talk, models.Speaker, models.TalkSpeaker, comments.get_model()),
+    models=(models.Talk, models.Speaker, models.TalkSpeaker),
     key='talk_data:%(tid)s')(talk_data, _i_talk_data)
 
 def talks_data(tids):
@@ -263,9 +248,7 @@ def talks_data(tids):
             content_type=ContentType.objects.get_for_model(models.Talk),
             object_id__in=talks.values('id')
         )
-    comment_list = comments.get_model().objects\
-        .filter(content_type__app_label='conference', content_type__model='talk')\
-        .filter(object_pk__in=talks.values('id'), is_public=True)
+    comment_list = []
     events = models.Event.objects\
         .filter(talk__in=missing)\
         .values('talk', 'id')
