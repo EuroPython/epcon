@@ -236,11 +236,3 @@ class TestView(TestCase):
         url = reverse('conference-profile-link-message')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-
-    @unittest.skip('todo')
-    def test_conference_voting(self):
-        # conference-voting -> conference.views.voting
-        url = reverse('conference-voting')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
