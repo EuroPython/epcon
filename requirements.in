@@ -29,7 +29,8 @@ django-cms>=3.6,<3.7
 djangocms-admin-style
 djangocms-text-ckeditor
 djangocms-grid
-django-filer
+# Upgrading to a newer version breaks cmsplugin-filer (that's deprecated)
+django-filer<=1.5
 cmsplugin-filer
 django-filebrowser-no-grappelli~=3.6
 
