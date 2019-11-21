@@ -51,7 +51,6 @@ urlpatterns = [
     url(r'^admin/filebrowser/', include(fsite.urls)),
     url(r'^admin/rosetta/', include('rosetta.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^comments/', include('django_comments.urls')),
     url(r'^cart/', include(cart19_urls, namespace="cart")),
     url(r'^p3/', include('p3.urls')),
     url(r'^conference/', include('conference.urls')),
@@ -61,7 +60,6 @@ urlpatterns = [
     url(r'^conference/speakers/(?P<slug>[\w-]+)', conference_views.speaker,
         {'speaker_form': pforms.P3SpeakerForm},
         name='conference-speaker'),
-    url(r'^hcomments/', include('hcomments.urls')),
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^markitup/', include('markitup.urls')),
 
