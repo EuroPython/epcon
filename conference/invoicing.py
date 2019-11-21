@@ -58,11 +58,19 @@ https://www.europython-society.org
 
 EPS_19 = EPS_18
 
+EPS_20 = """
+Europython Society
+Ramnebacken 45
+424 38 Agnesberg
+Sweden
+""".strip()
+
 ISSUER_BY_YEAR = {
     2016: ACPYSS_16,
     2017: PYTHON_ITALIA_17,
     2018: EPS_18,
     2019: EPS_19,
+    2020: EPS_20,
 }
 
 LOCAL_CURRENCY_BY_YEAR = {
@@ -87,6 +95,7 @@ ADDITIONAL_TEXT_FOR_YEAR = {
     2017: "",
     2018: "assopy/invoices/_additional_text_for_2018.html",
     2019: "assopy/invoices/_additional_text_for_2019.html",
+    2020: "assopy/invoices/_additional_text_for_2020.html",
 }
 
 REAL_INVOICE_PREFIX = "I/"
