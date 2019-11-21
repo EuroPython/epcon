@@ -378,18 +378,6 @@ def schedule_to_be_splitted(s):
     return len(tracks) != len(s)
 
 @register.filter
-def tickets_url(user):
-    """
-    ritorna la url più diretta per mandare l'utente sulla sua pagina ticket
-    """
-    if user.assopy_user.token:
-        u = reverse('p3-user', kwargs={'token': user.assopy_user.token})
-    else:
-        u = reverse('p3-tickets')
-
-    return settings.DEFAULT_URL_PREFIX + u
-
-@register.filter
 def ticket_user(ticket):
     try:
         p3c = ticket.p3_conference

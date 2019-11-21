@@ -10,36 +10,6 @@ from django_factory_boy import auth as auth_factories
 from tests.factories import (AttendeeProfileFactory, ConferenceFactory, ScheduleFactory)
 
 
-class TestWhosComing(TestCase):
-    def setUp(self):
-        self.user = auth_factories.UserFactory(password='password1234', is_superuser=True)
-        is_logged = self.client.login(username=self.user.username,
-                                      password='password1234')
-        AttendeeProfileFactory(user=self.user)
-        self.assertTrue(is_logged)
-
-    @override_settings(CONFERENCE_CONFERENCE='epbeta', DEBUG=False)
-    def test_p3_whos_coming_no_conference(self):
-        url = reverse('p3-whos-coming')
-        conference = ConferenceFactory(code='epbeta')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('p3-whos-coming-conference', kwargs={
-            'conference': conference.pk,
-        }))
-
-    def test_p3_whos_coming_with_conference(self):
-        # p3-whos-coming-conference -> p3.views.whos_coming
-        # FIXME: The conference parameter has a default value to None, but the url does not accept a empty value
-        conference = ConferenceFactory(code='epbeta')
-        url = reverse('p3-whos-coming-conference', kwargs={
-            'conference': conference.pk
-        })
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        # FIXME: Test the query string speaker, tags, country
-
-
 class TestView(TestCase):
     def setUp(self):
         self.user = auth_factories.UserFactory(password='password1234', is_superuser=True)
@@ -47,31 +17,6 @@ class TestView(TestCase):
                                       password='password1234')
         AttendeeProfileFactory(user=self.user)
         self.assertTrue(is_logged)
-
-    @pytest.mark.skip('superseded by new cart')
-    def test_p3_billing_with_no_user_cart(self):
-        # p3-billing -> p3.views.cart.billing
-        url = reverse('p3-billing')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('p3-cart'), fetch_redirect_response=False)
-
-    @pytest.mark.skip('superseded by new cart')
-    def test_p3_billing_no_ticket(self):
-        # p3-billing -> p3.views.cart.billing
-        url = reverse('p3-billing')
-        response = self.client.get(url)
-        self.assertRedirects(response, reverse('p3-cart'), fetch_redirect_response=False)
-
-    @pytest.mark.skip('superseded by new cart')
-    @override_settings(DEBUG=False)
-    def test_p3_calculator_get_default_values(self):
-        # p3-calculator -> p3.views.cart.calculator
-        url = reverse('p3-calculator')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get('content-type'), 'application/json')
-        self.assertJSONEqual(response.content, {'tickets': [], 'coupon': 0, 'total': 0})
 
     # TODO umgelurgel: these views do not exist for ep2019 - we should either
     #   remove these tests or add back the views
@@ -145,26 +90,6 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
     
-    @unittest.skip("FIXME")
-    def test_p3_tickets(self):
-        # p3-tickets -> p3.views.tickets
-        url = reverse('p3-tickets')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_ticket(self):
-        # p3-ticket -> p3.views.ticket
-        url = reverse('p3-ticket')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip("FIXME")
-    def test_p3_user(self):
-        # p3-user -> p3.views.user
-        url = reverse('p3-user')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
 
     # TODO umgelurgel: these views do not exist for ep2019 - we should either
     #   remove these tests or add back the views

@@ -109,7 +109,7 @@ def _assign_ticket(ticket, email):
             'name': name,
             'just_created': just_created,
             'ticket': ticket,
-            'link': settings.DEFAULT_URL_PREFIX + reverse('p3-user', kwargs={'token': recipient.assopy_user.token}),
+            'link': '',
         },
         to=[email]
     ).send()
@@ -256,106 +256,5 @@ def ticket(request, tid):
     return http.HttpResponse(tpl.render(RequestContext(request, {'t': t})))
 
 
-def user(request, token):
-    """
-    view che logga automaticamente un utente (se il token è valido) e lo
-    ridirige alla pagine dei tickets
-    """
-    u = get_object_or_404(amodels.AssopyUser, token=token)
-    log.info('autologin (via token url) for "%s"', u.user)
-    if not u.user.is_active:
-        u.user.is_active = True
-        u.user.save()
-        log.info('"%s" activated', u.user)
-    user = auth.authenticate(uid=u.user.id)
-    auth.login(request, user)
-    return HttpResponseRedirectSeeOther(reverse('p3-tickets'))
-
-
-def whos_coming(request, conference=None):
-    if conference is None:
-        return redirect('p3-whos-coming-conference', conference=settings.CONFERENCE_CONFERENCE)
-    # profiles can be public or only visible for participants, in the second
-    # case only who has a ticket can see them
-    access = ('p',)
-    if request.user.is_authenticated:
-        t = dataaccess.all_user_tickets(request.user.id, conference)
-        if any(tid for tid, _, _, complete in t if complete):
-            access = ('m', 'p')
-
-    countries = [('', 'All')] + list(amodels.Country.objects\
-        .filter(iso__in=models.P3Profile.objects\
-            .filter(profile__visibility__in=access)\
-            .exclude(country='')\
-            .values('country')
-        )\
-        .values_list('iso', 'name')\
-        .distinct()
-    )
-
-    class FormWhosFilter(forms.Form):
-        country = forms.ChoiceField(choices=countries, required=False)
-        speaker = forms.BooleanField(label="Only speakers", required=False)
-        tags = cforms.TagField(
-            required=False,
-            widget=cforms.ReadonlyTagWidget(),
-        )
-
-    qs = cmodels.AttendeeProfile.objects\
-        .filter(visibility__in=('m', 'p'))\
-        .filter(user__in=dataaccess.conference_users(conference))\
-        .values('visibility')\
-        .annotate(total=Count('visibility'))
-    profiles = {
-        'all': sum([ row['total'] for row in qs ]),
-        'visible': 0,
-    }
-    for row in qs:
-        if row['visibility'] in access:
-            profiles['visible'] += row['total']
-
-    people = cmodels.AttendeeProfile.objects\
-        .filter(visibility__in=access)\
-        .filter(user__in=dataaccess.conference_users(conference))\
-        .values_list('user', flat=True)\
-        .order_by('user__first_name', 'user__last_name')
-
-    form = FormWhosFilter(data=request.GET)
-    if form.is_valid():
-        data = form.cleaned_data
-        if data.get('country'):
-            people = people.filter(p3_profile__country=data['country'])
-        if data.get('tags'):
-            qs = cmodels.ConferenceTaggedItem.objects\
-                .filter(
-                    content_type__app_label='p3', content_type__model='p3profile',
-                    tag__name__in=data['tags'])\
-                .values('object_id')
-            people = people.filter(user__in=qs)
-        if data.get('speaker'):
-            speakers = cmodels.TalkSpeaker.objects\
-                .filter(talk__conference=conference, talk__status='accepted')\
-                .values('speaker')
-            people = people.filter(user__speaker__in=speakers)
-
-    try:
-        ix = max(int(request.GET.get('counter', 0)), 0)
-    except:
-        ix = 0
-    pids = people[ix:ix+10]
-    ctx = {
-        'profiles': profiles,
-        'pids': pids,
-        'form': form,
-        'conference': conference,
-    }
-    if request.is_ajax():
-        tpl = 'p3/ajax/whos_coming.html'
-    else:
-        tpl = 'p3/whos_coming.html'
-    return render(request, tpl, ctx)
-
-
-from p3.views.cart import *
 from p3.views.live import *
 from p3.views.profile import *
