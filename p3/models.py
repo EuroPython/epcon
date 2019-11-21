@@ -12,7 +12,6 @@ from conference.models import (Ticket,
                                ConferenceTaggedItem,
                                AttendeeProfile)
 from taggit.managers import TaggableManager
-from .helpers import get_secure_storage
 
 import logging
 log = logging.getLogger('p3.models')

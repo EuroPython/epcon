@@ -577,9 +577,9 @@ CONFERENCE_TICKET_CONFERENCE_EXPERIENCES = (
 
 
 def CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
-    from p3 import models
+    from conference.models import Ticket
 
-    tickets = models.Ticket.objects \
+    tickets = Ticket.objects \
         .filter(fare__conference=conf, orderitem__order___complete=True)
     if ticket_type:
         tickets = tickets.filter(fare__ticket_type=ticket_type)
