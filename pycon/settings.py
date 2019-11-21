@@ -282,7 +282,6 @@ INSTALLED_APPS = (
     'rosetta',
 
     'email_template',
-    # 'paypal.standard.ipn',
     'filer',
     'easy_thumbnails',
 
@@ -987,13 +986,6 @@ STRIPE_COMPANY_NAME = config("STRIPE_COMPANY_NAME", default='')
 STRIPE_COMPANY_LOGO = config("STRIPE_COMPANY_LOGO", default='')
 STRIPE_CURRENCY = "EUR"
 STRIPE_ALLOW_REMEMBER_ME = False
-
-# Paypl integration
-# Paypal merchant email
-PAYPAL_RECEIVER_EMAIL = config("PAYPAL_RECEIVER_EMAIL", default='')
-
-# If the merchant account is a debug one set this flag to True
-PAYPAL_TEST = config('PAYPAL_TEST', default=False, cast=bool)
 
 # files under SECURE_MEDIA_BOOT must be served by django, this if
 # is needed to avoid they end up in a subdir of MEDIA_ROOT that is

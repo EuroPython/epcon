@@ -633,11 +633,6 @@ ORDER_PAYMENT = (
     ('bank', 'Bank'),
 )
 
-# Enabled order payment options
-ENABLED_ORDER_PAYMENT = (
-    ('cc', 'Credit Card'),
-)
-
 # This is new for 2019; We can track order type for improved handling of forms
 # in the cart.
 ORDER_TYPE = Choices(
@@ -1017,16 +1012,6 @@ class Invoice(models.Model):
     @property
     def price_in_local_currency(self):
         return normalize_price(self.price * self.exchange_rate)
-
-
-if 'paypal.standard.ipn' in dsettings.INSTALLED_APPS:
-    from paypal.standard.ipn.signals import payment_was_successful as paypal_payment_was_successful
-    def confirm_order(sender, **kwargs):
-        ipn_obj = sender
-        o = Order.objects.get(code=ipn_obj.custom)
-        o.confirm_order(ipn_obj.payment_date)
-
-    paypal_payment_was_successful.connect(confirm_order)
 
 
 class CreditNote(models.Model):

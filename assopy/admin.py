@@ -99,7 +99,6 @@ class StripePaymentInline(admin.TabularInline):
 class OrderAdminForm(forms.ModelForm):
     method = forms.ChoiceField(choices=(
         ('admin', 'Admin'),
-        ('paypal', 'PayPal'),
         ('cc', 'Credit Card'),
         ('bank', 'Bank'),
     ))
