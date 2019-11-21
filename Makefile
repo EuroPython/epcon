@@ -55,8 +55,8 @@ build:
 init-db:
 	docker-compose down -t 60
 	mkdir -p data/site
-	docker-compose run epcon "./manage.py migrate --no-input"
-	docker-compose run epcon "./manage.py create_initial_data_for_dev"
+	docker-compose run --rm epcon "./manage.py migrate --no-input"
+	docker-compose run --rm epcon "./manage.py create_initial_data_for_dev"
 
 drop-db:
 	docker-compose down -t 60
@@ -65,38 +65,38 @@ drop-db:
 redo-db: drop-db init-db
 
 update-requirements: build
-	docker-compose run epcon "pip install pip-tools -U && pip-compile --upgrade requirements.in -o requirements.txt && chmod a+r requirements.txt"
-	docker-compose run epcon "pip install pip-tools -U && pip-compile --upgrade requirements.in requirements-dev.in -o requirements-dev.txt && chmod a+r requirements-dev.txt"
+	docker-compose run --rm epcon "pip install pip-tools -U && pip-compile --upgrade requirements.in -o requirements.txt && chmod a+r requirements.txt"
+	docker-compose run --rm epcon "pip install pip-tools -U && pip-compile --upgrade requirements.in requirements-dev.in -o requirements-dev.txt && chmod a+r requirements-dev.txt"
 
 migrations: build
-	docker-compose run epcon "./manage.py makemigrations"
+	docker-compose run --rm epcon "./manage.py makemigrations"
 
 shell:
-	docker-compose run epcon "./manage.py shell_plus"
+	docker-compose run --rm epcon "./manage.py shell_plus"
 
 urls:
-	docker-compose run epcon "./manage.py show_urls"
+	docker-compose run --rm epcon "./manage.py show_urls"
 
 test: build
-	docker-compose run epcon "pytest"
+	docker-compose run --rm epcon "pytest"
 
 test-pdb:
-	docker-compose run epcon "pytest --pdb"
+	docker-compose run --rm epcon "pytest --pdb"
 
 test-lf:
-	docker-compose run epcon "pytest --lf"
+	docker-compose run --rm epcon "pytest --lf"
 
 test-no-warnings:
-	docker-compose run epcon "pytest --disable-warnings"
+	docker-compose run --rm epcon "pytest --disable-warnings"
 
 test-n:
-	docker-compose run epcon "pytest -n auto"
+	docker-compose run --rm epcon "pytest -n auto"
 
 test-n-lf:
-	docker-compose run epcon "pytest -n auto -lf"
+	docker-compose run --rm epcon "pytest -n auto -lf"
 
 test-n-no-warnings:
-	docker-compose run epcon "pytest --disable-warnings -n auto"
+	docker-compose run --rm epcon "pytest --disable-warnings -n auto"
 
 clean: clean-docker clean-py
 
