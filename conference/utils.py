@@ -675,59 +675,6 @@ def archive_dir(directory):
     tar.close()
     return archive.getvalue()
 
-def timetables2ical(tts, altf=lambda d, comp: d):
-    from conference import ical
-    from conference import dataaccess
-    from datetime import timedelta
-    from django.utils.html import strip_tags
-
-    import pytz
-    from pytz import timezone
-    utc = pytz.utc
-    tz = timezone(dsettings.TIME_ZONE)
-
-    cal = altf({
-        'uid': '1',
-        'events': [],
-    }, 'calendar')
-    for tt in tts:
-        sdata = dataaccess.schedule_data(tt.sid)
-        for time, events in tt.iterOnTimes():
-            uniq = set()
-            for e in events:
-                if e['id'] in uniq:
-                    continue
-                uniq.add(e['id'])
-                track = strip_tags(sdata['tracks'][e['tracks'][0]].title)
-                # iCal supports dates in a different timezone to UTC through TZID parameter:
-                # DTSTART;TZID=Europe/Rome:20120702T093000
-                #
-                # So, decided to convert the time in UTC.
-                start = utc.normalize(tz.localize(e['time']).astimezone(utc))
-                end = utc.normalize(tz.localize(e['time'] + timedelta(seconds=e['duration']*60)).astimezone(utc))
-                ce = {
-                    'uid': e['id'],
-                    'start': start,
-                    #'duration': timedelta(seconds=e['duration']*60),
-                    'end': end,
-                    'location': 'Track: %s' % track,
-                }
-                if e['talk']:
-                    url = dsettings.DEFAULT_URL_PREFIX + reverse('conference-talk', kwargs={'slug': e['talk']['slug']})
-                    ce['summary'] = (e['talk']['title'], {'ALTREP': url})
-                else:
-                    ce['summary'] = e['name']
-                cal['events'].append(ical.Event(**altf(ce, 'event')))
-    return ical.Calendar(**cal)
-
-def conference2ical(conf, altf=lambda d, comp: d):
-    from conference import models
-
-    sids = models.Schedule.objects\
-        .filter(conference=conf)\
-        .values_list('id', flat=True)
-    tts = list(map(TimeTable2.fromSchedule, sids))
-    return timetables2ical(tts, altf=altf)
 
 def oembed(url, **kw):
     for pattern, sub in settings.OEMBED_URL_FIX:
