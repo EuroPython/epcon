@@ -66,17 +66,6 @@ urlpatterns = [
         views.sponsor_json,
         name="conference-sponsor-json",
     ),
-    url(
-        r"^paper-submission/$",
-        views.paper_submission,
-        name="conference-paper-submission",
-    ),
-    url(
-        r"^cfp/thank-you/$",
-        views.cfp_thank_you_for_proposal,
-        name="cfp-thank-you-for-proposal",
-    ),
-    url(r"^voting/$", views.voting, name="conference-voting"),
 ]
 
 urlpatterns += [

@@ -35,12 +35,6 @@ import os
 # cart.
 MAX_TICKETS = 6
 
-# URL that will receive a user who tries to access the paper submission when the CFP is closed
-# None if a 404 is returned
-CFP_CLOSED = getattr(settings, 'CONFERENCE_CFP_CLOSED', None)
-
-VOTING_CLOSED = getattr(settings, 'CONFERENCE_VOTING_CLOSED', None)
-
 VOTING_OPENED = getattr(settings, 'CONFERENCE_VOTING_OPENED', lambda conf, user: conf.voting())
 
 # Callable to check whether the user passed may vote
@@ -69,20 +63,8 @@ DEFAULT_VOTING_TALK_TYPES = (
 TALK_TYPES_TO_BE_VOTED = getattr(settings, 'CONFERENCE_VOTING_TALK_TYPES',
                                  DEFAULT_VOTING_TALK_TYPES)
 
-def _CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
-    from conference import models
-    tickets = models.Ticket.objects\
-        .filter(fare__conference=conf)
-    if ticket_type:
-        tickets = tickets.filter(fare__ticket_type=ticket_type)
-    if fare_code:
-        if fare_code.endswith('%'):
-            tickets = tickets.filter(fare__code__startswith=fare_code[:-1])
-        else:
-            tickets = tickets.filter(fare__code=fare_code)
-    return tickets
 
-CONFERENCE_TICKETS = getattr(settings, 'CONFERENCE_TICKETS', _CONFERENCE_TICKETS)
+CONFERENCE_TICKETS = settings.CONFERENCE_TICKETS
 # TICKET_BADGE_ENABLED enable or disable the ability to generate badge by admin
 TICKET_BADGE_ENABLED = getattr(settings, 'CONFERENCE_TICKET_BADGE_ENABLED', False)
 

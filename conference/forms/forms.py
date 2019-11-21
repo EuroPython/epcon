@@ -140,15 +140,6 @@ class MarkEditWidget(forms.Textarea):
 
 
 
-class PseudoRadioSelectWidget(forms.widgets.RadioSelect):
-    template_name = 'conference/widgets/radio_select.html'
-    option_template_name = 'conference/widgets/radio_select_option.html'
-
-    def get_context(self, name, value, attrs):
-        context = super().get_context(name, value, attrs)
-        return context
-
-
 class TalkBaseForm(forms.Form):
 
     # Talk details
@@ -607,34 +598,3 @@ class AdminSendMailForm(forms.Form):
 
 class AttendeeLinkDescriptionForm(forms.Form):
     message = forms.CharField(label='A note to yourself (when you met this persone, why you want to stay in touch)', widget=forms.Textarea)
-
-# -- Custom Option Form used for Talk Voting Filters
-class OptionForm(forms.Form):
-    abstracts = forms.ChoiceField(
-        choices=(('not-voted', 'To be voted'), ('all', 'All'),),
-        required=False,
-        initial='not-voted',
-        widget=PseudoRadioSelectWidget(),
-    )
-    talk_type = forms.ChoiceField(
-        choices=settings.TALK_TYPES_TO_BE_VOTED,
-        required=False,
-        initial='all',
-        widget=PseudoRadioSelectWidget(),
-    )
-    language = forms.ChoiceField(
-        choices=(('all', 'All'),) + tuple(settings.TALK_SUBMISSION_LANGUAGES),
-        required=False,
-        initial='all',
-        widget=PseudoRadioSelectWidget(),
-    )
-    order = forms.ChoiceField(
-        choices=(('vote', 'Vote'), ('speaker', 'Speaker name'),),
-        required=False,
-        initial='vote',
-        widget=PseudoRadioSelectWidget(),
-    )
-    tags = TagField(
-        required=False,
-        widget=ReadonlyTagWidget(),
-    )
