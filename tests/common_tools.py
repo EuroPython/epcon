@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 from wsgiref.simple_server import make_server
 
 from django.conf import settings
+from django.core import mail
 from django.core.cache import cache
 
 from django_factory_boy import auth as auth_factories
@@ -132,6 +133,27 @@ def redirects_to(response, url):
     return is_redirect and is_url
 
 
+def contains_message(response, message):
+    """
+    Inspired by django's self.assertRaisesMessage
+
+    Useful for confirming the response contains the provided message,
+    """
+    if len(response.context['messages']) != 1:
+        return False
+
+    full_message = str(list(response.context['messages'])[0])
+
+    return message in full_message
+
+
+def email_sent_with_subject(subject):
+    """
+    Verify an email was sent with the provided subject.
+    """
+    return [email.subject == subject for email in mail.outbox]
+
+
 def make_user(email='joedoe@example.com', **kwargs):
     user = auth_factories.UserFactory(
         email=email, is_active=True,
@@ -153,15 +175,17 @@ def is_using_jinja2_template(response):
 
 
 def setup_conference_with_typical_fares(start=date(2019, 7, 8), end=date(2019, 7, 14)):
-    get_default_conference(
+    conference = get_default_conference(
         conference_start=start,
         conference_end=end,
     )
     default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
-    pre_create_typical_fares_for_conference(
+    fares = pre_create_typical_fares_for_conference(
         settings.CONFERENCE_CONFERENCE,
         default_vat_rate
     )
+
+    return conference, fares
 
 
 def create_valid_ticket_for_user_and_fare(user, fare=None):
@@ -176,7 +200,7 @@ def create_valid_ticket_for_user_and_fare(user, fare=None):
         user=user.assopy_user,
         items=[(fare, {"qty": 1}),],
     )
-    order._complete=True
+    order._complete = True
     order.save()
 
     ticket = order.orderitem_set.first().ticket

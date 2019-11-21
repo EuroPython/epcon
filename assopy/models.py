@@ -1,5 +1,3 @@
-
-
 import re
 import os
 import os.path
@@ -392,7 +390,7 @@ class Coupon(models.Model):
 
     def valid(self, user=None):
         if self.start_validity and self.end_validity:
-            today = date.today()
+            today = timezone.now().date()
             if today < self.start_validity or today > self.end_validity:
                 return False
 

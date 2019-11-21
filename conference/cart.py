@@ -1,5 +1,4 @@
 import uuid
-from datetime import date
 
 from django import forms
 from django.conf import settings
@@ -38,7 +37,7 @@ from .payments import PaymentError, charge_for_payment
 
 
 GLOBAL_MAX_PER_FARE_TYPE = 6
-ORDER_CONFIRMATION_EMAIL_SUBJECT = "EuroPython2019: Order confirmation"
+ORDER_CONFIRMATION_EMAIL_SUBJECT = "EuroPython2020: Order confirmation"
 
 
 def cart_step1_choose_type_of_order(request):
@@ -101,7 +100,7 @@ def cart_step2_pick_tickets(request, type_of_tickets):
                     request, "The discount code provided expired or is invalid"
                 )
 
-        if CartActions.buy_tickets in request.POST:
+        elif CartActions.buy_tickets in request.POST:
             order = create_order(
                 for_user=request.user,
                 for_date=timezone.now().date(),
@@ -121,7 +120,6 @@ def cart_step2_pick_tickets(request, type_of_tickets):
 
 @login_required
 def cart_step3_add_billing_info(request, order_uuid):
-
     order = get_object_or_404(Order, uuid=order_uuid)
 
     if is_business_order(order) or is_non_conference_ticket_order(order):
@@ -155,7 +153,7 @@ def cart_step4_payment(request, order_uuid):
 
         if total_for_stripe == 0:
             # For 100% discounted orders/coupons
-            order.payment_date = date.today()
+            order.payment_date = timezone.now()
             order.save()
 
             with transaction.atomic():
@@ -181,7 +179,7 @@ def cart_step4_payment(request, order_uuid):
             # Save the payment information as soon as it goes through to
             # avoid data loss.
             charge_for_payment(stripe_payment)
-            order.payment_date = date.today()
+            order.payment_date = timezone.now()
             order.save()
 
             with transaction.atomic():
