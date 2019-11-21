@@ -62,6 +62,7 @@ class AssopyUserFactory(factory.django.DjangoModelFactory):
 class CountryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "assopy.Country"
+        django_get_or_create = ('iso',)
 
     iso = factory.Faker("country_code")
     name = factory.Faker("country")
@@ -77,6 +78,7 @@ class VatFactory(factory.django.DjangoModelFactory):
 class FareFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "conference.Fare"
+        django_get_or_create = ('conference', 'code')
 
     price = 10
 
@@ -166,6 +168,26 @@ class OrderFactory(factory.django.DjangoModelFactory):
     @factory.lazy_attribute
     def address(self):
         return "\n".join([fake.address(), self.country.name])
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        """
+        Override the default ``_create`` in order to be able to pass order_type to the factory;
+        The manager's ``create`` does not accept order_type as an argument.
+        """
+        order_type = kwargs.pop('order_type', None)
+        manager = cls._get_manager(model_class)
+        instance = manager.create(*args, **kwargs)
+
+        if order_type:
+            instance.order_type = order_type
+            instance.save()
+
+        if not instance.uuid:
+            instance.uuid = str(uuid.uuid4())
+            instance.save()
+
+        return instance
 
 
 class AssopyUserFactory(factory.django.DjangoModelFactory):

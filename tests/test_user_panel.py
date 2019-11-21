@@ -299,7 +299,7 @@ def test_frozen_ticket_cannot_be_managed(db, user_client):
 
 
 def test_other_fares_tickets_can_be_reassigned(db, user_client):
-    fare = FareFactory(ticket_type=FARE_TICKET_TYPES.other)
+    fare = FareFactory(ticket_type=FARE_TICKET_TYPES.other, conference=settings.CONFERENCE_CONFERENCE)
     ticket = create_valid_ticket_for_user_and_fare(user=user_client.user, fare=fare)
     target_user = UserFactory()
     target_email = target_user.email

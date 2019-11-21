@@ -1,6 +1,5 @@
 import csv
 import random
-from datetime import date
 from datetime import timedelta
 from io import StringIO
 
@@ -41,8 +40,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         conference = get_default_conference()
 
+        today = timezone.now().date()
         ExchangeRate.objects.create(
-            datestamp=date.today(), currency="CHF", rate="1.0"
+            datestamp=today, currency="CHF", rate="1.0"
         )
 
         print("Creating an admin user")
@@ -239,13 +239,13 @@ class Command(BaseCommand):
 
         set_early_bird_fare_dates(
             conference,
-            date.today(),
-            date.today() + timedelta(days=7)
+            today,
+            today + timedelta(days=7)
         )
         set_other_fares_dates(
             conference,
-            date.today(),
-            date.today() + timedelta(days=7)
+            today,
+            today + timedelta(days=7)
         )
 
         print("Creating tickets to allow users to vote")
