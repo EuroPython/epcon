@@ -27,11 +27,6 @@ urlpatterns = [
     ),
     url(r"^myself$", views.myself_profile, name="conference-myself-profile"),
     url(
-        r"^speakers/(?P<slug>[\w-]+).xml",
-        views.speaker_xml,
-        name="conference-speaker-xml",
-    ),
-    url(
         r"^speakers/(?P<slug>[\w-]+)", views.speaker, name="conference-speaker"
     ),
     url(r"^talks/report", views.talk_report, name="conference-talk-report"),
@@ -44,11 +39,6 @@ urlpatterns = [
         r"^talks/(?P<slug>[\w-]+)/video.mp4$",
         views.talk_video,
         name="conference-talk-video-mp4",
-    ),
-    url(
-        r"^talks/(?P<slug>[\w-]+).xml$",
-        views.talk_xml,
-        name="conference-talk-xml",
     ),
     url(r"^talks/(?P<slug>[\w-]+)$", views.talk, name="conference-talk"),
     url(
@@ -70,19 +60,9 @@ urlpatterns = [
 
 urlpatterns += [
     url(
-        r"^(?P<conference>[\w-]+).xml/$",
-        views.conference_xml,
-        name="conference-data-xml",
-    ),
-    url(
         r"^schedule/(?P<conference>.*)/(?P<slug>[\w-]+)/$",
         views.schedule,
         name="conference-schedule",
-    ),
-    url(
-        r"^schedule/(?P<conference>.*)/(?P<slug>[\w-]+).xml/?$",
-        views.schedule_xml,
-        name="conference-schedule-xml",
     ),
     url(
         r"^schedule/(?P<conference>.*)/(?P<slug>[\w-]+)/(?P<eid>\d+)/interest$",  # NOQA

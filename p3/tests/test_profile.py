@@ -1,13 +1,10 @@
 import unittest
-from unittest import mock
-import json
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django_factory_boy import auth as auth_factories
 
-from tests.factories import AttendeeProfileFactory, MessageFactory
-
+from tests.factories import AttendeeProfileFactory
 
 class TestView(TestCase):
     def setUp(self):
@@ -17,21 +14,6 @@ class TestView(TestCase):
         self.user_profile = AttendeeProfileFactory(user=self.user)
         # self.user_p3_profile = P3ProfileFactory(profile=self.user_profile)
         self.assertTrue(is_logged)
-
-    def test_p3_profile_json(self):
-        # p3-profile-json -> p3.views.profile.p3_profile
-        url = reverse('p3-profile-json', kwargs={
-            'slug': self.user_profile.slug,
-        })
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        json_content = json.loads(response.content)
-        dict_content = {
-            'first_name': self.user.first_name,
-            'last_name': self.user.last_name,
-            'slug': self.user_profile.slug,
-        }
-        self.assertDictContainsSubset(dict_content, json_content)
 
     def test_p3_profile(self):
         # p3-profile -> p3.views.profile.p3_profile
@@ -47,39 +29,3 @@ class TestView(TestCase):
         url = reverse('p3-profile-avatar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-
-    def test_p3_profile_message_refuse_message(self):
-
-        # p3-profile-message -> p3.views.profile.p3_profile_message
-        url = reverse('p3-profile-message', kwargs={
-            'slug': self.user_profile.slug,
-        })
-        message = MessageFactory()
-        response = self.client.post(url, data={
-            'subject': message.subject,
-            'message': message.message,
-            })
-        self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.content, b'This user does not want to receive a message')
-
-    def test_p3_profile_message_accept_message(self):
-        # p3-profile-message -> p3.views.profile.p3_profile_message
-        user = auth_factories.UserFactory()
-        user_profile = AttendeeProfileFactory(user=user)
-
-        url = reverse('p3-profile-message', kwargs={
-            'slug': user_profile.slug,
-        })
-
-        with mock.patch('p3.models.P3Profile.send_user_message'):
-            # We need to simulate the send_user_message method because there is a lot of checks
-            # in the code.
-            message = MessageFactory()
-
-            response = self.client.post(url, data={
-                'subject': message.subject,
-                'message': message.message,
-            })
-
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(json.loads(response.content), 'OK')

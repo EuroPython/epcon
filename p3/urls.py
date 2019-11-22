@@ -6,8 +6,6 @@ from p3 import views as p3_views
 urlpatterns = [
     url(r'^p/profile/(?P<slug>[\w-]+)/$', p3_views.p3_profile, name='p3-profile'),
     url(r'^p/profile/(?P<slug>[\w-]+)/avatar$', p3_views.p3_profile_avatar, name='p3-profile-avatar'),
-    url(r'^p/profile/(?P<slug>[\w-]+).json$', p3_views.p3_profile, name='p3-profile-json', kwargs={'format_': 'json'}),
-    url(r'^p/profile/(?P<slug>[\w-]+)/message$', p3_views.p3_profile_message, name='p3-profile-message'),
 
     url(r'^live/$', p3_views.live, name='p3-live'),
     url(r'^live/events$', p3_views.live_events, name='p3-live-events'),
