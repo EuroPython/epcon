@@ -9,10 +9,6 @@ urlpatterns = [
     url(r'^p/profile/(?P<slug>[\w-]+).json$', p3_views.p3_profile, name='p3-profile-json', kwargs={'format_': 'json'}),
     url(r'^p/profile/(?P<slug>[\w-]+)/message$', p3_views.p3_profile_message, name='p3-profile-message'),
 
-    url(r'^p/account/data$', p3_views.p3_account_data, name='p3-account-data'),
-    url(r'^p/account/email$', p3_views.p3_account_email, name='p3-account-email'),
-    url(r'^p/account/spam_control$', p3_views.p3_account_spam_control, name='p3-account-spam-control'),
-
     url(r'^live/$', p3_views.live, name='p3-live'),
     url(r'^live/events$', p3_views.live_events, name='p3-live-events'),
     url(r'^live/(?P<track>[\w-]+)/$', p3_views.live_track, name='p3-live-track'),
