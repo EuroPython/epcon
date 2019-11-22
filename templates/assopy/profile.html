@@ -34,18 +34,10 @@
 
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#account-personal-data">{% trans "Personal data" %}</a></li>
-            <li><a data-toggle="tab" href="#account-email-contact">{% trans "Email contact" %}</a></li>
-            <li><a data-toggle="tab" href="#account-spam-control">{% trans "Privacy settings" %}</a></li>
             <li><a data-toggle="tab" href="#account-orders">{% trans "Orders, invoices &amp; coupons" %}</a></li>
         </ul>
 
         <div class="tab-content">
-            <div class="tab-pane active" id="account-personal-data">
-                {% include "assopy/profile_personal_data.html" %}</div>
-            <div class="tab-pane" id="account-email-contact">
-                {% include "assopy/profile_email_contact.html" %}</div>
-            <div class="tab-pane" id="account-spam-control">
-                {% include "assopy/profile_spam_control.html" %} </div>
             <div class="tab-pane" id="account-login-options">
                 <div class="profile-user-data web-accounts clearfix">
                     <h4>{% trans "Web accounts for log in" %}</h4>

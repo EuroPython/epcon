@@ -18,43 +18,6 @@ class TestView(TestCase):
         # self.user_p3_profile = P3ProfileFactory(profile=self.user_profile)
         self.assertTrue(is_logged)
 
-    def test_p3_account_data_error(self):
-        # p3-account-data -> p3.views.profile.p3_account_data
-        url = reverse('p3-account-data')
-        self.client.logout()
-        response = self.client.get(url)
-
-        self.assertEqual(response.status_code, 302)
-
-    def test_p3_account_data_get(self):
-        # p3-account-data -> p3.views.profile.p3_account_data
-        url = reverse('p3-account-data')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'assopy/profile_personal_data.html')
-
-    def test_p3_account_data_post(self):
-        # p3-account-data -> p3.views.profile.p3_account_data
-        first_name, last_name = self.user.first_name, self.user.last_name
-        url = reverse('p3-account-data')
-        response = self.client.post(url, data={
-            'first_name': self.user.last_name,
-            'last_name': self.user.first_name,
-        })
-        self.assertEqual(response.status_code, 200)
-
-        from django.contrib.auth.models import User
-        user = User.objects.get(pk=self.user.id)
-        self.assertEqual(user.first_name, last_name)
-        self.assertEqual(user.last_name, first_name)
-
-    def test_p3_account_email(self):
-        # p3-account-email -> p3.views.profile.p3_account_email
-        url = reverse('p3-account-email')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['pform']['email'].value(), self.user.email)
-
     def test_p3_profile_json(self):
         # p3-profile-json -> p3.views.profile.p3_profile
         url = reverse('p3-profile-json', kwargs={
