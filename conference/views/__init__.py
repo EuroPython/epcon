@@ -54,15 +54,6 @@ def speaker(request, slug, speaker, talks, full_access, speaker_form=SpeakerForm
     }
 
 
-@speaker_access
-@render_to_template('conference/speaker.xml')
-def speaker_xml(request, slug, speaker, full_access, talks):
-    return {
-        'speaker': speaker,
-        'talks': talks,
-    }
-
-
 def talk(request, slug):
     return redirect('talks:talk', permanent=True, talk_slug=slug)
 
@@ -75,16 +66,6 @@ def talk_preview(request, slug, talk, full_access, talk_form=TalkForm):
         'talk': talk,
         'voting': conf.voting(),
     }
-
-
-@talk_access
-def talk_xml(request, slug, talk, full_access):
-    return TemplateResponse(
-        request,
-        'conference/talk.xml',
-        {'talk': talk},
-        content_type='application/xml'
-    )
 
 
 def talk_video(request, slug):  # pragma: no cover
@@ -131,21 +112,6 @@ def talk_video(request, slug):  # pragma: no cover
     fname = '%s%s' % (tlk.title.encode('utf-8'), vext.encode('utf-8'))
     r['content-disposition'] = 'attachment; filename="%s"' % fname
     return r
-
-
-@render_to_template('conference/conference.xml')
-def conference_xml(request, conference):
-    conference = get_object_or_404(models.Conference, code=conference)
-    talks = models.Talk.objects.filter(conference=conference)
-    schedules = [
-        (s, utils.TimeTable2.fromSchedule(s.id))
-        for s in models.Schedule.objects.filter(conference=conference.code)
-    ]
-    return {
-        'conference': conference,
-        'talks': talks,
-        'schedules': schedules,
-    }
 
 
 def talk_report(request):  # pragma: no cover
@@ -236,14 +202,6 @@ def schedule_events_booking_status(request, conference):
             v['user'] = False
         del v['booked']
     return data
-
-@render_to_template('conference/schedule.xml')
-def schedule_xml(request, conference, slug):
-    sch = get_object_or_404(models.Schedule, conference=conference, slug=slug)
-    return {
-        'schedule': sch,
-        'timetable': utils.TimeTable2.fromSchedule(sch.id),
-    }
 
 
 @render_to_json

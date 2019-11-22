@@ -85,20 +85,3 @@ class P3ProfileModelTestCase(TestCase):
         url = self.p3_profile.public_profile_image_url()
         self.assertEqual(url, dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR)
         self.p3_profile.profile.visibility = old_visibility
-
-    @mock.patch('conference.models.AttendeeLink.objects.getLink', side_effect=lambda *args, **kwargs: None)
-    @mock.patch('conference.models.Conference.objects.current')
-    @mock.patch('p3.dataaccess.all_user_tickets')
-    @mock.patch('django.core.mail.EmailMessage', return_value=mock.MagicMock())
-    def test_send_user_message(self, mock_email_message, mock_user_tickets, mock_current, mock_getLink):
-        mock_current.return_value = ConferenceFactory.build(conference_start=datetime.date.today())
-        mock_user_tickets.side_effect = lambda a, b: [(1, 'conference', None, True)]
-
-        user_from = auth_factories.UserFactory()
-        user_profile = AttendeeProfileFactory(user=user_from)
-        self.p3_profile.send_user_message(user_from, 'demo', 'message')
-
-        self.assertTrue(mock_getLink.called)
-        self.assertTrue(mock_user_tickets.called)
-        self.assertTrue(mock_current.called)
-        self.assertTrue(mock_email_message.called)

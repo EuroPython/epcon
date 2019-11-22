@@ -20,17 +20,6 @@ class TestView(TestCase):
         AttendeeProfileFactory(user=self.user)
         self.assertTrue(is_logged)
 
-    @override_settings(DEBUG=False)
-    def test_conference_data_xml(self):
-        # conference-data-xml -> conference.views.conference_xml
-        conference = ConferenceFactory()
-        url = reverse('conference-data-xml', kwargs={
-            'conference': conference.code,
-        })
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get('content-type'), 'application/xml')
-
     @unittest.skip('todo')
     def test_conference_covers(self):
         # conference-covers -> conference.views.covers
@@ -76,21 +65,6 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    @override_settings(DEBUG=False)
-    def test_conference_schedule_xml(self):
-        # conference-schedule-xml -> conference.views.schedule_xml
-        conference = ConferenceFactory()
-        schedule = ScheduleFactory(conference=conference.code)
-
-        url = reverse('conference-schedule-xml', kwargs={
-            'conference': conference.code,
-            'slug': schedule.slug,
-        })
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get('content-type'), 'application/xml')
-        self.assertEqual(response.context['schedule'], schedule)
-
     @unittest.skip('todo')
     def test_conference_schedule(self):
         # conference-schedule -> conference.views.schedule
@@ -133,19 +107,6 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    @unittest.skip('todo')
-    def test_conference_speaker_xml(self):
-        # conference-speaker-xml -> conference.views.speaker_xml
-        speaker = SpeakerFactory()
-
-        url = reverse('conference-speaker-xml', kwargs={
-            'slug': '123',
-        })
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get('content-type'), 'application/xml')
-        self.assertEqual(response.context['speaker'], speaker)
-
     @override_settings(DEBUG=False)
     def test_conference_sponsor(self):
         # conference-sponsor-json -> conference.views.sponsor_json
@@ -184,18 +145,6 @@ class TestView(TestCase):
         self.assertRedirects(
             response, reverse('talks:talk', kwargs={'talk_slug': talk.slug}), status_code=301
         )
-
-    def test_conference_talk_xml(self):
-        # conference-talk-xml -> conference.views.talk_xml
-        conference = ConferenceFactory()
-        talk = TalkFactory(conference=conference.code)
-        url = reverse('conference-talk-xml', kwargs={
-            'slug': talk.slug,
-        })
-        with override_settings(CONFERENCE_CONFERENCE=conference.code):
-            response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get('content-type'), 'application/xml')
 
     def test_conference_talk_preview(self):
         # conference-talk-preview -> conference.views.talk_preview

@@ -173,45 +173,6 @@ class P3Profile(models.Model):
             return url
         return dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR
 
-    def send_user_message(self, from_, subject, message):
-        from conference.models import Conference, AttendeeLink
-        if not self.spam_user_message:
-            # If there's a link between the two users the message is allowed
-            # despite spam_user_message
-            try:
-                AttendeeLink.objects.getLink(from_.id, self.profile_id)
-            except AttendeeLink.DoesNotExist:
-                raise ValueError("This user does not want to receive a message")
-        if not from_.email:
-            raise ValueError("Sender without an email address")
-        if not self.profile.user.email:
-            raise ValueError("Recipient without an email address")
-
-        from p3.dataaccess import all_user_tickets
-        conf = Conference.objects.current()
-
-        tickets = [
-            tid
-            for tid, ftype, _, complete in all_user_tickets(from_.id, conf.code)
-            if ftype == 'conference' and complete
-        ]
-        if not tickets:
-            raise ValueError("User without a valid ticket")
-
-        if not conf.conference_end  or datetime.date.today() > conf.conference_end:
-            raise ValueError("conference %s is ended" % conf.code)
-
-        from django.core.mail import EmailMessage
-        EmailMessage(
-            subject=subject, body=message + dsettings.P3_USER_MESSAGE_FOOTER,
-            from_email=from_.email,
-            to=[self.profile.user.email],
-            headers={
-                'Sender': 'info@europython.eu',
-            }
-        ).send()
-        log.info('email from "%s" to "%s" sent', from_.email, self.profile.user.email)
-
 
 #TODO: what is this import doing here?!
 import p3.listeners
