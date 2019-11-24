@@ -629,7 +629,7 @@ purchase_completed = dispatch.Signal(providing_args=[])
 # Implemented order payment options
 ORDER_PAYMENT = (
     ('cc', 'Credit Card'),
-    ('paypal', 'PayPal'),
+    ('paypal', 'PayPal (deprecated)'),
     ('bank', 'Bank'),
 )
 

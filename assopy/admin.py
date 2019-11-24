@@ -1,4 +1,3 @@
-
 from collections import defaultdict
 import csv
 from io import StringIO
@@ -98,9 +97,8 @@ class StripePaymentInline(admin.TabularInline):
 
 class OrderAdminForm(forms.ModelForm):
     method = forms.ChoiceField(choices=(
+        *models.ORDER_PAYMENT,
         ('admin', 'Admin'),
-        ('cc', 'Credit Card'),
-        ('bank', 'Bank'),
     ))
 
     class Meta:
