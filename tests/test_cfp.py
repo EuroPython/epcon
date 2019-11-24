@@ -186,7 +186,8 @@ def test_if_user_can_add_a_speaker_to_a_proposal(user_client):
     response = user_client.post(
         step2_url,
         {
-            "users_given_name": "Joe Doe",
+            "users_given_name": "Joe",
+            "users_family_name": "Doe",
             "phone": "+48523456789",
             "gender": "M",
             "bio": "ASdf bio",
@@ -456,7 +457,8 @@ def test_update_speaker_updated_speaker(user_client):
 
     edit_url = reverse("cfp:update_speakers", args=[talk.uuid])
     speaker_data = dict(
-        users_given_name="new name",
+        users_given_name="new",
+        users_family_name="name",
         is_minor=True,
         job_title="goat",
         phone="+48123456789",
@@ -475,7 +477,7 @@ def test_update_speaker_updated_speaker(user_client):
     user.refresh_from_db()
     attendee_profile = user.attendeeprofile
     attendee_profile.refresh_from_db()
-    assert user.assopy_user.name() == speaker_data["users_given_name"]
+    assert user.assopy_user.name() == "new name"
     assert attendee_profile.phone == speaker_data["phone"]
     assert attendee_profile.is_minor == speaker_data["is_minor"]
     assert attendee_profile.job_title == speaker_data["job_title"]
@@ -499,7 +501,8 @@ def test_update_speaker_updated_speaker_name(user_client):
 
     edit_url = reverse("cfp:update_speakers", args=[talk.uuid])
     speaker_data = dict(
-        users_given_name="new name",
+        users_given_name="New",
+        users_family_name="Name",
         phone="+48123456789",
         bio="this is my bio",
     )
@@ -512,7 +515,9 @@ def test_update_speaker_updated_speaker_name(user_client):
     user.refresh_from_db()
     attendee_profile = user.attendeeprofile
     attendee_profile.refresh_from_db()
-    assert user.assopy_user.name() == speaker_data["users_given_name"]
+    assert user.assopy_user.name() == 'New Name'
+    assert user.assopy_user.user.first_name == 'New'
+    assert user.assopy_user.user.last_name == 'Name'
 
 
 # Mark with django db only because AddSpeakerToTalkForm is a ModelForm
@@ -522,7 +527,8 @@ def test_update_speaker_updated_speaker_name(user_client):
 def test_speaker_form_accepts_valid_international_mobile_numbers(valid_phone):
     form = AddSpeakerToTalkForm(
         {
-            "users_given_name": "Joe Doe",
+            "users_given_name": "Joe",
+            "users_family_name": "Doe",
             "phone": valid_phone,
             "gender": "",
             "bio": "ASdf bio",
@@ -541,7 +547,8 @@ def test_speaker_form_doesnt_accept_invalid_international_mobile_numbers(
 ):
     form = AddSpeakerToTalkForm(
         {
-            "users_given_name": "Joe Doe",
+            "users_given_name": "Joe",
+            "users_family_name": "Doe",
             "phone": invalid_phone,
             "gender": "",
             "bio": "ASdf bio",
