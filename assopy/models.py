@@ -278,6 +278,13 @@ class AssopyUser(models.Model):
 
         return name.strip()
 
+    def name_tuple(self):
+        first_name, last_name = self.user.first_name, self.user.last_name
+        if first_name.endswith(" " + last_name) and last_name:
+            # handle name merged into first_name
+            return first_name[:-(len(last_name) + 1)], last_name
+        return first_name, last_name
+
     def get_orders(self):
         """
         Temporary wrapper method for Issue #592, to easily disable old

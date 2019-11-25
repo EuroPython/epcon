@@ -228,8 +228,10 @@ def program_wg_download_all_talks_for_current_conference(request):
 def extract_initial_speaker_data_from_user(user):
     attendee = user.attendeeprofile
 
+    given_name, family_name = user.assopy_user.name_tuple()
     return {
-        'users_given_name': user.assopy_user.name(),
+        'users_given_name': given_name,
+        'users_family_name': family_name,
         'is_minor': attendee.is_minor,
         'gender': attendee.gender,
         'job_title': attendee.job_title,
@@ -252,7 +254,7 @@ def dump_all_talks_for_conference_to_dict(conference: Conference):
 
 def save_information_from_speaker_form(user, cleaned_data):
     user.first_name = cleaned_data['users_given_name']
-    user.last_name = ''
+    user.last_name = cleaned_data['users_family_name']
     user.save()
 
     ap = user.attendeeprofile
@@ -276,7 +278,8 @@ def add_speaker_to_talk(speaker, talk):
 
 class AddSpeakerToTalkForm(forms.ModelForm):
 
-    users_given_name = forms.CharField(label="Name of the speaker")
+    users_given_name = forms.CharField(label="Given name of the speaker")
+    users_family_name = forms.CharField(label="Family name of the speaker")
     is_minor = forms.BooleanField(
         label="Are you a minor?",
         help_text=(
@@ -327,6 +330,7 @@ class AddSpeakerToTalkForm(forms.ModelForm):
         model = AttendeeProfile
         fields = [
             'users_given_name',
+            'users_family_name',
             'job_title',
             'phone',
             'bio',
