@@ -254,7 +254,6 @@ INSTALLED_APPS = (
 
     'p3',
     'assopy',
-    'assopy.stripe',
     'conference',
 
     'djangocms_text_ckeditor',
