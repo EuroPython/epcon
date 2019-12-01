@@ -115,85 +115,6 @@ def tickets(request):
     return {}
 
 
-def paypal_billing(request, code):
-    # questa vista serve a eseguire il redirect su paypol
-    log.debug('Paypal billing request (code %s): %s', code, request.environ)
-    o = get_object_or_404(models.Order, code=code.replace('-', '/'))
-    if o.total() == 0:
-        o.confirm_order(timezone.now())
-        return HttpResponseRedirectSeeOther(reverse('assopy-paypal-feedback-ok', kwargs={'code': code}))
-    form = aforms.PayPalForm(o)
-    return HttpResponseRedirectSeeOther("%s?%s" % (form.paypal_url(), form.as_url_args()))
-
-
-def paypal_cc_billing(request, code):
-    # questa vista serve a eseguire il redirect su paypal e aggiungere le info
-    # per billing con cc
-    log.debug('Paypal CC billing request (code %s): %s', code, request.environ)
-    o = get_object_or_404(models.Order, code=code.replace('-', '/'))
-    if o.total() == 0:
-        o.confirm_order(timezone.now())
-        return HttpResponseRedirectSeeOther(reverse('assopy-paypal-feedback-ok', kwargs={'code': code}))
-    form = aforms.PayPalForm(o)
-    cc_data = {
-        "address_override" : 0,
-        "no_shipping" : 1,
-        "email": o.user.user.email,
-        "first_name" : o.card_name,
-        "last_name": "",
-        "address1": o.address,
-        #"zip": o.zip_code,
-        #"state": o.state,
-        "country": o.country,
-        "address_name": o.card_name,
-    }
-    qparms = urllib.parse.urlencode([ (k,x.encode('utf-8') if isinstance(x, str) else x) for k,x in cc_data.items() ])
-    return HttpResponseRedirectSeeOther(
-        "%s?%s&%s" % (
-            form.paypal_url(),
-            form.as_url_args(),
-            qparms
-        )
-    )
-
-
-@render_to_template('assopy/paypal_cancel.html')
-def paypal_cancel(request, code):
-    log.debug('Paypal billing cancel request (code %s): %s', code, request.environ)
-    o = get_object_or_404(models.Order, code=code.replace('-', '/'))
-    form = aforms.PayPalForm(o)
-    return {'form': form }
-
-
-# looks like sometimes the redirect from paypal is ended with a POST request
-# from the browser (someone said HttpResponseRedirectSeeOther?), since we are not
-# executing anything critical I can skip the csrf check
-@csrf_exempt
-@render_to_template('assopy/paypal_feedback_ok.html')
-def paypal_feedback_ok(request, code):
-    log.debug('Paypal billing OK request (code %s): %s', code, request.environ)
-    o = get_object_or_404(models.Order, code=code.replace('-', '/'))
-    if o.user.user != request.user or o.method not in ('paypal', 'cc'):
-        raise http.Http404()
-    # let's wait a bit to get the IPN notification from PayPal
-    from time import sleep
-    sleep(0.4)
-    return {
-        'order': o,
-    }
-
-
-@login_required
-@render_to_template('assopy/bank_feedback_ok.html')
-def bank_feedback_ok(request, code):
-    o = get_object_or_404(models.Order, code=code.replace('-', '/'))
-    if o.user.user != request.user or o.method != 'bank':
-        raise http.Http404()
-    return {
-        'order': o,
-    }
-
-
 @login_required
 def invoice(request, order_code, code, mode='html'):
     if not request.user.is_staff:
@@ -303,6 +224,7 @@ def order_complete(request, assopy_id):
     r = order.complete()
     log.info('remote notice! order "%s" (%s) complete! result=%s', order.code, order.assopy_id, r)
     return http.HttpResponse('')
+
 
 @login_required
 @render_to_json

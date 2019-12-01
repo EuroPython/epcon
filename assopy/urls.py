@@ -31,31 +31,6 @@ urlpatterns = [
         name="assopy-order-complete",
     ),
     url(
-        r"^paypal/redirect/(?P<code>.+)/$",
-        views.paypal_billing,
-        name="assopy-paypal-redirect",
-    ),
-    url(
-        r"^paypal/cc/redirect/(?P<code>.+)/$",
-        views.paypal_cc_billing,
-        name="assopy-cc-paypal-redirect",
-    ),
-    url(
-        r"paypal_return/(?P<code>.+)/$",
-        views.paypal_feedback_ok,
-        name="assopy-paypal-feedback-ok",
-    ),
-    url(
-        r"^paypal/cancel/(?P<code>.+)/$",
-        views.paypal_cancel,
-        name="assopy-paypal-feedback-cancel",
-    ),
-    url(
-        r"bank_return/(?P<code>.+)/$",
-        views.bank_feedback_ok,
-        name="assopy-bank-feedback-ok",
-    ),
-    url(
         r"orders/(?P<order_code>.+)/invoices/(?P<code>.+).html$",
         views.invoice,
         name="assopy-invoice-html",
@@ -81,7 +56,3 @@ urlpatterns = [
     ),
 ]
 
-if "paypal.standard.ipn" in dsettings.INSTALLED_APPS:
-    urlpatterns += [
-        url(r"^paypal/standard-ipn/", include("paypal.standard.ipn.urls"))
-    ]

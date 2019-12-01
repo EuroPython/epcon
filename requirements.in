@@ -46,7 +46,6 @@ phonenumbers
 
 # payments
 stripe
-django-paypal
 
 # I don't think we use this anywhere anymore...
 django-xmlrpc
