@@ -56,5 +56,3 @@ urlpatterns = [
     ),
 ]
 
-if "assopy.stripe" in dsettings.INSTALLED_APPS:
-    urlpatterns += [url(r"^stripe/", include("assopy.stripe.urls"))]
