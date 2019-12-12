@@ -4,14 +4,20 @@
     <tr>
         <th>code</th>
         <th>ticket</th>
-        <th class='text-right'>&euro;</th>
+        <th>&euro;</th>
+        <th class='text-right'>Manage</th>
     </tr>
 
     {% for item in order.orderitem_set.all %}
     <tr>
         <td>{{ item.code }}</td>
         <td>{% if item.ticket %}{{ item.ticket }}{% else %}{{ item.description }}{% endif %}</td>
-        <td class='text-right'>{{ item.price }}</td>
+        <td>{{ item.price }}</td>
+        <td class='text-right'>
+            <a class='btn btn-outline-primary' href='{% url "user_panel:manage_ticket" item.ticket.id %}'>Configure ticket</a>
+            <a class='btn btn-outline-primary' href='{% url "user_panel:assign_ticket" item.ticket.id %}'>Assign ticket</a>
+        </td>
+
     </tr>
     {% endfor %}
 </table>
