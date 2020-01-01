@@ -15,14 +15,6 @@ class TestView(TestCase):
         # self.user_p3_profile = P3ProfileFactory(profile=self.user_profile)
         self.assertTrue(is_logged)
 
-    def test_p3_profile(self):
-        # p3-profile -> p3.views.profile.p3_profile
-        url = reverse('p3-profile', kwargs={
-            'slug': self.user_profile.slug,
-        })
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
     @unittest.skip("FIXME")
     def test_p3_profile_avatar(self):
         # p3-profile-avatar -> p3.views.profile.p3_profile_avatar

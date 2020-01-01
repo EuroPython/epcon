@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 from django import forms
 from django import template
 from django.utils.safestring import mark_safe
 from django.template.loader import render_to_string
-
 
 
 register = template.Library()
