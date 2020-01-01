@@ -1,6 +1,3 @@
-
-import datetime
-
 from django.conf import settings as dsettings
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -8,9 +5,7 @@ from django.utils.translation import ugettext as _
 from assopy import utils as autils
 
 import conference.gravatar
-from conference.models import (Ticket,
-                               ConferenceTaggedItem,
-                               AttendeeProfile)
+from conference.models import Ticket, ConferenceTaggedItem, AttendeeProfile
 from taggit.managers import TaggableManager
 
 import logging

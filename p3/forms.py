@@ -1,14 +1,9 @@
-
 import datetime
 
 from django import forms
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.db import transaction
 from django.utils.translation import ugettext as _
 
-import assopy.models as amodels
-import assopy.forms as aforms
 import conference.forms as cforms
 import conference.models as cmodels
 
@@ -17,10 +12,7 @@ from p3 import models
 
 ### Globals
 
-## These should really be changes in the conference package:
-
-# TBD: These forms need some cleanup. Probably best to merge the
-# conference repo into epcon and then remove all this subclassing.
+## TODO: These forms are candidates for removal
 
 class P3TalkFormMixin(object):
     def clean(self):
@@ -36,24 +28,7 @@ class P3TalkFormMixin(object):
         return data
 
 
-# This form is used for new talk submissions and only when the speaker
-# has not yet submitted another talk; see P3SubmissionAdditionalForm
-# for talk editing and additional talks.
-
-# Hot topic CFP only allows a subset of available talk types:
-#TALK_TYPE_FORM = list((
-#    ('t_30', 'Talk (30 mins)'),
-#    ('t_45', 'Talk (45 mins)'),
-##    ('t_60', 'Talk (60 mins)'),
-##    ('i_60', 'Interactive (60 mins)'),
-##    ('r_180', 'Training (180 mins)'),
-#    ('p_180', 'Poster session (180 mins)'),
-##    ('n_60', 'Panel (60 mins)'),
-##    ('n_90', 'Panel (90 mins)'),
-#    ('h_180', 'Help desk (180 mins)'),
-#))
-
-# Normal CFP:
+## Normal CFP:
 TALK_TYPE_FORM = list(cmodels.TALK_TYPE)
 
 # Add a non-valid default choice for the talk type to force the user
@@ -132,56 +107,12 @@ class P3SubmissionForm(P3TalkFormMixin, cforms.SubmissionForm):
         return talk
 
 
-
-# This form is used in case the speaker has already proposed a talk
-# and for editing talks
-
-class P3SubmissionAdditionalForm(P3TalkFormMixin, cforms.TalkForm):
-    slides_agreement = P3SubmissionForm.base_fields['slides_agreement']
-    video_agreement = P3SubmissionForm.base_fields['video_agreement']
-    type = P3SubmissionForm.base_fields['type']
-    domain = forms.ChoiceField(
-        label=_('Domain / Track'),
-        help_text=_('Select the domain of the talk, this will help us with the conference scheduling.'),
-        choices=settings.CONFERENCE_TALK_DOMAIN,
-        initial='',
-        required=False)
-
-    domain_level = forms.ChoiceField(
-        label=_('Domain Expertise'),
-        help_text=_('The domain expertise your audience should have to follow along (e.g. how much should one know about DevOps or Data Science already)'),
-        choices=cmodels.TALK_LEVEL,
-        initial='',
-        required=False)
-
-    class Meta(cforms.TalkForm.Meta):
-        exclude = ('duration', )
-
-    def __init__(self, *args, **kwargs):
-        super(P3SubmissionAdditionalForm, self).__init__(*args, **kwargs)
-        if self.instance:
-            # The speaker has already agreed to these when submitting
-            # the first talk, so preset them
-            self.fields['slides_agreement'].initial = True
-            self.fields['video_agreement'].initial = True
-
-    def save(self, *args, **kwargs):
-        # TODO/FIXME(artcz) – added this from P3SubmissionForm, because talks
-        # submitted via this form later complained about P3Talk missing.
-        # However I'm not sure if we even need that, but due to time
-        # constraints we can't refactors this right now.
-        # Set additional fields added in this form (compared to
-        # cforms.SubmissionForm)
-        talk = super(P3SubmissionAdditionalForm, self).save(*args, **kwargs)
-        models.P3Talk.objects.get_or_create(talk=talk)
-        return talk
-
-
 class P3TalkForm(P3TalkFormMixin, cforms.TalkForm):
     type = P3SubmissionForm.base_fields['type']
 
     class Meta(cforms.TalkForm.Meta):
         exclude = ('duration', 'qa_duration',)
+
 
 class P3SpeakerForm(cforms.SpeakerForm):
     bio = forms.CharField(
@@ -261,146 +192,6 @@ class FormTicketPartner(forms.ModelForm):
     class Meta:
         model = cmodels.Ticket
         fields = ('name',)
-
-
-class P3ProfilePersonalDataForm(forms.ModelForm):
-    first_name = forms.CharField(max_length=30)
-    last_name = forms.CharField(max_length=30)
-    phone = forms.CharField(
-        help_text=_('If you opt-in the privacy settings, '
-                    'we can send you important communications via SMS.'
-                    '<br />Use the international format, '
-                    'eg: +99-012-3456789.<br/>This number will <i>never</i> be published.'),
-        max_length=30,
-        required=False,
-    )
-    birthday = forms.DateField(
-        label=_('Date of birth'),
-        help_text=_('We require date of birth for speakers to accommodate for local '
-                    'laws regarding minors.<br />'
-                    'Format: YYYY-MM-DD<br />This date will <i>never</i> be published.'),
-        input_formats=('%Y-%m-%d',),
-        widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}),
-        required=False,
-    )
-
-    class Meta:
-        model = cmodels.AttendeeProfile
-        fields = ('phone', 'birthday')
-
-    def clean_phone(self):
-        value = self.cleaned_data.get('phone', '')
-        try:
-            self.instance.user.speaker
-        except (AttributeError, User.DoesNotExist, cmodels.Speaker.DoesNotExist):
-            pass
-        else:
-            if not value:
-                raise forms.ValidationError(_('This field is required for a speaker'))
-        return value
-
-    def clean_birthday(self):
-        value = self.cleaned_data.get('birthday', '')
-        try:
-            self.instance.user.speaker
-        except (AttributeError, User.DoesNotExist, cmodels.Speaker.DoesNotExist):
-            pass
-        else:
-            if not value:
-                raise forms.ValidationError(_('This field is required for a speaker'))
-        return value
-
-
-class P3ProfileEmailContactForm(forms.Form):
-    email = forms.EmailField(label="Enter new email")
-
-    def __init__(self, *args, **kw):
-        self.user = kw.pop('user', None)
-        super(P3ProfileEmailContactForm, self).__init__(*args, **kw)
-
-    def clean_email(self):
-        value = self.cleaned_data['email'].strip()
-        if self.user:
-            if value != self.user.email and User.objects.filter(email__iexact=value).exists():
-                raise forms.ValidationError(_('Email already registered'))
-        return value
-
-
-class P3ProfileSpamControlForm(forms.ModelForm):
-    spam_recruiting = forms.BooleanField(label=_('I want to receive a few selected job offers through EuroPython.'),
-                                         required=False)
-    spam_user_message = forms.BooleanField(label=_('I want to receive private messages from other participants.'),
-                                           required=False)
-    spam_sms = forms.BooleanField(label=_('I want to receive SMS during the conference for main communications.'),
-                                  required=False)
-    class Meta:
-        model = models.P3Profile
-        fields = ('spam_recruiting', 'spam_user_message', 'spam_sms')
-
-
-class P3FormTickets(aforms.FormTickets):
-    coupon = forms.CharField(
-        label=_('Insert your discount code and save money!'),
-        max_length=10,
-        required=False,
-        widget=forms.TextInput(attrs={'size': 10}),
-    )
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super(P3FormTickets, self).__init__(*args, **kwargs)
-        # Deleting payment field because I want to delay this choice
-        del self.fields['payment']
-
-        # Fields related to hotel reservations behave differently;
-        # first of all the can be "multiple" in the sense that for the
-        # same fare type (e.g. HB3 - bed in triple room) there could
-        # entries for different periods (each entry can specify the
-        # number of available beds).
-        # Moreover each reservation must specify the "period".
-
-        # These cases will be handled in custom code of clean
-        for k in self.fields.keys():
-            if k.startswith('H'):
-                del self.fields[k]
-
-    def clean_coupon(self):
-        data = self.cleaned_data.get('coupon', '').strip()
-        if not data:
-            return None
-        if data[0] == '_':
-            raise forms.ValidationError(_('invalid coupon'))
-        try:
-            coupon = amodels.Coupon.objects.get(
-                conference=settings.CONFERENCE_CONFERENCE,
-                code__iexact=data)
-        except amodels.Coupon.DoesNotExist:
-            raise forms.ValidationError(_('invalid coupon'))
-        if not coupon.valid(self.user):
-            raise forms.ValidationError(_('invalid coupon'))
-        return coupon
-
-    def clean(self):
-        data = super(P3FormTickets, self).clean()
-
-        company = data.get('order_type') == 'deductible'
-        for ix, row in list(enumerate(data['tickets']))[::-1]:
-            fare = row[0]
-            if fare.ticket_type != 'company':
-                continue
-            if (company ^ (fare.code[-1] == 'C')):
-                del data['tickets'][ix]
-                del data[fare.code]
-
-        from conference.models import Fare
-        for fname in ('bed_reservations', 'room_reservations'):
-            for r in data.get(fname, []):
-                data['tickets'].append((Fare.objects.get(conference=settings.CONFERENCE_CONFERENCE,
-                                                         code=r['fare']), r))
-
-        if not data['tickets']:
-            raise forms.ValidationError('No tickets')
-
-        return data
 
 
 class P3EventBookingForm(cforms.EventBookingForm):
