@@ -475,9 +475,7 @@ from django.contrib.messages import constants as messages  # noqa
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
-# TODO umgelurgel: this is only required for ep2019;
-#  remove this after ep2019 and before ep2020
-MESSAGE_STORAGE = 'conference.messages.CustomFallbackStorage'
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 
 #
@@ -789,7 +787,7 @@ P3_USER_MESSAGE_FOOTER = '''
 This message was sent from a participant at the EuroPython conference.
 Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
-https://ep2019.europython.eu/accounts/profile/
+https://ep2020.europython.eu/accounts/profile/
 '''
 
 

@@ -193,7 +193,7 @@ def test_author_can_post_submit_slides_url(user_client):
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
 
     url = reverse("talks:submit_slides", args=[talk.slug])
-    payload = {"slides_url": "https://ep2019.europython.eu"}
+    payload = {"slides_url": "https://epstage.europython.eu"}
     response = user_client.post(url, data=payload)
 
     assert redirects_to(response, talk.get_absolute_url())
@@ -206,7 +206,7 @@ def test_author_can_post_submit_repository_url(user_client):
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
 
     url = reverse("talks:submit_slides", args=[talk.slug])
-    payload = {"repository_url": "https://ep2019.europython.eu"}
+    payload = {"repository_url": "https://epstage.europython.eu"}
     response = user_client.post(url, data=payload)
 
     assert redirects_to(response, talk.get_absolute_url())
@@ -282,7 +282,7 @@ def test_view_slides_remote_url_on_talk_detail_page(client):
     assert 'view slides' not in response.content.decode().lower()
 
     # Slides URL does appear when the slides have been uploaded
-    talk.slides_url = "ep2019.europython.eu"
+    talk.slides_url = "epstage.europython.eu"
     talk.save()
 
     response = client.get(url)

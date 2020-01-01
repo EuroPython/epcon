@@ -195,7 +195,7 @@ class Command(BaseCommand):
             ("social-media", "Social Media"),
             ("code-of-conduct", "Code of Conduct"),
             ("privacy", "Privacy policy"),
-            ("workgroups", "2019 Team"),
+            ("workgroups", "2020 Team"),
             ("photos", "Photos"),
             ("videos", "Videos"),
             ("eps", "EuroPython Society"),

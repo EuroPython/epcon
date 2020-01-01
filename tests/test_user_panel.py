@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 import responses
 
 from assopy.models import Invoice, Order, OrderItem
-from conference.models import Ticket, Conference, FARE_TICKET_TYPES
+from conference.models import Ticket, FARE_TICKET_TYPES
 from conference.invoicing import create_invoices_for_order
 from conference.user_panel import PICTURE_CHOICES
 from p3.models import TicketConference
@@ -103,12 +103,7 @@ def test_privacy_settings_updates_profile(user_client):
 
 @responses.activate
 def test_user_panel_manage_ticket(client):
-    Conference.objects.create(
-        code=settings.CONFERENCE_CONFERENCE,
-        name=settings.CONFERENCE_NAME,
-        conference_start="2019-07-08",
-        conference_end="2019-07-14",
-    )
+    get_default_conference()
     Email.objects.create(code="purchase-complete")
     fare = FareFactory()
     user = make_user(is_staff=True)
@@ -134,12 +129,7 @@ def test_user_panel_manage_ticket(client):
 
 @responses.activate
 def test_user_panel_update_ticket(client):
-    Conference.objects.create(
-        code=settings.CONFERENCE_CONFERENCE,
-        name=settings.CONFERENCE_NAME,
-        conference_start="2019-07-08",
-        conference_end="2019-07-14",
-    )
+    get_default_conference()
     Email.objects.create(code="purchase-complete")
     fare = FareFactory()
     user = make_user(is_staff=True)
@@ -450,7 +440,7 @@ def test_profile_settings_update_show_url_image(user_client):
     response = user_client.post(url, data={
         **required_fields,
         "picture_options": PICTURE_CHOICES.url,
-        "image_url": "https://ep2019.europython.eu",
+        "image_url": "https://epstage.europython.eu",
     })
 
     assert response.status_code == 200
