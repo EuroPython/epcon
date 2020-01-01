@@ -81,6 +81,7 @@ LOCAL_CURRENCY_BY_YEAR = {
     # Using EUR here because we don't need to do conversion to CHF on our own,
     # nor put it on the invoices.
     2019: "EUR",
+    2020: "EUR",
 }
 
 EP_CITY_FOR_YEAR = {
@@ -88,6 +89,7 @@ EP_CITY_FOR_YEAR = {
     2017: "Rimini",
     2018: "Edinburgh",
     2019: "Basel",
+    2020: "Dublin",
 }
 
 ADDITIONAL_TEXT_FOR_YEAR = {

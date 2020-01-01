@@ -97,7 +97,7 @@ class FareFactory(factory.django.DjangoModelFactory):
 
     @factory.lazy_attribute
     def name(self):
-        return "EuroPython2019 – %s" % ALL_POSSIBLE_FARE_CODES[self.code]
+        return "EuroPython2020 – %s" % ALL_POSSIBLE_FARE_CODES[self.code]
 
     @factory.lazy_attribute
     def start_validity(self):
@@ -267,7 +267,7 @@ class ConferenceFactory(factory.django.DjangoModelFactory):
         model = "conference.Conference"
         django_get_or_create = ('code',)
 
-    name = 'EuroPython 2020'
+    name = settings.CONFERENCE_NAME
     code = settings.CONFERENCE_CONFERENCE
 
     conference_start = factory.LazyAttribute(lambda obj: timezone.now() + timedelta(days=30))
