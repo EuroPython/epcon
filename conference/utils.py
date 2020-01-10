@@ -1,15 +1,11 @@
-
-import json
 import logging
 import os.path
 import re
 import subprocess
-import tempfile
 from collections import defaultdict
 
 from django.conf import settings as dsettings
 from django.core.mail import send_mail as real_send_mail
-from django.core.urlresolvers import reverse
 
 from conference import settings
 from conference.models import VotoTalk, EventTrack
