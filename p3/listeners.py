@@ -4,8 +4,8 @@ from . import models
 
 from assopy.models import order_created, purchase_completed, ticket_for_user, user_created, user_identity_created
 from conference.listeners import fare_price, fare_tickets
-from conference.signals import attendees_connected, event_booked
-from conference.models import AttendeeProfile, Ticket, Talk
+from conference.signals import attendees_connected
+from conference.models import AttendeeProfile, Ticket
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse

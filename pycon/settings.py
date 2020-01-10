@@ -193,14 +193,15 @@ TEMPLATES = [
                 "django.template.context_processors.csrf",
                 "django.template.context_processors.request",
                 "django.template.context_processors.tz",
-                "p3.context_processors.settings",
-                "conference.context_processors.current_url",
-                "conference.context_processors.stuff",
                 "sekizai.context_processors.sekizai",
                 "cms.context_processors.cms_settings",
                 "django.template.context_processors.static",
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
+                # Epcon context processors
+                "p3.context_processors.settings",
+                "conference.context_processors.current_url",
+                "conference.context_processors.stuff",
             ],
             "loaders": [
                 "django.template.loaders.filesystem.Loader",
@@ -499,9 +500,6 @@ CONFERENCE_TALK_VOTING_ELIGIBLE = (
 )
 
 CONFERENCE_FORMS = {
-    'PaperSubmission': 'p3.forms.P3SubmissionForm',
-    'AdditionalPaperSubmission': 'p3.forms.P3SubmissionAdditionalForm',
-    'Profile': 'p3.forms.P3ProfileForm',
     'EventBooking': 'p3.forms.P3EventBookingForm',
 }
 
