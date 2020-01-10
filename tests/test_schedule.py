@@ -70,30 +70,3 @@ def test_names_are_not_abbreviated(client):
     assert template_used(response, 'ep19/bs/schedule/schedule.html')
     assert 'J. Doedoe' not in response.content.decode()
     assert 'Joejoe Doedoe' in response.content.decode()
-
-    # TODO umgelurgel: these views do not exist for ep2019 - we should either
-    #   remove these tests or add back the views
-    # list_url = reverse(
-    #     'p3-schedule-list',
-    #     kwargs={'conference': conference.code}
-    # )
-    #
-    # response = client.get(list_url)
-    # assert response.status_code == HTTP_OK_200
-    # assert 'J. Doedoe' not in response.content.decode('utf-8')
-    # assert 'Joejoe Doedoe' in response.content.decode('utf-8')
-    # assert template_used(response, 'p3/schedule_list.html')
-    #
-    # # test name abbreviations in ical output
-    # ical_url = reverse(
-    #     'p3-schedule-ics',
-    #     kwargs={'conference': conference.code}
-    # )
-    #
-    # # Currently we have neither in the ical version...
-    # # FIXME(?) https://github.com/EuroPython/epcon/issues/800
-    # response = client.get(ical_url)
-    # assert response.status_code == HTTP_OK_200
-    # assert response['Content-Type'] == 'text/calendar'
-    # assert 'J. Doedoe' not in response.content.decode('utf-8')
-    # assert 'Joejoe Doedoe' not in response.content.decode('utf-8')

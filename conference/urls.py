@@ -11,22 +11,6 @@ urlpatterns = [
         name="conference-profile",
     ),
     url(
-        r"^u/(?P<uuid>[\w]{6})/?$",
-        views.user_profile_link,
-        name="conference-profile-link",
-    ),
-    url(
-        r"^u/(?P<uuid>[\w]{6})/message?$",
-        views.user_profile_link_message,
-        name="conference-profile-link-message",
-    ),
-    url(
-        r"^my_conferences/$",
-        views.user_conferences,
-        name="conference-profile-conferences",
-    ),
-    url(r"^myself$", views.myself_profile, name="conference-myself-profile"),
-    url(
         r"^speakers/(?P<slug>[\w-]+)", views.speaker, name="conference-speaker"
     ),
     url(r"^talks/report", views.talk_report, name="conference-talk-report"),

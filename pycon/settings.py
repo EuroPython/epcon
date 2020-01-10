@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Django settings for pycon project.
-import os
 import os.path
 import sys
 
@@ -706,13 +705,6 @@ def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
 
 
 CONFERENCE_TICKET_BADGE_ENABLED = True
-CONFERENCE_TICKET_BADGE_PROG_ARGS = ['-e', '0', '-p', 'A4', '-n', '1']
-
-
-def CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION(tickets):
-    from p3.utils import conference_ticket_badge
-
-    return conference_ticket_badge(tickets)
 
 
 def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):

@@ -6,13 +6,12 @@ from django.conf import settings as dsettings
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect, render, render_to_response
-from django.template.response import TemplateResponse
 
 from common.decorators import render_to_json
 from common.decorators import render_to_template
 from conference import dataaccess, models, settings, utils
 from conference.decorators import speaker_access, talk_access, profile_access
-from conference.forms import AttendeeLinkDescriptionForm, SpeakerForm, TalkForm
+from conference.forms import SpeakerForm, TalkForm
 
 
 class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
@@ -270,82 +269,3 @@ def covers(request, conference):
         'events': ordered,
     }
     return render(request, 'conference/covers.html', ctx)
-
-
-@login_required
-def user_profile_link(request, uuid):
-    """
-    """
-    profile = get_object_or_404(models.AttendeeProfile, uuid=uuid).user_id
-    conf = models.Conference.objects.current()
-    active = conf.conference() or 1
-    if request.user.id == profile:
-        if active:
-            p, _ = models.Presence.objects.get_or_create(profile_id=profile, conference=conf.code)
-        return redirect('conference-myself-profile')
-
-    uid = request.user.id
-    created = linked = False
-    try:
-        link = models.AttendeeLink.objects.getLink(uid, profile)
-        linked = True
-    except models.AttendeeLink.DoesNotExist:
-        if active:
-            link = models.AttendeeLink(attendee1_id=uid, attendee2_id=profile)
-            link.save()
-
-            from conference.signals import attendees_connected
-            attendees_connected.send(link, attendee1=uid, attendee2=profile)
-
-            created = True
-            linked = True
-    form = AttendeeLinkDescriptionForm(initial={
-        'message': link.message,
-    })
-    ctx = {
-        'profile2': profile,
-        'created': created,
-        'linked': linked,
-        'form': form,
-    }
-    return render(request, 'conference/profile_link.html', ctx)
-
-
-@login_required
-@render_to_json
-def user_profile_link_message(request, uuid):
-    profile = get_object_or_404(models.AttendeeProfile, uuid=uuid).user_id
-    uid = request.user.id
-    if uid == profile:
-        return {}
-
-    try:
-        link = models.AttendeeLink.objects.getLink(uid, profile)
-    except models.AttendeeLink.DoesNotExist:
-        raise http.Http404()
-
-    if request.method == 'POST':
-        form = AttendeeLinkDescriptionForm(data=request.POST)
-        if form.is_valid():
-            link.message = form.cleaned_data['message']
-            link.save()
-    return {}
-
-
-@login_required
-def user_conferences(request):
-    uid = request.user.id
-    conferences = models.Conference.objects.filter(
-        code__in=models.Presence.objects.filter(profile=uid).values('conference'))
-    people = []
-    for p in models.AttendeeLink.objects.findLinks(uid).order_by('timestamp'):
-        if p.attendee1_id == uid:
-            p.other = p.attendee2_id
-        else:
-            p.other = p.attendee1_id
-        people.append(p)
-    ctx = {
-        'conferences': conferences,
-        'people': people,
-    }
-    return render(request, 'conference/user_conferences.html', ctx)

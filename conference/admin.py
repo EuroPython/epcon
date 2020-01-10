@@ -575,23 +575,6 @@ class SponsorAdmin(admin.ModelAdmin):
         return ", ".join(s.conference for s in obj.sponsorincome_set.all())
 
 
-class MediaPartnerConferenceInlineAdmin(admin.TabularInline):
-    model = models.MediaPartnerConference
-    extra = 1
-
-
-class MediaPartnerAdmin(admin.ModelAdmin):
-    prepopulated_fields = {"slug": ("partner",)}
-    list_display = ("partner", "url", "conferences")
-    inlines = [MediaPartnerConferenceInlineAdmin]
-
-    def conferences(self, obj):
-        """Will give the conferences which the partner has participated"""
-        return ", ".join(
-            s.conference for s in obj.mediapartnerconference_set.all()
-        )
-
-
 class TrackInlineAdmin(admin.TabularInline):
     model = models.Track
     extra = 1
@@ -1180,7 +1163,6 @@ admin.site.register(models.DidYouKnow, DidYouKnowAdmin)
 admin.site.register(models.ExchangeRate, ExchangeRateAdmin)
 admin.site.register(models.Fare, FareAdmin)
 admin.site.register(models.Hotel, HotelAdmin)
-admin.site.register(models.MediaPartner, MediaPartnerAdmin)
 admin.site.register(models.Quote, QuoteAdmin)
 admin.site.register(models.Schedule, ScheduleAdmin)
 admin.site.register(models.Speaker, SpeakerAdmin)

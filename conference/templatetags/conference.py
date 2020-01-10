@@ -678,38 +678,6 @@ def conference_sponsor(conference=None, only_tags=None, exclude_tags=None):
 
 
 @register.tag
-def conference_mediapartner(parser, token):
-    """
-    {% conference_mediapartner [ conference ] as var %}
-    """
-    contents = token.split_contents()
-    tag_name = contents[0]
-    if contents[-2] != 'as':
-        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-    var_name = contents[-1]
-    contents = contents[1:-2]
-
-    conference = None
-    if contents:
-        conference = contents.pop(0)
-
-    class MediaPartnerNode(TNode):
-        def __init__(self, conference, var_name):
-            self.var_name = var_name
-            self.conference = self._set_var(conference)
-
-        def render(self, context):
-            partner = models.MediaPartner.objects.all()
-            conference = self._get_var(self.conference, context)
-            if conference:
-                partner = partner.filter(mediapartnerconference__conference = conference)
-            partner = partner.order_by('partner')
-            context[self.var_name] = partner
-            return ''
-    return MediaPartnerNode(conference, var_name)
-
-
-@register.tag
 def render_page_template(parser, token):
     contents = token.split_contents()
     try:
@@ -1247,29 +1215,6 @@ def current_conference():
 @register.simple_tag()
 def conference_fares(conf=settings.CONFERENCE):
     return [f for f in dataaccess.fares(conf) if f['valid']]
-
-
-@register.simple_tag(takes_context=True)
-def render_schedule_list(context, conference, exclude_tags=None, exclude_tracks=None):
-    ctx = context.flatten()
-
-    events = dataaccess.events(conf=conference)
-    if exclude_tags:
-        exclude = set(exclude_tags.split(','))
-        events = [x for x in events if len(x['tags'] & exclude) == 0]
-
-    if exclude_tracks:
-        exclude = set(exclude_tracks.split(','))
-        events = [x for x in events if len(set(x['tracks']) & exclude) == 0]
-
-    grouped = defaultdict(list)
-    for e in events:
-        grouped[e['time'].date()].append(e)
-    ctx.update({
-        'conference': conference,
-        'events': sorted(grouped.items()),
-    })
-    return render_to_string('conference/render_schedule_list.html', ctx)
 
 
 @register.filter

@@ -29,21 +29,7 @@ class TestView(TestCase):
         })
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip('todo')
-    def test_conference_profile_conferences(self):
-        # conference-profile-conferences -> conference.views.user_conferences
-        url = reverse('conference-profile-conferences')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @unittest.skip('todo')
-    def test_conference_myself_profile(self):
-        # conference-myself-profile -> conference.views.myself_profile
-        url = reverse('conference-myself-profile')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
+
     @unittest.skip('todo')
     def test_conference_profile(self):
         # conference-profile -> conference.views.user_profile
@@ -176,12 +162,5 @@ class TestView(TestCase):
     def test_conference_profile_link(self):
         # conference-profile-link -> conference.views.user_profile_link
         url = reverse('conference-profile-link')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip('todo')
-    def test_conference_profile_link_message(self):
-        # conference-profile-link-message -> conference.views.user_profile_link_message
-        url = reverse('conference-profile-link-message')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)

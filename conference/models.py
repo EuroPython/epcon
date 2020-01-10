@@ -421,39 +421,6 @@ class AttendeeProfile(models.Model):
         return MultilingualContent.objects.getContent(self, 'bios', language)
 
 
-class Presence(models.Model):
-    """
-    Presence of a participant in a conference.
-    """
-    profile = models.ForeignKey(AttendeeProfile, related_name='presences', on_delete=models.CASCADE)
-    conference = models.CharField(max_length=10)
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = (('profile', 'conference'),)
-
-class AttendeeLinkManager(models.Manager):
-    def findLinks(self, uid):
-        return AttendeeLink.objects.filter(
-                models.Q(attendee1=uid) |
-                models.Q(attendee2=uid))
-
-    def getLink(self, uid1, uid2):
-        return AttendeeLink.objects.get(
-                models.Q(attendee1=uid1, attendee2=uid2) |
-                models.Q(attendee1=uid2, attendee2=uid1))
-
-class AttendeeLink(models.Model):
-    """
-    Connection between two participants
-    """
-    attendee1 = models.ForeignKey(AttendeeProfile, related_name='link1', on_delete=models.CASCADE)
-    attendee2 = models.ForeignKey(AttendeeProfile, related_name='link2', on_delete=models.CASCADE)
-    message = models.TextField(blank=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    objects = AttendeeLinkManager()
-
 class SpeakerManager(models.Manager):
     def byConference(self, conf, only_accepted=True, talk_type=None):
         """
@@ -1051,35 +1018,6 @@ class SponsorIncome(models.Model):
     sponsor = models.ForeignKey(Sponsor, on_delete=models.CASCADE)
     conference = models.CharField(max_length=20)
     income = models.PositiveIntegerField()
-    tags = TagField()
-
-    class Meta:
-        ordering = ['conference']
-
-
-class MediaPartner(models.Model):
-    """
-    The media partners are the sponsors who do not pay but that offer visibility
-    of some kind.
-    """
-    partner = models.CharField(max_length=100, help_text='The media partner name')
-    slug = models.SlugField()
-    url = models.URLField(blank=True)
-    logo = models.ImageField(
-        upload_to=_fs_upload_to('media-partner'), blank = True,
-        help_text='Insert a raster image big enough to be scaled as needed'
-    )
-
-    class Meta:
-        ordering = ['partner']
-
-    def __str__(self):
-        return self.partner
-
-
-class MediaPartnerConference(models.Model):
-    partner = models.ForeignKey(MediaPartner, on_delete=models.CASCADE)
-    conference = models.CharField(max_length = 20)
     tags = TagField()
 
     class Meta:
