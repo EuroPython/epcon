@@ -132,12 +132,6 @@ ADMIN_TICKETS_STATS_EMAIL_LOG = getattr(settings, 'CONFERENCE_ADMIN_TICKETS_STAT
 
 ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = getattr(settings, 'CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY', ['conference'])
 
-def _VIDEO_COVER_EVENTS(conference):
-    from conference import dataaccess
-    return [ x['id'] for x in dataaccess.events(conf=conference) ]
-
-VIDEO_COVER_EVENTS = getattr(settings, 'CONFERENCE_VIDEO_COVER_EVENTS', _VIDEO_COVER_EVENTS)
-
 def _VIDEO_COVER_IMAGE(conference, eid, type='front', thumb=False):
     return None
 

@@ -41,39 +41,3 @@ urlpatterns = [
         name="conference-sponsor-json",
     ),
 ]
-
-urlpatterns += [
-    url(
-        r"^schedule/(?P<conference>.*)/(?P<slug>[\w-]+)/$",
-        views.schedule,
-        name="conference-schedule",
-    ),
-    url(
-        r"^schedule/(?P<conference>.*)/(?P<slug>[\w-]+)/(?P<eid>\d+)/interest$",  # NOQA
-        views.schedule_event_interest,
-        name="conference-schedule-event-interest",
-    ),
-    url(
-        r"^schedule/(?P<conference>.*)/(?P<slug>[\w-]+)/(?P<eid>\d+)/booking$",
-        views.schedule_event_booking,
-        name="conference-schedule-event-booking",
-    ),
-    url(
-        r"^schedule/(?P<conference>.*)/events/booking$",
-        views.schedule_events_booking_status,
-        name="conference-schedule-events-booking-status",
-    ),
-    url(
-        r"^schedule/(?P<conference>.*)/events/expected_attendance$",
-        views.schedule_events_expected_attendance,
-        name="conference-schedule-events-expected-attendance",
-    ),
-]
-
-urlpatterns += [
-    url(
-        r"^(?P<conference>[\w-]+)/covers$",
-        views.covers,
-        name="conference-covers",
-    )
-]

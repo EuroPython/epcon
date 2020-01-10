@@ -21,16 +21,6 @@ class TestView(TestCase):
         self.assertTrue(is_logged)
 
     @unittest.skip('todo')
-    def test_conference_covers(self):
-        # conference-covers -> conference.views.covers
-        conference = ConferenceFactory()
-        url = reverse('conference-covers', kwargs={
-            'conference': conference.code,
-        })
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip('todo')
     def test_conference_profile(self):
         # conference-profile -> conference.views.user_profile
         url = reverse('conference-profile')
@@ -48,41 +38,6 @@ class TestView(TestCase):
     def test_conference_places(self):
         # conference-places -> conference.views.places
         url = reverse('conference-places')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip('todo')
-    def test_conference_schedule(self):
-        # conference-schedule -> conference.views.schedule
-        url = reverse('conference-schedule')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip('todo')
-    def test_conference_schedule_event_booking(self):
-        # conference-schedule-event-booking -> conference.views.schedule_event_booking
-        url = reverse('conference-schedule-event-booking')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip('todo')
-    def test_conference_schedule_event_interest(self):
-        # conference-schedule-event-interest -> conference.views.schedule_event_interest
-        url = reverse('conference-schedule-event-interest')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip('todo')
-    def test_conference_schedule_events_booking_status(self):
-        # conference-schedule-events-booking-status -> conference.views.schedule_events_booking_status
-        url = reverse('conference-schedule-events-booking-status')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip('todo')
-    def test_conference_schedule_events_expected_attendance(self):
-        # conference-schedule-events-expected-attendance -> conference.views.schedule_events_expected_attendance
-        url = reverse('conference-schedule-events-expected-attendance')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 

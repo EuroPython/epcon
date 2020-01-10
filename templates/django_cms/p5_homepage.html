@@ -94,24 +94,6 @@
         {%endif%}
     {% endblock SPONSORS %}
 
-    <section class="quote-section">
-        <div id="quotes" class="quote-slider grid-container clearfix">
-            {% conference_quotes limit 3 as quotes %}
-            {% for quote in quotes %}
-            <div class="">
-                <div class="grid-20 prefix-10 quote-image">
-                    {% thumbnail quote.image 150x150 crop=True upscale=True as thumbnail %}
-                    <img src="{{ thumbnail.url }}" />
-                </div>
-                <div class="grid-60 suffix-10">
-                    <q>{{ quote.text }}</q>
-                    <p>- {{ quote.who }}, {{ quote.activity }}</p>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
-
     <section class="discover-europython">
         <div class="grid-container">
             <div class="grid-100">

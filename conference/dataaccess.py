@@ -707,32 +707,6 @@ user_events_interest = cache_me(
     models=(models.EventInterest,),
     key='user_events_interest:%(uid)s:%(conference)s')(user_events_interest, _i_user_events_interest)
 
-def conference_booking_status(conference):
-    booked = models.EventBooking.objects\
-        .filter(event__schedule__conference=conference)\
-        .values_list('event', flat=True)\
-        .distinct()
-    bookable = models.Event.objects\
-        .filter(bookable=True, schedule__conference=conference)\
-        .values_list('id', flat=True)
-    output = {}
-    for e in set(list(booked) + list(bookable)):
-        output[e] = models.EventBooking.objects.booking_status(e)
-    return output
-
-def _i_conference_booking_status(sender, **kw):
-    if sender is models.EventBooking:
-        conference = kw['instance'].event.schedule.conference
-    elif sender is models.Track:
-        conference = kw['instance'].schedule.conference
-    elif sender is models.Event:
-        conference = kw['instance'].schedule.conference
-    return 'conference_booking_status:%s' % conference
-
-conference_booking_status = cache_me(
-    models=(models.EventBooking, models.Track, models.Event,),
-    key='conference_booking_status:%(conference)s')(conference_booking_status, _i_conference_booking_status)
-
 def expected_attendance(conference):
     data = models.Schedule.objects.expected_attendance(conference)
     vals = list(data.values())

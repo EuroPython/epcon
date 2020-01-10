@@ -397,28 +397,6 @@ def schedule_context(schedule):
     return timetable
 
 
-@register.inclusion_tag('conference/render_schedule.html', takes_context = True)
-def render_schedule(context, schedule):
-    """
-    {% render_schedule schedule %}
-    """
-    if isinstance(schedule, int):
-        sid = schedule
-    elif isinstance(schedule, str):
-        try:
-            c, s = schedule.split('/')
-        except ValueError:
-            raise template.TemplateSyntaxError('%s is not in the form of conference/slug' % schedule)
-        sid = models.Schedule.objects.values('id').get(conference=c, slug=s)['id']
-    else:
-        sid = schedule.id
-
-    return {
-        'sid': sid,
-        'timetable': utils.TimeTable2.fromSchedule(sid),
-    }
-
-
 @register.filter
 def timetable_iter_fixed_steps(tt, step):
     return tt.iterOnTimes(step=int(step))
@@ -876,35 +854,6 @@ def embed_video(context, value, args=""):
     if output:
         output['html'] = mark_safe(output['html'])
     return output
-
-
-@register.tag
-def conference_quotes(parser, token):
-    """
-    {% conference_quotes [ limit num ] as var %}
-    """
-    contents = token.split_contents()
-    tag_name = contents.pop(0)
-    if contents[-2] != 'as':
-        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-    var_name = contents[-1]
-    contents = contents[:-2]
-
-    if contents:
-        contents.pop(0)
-        limit = int(contents.pop(0))
-
-    class QuotesNode(TNode):
-        def __init__(self, limit, var_name):
-            self.var_name = var_name
-            self.limit = limit
-        def render(self, context):
-            quotes = models.Quote.objects.order_by('?')
-            if self.limit:
-                quotes = quotes[:self.limit]
-            context[self.var_name] = list(quotes)
-            return ''
-    return QuotesNode(limit, var_name)
 
 
 @register.filter
@@ -1489,17 +1438,6 @@ def user_events_interest(context, uid=None, conference=None, event_id=None):
         return ei.get(event_id, 0)
     else:
         return ei
-
-
-@register.simple_tag(takes_context=True)
-def conference_booking_status(context, conference=None, event_id=None):
-    if conference is None:
-        conference = settings.CONFERENCE
-    status = dataaccess.conference_booking_status(conference)
-    if event_id is not None:
-        return status.get(event_id)
-    else:
-        return status
 
 
 @register.simple_tag()

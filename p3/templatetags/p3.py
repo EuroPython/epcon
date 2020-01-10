@@ -13,29 +13,6 @@ from p3 import dataaccess
 
 register = template.Library()
 
-@register.inclusion_tag('p3/box_toc.html', takes_context=True)
-def box_toc(context):
-    return context
-
-@register.inclusion_tag('p3/box_sponsor.html', takes_context=True)
-def box_sponsor(context):
-    return context
-
-@register.inclusion_tag('p3/box_newsletter.html', takes_context=True)
-def box_newsletter(context):
-    return context
-
-
-@register.inclusion_tag('p3/box_didyouknow.html', takes_context = True)
-def box_didyouknow(context):
-    try:
-        d = ConferenceModels.DidYouKnow.objects.filter(visible = True).order_by('?')[0]
-    except IndexError:
-        d = None
-    return {
-        'd': d,
-        'LANGUAGE_CODE': context.get('LANGUAGE_CODE'),
-    }
 
 @register.inclusion_tag('p3/box_talks_conference.html', takes_context = True)
 def box_talks_conference(context, talks):

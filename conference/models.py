@@ -1413,25 +1413,6 @@ class Hotel(models.Model):
         return self.name
 
 
-class DidYouKnow(models.Model):
-    """
-    Do you know that ?
-    """
-    visible = models.BooleanField('visible', default = True)
-    messages = GenericRelation(MultilingualContent)
-
-
-class Quote(models.Model):
-    who = models.CharField(max_length=100)
-    conference = models.CharField(max_length=20)
-    text = models.TextField()
-    activity = models.CharField(max_length=50, blank=True)
-    image = models.ImageField(upload_to=_fs_upload_to('quote', 'who'), blank=True)
-
-    class Meta:
-        ordering = ['conference', 'who']
-
-
 class VotoTalk(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     talk = models.ForeignKey(Talk, on_delete=models.CASCADE)
@@ -1443,31 +1424,6 @@ class VotoTalk(models.Model):
         unique_together = (('user', 'talk'),)
         verbose_name = 'Talk voting'
         verbose_name_plural = 'Talk votings'
-#
-#def _clear_track_cache(sender, **kwargs):
-#    if hasattr(sender, 'schedule_id'):
-#        Track.objects.clear_cache(sender.schedule_id)
-#post_save.connect(_clear_track_cache, sender=Track)
-#
-#def _clear_talkspeaker_cache(sender, **kwargs):
-#    o = kwargs['instance']
-#    if isinstance(o, Talk):
-#        conference = o.conference
-#    else:
-#        conference = None
-#    TalkSpeaker.objects.clear_cache(conference)
-#post_save.connect(_clear_talkspeaker_cache, sender=Talk)
-#post_save.connect(_clear_talkspeaker_cache, sender=Speaker)
-#
-#def _clear_schedule_cache(sender, **kwargs):
-#    o = kwargs['instance']
-#    if isinstance(o, Event):
-#        conference = o.schedule.conference
-#    else:
-#        conference = o.event.schedule.conference
-#    Schedule.objects.clear_cache(conference)
-#post_save.connect(_clear_schedule_cache, sender=Event)
-#post_save.connect(_clear_schedule_cache, sender=EventInterest)
 
 from conference import listeners
 
