@@ -1,5 +1,5 @@
 {% extends "p3/base.html" %}
-{% load i18n conference p3 hcomments_tags formstyle %}
+{% load i18n conference p3 formstyle %}
 
 {% block PAGE_TITLE %}{{ talk.title }}{% endblock %}
 
@@ -27,16 +27,6 @@
 {% block EXTRA_HEAD %}
 {{ block.super }}
 {{ form.media }}
-<script type="text/javascript">//<![CDATA[
-    $(function() {
-        hcomments.comments({
-            'form': $('#add-comment form.new-comment'),
-            'wrapper': $('#comments'),
-            'comments': $('#comments li'),
-        });
-    });
-//]]>
-    </script>
 {% endblock %}
 
 
