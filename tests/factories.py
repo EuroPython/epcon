@@ -383,13 +383,6 @@ class ScheduleFactory(factory.django.DjangoModelFactory):
     date = factory.Faker("date_time_this_decade", before_now=True, after_now=True)
 
 
-class P3TalkFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = "p3.P3Talk"
-
-    talk = factory.SubFactory(TalkFactory)
-
-
 class TicketConferenceFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "p3.TicketConference"

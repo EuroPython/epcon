@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from pytest import mark
 
-from tests.common_tools import template_used  # , serve_response
+from tests.common_tools import template_used
 from conference.models import (
     Conference,
     Schedule,
@@ -18,9 +18,7 @@ from conference.models import (
 
 from django_factory_boy import auth as auth_factories
 
-from tests.factories import (
-    AssopyUserFactory, TalkFactory, TalkSpeakerFactory, SpeakerFactory, P3TalkFactory,
-)
+from tests.factories import AssopyUserFactory, TalkFactory, TalkSpeakerFactory, SpeakerFactory
 
 
 @mark.django_db
@@ -42,7 +40,6 @@ def test_names_are_not_abbreviated(client):
     talk = TalkFactory()
     AttendeeProfile.objects.getOrCreateForUser(user=user)
     TalkSpeakerFactory(talk=talk, speaker=SpeakerFactory(user=user))
-    P3TalkFactory(talk=talk)
 
     schedule = Schedule.objects.create(
         conference=conference.name,

@@ -18,7 +18,6 @@ from conference.cart import urlpatterns_ep19 as cart19_urls
 from conference.cfp import urlpatterns as cfp_urls
 from conference.debug_panel import urlpatterns as debugpanel_urls
 from conference.homepage import (
-    form_testing,
     generic_content_page,
     generic_content_page_with_sidebar,
     homepage,
@@ -36,9 +35,7 @@ admin.site.index_template = 'p3/admin/index.html'
 urlpatterns = [
     url(r'^$', homepage, name='homepage'),
     url(r'^generic-content-page/$', generic_content_page),
-    url(r'^generic-content-page/with-sidebar/$',
-        generic_content_page_with_sidebar),
-    url(r'^form-testing/$', form_testing),
+    url(r'^generic-content-page/with-sidebar/$', generic_content_page_with_sidebar),
     url(r'^user-panel/', include(user_panel_urls, namespace="user_panel")),
     url(r'^accounts/', include(accounts_urls, namespace="accounts")),
     url(r'^cfp/', include(cfp_urls, namespace="cfp")),
@@ -54,9 +51,7 @@ urlpatterns = [
     url(r'^cart/', include(cart19_urls, namespace="cart")),
     url(r'^p3/', include('p3.urls')),
     url(r'^conference/', include('conference.urls')),
-    url(r'^conference/talks/(?P<slug>[\w-]+)$', conference_views.talk,
-        {'talk_form': pforms.P3TalkForm},
-        name='conference-talk'),
+    url(r'^conference/talks/(?P<slug>[\w-]+)$', conference_views.talk, name='conference-talk'),
     url(r'^conference/speakers/(?P<slug>[\w-]+)', conference_views.speaker,
         {'speaker_form': pforms.P3SpeakerForm},
         name='conference-speaker'),

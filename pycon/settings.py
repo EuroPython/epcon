@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Django settings for pycon project.
 import os.path
-import sys
 
 import dj_database_url
 from decouple import config
@@ -410,10 +409,6 @@ CMS_LANGUAGES = {
     }
 }
 CMS_TEMPLATES = (
-    # ('django_cms/p5_homepage.html', 'Homepage'),
-    # ('django_cms/content.html', 'Content page'),
-    # ('django_cms/content-1col.html', 'Content page, single column'),
-    # ('django_cms/p5_home_splash.html', 'Homepage, splash'),
     # ('ep19/bs/content/generic_content_page.html', 'Generic Content Page'),
     # ('ep19/bs/homepage/home.html', 'Homepage'),
     ('ep19/bs/content/generic_content_page_with_sidebar.html',
