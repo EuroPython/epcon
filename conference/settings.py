@@ -97,14 +97,6 @@ TICKET_BADGE_ENABLED = getattr(settings, 'CONFERENCE_TICKET_BADGE_ENABLED', Fals
 # "ticket" is called passing a copy of the image returned by "tickets" and the instance
 # of a single participant, it must return the image of badge.
 
-import os.path
-import conference
-TICKED_BADGE_PROG = getattr(settings, 'CONFERENCE_TICKED_BADGE_PROG',
-                            os.path.join(os.path.dirname(conference.__file__), 'tools', 'ticket_badge.py'))
-TICKET_BADGE_PROG_ARGS = getattr(settings, 'CONFERENCE_TICKET_BADGE_PROG_ARGS', ['-e', '1', '-n', '6'])
-TICKET_BADGE_PROG_ARGS_ADMIN = getattr(settings, 'CONFERENCE_TICKET_BADGE_PROG_ARGS', ['-e', '0', '-p', 'A4', '-n', '2'])
-TICKET_BADGE_PREPARE_FUNCTION = getattr(settings, 'CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION', lambda tickets: [])
-
 SCHEDULE_ATTENDEES = getattr(settings, 'CONFERENCE_SCHEDULE_ATTENDEES', lambda schedule, forecast=False: 0)
 
 X_SENDFILE = getattr(settings, 'CONFERENCE_X_SENDFILE', None)
@@ -139,12 +131,6 @@ TALK_TYPES_TO_BE_VOTED = getattr(settings, 'CONFERENCE_VOTING_TALK_TYPES', DEFAU
 ADMIN_TICKETS_STATS_EMAIL_LOG = getattr(settings, 'CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG', None)
 
 ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = getattr(settings, 'CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY', ['conference'])
-
-def _VIDEO_COVER_EVENTS(conference):
-    from conference import dataaccess
-    return [ x['id'] for x in dataaccess.events(conf=conference) ]
-
-VIDEO_COVER_EVENTS = getattr(settings, 'CONFERENCE_VIDEO_COVER_EVENTS', _VIDEO_COVER_EVENTS)
 
 def _VIDEO_COVER_IMAGE(conference, eid, type='front', thumb=False):
     return None

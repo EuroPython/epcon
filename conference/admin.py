@@ -575,23 +575,6 @@ class SponsorAdmin(admin.ModelAdmin):
         return ", ".join(s.conference for s in obj.sponsorincome_set.all())
 
 
-class MediaPartnerConferenceInlineAdmin(admin.TabularInline):
-    model = models.MediaPartnerConference
-    extra = 1
-
-
-class MediaPartnerAdmin(admin.ModelAdmin):
-    prepopulated_fields = {"slug": ("partner",)}
-    list_display = ("partner", "url", "conferences")
-    inlines = [MediaPartnerConferenceInlineAdmin]
-
-    def conferences(self, obj):
-        """Will give the conferences which the partner has participated"""
-        return ", ".join(
-            s.conference for s in obj.mediapartnerconference_set.all()
-        )
-
-
 class TrackInlineAdmin(admin.TabularInline):
     model = models.Track
     extra = 1
@@ -877,32 +860,6 @@ class HotelAdmin(admin.ModelAdmin):
     _contacts.short_description = 'Contatti'
 
 
-class DidYouKnowAdmin(admin.ModelAdmin):
-    list_display = ('_message', 'visible')
-
-    form = MultiLingualForm.for_model(models.DidYouKnow)
-
-    def _message(self, o):
-        messages = dict( (c.language, c) for c in o.messages.all() if c.body)
-
-        try:
-            return messages[dsettings.LANGUAGES[0][0]].body
-        except KeyError:
-            if messages:
-                return list(messages.values())[0].body
-            else:
-                return 'no messages'
-
-
-
-class QuoteAdmin(admin.ModelAdmin):
-    list_display = ('who', 'conference', '_text')
-
-    def _text(self, o):
-        return o.text[:80]
-
-
-
 class FilterFareByTicketCode(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
@@ -1176,12 +1133,9 @@ admin.site.register(models.CaptchaQuestion, CaptchaQuestionAdmin)
 admin.site.register(models.Conference, ConferenceAdmin)
 admin.site.register(models.ConferenceTag, ConferenceTagAdmin)
 admin.site.register(models.Deadline, DeadlineAdmin)
-admin.site.register(models.DidYouKnow, DidYouKnowAdmin)
 admin.site.register(models.ExchangeRate, ExchangeRateAdmin)
 admin.site.register(models.Fare, FareAdmin)
 admin.site.register(models.Hotel, HotelAdmin)
-admin.site.register(models.MediaPartner, MediaPartnerAdmin)
-admin.site.register(models.Quote, QuoteAdmin)
 admin.site.register(models.Schedule, ScheduleAdmin)
 admin.site.register(models.Speaker, SpeakerAdmin)
 admin.site.register(models.Sponsor, SponsorAdmin)

@@ -11,22 +11,6 @@ urlpatterns = [
         name="conference-profile",
     ),
     url(
-        r"^u/(?P<uuid>[\w]{6})/?$",
-        views.user_profile_link,
-        name="conference-profile-link",
-    ),
-    url(
-        r"^u/(?P<uuid>[\w]{6})/message?$",
-        views.user_profile_link_message,
-        name="conference-profile-link-message",
-    ),
-    url(
-        r"^my_conferences/$",
-        views.user_conferences,
-        name="conference-profile-conferences",
-    ),
-    url(r"^myself$", views.myself_profile, name="conference-myself-profile"),
-    url(
         r"^speakers/(?P<slug>[\w-]+)", views.speaker, name="conference-speaker"
     ),
     url(r"^talks/report", views.talk_report, name="conference-talk-report"),
@@ -56,40 +40,4 @@ urlpatterns = [
         views.sponsor_json,
         name="conference-sponsor-json",
     ),
-]
-
-urlpatterns += [
-    url(
-        r"^schedule/(?P<conference>.*)/(?P<slug>[\w-]+)/$",
-        views.schedule,
-        name="conference-schedule",
-    ),
-    url(
-        r"^schedule/(?P<conference>.*)/(?P<slug>[\w-]+)/(?P<eid>\d+)/interest$",  # NOQA
-        views.schedule_event_interest,
-        name="conference-schedule-event-interest",
-    ),
-    url(
-        r"^schedule/(?P<conference>.*)/(?P<slug>[\w-]+)/(?P<eid>\d+)/booking$",
-        views.schedule_event_booking,
-        name="conference-schedule-event-booking",
-    ),
-    url(
-        r"^schedule/(?P<conference>.*)/events/booking$",
-        views.schedule_events_booking_status,
-        name="conference-schedule-events-booking-status",
-    ),
-    url(
-        r"^schedule/(?P<conference>.*)/events/expected_attendance$",
-        views.schedule_events_expected_attendance,
-        name="conference-schedule-events-expected-attendance",
-    ),
-]
-
-urlpatterns += [
-    url(
-        r"^(?P<conference>[\w-]+)/covers$",
-        views.covers,
-        name="conference-covers",
-    )
 ]

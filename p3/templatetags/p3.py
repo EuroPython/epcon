@@ -1,60 +1,18 @@
-
-
-import mimetypes
-import os
-import os.path
 import re
-import random
-import sys
-import urllib.request, urllib.parse, urllib.error
 from collections import defaultdict
-from datetime import datetime
-from itertools import groupby
 
 from django import template
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 
-from conference import dataaccess as cdataaccess
 from conference import models as ConferenceModels
-from conference.settings import STUFF_DIR, STUFF_URL
 
-from assopy import models as amodels
 from p3 import dataaccess
-from p3 import forms as p3forms
-from p3 import models
-
-
-mimetypes.init()
 
 register = template.Library()
 
-@register.inclusion_tag('p3/box_toc.html', takes_context=True)
-def box_toc(context):
-    return context
-
-@register.inclusion_tag('p3/box_sponsor.html', takes_context=True)
-def box_sponsor(context):
-    return context
-
-@register.inclusion_tag('p3/box_newsletter.html', takes_context=True)
-def box_newsletter(context):
-    return context
-
-
-@register.inclusion_tag('p3/box_didyouknow.html', takes_context = True)
-def box_didyouknow(context):
-    try:
-        d = ConferenceModels.DidYouKnow.objects.filter(visible = True).order_by('?')[0]
-    except IndexError:
-        d = None
-    return {
-        'd': d,
-        'LANGUAGE_CODE': context.get('LANGUAGE_CODE'),
-    }
 
 @register.inclusion_tag('p3/box_talks_conference.html', takes_context = True)
 def box_talks_conference(context, talks):
