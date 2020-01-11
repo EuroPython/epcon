@@ -255,6 +255,7 @@ INSTALLED_APPS = (
     'p3',
     'assopy',
     'conference',
+    'email_template',
 
     'djangocms_text_ckeditor',
     'cmsplugin_filer_file',
@@ -280,7 +281,6 @@ INSTALLED_APPS = (
     'django_xmlrpc',
     'rosetta',
 
-    'email_template',
     'filer',
     'easy_thumbnails',
 
@@ -813,6 +813,3 @@ DISABLE_CACHING = False
 # Complete project setup.
 if not os.path.exists(LOGS_DIR):
     os.makedirs(LOGS_DIR)
-
-# TODO: Remove the need for modifying python path in django settings.
-sys.path.insert(0, os.path.join(PROJECT_DIR, 'deps'))
