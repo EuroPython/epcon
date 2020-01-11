@@ -47,25 +47,6 @@ def profile(request):
 
 
 @login_required
-def profile_identities(request):
-    if request.method == 'POST':
-        try:
-            x = request.user.assopy_user.identities.get(identifier=request.POST['identifier'])
-        except:
-            return http.HttpResponseBadRequest()
-        log.info(
-            'Removed the identity "%s" from the user "%s" "%s"',
-            x.identifier,
-            x.user.name(),
-            x.user.user.email)
-        x.delete()
-    if request.is_ajax():
-        return http.HttpResponse('')
-    else:
-        return HttpResponseRedirectSeeOther(reverse('assopy-profile'))
-
-
-@login_required
 @render_to_template('assopy/billing.html')
 def billing(request, order_id=None):
     user = request.user.assopy_user

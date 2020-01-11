@@ -101,10 +101,6 @@ class Token(models.Model):
 # seguito ad un'identità fornita da janrain (profile_complete=False).
 user_created = dispatch.Signal(providing_args=['profile_complete'])
 
-# Segnale emesso quando una nuova identità viene aggiunta ad un utente (il
-# sender).
-user_identity_created = dispatch.Signal(providing_args=['identity'])
-
 
 class AssopyUserManager(models.Manager):
     def _create_user(
@@ -303,62 +299,6 @@ class AssopyUser(models.Model):
 
     def invoices(self):
         return Invoice.objects.filter(order__in=self.orders)
-
-
-class UserIdentityManager(models.Manager):
-    def create_from_profile(self, user, profile):
-        """
-        crea una UserIdentity estraendo i dati dal profilo, risultato di una
-        chiamata ad auth_info; l'identity sarà associata all'utente (assopy)
-        passato.
-        """
-        identifier = UserIdentity(
-            identifier=profile['identifier'],
-            user=user,
-            provider=profile['providerName'],
-        )
-        try:
-            identifier.display_name = profile['name']['formatted']
-        except KeyError:
-            identifier.display_name = profile.get('displayName')
-        identifier.gender = profile.get('gender')
-
-        if 'birthday' in profile:
-            birthday = profile.get('birthday', '').split('-')
-            if birthday[0] == '0000':
-                birthday[0] = '1900'
-            identifier.birthday = date(*list(map(int, birthday)))
-        try:
-            identifier.email = profile['verifiedEmail']
-        except KeyError:
-            identifier.email = profile.get('email')
-        identifier.url = profile.get('url')
-        identifier.photo = profile.get('photo')
-        identifier.phoneNumber = profile.get('phoneNumber')
-        try:
-            identifier.address = profile['address']['formatted']
-        except KeyError:
-            pass
-
-        identifier.save()
-        user_identity_created.send(sender=user, identity=identifier)
-        return identifier
-
-
-class UserIdentity(models.Model):
-    identifier = models.CharField(max_length=255, primary_key=True)
-    user = models.ForeignKey(AssopyUser, related_name='identities', on_delete=models.CASCADE)
-    provider = models.CharField(max_length=255)
-    display_name = models.TextField(blank=True)
-    gender = models.CharField(max_length=10, blank=True)
-    birthday = models.DateField(null=True)
-    email = models.EmailField(blank=True)
-    url = models.URLField()
-    photo = models.URLField()
-    phoneNumber = models.CharField(max_length=20, blank=True)
-    address = models.TextField(blank=True)
-
-    objects = UserIdentityManager()
 
 
 class Coupon(models.Model):
@@ -628,10 +568,6 @@ class VatFare(models.Model):
 # recuperare.
 order_created = dispatch.Signal(providing_args=['raw_items'])
 
-# segnale emesso da un ordine quando un questo viene "completato".  Al momento
-# l'unico meccanismo per accorgersi se un ordine è completo è pollare il
-# backend attraverso il metodo Order.complete.
-purchase_completed = dispatch.Signal(providing_args=[])
 
 # Implemented order payment options
 ORDER_PAYMENT = (
@@ -740,7 +676,6 @@ class Order(models.Model):
         r = len(invoices) > 0 and all(invoices)
         if r and not self._complete:
             log.info('purchase of order "%s" completed', self.code)
-            purchase_completed.send(sender=self)
         if r and update_cache:
             self._complete = r
             self.save()

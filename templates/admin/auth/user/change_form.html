@@ -84,18 +84,6 @@
                     <td>{{ d.email }}</td>
                 </tr>
                 {% endwith %}
-                {% with user_data.identities as d %}
-                    {% for x in d %}
-                    <tr>
-                        {% if forloop.counter == 1 %}
-                        <th rowspan="{{ d|length }}">Identities:</th>
-                        {% endif %}
-                        <td>
-                            <div title="{{ x.identifier }}">{{ x.provider }}</div>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                {% endwith %}
                 </tbody>
             </table>
         </div>

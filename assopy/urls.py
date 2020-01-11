@@ -6,11 +6,6 @@ from assopy import views
 urlpatterns = [
     # Manage user profile
     url(r"^profile/$", views.profile, name="assopy-profile"),
-    url(
-        r"^profile/identities$",
-        views.profile_identities,
-        name="assopy-profile-identities",
-    ),
     url(r"^billing/$", views.billing, name="assopy-billing"),
     url(r"^checkout/$", views.checkout, name="assopy-checkout"),
     url(r"^tickets/$", views.tickets, name="assopy-tickets"),

@@ -39,17 +39,7 @@
                     <p class="">{% trans "You can connect more web accounts to your profile, so that you can use any of them for logging in (without having to remember which one you used to create the account)." %}</p>
                     <div class="">
                         <ul id="web-accounts">
-                            {% for i in user.identities.all %}
-                            <li class="" data-identifier="{{ i.identifier }}">
-                                <p title="{{ i.identifier }}">{% if i.provider == "Other" %}OpenID{% else %}{{ i.provider }}{% endif %}
-                                &nbsp;<span title="{% trans 'Remove account' %}" class="icon icon-remove"><i class="fa fa-times-circle"></i></span>
-                                </p>
-                            </li>
-                            {% endfor %}
                         </ul>
-                        <form id="remove-identity" action="{% url "assopy-profile-identities" %}" method="post">
-                            <input type="hidden" name="identifier" value="" />
-                        </form>
                         <script type="text/javascript">
                             $('#web-accounts span.icon-remove').click(function(e) {
                                 if(!confirm('Are you sure?')) {
