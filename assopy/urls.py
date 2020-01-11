@@ -1,5 +1,4 @@
-from django.conf import settings as dsettings
-from django.conf.urls import url, include
+from django.conf.urls import url
 
 from assopy import views
 
@@ -16,20 +15,12 @@ urlpatterns = [
     url(r"^checkout/$", views.checkout, name="assopy-checkout"),
     url(r"^tickets/$", views.tickets, name="assopy-tickets"),
     url(
-        r"orders/(?P<order_id>\d+)/(?P<item_id>\d+)/voucher$",
-        views.voucher,
-        name="assopy-orderitem-voucher",
-    ),
-    url(
-        r"orders/(?P<order_id>\d+)/(?P<item_id>\d+)/refund$",
-        views.refund,
-        name="assopy-orderitem-refund",
-    ),
-    url(
         r"orders/(?P<assopy_id>.+)/completed$",
         views.order_complete,
         name="assopy-order-complete",
     ),
+
+    # Views below continue to be used as of EP2019/2020
     url(
         r"orders/(?P<order_code>.+)/invoices/(?P<code>.+).html$",
         views.invoice,
@@ -40,18 +31,6 @@ urlpatterns = [
         r"orders/(?P<order_code>.+)/invoices/(?P<code>.+).pdf$",
         views.invoice,
         name="assopy-invoice-pdf",
-        kwargs={"mode": "pdf"},
-    ),
-    url(
-        r"orders/(?P<order_code>.+)/credit-note/(?P<code>.+).html$",
-        views.credit_note,
-        name="assopy-credit_note-html",
-        kwargs={"mode": "html"},
-    ),
-    url(
-        r"orders/(?P<order_code>.+)/credit-note/(?P<code>.+).pdf$",
-        views.credit_note,
-        name="assopy-credit_note-pdf",
         kwargs={"mode": "pdf"},
     ),
 ]

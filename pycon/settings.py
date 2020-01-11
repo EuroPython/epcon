@@ -717,23 +717,6 @@ def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
                 fare__ticket_type='conference')
     return qs.exists()
 
-
-def ASSOPY_ORDERITEM_CAN_BE_REFUNDED(user, item):
-    if user.is_superuser:
-        return True
-    return False
-    if not item.ticket:
-        return False
-    ticket = item.ticket
-    if ticket.user != user:
-        return False
-    if ticket.fare.conference != CONFERENCE_CONFERENCE:
-        return False
-    if item.order.total() == 0:
-        return False
-    return item.order._complete
-
-
 #
 # XXX What is this AssoPy stuff ?
 #

@@ -228,8 +228,6 @@ class OrderAdmin(admin.ModelAdmin):
         my_urls = [
             url(r'^invoices/$', admin_view(self.edit_invoices), name='assopy-edit-invoices'),
             url(r'^stats/$', admin_view(self.stats), name='assopy-order-stats'),
-            url(r'^vouchers/$', admin_view(self.vouchers), name='assopy-order-vouchers'),
-            url(r'^vouchers/(?P<conference>[\w-]+)/(?P<fare>[\w-]+)/$', admin_view(self.vouchers_fare), name='assopy-order-vouchers-fare'),
             url(
                 r'^(?P<order_id>.+)/invoices/latest$',
                 admin_view(self.latest_invoice),
@@ -243,23 +241,6 @@ class OrderAdmin(admin.ModelAdmin):
             order__pk=order_id).order_by('emit_date').last()
 
         return redirect('admin:assopy_invoice_change', invoice.id)
-
-    def vouchers(self, request):
-        ctx = {
-            'fares': Fare.objects\
-                .filter(conference=dsettings.CONFERENCE_CONFERENCE, payment_type='v'),
-        }
-        return TemplateResponse(request, 'admin/assopy/order/vouchers.html', ctx)
-
-    def vouchers_fare(self, request, conference, fare):
-        items = models.OrderItem.objects\
-            .filter(ticket__fare__conference=conference, ticket__fare__code=fare)\
-            .filter(Q(order___complete=True)|Q(order__method='bank'))\
-            .select_related('ticket__fare', 'order__user__user')
-        ctx = {
-            'items': items,
-        }
-        return TemplateResponse(request, 'admin/assopy/order/vouchers_fare.html', ctx)
 
     def do_edit_invoices(self, request, queryset):
         ids = [ str(o.id) for o in queryset ]
@@ -565,7 +546,7 @@ class RefundAdminForm(forms.ModelForm):
 
 
 class RefundAdmin(admin.ModelAdmin):
-    list_display = ('_user', 'reason', '_status', '_order', '_invoice', '_cnote', '_items', '_total', 'created', 'done')
+    list_display = ('_user', 'reason', '_status', '_order', '_invoice', '_items', '_total', 'created', 'done')
     form = RefundAdminForm
 
     def get_queryset(self, request):
@@ -616,15 +597,6 @@ class RefundAdmin(admin.ModelAdmin):
         return '<a href="%s">%s</a> (<a href="%s">pdf</a>)' % (url, i, download)
 
     _invoice.allow_tags = True
-
-    def _cnote(self, o):
-        c = o.credit_note
-        if not c:
-            return ''
-        rev = reverse
-        download = rev('assopy-credit_note-pdf', kwargs={'order_code': o.invoice.order.code, 'code': c.code})
-        return '%s (<a href="%s">pdf</a>)' % (c, download)
-    _cnote.allow_tags = True
 
     def _items(self, o):
         data = self.orderitems[o.id]

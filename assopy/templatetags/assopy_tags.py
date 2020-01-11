@@ -257,21 +257,3 @@ def add_page_number_to_query(context, page, get=None):
         get = dict(get)
     get['page'] = page
     return urllib.parse.urlencode(get)
-
-@register.inclusion_tag('assopy/render_voucher.html', takes_context=True)
-def render_voucher(context, item):
-    return {
-        'item': item,
-    }
-
-@register.simple_tag(takes_context=True)
-def orderitem_can_be_refunded(context, item):
-    req = context['request']
-    try:
-        d = req.session['doppelganger']
-    except KeyError:
-        user = context['user']
-    else:
-        from django.contrib.auth.models import User
-        user = User.objects.get(id=d[0])
-    return settings.ORDERITEM_CAN_BE_REFUNDED(user, item)
