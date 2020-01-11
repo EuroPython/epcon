@@ -918,9 +918,6 @@ class TicketAdmin(admin.ModelAdmin):
     search_fields = ('name', 'user__first_name', 'user__last_name', 'user__email')
     list_filter = ('fare__conference', 'fare__ticket_type', 'ticket_type',)
 
-    if settings.TICKET_BADGE_ENABLED:
-        actions = ('',)
-
     class Media:
         js = (
             'conference/jquery-ui/js/jquery-1.7.1.min.js',

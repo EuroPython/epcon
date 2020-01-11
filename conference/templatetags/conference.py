@@ -762,20 +762,6 @@ def conference_multilingual_attribute(parser, token):
     return AttributeNode(instance, attribute, var_name, fallback)
 
 
-@register.simple_tag()
-def video_cover_url(event, type='front', thumb=False):
-    base = dsettings.MEDIA_URL + 'conference/covers/%s/' % event['conference']
-    if event.get('talk'):
-        url = base + event['talk']['slug']
-    else:
-        url = base + 'event-%d' % event['id']
-    if thumb:
-        url += '.jpg.thumb'
-    else:
-        url += '.jpg'
-    return url
-
-
 @register.simple_tag(takes_context=True)
 def embed_video(context, value, args=""):
     """

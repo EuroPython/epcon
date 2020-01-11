@@ -681,9 +681,6 @@ def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
     return 0
 
 
-CONFERENCE_TICKET_BADGE_ENABLED = True
-
-
 def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
     return True
     if talk.conference != CONFERENCE_CONFERENCE:

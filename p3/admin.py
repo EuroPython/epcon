@@ -111,7 +111,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         'orderitem__order__code',
         'fare__code',
         )
-    actions = cadmin.TicketAdmin.actions + (
+    actions = (
         'do_assign_to_buyer',
         'do_update_ticket_name',
         )
