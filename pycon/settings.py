@@ -590,24 +590,6 @@ def CONFERENCE_VOTING_OPENED(conf, user):
     else:
         return False
 
-    # XXX Disabled these special cases, since it's not clear
-    #     what they are used for
-    if 0:
-        from p3.models import TalkSpeaker, Speaker
-        try:
-            count = TalkSpeaker.objects.filter(
-                talk__conference=CONFERENCE_CONFERENCE,
-                speaker=user.speaker).count()
-        except (AttributeError, Speaker.DoesNotExist):
-            pass
-        else:
-            if count > 0:
-                return True
-
-        # Special case for "pre_voting" group members;
-        if user.groups.filter(name='pre_voting').exists():
-            return True
-
     return False
 
 
@@ -723,14 +705,6 @@ def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
 ASSOPY_BACKEND = 'https://assopy.europython.eu/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = False
 ASSOPY_SEND_EMAIL_TO = ['billing-log@europython.io']
-ASSOPY_REFUND_EMAIL_ADDRESS = {
-    'approve': ['billing@europython.eu'],
-    'execute': {
-        None: ['billing@europython.eu'],
-        'bank': ['billing@europython.eu'],
-    },
-    'credit-note': ['billing@europython.eu'],
-}
 
 #
 # This URL needs to be set to the main URL of the site.

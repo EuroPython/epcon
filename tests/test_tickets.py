@@ -1,15 +1,11 @@
 from datetime import date
 
 import responses
-from freezegun import freeze_time
-from pytest import mark
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.utils import timezone
 
-from assopy.models import Vat, Order, Country, Refund, Invoice
+from assopy.models import Vat
 from conference.fares import (
     pre_create_typical_fares_for_conference,
     set_early_bird_fare_dates,
@@ -21,9 +17,7 @@ from conference.currencies import (
     EXAMPLE_ECB_DAILY_XML,
     fetch_and_store_latest_ecb_exrates,
 )
-from conference.models import Conference, Fare, Ticket
-from p3.models import TicketConference
-from email_template.models import Email
+from conference.models import Conference, Fare
 
 from tests.common_tools import make_user
 
