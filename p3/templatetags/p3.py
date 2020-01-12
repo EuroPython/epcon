@@ -75,34 +75,3 @@ def all_user_tickets(context, uid=None, conference=None,
 @register.simple_tag()
 def p3_tags():
     return dataaccess.tags()
-
-@register.simple_tag(takes_context=True)
-def render_profile_box(context, profile, conference=None, user_message="auto"):
-    if conference is None:
-        conference = settings.CONFERENCE_CONFERENCE
-    if isinstance(profile, int):
-        profile = dataaccess.profile_data(profile)
-    ctx = context.flatten()
-    ctx.update({
-        'profile': profile,
-        'conference': conference,
-        'user_message': user_message if user_message in ('auto', 'always', 'none') else 'auto',
-    })
-    return render_to_string('p3/fragments/render_profile_box.html', ctx)
-
-@register.filter
-def timetable_remove_first(timetable, tag):
-    if not tag:
-        return timetable
-    start = None
-    for time, events in timetable.iterOnTimes():
-        stop = False
-        for e in events:
-            if tag not in e['tags']:
-                stop = True
-                break
-        start = time.time()
-        if stop:
-            break
-
-    return timetable.slice(start=start)

@@ -11,10 +11,6 @@ urlpatterns = [
         name="conference-profile",
     ),
     url(
-        r"^speakers/(?P<slug>[\w-]+)", views.speaker, name="conference-speaker"
-    ),
-    url(r"^talks/report", views.talk_report, name="conference-talk-report"),
-    url(
         r"^talks/(?P<slug>[\w-]+)/video$",
         views.talk_video,
         name="conference-talk-video",
@@ -25,11 +21,6 @@ urlpatterns = [
         name="conference-talk-video-mp4",
     ),
     url(r"^talks/(?P<slug>[\w-]+)$", views.talk, name="conference-talk"),
-    url(
-        r"^talks/(?P<slug>[\w-]+)/preview$",
-        views.talk_preview,
-        name="conference-talk-preview",
-    ),
     url(
         r"^talks/(?P<slug>[\w-]+)/social-card.png$",
         talk_social_card_png,

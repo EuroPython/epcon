@@ -331,23 +331,6 @@ class SubmissionForm(forms.Form):
 
         return talk
 
-class SpeakerForm(forms.Form):
-    activity = forms.CharField(
-        label=_('Job title'),
-        help_text=_('eg: student, developer, CTO, js ninja, BDFL'),
-        max_length=50,
-        required=False,)
-    activity_homepage = forms.URLField(label=_('Personal homepage'), required=False)
-    company = forms.CharField(label=_('Your company'), max_length=50, required=False)
-    company_homepage = forms.URLField(label=_('Company homepage'), required=False)
-    industry = forms.CharField(max_length=50, required=False)
-    bio = forms.CharField(
-        label=_('Compact biography'),
-        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
-        widget=forms.Textarea(),)
-    ad_hoc_description = forms.CharField(label=_('Presentation'), required=False)
-
-_abstract = models.Talk._meta.get_field('abstracts')
 
 # This form is used in case the speaker has already proposed a talk
 # and for editing talks
@@ -422,10 +405,6 @@ class TalkForm(forms.ModelForm):
 
         return talk
 
-del _abstract
-
-from tagging.models import TaggedItem
-from tagging.utils import parse_tag_input
 
 class TrackForm(forms.ModelForm):
     class Meta:

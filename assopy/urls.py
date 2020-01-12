@@ -7,7 +7,6 @@ urlpatterns = [
     # Manage user profile
     url(r"^profile/$", views.profile, name="assopy-profile"),
 
-
     # Views below continue to be used as of EP2019/2020
     url(
         r"orders/(?P<order_code>.+)/invoices/(?P<code>.+).html$",
