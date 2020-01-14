@@ -284,7 +284,6 @@ INSTALLED_APPS = (
     'easy_thumbnails',
 
     'django_crontab',
-    'formstyle',
 
     'markitup',
     'cms_utils',
@@ -711,10 +710,6 @@ ASSOPY_SEND_EMAIL_TO = ['billing-log@europython.io']
 #
 DEFAULT_URL_PREFIX = 'https://ep2020.europython.eu'
 LOGIN_REDIRECT_URL = reverse_lazy("user_panel:dashboard")
-
-# Disabled until we find out how to use europython-announce for this:
-# P3_NEWSLETTER_SUBSCRIBE_URL = "https://mail.python.org/mailman/subscribe/europython-announce"
-P3_NEWSLETTER_SUBSCRIBE_URL = ""
 
 P3_TWITTER_USER = 'europython'
 P3_USER_MESSAGE_FOOTER = '''

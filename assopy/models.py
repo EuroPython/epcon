@@ -20,33 +20,13 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from model_utils import Choices
 
-from assopy import settings
 from assopy.utils import send_email
 from conference.currencies import normalize_price
-from conference.gravatar import gravatar
 from conference.models import Ticket, Fare
 from conference.users import generate_random_username
-from email_template import utils
 
 
 log = logging.getLogger('assopy.models')
-
-
-
-def _cache(f):
-    """
-    cache dei poveri, memorizzo nell'istanza il risultato di una richiesta
-    remota (la cache dura una richiesta)
-    """
-    def wrapper(self, *args, **kwargs):
-        key = '_c' + f.__name__
-        try:
-            r = getattr(self, key)
-        except AttributeError:
-            r = f(self, *args, **kwargs)
-            setattr(self, key, r)
-        return r
-    return wrapper
 
 
 COUNTRY_VAT_COMPANY_VERIFY = (

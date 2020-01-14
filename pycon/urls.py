@@ -52,9 +52,6 @@ urlpatterns = [
     url(r'^p3/', include('p3.urls')),
     url(r'^conference/', include('conference.urls')),
     url(r'^conference/talks/(?P<slug>[\w-]+)$', conference_views.talk, name='conference-talk'),
-    url(r'^conference/speakers/(?P<slug>[\w-]+)', conference_views.speaker,
-        {'speaker_form': pforms.P3SpeakerForm},
-        name='conference-speaker'),
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^markitup/', include('markitup.urls')),
 

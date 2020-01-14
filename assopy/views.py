@@ -47,50 +47,6 @@ def profile(request):
 
 
 @login_required
-@render_to_template('assopy/billing.html')
-def billing(request, order_id=None):
-    user = request.user.assopy_user
-    if request.method == 'POST':
-        form = aforms.BillingData(data=request.POST, files=request.FILES, instance=user)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirectSeeOther('.')
-    else:
-        form = aforms.BillingData(instance=user)
-    return {
-        'user': user,
-        'form': form,
-    }
-
-
-@render_to_template('assopy/checkout.html')
-def checkout(request):
-    if request.method == 'POST':
-        if not request.user.is_authenticated:
-            return http.HttpResponseBadRequest('unauthorized')
-        form = aforms.FormTickets(data=request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            o = models.Order.objects.create(user=request.user.assopy_user, payment=data['payment'], items=data['tickets'])
-            if o.payment_url:
-                return HttpResponseRedirectSeeOther(o.payment_url)
-            else:
-                return HttpResponseRedirectSeeOther(reverse('assopy-tickets'))
-    else:
-        form = aforms.FormTickets()
-
-    return {
-        'form': form,
-    }
-
-
-@login_required
-@render_to_template('assopy/tickets.html')
-def tickets(request):
-    return {}
-
-
-@login_required
 def invoice(request, order_code, code, mode='html'):
     if not request.user.is_staff:
         userfilter = {
@@ -111,13 +67,3 @@ def invoice(request, order_code, code, mode='html'):
 
     return PdfResponse(filename=invoice.get_invoice_filename(),
                        content=invoice.html)
-
-@csrf_exempt
-def order_complete(request, assopy_id):
-    if request.method != 'POST':
-        return http.HttpResponseNotAllowed(('POST',))
-    log.debug('Order complete notice (assopy_id %s): %s', assopy_id, request.environ)
-    order = get_object_or_404(models.Order, assopy_id=assopy_id)
-    r = order.complete()
-    log.info('remote notice! order "%s" (%s) complete! result=%s', order.code, order.assopy_id, r)
-    return http.HttpResponse('')

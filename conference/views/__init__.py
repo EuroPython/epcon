@@ -4,67 +4,19 @@ from django import http
 from django.conf import settings as dsettings
 
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404, redirect, render_to_response
+from django.shortcuts import get_object_or_404, redirect
 
 from common.decorators import render_to_json
-from common.decorators import render_to_template
 from conference import models, settings
-from conference.decorators import speaker_access, talk_access, profile_access
-from conference.forms import SpeakerForm, TalkForm
+from conference.decorators import profile_access
 
 
 class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
     status_code = 303
 
 
-@speaker_access
-@render_to_template('conference/speaker.html')
-def speaker(request, slug, speaker, talks, full_access, speaker_form=SpeakerForm):
-    if request.method == 'POST':
-        if not full_access:
-            return http.HttpResponseBadRequest()
-        form = speaker_form(data=request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            speaker.activity = data['activity']
-            speaker.activity_homepage = data['activity_homepage']
-            speaker.industry = data['industry']
-            speaker.company = data['company']
-            speaker.company_homepage = data['company_homepage']
-            speaker.save()
-            speaker.setBio(data['bio'])
-            return HttpResponseRedirectSeeOther(reverse('conference-speaker', kwargs={'slug': speaker.slug}))
-    else:
-        form = speaker_form(initial={
-            'activity': speaker.activity,
-            'activity_homepage': speaker.activity_homepage,
-            'industry': speaker.industry,
-            'company': speaker.company,
-            'company_homepage': speaker.company_homepage,
-            'bio': getattr(speaker.getBio(), 'body', ''),
-        })
-    return {
-        'form': form,
-        'full_access': full_access,
-        'speaker': speaker,
-        'talks': talks,
-        'accepted': talks.filter(status='accepted'),
-    }
-
-
 def talk(request, slug):
     return redirect('talks:talk', permanent=True, talk_slug=slug)
-
-
-@render_to_template('conference/talk_preview.html')
-@talk_access
-def talk_preview(request, slug, talk, full_access, talk_form=TalkForm):
-    conf = models.Conference.objects.current()
-    return {
-        'talk': talk,
-        'voting': conf.voting(),
-    }
 
 
 def talk_video(request, slug):  # pragma: no cover
@@ -111,17 +63,6 @@ def talk_video(request, slug):  # pragma: no cover
     fname = '%s%s' % (tlk.title.encode('utf-8'), vext.encode('utf-8'))
     r['content-disposition'] = 'attachment; filename="%s"' % fname
     return r
-
-
-def talk_report(request):  # pragma: no cover
-    conference = request.GET.getlist('conference')
-    tags = request.GET.getlist('tag')
-    return render_to_response(
-        'conference/talk_report.html', {
-            'conference': conference,
-            'tags': tags,
-        },
-    )
 
 
 @render_to_json

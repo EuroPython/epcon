@@ -1,9 +1,7 @@
 from django import forms
-from django.conf import settings as dsettings
 from django.utils.translation import ugettext as _
 
 from assopy import models
-from assopy import settings
 from conference import models as cmodels
 
 import logging
@@ -68,33 +66,6 @@ class Profile(forms.ModelForm):
         return u
 
 Profile = autostrip(Profile)
-
-class BillingData(forms.ModelForm):
-    class Meta:
-        model = models.AssopyUser
-        exclude = ('user', 'token', 'assopy_id')
-
-    def _required(self, name):
-        data = self.cleaned_data.get(name, '')
-        try:
-            data = data.strip()
-        except:
-            pass
-        if not data:
-            raise forms.ValidationError('this field is required')
-        return data
-
-    clean_country = lambda self: self._required('country')
-    clean_address = lambda self: self._required('address')
-
-    def clean_card_name(self):
-        data = self.cleaned_data.get('card_name', '')
-        if not data:
-            return self.instance.name()
-        else:
-            return data
-
-BillingData = autostrip(BillingData)
 
 
 class FormTickets(forms.Form):

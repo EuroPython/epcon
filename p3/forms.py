@@ -1,13 +1,10 @@
 import datetime
 
 from django import forms
-from django.conf import settings
 from django.utils.translation import ugettext as _
 
-import conference.forms as cforms
 import conference.models as cmodels
 
-from p3 import dataaccess
 from p3 import models
 
 ### Globals
@@ -15,11 +12,6 @@ from p3 import models
 ## TODO: These forms are candidates for removal
 
 
-class P3SpeakerForm(cforms.SpeakerForm):
-    bio = forms.CharField(
-        label=_('Compact biography'),
-        help_text=_('Short biography (one or two paragraphs). Do not paste your CV'),
-        widget=forms.Textarea,)
 
 
 class FormTicket(forms.ModelForm):

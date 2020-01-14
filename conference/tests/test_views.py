@@ -27,27 +27,6 @@ class TestView(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
     
-    @unittest.skip('todo')
-    def test_conference_paper_submission(self):
-        # conference-paper-submission -> conference.views.paper_submission
-        url = reverse('conference-paper-submission')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip('todo')
-    def test_conference_places(self):
-        # conference-places -> conference.views.places
-        url = reverse('conference-places')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip('todo')
-    def test_conference_speaker(self):
-        # conference-speaker -> conference.views.speaker
-        url = reverse('conference-speaker')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
     @override_settings(DEBUG=False)
     def test_conference_sponsor(self):
         # conference-sponsor-json -> conference.views.sponsor_json
@@ -87,18 +66,6 @@ class TestView(TestCase):
             response, reverse('talks:talk', kwargs={'talk_slug': talk.slug}), status_code=301
         )
 
-    def test_conference_talk_preview(self):
-        # conference-talk-preview -> conference.views.talk_preview
-        conference = ConferenceFactory()
-        talk = TalkFactory(conference=conference.code)
-        url = reverse('conference-talk-preview', kwargs={
-            'slug': talk.slug,
-        })
-        with override_settings(CONFERENCE_CONFERENCE=conference.code):
-            response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['talk'], talk)
-
     @unittest.skip('todo')
     def test_conference_talk_video(self):
         # conference-talk-video -> conference.views.talk_video
@@ -110,12 +77,5 @@ class TestView(TestCase):
     def test_conference_talk_video_mp4(self):
         # conference-talk-video-mp4 -> conference.views.talk_video
         url = reverse('conference-talk-video-mp4')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip('todo')
-    def test_conference_profile_link(self):
-        # conference-profile-link -> conference.views.user_profile_link
-        url = reverse('conference-profile-link')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
