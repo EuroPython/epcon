@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Django settings for pycon project.
 import os.path
-import sys
 
 import dj_database_url
 from decouple import config
@@ -410,10 +409,6 @@ CMS_LANGUAGES = {
     }
 }
 CMS_TEMPLATES = (
-    # ('django_cms/p5_homepage.html', 'Homepage'),
-    # ('django_cms/content.html', 'Content page'),
-    # ('django_cms/content-1col.html', 'Content page, single column'),
-    # ('django_cms/p5_home_splash.html', 'Homepage, splash'),
     # ('ep19/bs/content/generic_content_page.html', 'Generic Content Page'),
     # ('ep19/bs/homepage/home.html', 'Homepage'),
     ('ep19/bs/content/generic_content_page_with_sidebar.html',
@@ -595,24 +590,6 @@ def CONFERENCE_VOTING_OPENED(conf, user):
     else:
         return False
 
-    # XXX Disabled these special cases, since it's not clear
-    #     what they are used for
-    if 0:
-        from p3.models import TalkSpeaker, Speaker
-        try:
-            count = TalkSpeaker.objects.filter(
-                talk__conference=CONFERENCE_CONFERENCE,
-                speaker=user.speaker).count()
-        except (AttributeError, Speaker.DoesNotExist):
-            pass
-        else:
-            if count > 0:
-                return True
-
-        # Special case for "pre_voting" group members;
-        if user.groups.filter(name='pre_voting').exists():
-            return True
-
     return False
 
 
@@ -704,9 +681,6 @@ def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
     return 0
 
 
-CONFERENCE_TICKET_BADGE_ENABLED = True
-
-
 def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
     return True
     if talk.conference != CONFERENCE_CONFERENCE:
@@ -722,37 +696,12 @@ def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
                 fare__ticket_type='conference')
     return qs.exists()
 
-
-def ASSOPY_ORDERITEM_CAN_BE_REFUNDED(user, item):
-    if user.is_superuser:
-        return True
-    return False
-    if not item.ticket:
-        return False
-    ticket = item.ticket
-    if ticket.user != user:
-        return False
-    if ticket.fare.conference != CONFERENCE_CONFERENCE:
-        return False
-    if item.order.total() == 0:
-        return False
-    return item.order._complete
-
-
 #
 # XXX What is this AssoPy stuff ?
 #
 ASSOPY_BACKEND = 'https://assopy.europython.eu/conference/externalcall'
 ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = False
 ASSOPY_SEND_EMAIL_TO = ['billing-log@europython.io']
-ASSOPY_REFUND_EMAIL_ADDRESS = {
-    'approve': ['billing@europython.eu'],
-    'execute': {
-        None: ['billing@europython.eu'],
-        'bank': ['billing@europython.eu'],
-    },
-    'credit-note': ['billing@europython.eu'],
-}
 
 #
 # This URL needs to be set to the main URL of the site.

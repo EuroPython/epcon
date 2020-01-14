@@ -1,14 +1,7 @@
-from datetime import (
-    date,
-    timedelta,
-)
+from datetime import date, timedelta
 
-import pytest
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.test import TestCase
-from django.utils import timezone
-from django_factory_boy import auth as auth_factories
 
 from conference.models import Conference
 
@@ -16,10 +9,7 @@ from tests.common_tools import (
     redirects_to,
     template_used,
 )
-from tests.factories import (
-    TicketFactory, AssopyUserFactory, SpeakerFactory,
-    TalkFactory, TalkSpeakerFactory, P3TalkFactory,
-)
+from tests.factories import TicketFactory
 
 
 def test_new_talk_voting_is_inaccessible_to_unauthenticated_users(db, client):

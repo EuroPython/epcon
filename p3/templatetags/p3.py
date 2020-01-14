@@ -55,10 +55,6 @@ def schedule_to_be_splitted(s):
 def p3_profile_data(uid):
     return dataaccess.profile_data(uid)
 
-@register.simple_tag()
-def p3_talk_data(tid):
-    return dataaccess.talk_data(tid)
-
 @register.simple_tag(takes_context=True)
 def all_user_tickets(context, uid=None, conference=None,
                      status="complete", fare_type="conference"):

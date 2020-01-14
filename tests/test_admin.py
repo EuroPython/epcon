@@ -76,34 +76,6 @@ def test_order_stats_admin(admin_client):
 
 
 @mark.django_db
-def test_order_vouchers_admin(admin_client):
-    factories.FareFactory(conference=settings.CONFERENCE_CONFERENCE, payment_type='v')
-    url = reverse('admin:assopy-order-vouchers')
-
-    response = admin_client.get(url)
-
-    assert response.status_code == 200
-
-
-@mark.django_db
-def test_order_vouchers_fare_admin(admin_client):
-    fare = factories.FareFactory()
-    ticket = factories.TicketFactory(fare=fare, frozen=False)
-    order = factories.OrderFactory(items=[(fare, {"qty": 1})])
-    order._complete = True
-    order_item = factories.OrderItemFactory(order=order, ticket=ticket, price=1)
-
-    url = reverse('admin:assopy-order-vouchers-fare', kwargs={
-        'conference': order_item.ticket.fare.conference,
-        'fare': order_item.ticket.fare.code,
-    })
-
-    response = admin_client.get(url)
-
-    assert response.status_code == 200
-
-
-@mark.django_db
 def test_vat_list_admin(admin_client):
     factories.VatFactory()
     url = reverse('admin:assopy_vat_changelist')

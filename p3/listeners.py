@@ -1,8 +1,7 @@
-
 import logging
 from . import models
 
-from assopy.models import order_created, purchase_completed, ticket_for_user, user_created, user_identity_created
+from assopy.models import order_created, ticket_for_user, user_created
 from conference.listeners import fare_price, fare_tickets
 from conference.signals import attendees_connected
 from conference.models import AttendeeProfile, Ticket
@@ -15,9 +14,7 @@ from email_template import utils
 log = logging.getLogger('p3')
 
 def on_order_created(sender, **kwargs):
-    if sender.total() == 0:
-        on_purchase_completed(sender)
-    elif sender.method == 'bank':
+    if sender.method == 'bank':
         utils.email(
             'bank-order-complete',
             ctx={'order': sender,},
@@ -50,11 +47,6 @@ def on_order_created(sender, **kwargs):
 
 order_created.connect(on_order_created)
 
-def on_purchase_completed(sender, **kwargs):
-    if sender.method == 'admin':
-        return
-
-purchase_completed.connect(on_purchase_completed)
 
 def on_ticket_for_user(sender, **kwargs):
     from p3 import dataaccess
@@ -80,16 +72,6 @@ def on_user_created(sender, **kw):
         pass
 
 user_created.connect(on_user_created)
-
-def on_user_identity_created(sender, **kw):
-    identity = kw['identity']
-    profile = AttendeeProfile.objects.getOrCreateForUser(sender.user)
-    if identity.user.identities.count() > 1:
-        # If it's not the first identity I'm not copying anything to
-        # avoiding overwriting manually edited data
-        return
-
-user_identity_created.connect(on_user_identity_created)
 
 def calculate_hotel_reservation_price(sender, **kw):
     if sender.code[0] != 'H':

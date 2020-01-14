@@ -139,20 +139,3 @@ class FormTickets(forms.Form):
 
         data['tickets'] = o
         return data
-
-class RefundItemForm(forms.Form):
-    reason = forms.CharField(
-        label=_("Reason"),
-        max_length=200,
-        help_text=_("""Please enter the reason of your refund request"""),
-        widget=forms.Textarea)
-    bank = forms.CharField(
-        label=_("Bank routing information"),
-        help_text=_("""Please specify IBAN, BIC and bank address (if in Europe) or any needed information for a worldwide transfer"""),
-        required=True,
-        widget=forms.Textarea)
-
-    def __init__(self, item, *args, **kw):
-        super(RefundItemForm, self).__init__(*args, **kw)
-        self.item = item
-

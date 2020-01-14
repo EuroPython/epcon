@@ -55,18 +55,3 @@ def generic_content_page_with_sidebar(request):
             'lorem_paragraphs': paragraphs,
         }
     )
-
-
-def form_testing(request):
-
-    class AForm(forms.Form):
-        name = forms.CharField()
-        password = forms.CharField(widget=forms.widgets.PasswordInput)
-        email = forms.EmailField()
-        textarea = forms.CharField(widget=forms.widgets.Textarea)
-
-    return TemplateResponse(
-        request, 'ep19/bs/form_testing.html', {
-            'form': AForm()
-        }
-    )

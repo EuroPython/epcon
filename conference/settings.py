@@ -62,8 +62,6 @@ TALK_TYPES_TO_BE_VOTED = getattr(settings, 'CONFERENCE_VOTING_TALK_TYPES',
 
 
 CONFERENCE_TICKETS = settings.CONFERENCE_TICKETS
-# TICKET_BADGE_ENABLED enable or disable the ability to generate badge by admin
-TICKET_BADGE_ENABLED = getattr(settings, 'CONFERENCE_TICKET_BADGE_ENABLED', False)
 
 # The generation of the badges is a process in 3 steps:
 
@@ -131,11 +129,6 @@ TALK_TYPES_TO_BE_VOTED = getattr(settings, 'CONFERENCE_VOTING_TALK_TYPES', DEFAU
 ADMIN_TICKETS_STATS_EMAIL_LOG = getattr(settings, 'CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG', None)
 
 ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = getattr(settings, 'CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY', ['conference'])
-
-def _VIDEO_COVER_IMAGE(conference, eid, type='front', thumb=False):
-    return None
-
-VIDEO_COVER_IMAGE = getattr(settings, 'CONFERENCE_VIDEO_COVER_IMAGE', _VIDEO_COVER_IMAGE)
 
 _OEMBED_PROVIDERS = (
     ('https://www.youtube.com/oembed',
