@@ -408,21 +408,6 @@ class AttendeeProfileAdmin(admin.ModelAdmin):
     _user.admin_order_field = "user__username"
 
 
-# MAL: Commented out, since we don't really have a need for this:
-#
-# class TalkConferenceAdminForm(cadmin.TalkAdminForm):
-#     def __init__(self, *args, **kwargs):
-#         super(TalkConferenceAdminForm, self).__init__(*args, **kwargs)
-#         self.fields['tags'].required = False
-#
-# class TalkConferenceAdmin(cadmin.TalkAdmin):
-#     multilingual_widget = cforms.MarkEditWidget
-#     form = TalkConferenceAdminForm
-#
-# admin.site.unregister(cmodels.Talk)
-# admin.site.register(cmodels.Talk, TalkConferenceAdmin)
-
-
 class CustomTalkAdminForm(cadmin.MultiLingualForm):
 
     tags = TagField(

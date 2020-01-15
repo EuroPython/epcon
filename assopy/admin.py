@@ -14,13 +14,10 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect
 from django.template import Template, Context
 from django.template.response import TemplateResponse
-from django.utils.safestring import mark_safe
 
 from assopy import dataaccess as assopy_dataaccess
 from assopy import forms as assopy_forms
-from assopy import models
-from assopy import stats
-from conference import admin as cadmin
+from assopy import models, stats
 from conference.accounts import send_verification_email
 from conference.invoicing import render_invoice_as_html
 from conference.models import Conference, Fare, StripePayment
@@ -30,21 +27,6 @@ class CountryAdmin(admin.ModelAdmin):
     list_display = ('printable_name', 'vat_company', 'vat_company_verify', 'vat_person')
     list_editable = ('vat_company', 'vat_company_verify', 'vat_person')
     search_fields = ('name', 'printable_name', 'iso', 'numcode')
-
-
-class ReadOnlyWidget(forms.widgets.HiddenInput):
-
-    # MAL: This widget doesn't render well in Django 1.8. See #539
-
-    def __init__(self, display=None, *args, **kwargs):
-        self.display = display
-        super(ReadOnlyWidget, self).__init__(*args, **kwargs)
-
-    def render(self, name, value, attrs=None):
-        output = []
-        output.append('<span>%s</span>' % (self.display or value))
-        output.append(super(ReadOnlyWidget, self).render(name, value, attrs))
-        return mark_safe(''.join(output))
 
 
 class OrderItemInlineAdmin(admin.TabularInline):
@@ -535,17 +517,6 @@ class AuthUserAdmin(UserAdmin):
         return redirect ('.')
 
 
-class InvoiceAdminForm(forms.ModelForm):
-    class Meta:
-        model = models.Invoice
-        exclude = ("assopy_id",)
-        widgets = {
-            'price':ReadOnlyWidget,
-            'vat' : ReadOnlyWidget,
-            'order' : ReadOnlyWidget
-        }
-
-
 class InvoiceAdmin(admin.ModelAdmin):
     actions = ('do_csv_invoices',)
     list_display = ('__str__', '_invoice', '_user', 'payment_date', 'price', '_order', 'vat')
@@ -554,7 +525,8 @@ class InvoiceAdmin(admin.ModelAdmin):
         'code', 'order__code', 'order__card_name',
         'order__user__user__first_name', 'order__user__user__last_name', 'order__user__user__email',
         'order__billing_notes',)
-    form = InvoiceAdminForm
+    readonly_fields = ('price', 'vat', 'order')
+    exclude = ('assopy_id',)
 
     def _order(self, o):
         order = o.order
@@ -680,51 +652,8 @@ class InvoiceLogAdmin(admin.ModelAdmin):
     )
 
 
-class AssopyFareForm(forms.ModelForm):
-    vat = forms.ModelChoiceField(queryset=models.Vat.objects.all())
-
-    class Meta:
-        model = cadmin.models.Fare
-        fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        instance = kwargs.get('instance',None)
-        if instance:
-            try:
-                vat = instance.vat_set.all()[0]
-                initial = kwargs.get('initial',{})
-                initial.update({'vat' : vat })
-                kwargs['initial'] = initial
-            except  IndexError:
-                pass
-        super(AssopyFareForm, self).__init__(*args, **kwargs)
 
 
-class AssopyFareAdmin(cadmin.FareAdmin):
-    form = AssopyFareForm
-    list_display = cadmin.FareAdmin.list_display + ('_vat',)
-
-    def _vat(self,obj):
-        try:
-            return obj.vat_set.all()[0]
-        except IndexError:
-            return None
-    _vat.short_description = 'VAT'
-
-    def save_model(self, request, obj, form, change):
-        super(AssopyFareAdmin, self).save_model(request, obj, form, change)
-        if 'vat' in form.cleaned_data:
-            # se la tariffa viene modificata dalla list_view 'vat' potrebbe
-            # non esserci
-            vat_fare, created = models.VatFare.objects.get_or_create(
-                fare=obj, defaults={'vat': form.cleaned_data['vat']})
-            if not created and vat_fare.vat != form.cleaned_data['vat']:
-                vat_fare.vat = form.cleaned_data['vat']
-                vat_fare.save()
-
-
-admin.site.unregister(cadmin.models.Fare)
-admin.site.register(cadmin.models.Fare, AssopyFareAdmin)
 
 admin.site.unregister(User)
 admin.site.register(User, AuthUserAdmin)

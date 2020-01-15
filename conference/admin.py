@@ -19,6 +19,7 @@ from django.utils.safestring import mark_safe
 import common.decorators
 from common.jsonify import json_dumps
 from conference import dataaccess, models, utils
+from assopy.models import Vat, VatFare
 
 from conference.fares import (
     FARE_CODE_TYPES,
@@ -26,7 +27,6 @@ from conference.fares import (
     FARE_CODE_GROUPS,
     FARE_CODE_REGEXES,
 )
-
 
 log = logging.getLogger('conference')
 
@@ -265,6 +265,7 @@ class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
         new_class.base_fields.update(form_fields)
         return new_class
 
+
 class MultiLingualForm(forms.ModelForm, metaclass=MultiLingualFormMetaClass):
     def __init__(self, *args, **kw):
         super(MultiLingualForm, self).__init__(*args, **kw)
@@ -320,6 +321,7 @@ class MultiLingualForm(forms.ModelForm, metaclass=MultiLingualFormMetaClass):
                 fields = '__all__'
         return Form
 
+
 class TalkSpeakerInlineAdminForm(forms.ModelForm):
     class Meta:
         model = models.TalkSpeaker
@@ -339,10 +341,12 @@ class TalkSpeakerInlineAdminForm(forms.ModelForm):
         data = self.cleaned_data
         return models.Speaker.objects.get(user=data['speaker'])
 
+
 class TalkSpeakerInlineAdmin(admin.TabularInline):
     model = models.TalkSpeaker
     form = TalkSpeakerInlineAdminForm
     extra = 1
+
 
 class SpeakerAdminForm(forms.ModelForm):
     class Meta:
@@ -352,6 +356,7 @@ class SpeakerAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SpeakerAdminForm, self).__init__(*args, **kwargs)
         self.fields['user'].queryset = self.fields['user'].queryset.order_by('username')
+
 
 class SpeakerAdmin(admin.ModelAdmin):
     list_display = ('_avatar', '_user', '_email', '_company')
@@ -472,11 +477,11 @@ class TrackInlineAdmin(admin.TabularInline):
     model = models.Track
     extra = 1
 
+
 class EventInlineAdmin(admin.TabularInline):
     model = models.Event
     extra = 3
 
-from django.template import Template
 
 class ScheduleAdmin(admin.ModelAdmin):
     list_display = ('conference', 'slug', 'date')
@@ -769,9 +774,29 @@ class FilterFareByGroup(FilterFareByTicketCode):
     filter_by = FARE_CODE_GROUPS._doubles
 
 
+class AdminFareForm(forms.ModelForm):
+    vat = forms.ModelChoiceField(queryset=Vat.objects.all())
+
+    class Meta:
+        model = models.Fare
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance',None)
+        if instance:
+            try:
+                vat = instance.vat_set.all()[0]
+                initial = kwargs.get('initial',{})
+                initial.update({'vat' : vat })
+                kwargs['initial'] = initial
+            except  IndexError:
+                pass
+        super().__init__(*args, **kwargs)
+
+
 class FareAdmin(admin.ModelAdmin):
     list_display = ('conference', 'code', 'name', 'price', 'recipient_type',
-                    'start_validity', 'end_validity')
+                    'start_validity', 'end_validity', '_vat',)
     list_filter = ('conference',
                    'ticket_type',
                    FilterFareByType,
@@ -780,6 +805,7 @@ class FareAdmin(admin.ModelAdmin):
     list_editable = ('price', 'start_validity', 'end_validity')
     list_display_links = ('code', 'name')
     ordering = ('conference', 'start_validity', 'code')
+    form = AdminFareForm
 
     def changelist_view(self, request, extra_context=None):
         if 'conference' not in request.GET and 'conference__exact' not in request.GET:
@@ -788,6 +814,24 @@ class FareAdmin(admin.ModelAdmin):
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(FareAdmin,self).changelist_view(request, extra_context=extra_context)
+
+    def _vat(self,obj):
+        try:
+            return obj.vat_set.all()[0]
+        except IndexError:
+            return None
+    _vat.short_description = 'VAT'
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if 'vat' in form.cleaned_data:
+            # se la tariffa viene modificata dalla list_view 'vat' potrebbe
+            # non esserci
+            vat_fare, created = VatFare.objects.get_or_create(
+                fare=obj, defaults={'vat': form.cleaned_data['vat']})
+            if not created and vat_fare.vat != form.cleaned_data['vat']:
+                vat_fare.vat = form.cleaned_data['vat']
+                vat_fare.save()
 
 
 class TicketAdmin(admin.ModelAdmin):

@@ -63,7 +63,7 @@ SITE_DATA_ROOT = DATA_DIR + "/site"
 # --------
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///{}/epcon.db'.format(SITE_DATA_ROOT)
+        default='sqlite:///{}/epcon_staging.db'.format(SITE_DATA_ROOT)
     ),
 }
 
@@ -478,7 +478,7 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 SESSION_COOKIE_NAME = 'sid'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
-CONFERENCE_CONFERENCE = 'ep2020'
+CONFERENCE_CONFERENCE = 'ep2019'
 CONFERENCE_NAME = "EuroPython 2020"
 CONFERENCE_SEND_EMAIL_TO = ["helpdesk@europython.eu"]
 CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL = []
