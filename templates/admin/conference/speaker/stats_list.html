@@ -23,7 +23,7 @@
             <ul>
             {% for t in s.talks %}
             {% if t.conference == CONFERENCE %}
-            <li><a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a></li>
+            <li><a href="{% url "talks:talk" talk_slug=t.slug %}">{{ t.title }}</a></li>
             {% endif %}
             {% endfor %}
             </ul>
@@ -46,7 +46,7 @@
             <ul>
             {% for t in s.talks %}
             {% if t.conference == CONFERENCE %}
-            <li><a href="{% url "conference-talk" slug=t.slug %}">{{ t.title }}</a></li>
+            <li><a href="{% url "talks:talk" talk_slug=t.slug %}">{{ t.title }}</a></li>
             {% endif %}
             {% endfor %}
             </ul>

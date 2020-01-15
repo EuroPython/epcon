@@ -11,7 +11,6 @@ from django.views import (
 from django.views.generic import RedirectView
 from filebrowser.sites import site as fsite
 
-from conference import views as conference_views
 from conference.accounts import urlpatterns as accounts_urls
 from conference.cart import urlpatterns_ep19 as cart19_urls
 from conference.cfp import urlpatterns as cfp_urls
@@ -27,6 +26,7 @@ from conference.user_panel import urlpatterns as user_panel_urls
 from conference.talks import urlpatterns as talks_urls
 from conference.profiles import urlpatterns as profiles_urls
 from conference.schedule import urlpatterns as schedule_urls
+from conference.social_card import urlpatterns as social_urls
 
 admin.autodiscover()
 admin.site.index_template = 'p3/admin/index.html'
@@ -49,8 +49,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^cart/', include(cart19_urls, namespace="cart")),
     url(r'^p3/', include('p3.urls')),
-    url(r'^conference/', include('conference.urls')),
-    url(r'^conference/talks/(?P<slug>[\w-]+)$', conference_views.talk, name='conference-talk'),
+    url(r'^conference/', include(social_urls)),
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^markitup/', include('markitup.urls')),
 
