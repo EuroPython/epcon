@@ -438,7 +438,7 @@ class AuthUserAdmin(UserAdmin):
             billing_notes = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 3}))
             remote = forms.BooleanField(required=False, initial=True, help_text='debug only, fill the order on the remote backend')
             def __init__(self, *args, **kwargs):
-                super(FormTickets, self).__init__(*args, **kwargs)
+                super().__init__(*args, **kwargs)
                 self.fields['payment'].choices = (('admin', 'Admin'),) + tuple(self.fields['payment'].choices)
                 self.fields['payment'].initial = 'admin'
 
@@ -650,9 +650,6 @@ class InvoiceLogAdmin(admin.ModelAdmin):
     list_display = (
         'code', 'order', 'invoice','date'
     )
-
-
-
 
 
 admin.site.unregister(User)

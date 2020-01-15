@@ -14,7 +14,6 @@ from assopy import stats as astats
 from assopy import utils as autils
 from conference import admin as cadmin
 from conference import models as cmodels
-from conference import forms as cforms
 from p3 import models
 from p3 import dataaccess
 from p3 import utils
@@ -455,7 +454,6 @@ class TalkAdmin(admin.ModelAdmin):
 
     prepopulated_fields = {"slug": ("title",)}
     ordering = ("-conference", "title")
-    multilingual_widget = cforms.MarkEditWidget
     filter_horizontal = ["tags"]
     inlines = [cadmin.TalkSpeakerInlineAdmin]
 

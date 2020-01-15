@@ -19,6 +19,7 @@ from django.utils.safestring import mark_safe
 import common.decorators
 from common.jsonify import json_dumps
 from conference import dataaccess, models, utils
+from conference.forms import TrackForm, EventForm
 from assopy.models import Vat, VatFare
 
 from conference.fares import (
@@ -95,7 +96,6 @@ class ConferenceAdmin(admin.ModelAdmin):
             tks = sorted(list(sch['tracks'].values()), key=lambda x: x.order)
             tracks.append([ sch['id'], [ t for t in tks ] ])
 
-        from conference.forms import EventForm
         return TemplateResponse(
             request,
             'admin/conference/conference/schedule_view.html',
@@ -241,7 +241,7 @@ class ConferenceAdmin(admin.ModelAdmin):
 
 class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
     def __new__(mcs, name, bases, attrs):
-        new_class = super(MultiLingualFormMetaClass, mcs).__new__(mcs, name, bases, attrs)
+        new_class = super().__new__(mcs, name, bases, attrs)
 
         multilingual_fields = new_class.multilingual_fields = []
         model = new_class._meta.model
@@ -253,7 +253,7 @@ class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
                 if f.field.remote_field.model is models.MultilingualContent:
                     multilingual_fields.append(name)
 
-        widget = attrs.get('multilingual_widget', forms.Textarea)
+        widget = forms.Textarea
         form_fields = {}
         for field_name in multilingual_fields:
             for lang, _ in settings.LANGUAGES:
@@ -268,7 +268,7 @@ class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
 
 class MultiLingualForm(forms.ModelForm, metaclass=MultiLingualFormMetaClass):
     def __init__(self, *args, **kw):
-        super(MultiLingualForm, self).__init__(*args, **kw)
+        super().__init__(*args, **kw)
 
         if self.instance:
             self._init_multilingual_fields()
@@ -302,7 +302,7 @@ class MultiLingualForm(forms.ModelForm, metaclass=MultiLingualFormMetaClass):
                 translation.save()
 
     def save(self, commit=True):
-        o = super(MultiLingualForm, self).save(commit=commit)
+        o = super().save(commit=commit)
         if not commit:
             base_m2m = self.save_m2m
             def save_m2m():
@@ -515,7 +515,6 @@ class ScheduleAdmin(admin.ModelAdmin):
         sch = get_object_or_404(models.Schedule, id=sid)
         if request.method != 'POST':
             return http.HttpResponseNotAllowed(('POST',))
-        from conference.forms import EventForm
         form = EventForm(data=request.POST)
         output = {}
         if form.is_valid():
@@ -699,7 +698,6 @@ class ScheduleAdmin(admin.ModelAdmin):
     #@transaction.atomic
     def tracks(self, request, sid, tid):
         track = get_object_or_404(models.Track, schedule=sid, id=tid)
-        from conference.forms import TrackForm
         if request.method == 'POST':
             tracks = models.Track.objects\
                 .filter(schedule__conference=track.schedule.conference, track=track.track)

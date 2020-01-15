@@ -77,7 +77,7 @@ class FormTickets(forms.Form):
         initial='non-deductible')
 
     def __init__(self, *args, **kwargs):
-        super(FormTickets, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         for t in self.available_fares():
             field = forms.IntegerField(
                 label=t.name,
