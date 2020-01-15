@@ -47,7 +47,7 @@ URL_PREFIX = settings.DEFAULT_URL_PREFIX or 'https://ep2020.europython.eu'
 
 def profile_url(user):
 
-    return urlresolvers.reverse('conference-profile',
+    return urlresolvers.reverse('profiles:profile',
                                 args=[user.attendeeprofile.slug])
 
 def format_text(text, remove_tags=False, output_html=True):

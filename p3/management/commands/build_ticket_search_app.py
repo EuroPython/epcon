@@ -103,7 +103,7 @@ var ticketList = new List('ticket-list', {
 
 def profile_url(user):
 
-    return urlresolvers.reverse('conference-profile',
+    return urlresolvers.reverse('profiles:profile',
                                 args=[user.attendeeprofile.slug])
 
 def attendee_name(ticket, profile=None):

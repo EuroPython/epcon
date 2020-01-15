@@ -513,7 +513,7 @@ class SpeakerAdmin(admin.ModelAdmin):
 
     def _user(self, o):
         if o.user.attendeeprofile:
-            p = urlresolvers.reverse('conference-profile', kwargs={'slug': o.user.attendeeprofile.slug})
+            p = urlresolvers.reverse('profiles:profile', kwargs={'profile_slug': o.user.attendeeprofile.slug})
         else:
             p = 'javascript:alert("profile not set")'
         return '<a href="%s">%s %s</a>' % (p, o.user.first_name, o.user.last_name)

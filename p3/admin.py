@@ -371,7 +371,7 @@ class VotoTalkAdmin(admin.ModelAdmin):
 
     def _name(self, o):
         url = reverse(
-            "conference-profile", kwargs={"slug": o.user.attendeeprofile.slug}
+            "profiles:profile", kwargs={"profile_slug": o.user.attendeeprofile.slug}
         )
         return '<a href="%s">%s</a>' % (url, o.user.assopy_user.name())
 
@@ -399,9 +399,7 @@ class AttendeeProfileAdmin(admin.ModelAdmin):
     ]
 
     def _name(self, o):
-        url = reverse(
-            "conference-profile", kwargs={"slug": o.slug}
-        )
+        url = reverse("profiles:profile", kwargs={"profile_slug": o.slug})
         return '<a href="%s">%s %s</a>' % (
             url,
             o.user.first_name,

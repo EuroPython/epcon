@@ -20,34 +20,6 @@ class TestView(TestCase):
         AttendeeProfileFactory(user=self.user)
         self.assertTrue(is_logged)
 
-    @unittest.skip('todo')
-    def test_conference_profile(self):
-        # conference-profile -> conference.views.user_profile
-        url = reverse('conference-profile')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-    
-    @override_settings(DEBUG=False)
-    def test_conference_sponsor(self):
-        # conference-sponsor-json -> conference.views.sponsor_json
-        sponsor = SponsorFactory()
-        url = reverse('conference-sponsor-json', kwargs={
-            'sponsor': sponsor.slug,
-        })
-
-        response = self.client.get(url)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.get('content-type'), 'application/json')
-
-        result = {
-            'slug': sponsor.slug,
-            'sponsor': sponsor.sponsor,
-            'url': sponsor.url,
-        }
-
-        self.assertJSONEqual(response.content, result)
-
     def test_conference_talk(self):
         """
         Test the view redirects to the new talk detail view.

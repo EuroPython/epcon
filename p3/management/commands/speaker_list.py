@@ -11,7 +11,7 @@ from conference import models as cmodels
 
 def profile_url(user):
 
-    return urlresolvers.reverse('conference-profile',
+    return urlresolvers.reverse('profiles:profile',
                                 args=[user.attendeeprofile.slug])
 
 def speaker_listing(talk):
