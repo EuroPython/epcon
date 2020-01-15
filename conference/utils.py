@@ -2,19 +2,18 @@ import logging
 import os.path
 import re
 import subprocess
+from datetime import datetime, date, timedelta, time
 from collections import defaultdict
 
-from django.conf import settings as dsettings
-from django.core.mail import send_mail as real_send_mail
-
 from conference import settings
-from conference.models import VotoTalk, EventTrack
+from conference.models import VotoTalk, EventTrack, Event, Track
 
 
 log = logging.getLogger('conference')
 
 
 def dotted_import(path):
+    # TODO: This is used in one place in the admin as a hack, replace its usage and retire this
     from importlib import import_module
     from django.core.exceptions import ImproperlyConfigured
     i = path.rfind('.')
@@ -32,14 +31,6 @@ def dotted_import(path):
 
     return o
 
-def send_email(force=False, *args, **kwargs):
-    if force is False and not settings.SEND_EMAIL_TO:
-        return
-    if 'recipient_list' not in kwargs:
-        kwargs['recipient_list'] = settings.SEND_EMAIL_TO
-    if 'from_email' not in kwargs:
-        kwargs['from_email'] = dsettings.DEFAULT_FROM_EMAIL
-    real_send_mail(*args, **kwargs)
 
 def _input_for_ranking_of_talks(talks, missing_vote=5):
     """
@@ -86,6 +77,7 @@ def _input_for_ranking_of_talks(talks, missing_vote=5):
 
     return '\n'.join(vinput)
 
+
 def ranking_of_talks(talks, missing_vote=5):
     import conference
     vengine = os.path.join(os.path.dirname(conference.__file__), 'tools', 'voteengine-0.99', 'voteengine.py')
@@ -103,6 +95,7 @@ def ranking_of_talks(talks, missing_vote=5):
         raise RuntimeError("voteengine.py exits with code: %s; %s" % (pipe.returncode, err))
 
     return [ talks_map[int(tid)] for tid in re.findall(r'\d+', out.split('\n')[-2]) ]
+
 
 def voting_results():
     """
@@ -127,8 +120,6 @@ def voting_results():
             pass
     return None
 
-from datetime import datetime, date, timedelta, time
-from conference.models import Event, Track
 
 class TimeTable2(object):
     def __init__(self, sid, events):
@@ -376,272 +367,3 @@ class TimeTable2(object):
                 self.events[track].append(e)
 
         return self
-
-def collapse_events(tt, threshold):
-    """
-    Given a timetable looks for moments in time that can be "Collapsed"
-    because not interesting, that do not lead to changes schedule.
-
-    For example, a timetable with very long events.
-    """
-    if isinstance(threshold, int):
-        threshold = { None: threshold }
-
-    output = []
-    for time, events in tt.iterOnTimes():
-        limits = []
-        durations = []
-        checks = []
-        for e in events:
-            l = threshold.get('talk' if e['talk'] else 'custom', threshold[None])
-            limits.append(l)
-            durations.append(e['duration'])
-            checks.append(e['duration'] > l)
-
-        if all(checks):
-            offset = min(limits)
-            st = time + timedelta(seconds=offset*60)
-            d = min(durations) - offset
-            output.append((st, d))
-    return output
-
-class TimeTable(object):
-    class Event(object):
-        def __init__(self, time, row, ref, columns, rows):
-            self.time = time
-            self.row = row
-            self.ref = ref
-            self.columns = columns
-            self.rows = rows
-
-    class Reference(object):
-        def __init__(self, time, row, evt, flex=False):
-            self.time = time
-            self.row = row
-            self.evt = evt
-            self.flex = flex
-
-    def __init__(self, time_spans, rows, slot_length=15):
-        self.start, self.end = time_spans
-        assert self.start < self.end
-        self.rows = rows
-        assert self.rows
-        self.slot = timedelta(seconds=slot_length*60)
-
-        self._data = {}
-        self.errors = []
-
-    def slice(self, start=None, end=None):
-        if not start:
-            start = self.start
-        if not end:
-            end = self.end
-        if end < start:
-            start, end = end, start
-        t2 = TimeTable(
-            (start, end),
-            self.rows,
-            self.slot.seconds/60,
-        )
-        t2._data = dict(self._data)
-        t2.errors = list(self.errors)
-
-        for key in t2._data:
-            if (start and key[0] < start) or (end and key[0] >= end):
-                del t2._data[key]
-
-        return t2
-
-    @classmethod
-    def sumTime(cls, t, td):
-        return ((datetime.combine(date.today(), t)) + td).time()
-
-    @classmethod
-    def diffTime(cls, t1, t2):
-        return ((datetime.combine(date.today(), t1)) - (datetime.combine(date.today(), t2)))
-
-    def setEvent(self, time, o, duration, rows):
-        assert rows
-        assert not (set(rows) - set(self.rows))
-        if not duration:
-            next = self.findFirstEvent(self.sumTime(time, self.slot), rows[0])
-            if not next:
-                duration = self.diffTime(self.end, time).seconds / 60
-            else:
-                duration = self.diffTime(next.time, time).seconds / 60
-            flex = True
-        else:
-            flex = False
-        count = duration / (self.slot.seconds / 60)
-
-        evt = TimeTable.Event(time, rows[0], o, count, len(rows))
-        self._setEvent(evt, flex)
-        for r in rows[1:]:
-            ref = TimeTable.Reference(time, r, evt, flex)
-            self._setEvent(ref, flex)
-
-        step = self.sumTime(time, self.slot)
-        while count > 1:
-            for r in rows:
-                ref = TimeTable.Reference(step, r, evt, flex)
-                self._setEvent(ref, flex)
-            step = self.sumTime(step, self.slot)
-            count -= 1
-
-    def _setEvent(self, evt, flex):
-        event = evt.ref if isinstance(evt, TimeTable.Event) else evt.evt.ref
-        try:
-            prev = self._data[(evt.time, evt.row)]
-        except KeyError:
-            pass
-        else:
-            if isinstance(prev, TimeTable.Event):
-                self.errors.append({
-                    'type': 'overlap-event',
-                    'time': evt.time,
-                    'event': event,
-                    'previous': prev.ref,
-                    'msg': 'Event %s overlap %s on time %s' % (event, prev.ref, evt.time),
-                })
-                return
-            elif isinstance(prev, TimeTable.Reference):
-                # I am trying to place an event on a cell occupied by a reference,
-                # a time extension of an other event.
-                #
-                # Se nessuno dei due eventi (il nuovo e il precedente) è flex
-                # notifico un warning (nel caso uno dei due sia flex non dico
-                # nulla perché gli eventi flessibili sono nati proprio per
-                # adattarsi agli altri); dopodiché accorcio, se possibile,
-                # l'evento precedente.
-                if not prev.flex and not flex:
-                    self.errors.append({
-                        'type': 'overlap-reference',
-                        'time': evt.time,
-                        'event': event,
-                        'previous': prev.evt.ref,
-                        'msg': 'Event %s overlap %s on time %s' % (event, prev.evt.ref, evt.time),
-                    })
-
-                # accorcio l'evento precedente solo se è di tipo flex oppure se
-                # l'evento che sto inserendo non *è* flex. Questo copre il caso
-                # in cui un talk va a posizionarsi in una cella occupata da un
-                # estensione di un pranzo (evento flex) oppure quando un
-                # evento flex a sua volta va a coprire un estensione di un
-                # altro evento flex (ad esempio due eventi custom uno dopo
-                # l'altro).
-                if not flex or prev.flex:
-                    evt0 = prev.evt
-                    columns = self.diffTime(evt.time, evt0.time).seconds / self.slot.seconds
-                    for row in self.rows:
-                        for e in self.iterOnRow(row, start=evt.time):
-                            if isinstance(e, TimeTable.Reference) and e.evt is evt0:
-                                del self._data[(e.time, e.row)]
-                            else:
-                                break
-                    evt0.columns = columns
-        self._data[(evt.time, evt.row)] = evt
-
-    def iterOnRow(self, row, start=None, end=None):
-        if start is None:
-            start = self.start
-        if end is None:
-            end = self.end
-        while start < end:
-            try:
-                yield self._data[(start, row)]
-            except KeyError:
-                pass
-            start = self.sumTime(start, self.slot)
-
-    def findFirstEvent(self, start, row):
-        for evt in self.iterOnRow(row, start=start):
-            if isinstance(evt, TimeTable.Reference) and evt.evt.time >= start:
-                return evt.evt
-            elif isinstance(evt, TimeTable.Event):
-                return evt
-
-    def columns(self):
-        step = self.start
-        while step < self.end:
-            yield step
-            step = self.sumTime(step, self.slot)
-
-    def eventsAtTime(self, start, include_reference=False):
-        """
-        Returns the rows that contain an Event (and Reference if include_reference = True)
-        in the past tense.
-        """
-        output = []
-        for r in self.rows:
-            try:
-                cell = self._data[(start, r)]
-            except KeyError:
-                continue
-            if include_reference or isinstance(cell, TimeTable.Event):
-                output.append(cell)
-        return output
-
-    def changesAtTime(self, start):
-        """
-        Returns the rows that introduce a change in the past tense.
-        """
-        output = []
-        for key, item in self._data.items():
-            if not isinstance(item, TimeTable.Event):
-                continue
-            if key[0] == start or self.sumTime(key[0], timedelta(seconds=self.slot.seconds*item.columns)) == start:
-                output.append(key)
-        return output
-
-    def byRows(self):
-        output = []
-        data = self._data
-        for row in self.rows:
-            step = self.start
-
-            cols = []
-            line = [ row, cols ]
-            while step < self.end:
-                cols.append({'time': step, 'row': row, 'data': data.get((step, row))})
-                step = self.sumTime(step, self.slot)
-
-            output.append(line)
-
-        return output
-
-    def byTimes(self):
-        output = []
-        data = self._data
-        #if not data:
-        #    return output
-        step = self.start
-        while step < self.end:
-            rows = []
-            line = [ step, rows ]
-            for row in self.rows:
-                rows.append({'row': row, 'data': data.get((step, row))})
-            output.append(line)
-            step = self.sumTime(step, self.slot)
-
-        return output
-
-
-def archive_dir(directory):
-    from io import StringIO
-    import tarfile
-
-    archive = StringIO()
-    tar = tarfile.open(fileobj=archive, mode='w:gz')
-
-    for fname in os.listdir(directory):
-        fpath = os.path.join(directory, fname)
-        if os.path.isfile(fpath):
-            tar.add(fpath, arcname=fname)
-    tar.close()
-    return archive.getvalue()
-
-
-def oembed(url, **kw):
-    for pattern, sub in settings.OEMBED_URL_FIX:
-        url = re.sub(pattern, sub, url)
-    return settings.OEMBED_CONSUMER.embed(url, **kw).getData()

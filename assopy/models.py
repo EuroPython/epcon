@@ -186,19 +186,6 @@ class AssopyUserManager(models.Manager):
         return assopy_user
 
 
-
-def _fs_upload_to(subdir, attr=None):
-    if attr is None:
-        attr = lambda i: i.pk
-    def wrapper(instance, filename):
-        fpath = os.path.join('assopy', subdir, '%s%s' % (attr(instance), os.path.splitext(filename)[1].lower()))
-        ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
-        if os.path.exists(ipath):
-            os.unlink(ipath)
-        return fpath
-    return wrapper
-
-
 # segnale emesso quando assopy ha bisogno di conoscere i biglietti assegnati ad
 # un certo utente (il sender).  questo segnale permette ad altre applicazioni
 # di intervenire su questa scelta, se nessuno è in ascolto viene fatta una
@@ -774,7 +761,7 @@ class OrderItem(models.Model):
         return (self.price * self.vat.value  / 100) / (1 + self.vat.value / 100)
 
     def get_readonly_fields(self, request, obj=None):
-	    # Make fields read-only if an invoice for the order already exists
+        # Make fields read-only if an invoice for the order already exists
         if obj and self.order.invoices.exclude(payment_date=None).exists():
             return self.readonly_fields + ('ticket', 'price', 'vat', 'code')
         return self.readonly_fields

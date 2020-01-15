@@ -699,7 +699,6 @@ def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
 # XXX What is this AssoPy stuff ?
 #
 ASSOPY_BACKEND = 'https://assopy.europython.eu/conference/externalcall'
-ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = False
 ASSOPY_SEND_EMAIL_TO = ['billing-log@europython.io']
 
 #

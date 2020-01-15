@@ -4,7 +4,6 @@
     to be escaped in MarkItUp CMS plugins.
 
 """
-
 from django import template
 from conference import models
 

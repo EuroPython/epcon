@@ -11,7 +11,6 @@ from django.views import (
 from django.views.generic import RedirectView
 from filebrowser.sites import site as fsite
 
-import p3.forms as pforms
 from conference import views as conference_views
 from conference.accounts import urlpatterns as accounts_urls
 from conference.cart import urlpatterns_ep19 as cart19_urls

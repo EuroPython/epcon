@@ -2,27 +2,17 @@ import mimetypes
 import os
 import os.path
 import re
-from django.utils.translation import get_language_from_request
-import random
-import sys
 from collections import defaultdict
-from datetime import date, datetime, time, timedelta
+
 from django import template
 from django.conf import settings as dsettings
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.template import defaultfilters
-from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
 from common.jsonify import json_dumps
 from conference import dataaccess
 from conference import models
-from conference import utils
-from conference import settings
-
-from tagging.models import Tag
-from tagging.utils import parse_tag_input
 
 mimetypes.init()
 

@@ -27,7 +27,7 @@ from taggit.models import GenericTaggedItemBase, ItemBase, TagBase
 
 from common.django_urls import UrlMixin
 
-from . import settings, signals
+from . import settings
 
 log = logging.getLogger('conference.tags')
 
@@ -1366,7 +1366,6 @@ class EventBookingManager(models.Manager):
         except EventBooking.DoesNotExist:
             e = EventBooking(event_id=eid, user_id=uid)
             e.save()
-            signals.event_booked.send(sender=Event, booked=True, event_id=eid, user_id=uid)
         return e
 
     def cancel_reservation(self, eid, uid):
@@ -1375,7 +1374,6 @@ class EventBookingManager(models.Manager):
         except EventBooking.DoesNotExist:
             return
         e.delete()
-        signals.event_booked.send(sender=Event, booked=False, event_id=eid, user_id=uid)
 
 
 class EventBooking(models.Model):

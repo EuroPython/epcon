@@ -1,13 +1,8 @@
-import unittest
-
-import pytest
-
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.test import override_settings
 from django_factory_boy import auth as auth_factories
 
-from tests.factories import (AttendeeProfileFactory, ConferenceFactory, ScheduleFactory)
+from tests.factories import AttendeeProfileFactory, ConferenceFactory
 
 
 class TestView(TestCase):

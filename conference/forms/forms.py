@@ -1,7 +1,5 @@
-
 from django import forms
 from django.conf import settings as dsettings
-from django.contrib.admin import widgets as admin_widgets
 from django.core import mail
 from django.forms import widgets
 from django.forms.utils import flatatt

@@ -19,7 +19,6 @@ import responses
 from assopy.models import Country, Invoice, Order, Vat
 from tests.factories import AssopyUserFactory, FareFactory, OrderFactory
 from conference.models import AttendeeProfile, Ticket, Fare, Conference
-from conference import settings as conference_settings
 from conference.invoicing import (
     ACPYSS_16,
     PYTHON_ITALIA_17,
