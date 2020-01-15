@@ -100,15 +100,36 @@ class OrderAdminForm(forms.ModelForm):
         return super(OrderAdminForm, self).save(*args, **kwargs)
 
 
+class DiscountListFilter(admin.SimpleListFilter):
+    # Human-readable title which will be displayed in the
+    # right admin sidebar just above the filter options.
+    title = 'discounts'
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = 'discounts'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('yes', 'With discounts'),
+            ('no', 'Regular order'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'yes':
+            return queryset.filter(orderitem__price__lt=0)
+        elif self.value() == 'no':
+            return queryset.exclude(orderitem__price__lt=0)
+
+
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'code', '_user', '_email',
         '_created', 'method',
         '_items', '_complete', '_invoice',
-        '_total_nodiscount', '_discount', '_total_payed',
+        '_total_nodiscount', '_discount', '_total_payed', 'country',
     )
     list_select_related = True
-    list_filter = ('method', '_complete',)
+    list_filter = ('method', '_complete', DiscountListFilter, 'country')
     raw_id_fields = ('user',)
     search_fields = (
         'code', 'card_name',
@@ -176,7 +197,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     def _total_payed(self, o):
         return o.total()
-    _total_payed.short_description = 'Payed'
+    _total_payed.short_description = 'Paid'
 
     def _invoice(self, o):
         output = []

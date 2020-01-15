@@ -22,30 +22,6 @@ from taggit.forms import TagField
 from taggit_labels.widgets import LabelWidget
 
 
-### Customg list filters
-
-class DiscountListFilter(admin.SimpleListFilter):
-    # Human-readable title which will be displayed in the
-    # right admin sidebar just above the filter options.
-    title = 'discounts'
-
-    # Parameter for the filter that will be used in the URL query.
-    parameter_name = 'discounts'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('yes', 'With discounts'),
-            ('no', 'Regular order'),
-        )
-
-    def queryset(self, request, queryset):
-        if self.value() == 'yes':
-            return queryset.filter(orderitem__price__lt=0)
-        elif self.value() == 'no':
-            return queryset.exclude(orderitem__price__lt=0)
-
-###
-
 _TICKET_CONFERENCE_COPY_FIELDS = ('shirt_size', 'python_experience', 'diet', 'tagline', 'days', 'badge_image')
 def ticketConferenceForm():
     class _(forms.ModelForm):
@@ -80,7 +56,7 @@ def ticketConferenceForm():
                         for k in _TICKET_CONFERENCE_COPY_FIELDS:
                             initial[k] = getattr(p3c, k)
                         kw['initial'] = initial
-            return super(TicketConferenceForm, self).__init__(*args, **kw)
+            return super().__init__(*args, **kw)
 
     return TicketConferenceForm
 
@@ -266,15 +242,15 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
             q['frozen__exact'] = 0
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
-        return super(TicketConferenceAdmin,self).changelist_view(request, extra_context=extra_context)
+        return super().changelist_view(request, extra_context=extra_context)
 
     def get_queryset(self, request):
-        qs = super(TicketConferenceAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         qs = qs.select_related('orderitem__order', 'p3_conference', 'user', 'fare', )
         return qs
 
     def get_urls(self):
-        urls = super(TicketConferenceAdmin, self).get_urls()
+        urls = super().get_urls()
         my_urls = [
             url(r'^stats/data/$', self.admin_site.admin_view(self.stats_data), name='p3-ticket-stats-data'),
         ]
@@ -521,18 +497,6 @@ class TalkAdmin(admin.ModelAdmin):
 
 admin.site.register(cmodels.Talk, TalkAdmin)
 
-
-class OrderAdmin(aadmin.OrderAdmin):
-    list_display = aadmin.OrderAdmin.list_display + (
-        'country',
-        )
-    list_filter = aadmin.OrderAdmin.list_filter + (
-        DiscountListFilter,
-        'country',
-        )
-
-admin.site.unregister(amodels.Order)
-admin.site.register(amodels.Order, OrderAdmin)
 
 class EventTrackInlineAdmin(admin.TabularInline):
     model = cmodels.EventTrack
