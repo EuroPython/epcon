@@ -32,114 +32,6 @@ def _request_cache(request, key):
     return request._conf_cache[key]
 
 
-class TNode(template.Node):
-    def _set_var(self, v):
-        if not v:
-            return v
-        if v.startswith('"') and v.endswith('"'):
-            return v[1:-1]
-        else:
-            return template.Variable(v)
-
-    def _get_var(self, v, context):
-        try:
-            return v.resolve(context)
-        except AttributeError:
-            return v
-
-
-@register.filter
-def image_resized(value, size='resized'):
-    if isinstance(value, str):
-        url = value
-        if not url.startswith(settings.DEFAULT_URL_PREFIX + settings.MEDIA_URL):
-            return url
-    else:
-        try:
-            url = value.url
-        except AttributeError:
-            return ''
-    try:
-        dirname, basename = os.path.split(url)
-    except:
-        return ''
-    else:
-        return dirname + '/%s/%s' % (size, os.path.splitext(basename)[0] + '.jpg')
-
-
-@register.tag
-def conference_multilingual_attribute(parser, token):
-    """
-    {% conference_multilingual_attribute object attribute [as var] [fallback lang|any] %}
-    """
-    contents = token.split_contents()
-    tag_name = contents[0]
-    try:
-        instance, attribute = contents[1:3]
-    except ValueError:
-        raise template.TemplateSyntaxError("%r tag had invalid arguments" % tag_name)
-    contents = contents[3:]
-    if contents and contents[0] == 'as':
-        var_name = contents[1]
-        contents = contents[2:]
-    else:
-        var_name = None
-
-    if contents and contents[0] == 'fallback':
-        fallback = contents[1]
-        contents = contents[2:]
-    else:
-        fallback = None
-
-    if contents:
-        raise template.TemplateSyntaxError("%r had too many arguments" % tag_name)
-
-    class AttributeNode(TNode):
-        def __init__(self, instance, attribute, var_name, fallback):
-            self.var_name = var_name
-            self.instance = self._set_var(instance)
-            self.attribute = self._set_var(attribute)
-            self.fallback = self._set_var(fallback)
-
-        def render(self, context):
-            instance = self._get_var(self.instance, context)
-            attribute = self._get_var(self.attribute, context)
-            fallback = self._get_var(self.fallback, context)
-            try:
-                query = getattr(instance, attribute)
-            except AttributeError:
-                return ''
-
-            contents = dict((c.language, c) for c in query.all() if (c.body and c.content == attribute))
-            try:
-                value = contents[context['LANGUAGE_CODE']]
-            except KeyError:
-                try:
-                    value = contents[context['LANGUAGE_CODE'].split('-')[0]]
-                except KeyError:
-                    if fallback is None or not contents:
-                        value = None
-                    elif fallback != 'any':
-                        value = contents.get(fallback)
-                    else:
-                        dlang = settings.LANGUAGES[0][0]
-                        dlang_single = settings.LANGUAGES[0][0].split('-')[0]
-                        if dlang in contents:
-                            value = contents[dlang]
-                        elif dlang_single in contents:
-                            value = contents[dlang_single]
-                        else:
-                            value = list(contents.values())[0]
-            if self.var_name:
-                context[self.var_name] = value
-                return ''
-            else:
-                return value.body if value else ''
-
-    return AttributeNode(instance, attribute, var_name, fallback)
-
-
-
 @register.filter
 def full_name(u):
     return "%s %s" % (u.first_name, u.last_name)
@@ -165,20 +57,6 @@ def get_talk_speakers(context, talk):
     if not c:
         c['items'] = models.TalkSpeaker.objects.speakers_by_talks(talk.conference)
     return c['items'].get(talk.id, [])
-
-
-# TODO: Remove
-@register.filter
-def markdown2(text, arg=''):
-    from markdown2 import markdown
-    extensions = [e for e in arg.split(",") if e]
-    if len(extensions) > 0 and extensions[0] == "nosafe":
-        extensions = extensions[1:]
-        safe_mode = None
-    else:
-        safe_mode = "escape"
-
-    return mark_safe(markdown(text, safe_mode=safe_mode, extras=extensions))
 
 
 @register.simple_tag

@@ -1,7 +1,7 @@
 from django.template.response import TemplateResponse
 from django.utils.lorem_ipsum import words, paragraphs
 from django.conf import settings
-from django import forms
+
 from .models import News, Sponsor
 
 

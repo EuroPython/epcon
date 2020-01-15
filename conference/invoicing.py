@@ -7,7 +7,6 @@ This module handles all things related to creating a new invoice, including
 * stroing full copy in the Invoice model to be viewed later.
 * rendering PDFs of the invoice.
 """
-
 from collections import OrderedDict
 from decimal import Decimal
 import datetime

@@ -2,13 +2,11 @@ import logging
 from . import models
 
 from assopy.models import ticket_for_user, user_created
-from conference.listeners import fare_price, fare_tickets
+from conference.listeners import fare_tickets
 from conference.models import AttendeeProfile, Ticket
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db.models.signals import post_save
-from email_template import utils
 
 log = logging.getLogger('p3')
 
@@ -38,34 +36,6 @@ def on_user_created(sender, **kw):
 
 user_created.connect(on_user_created)
 
-def calculate_hotel_reservation_price(sender, **kw):
-    if sender.code[0] != 'H':
-        return
-    # the cost of an hotel booking depends on the period
-    calc = kw['calc']
-    period = calc['params']['period']
-    room = models.HotelRoom.objects.get(
-        booking__conference=sender.conference,
-        room_type='t' + sender.code[2])
-    price = room.price(days=(period[1] - period[0]).days)
-    if sender.code[1] == 'R':
-        price *= int(sender.code[2])
-    calc['total'] = price * calc['params']['qty']
-
-fare_price.connect(calculate_hotel_reservation_price)
-
-def create_hotel_tickets(sender, **kw):
-    # only for bookings of full rooms I need to create multiple tickets, in
-    # all other cases it's ok the default behavior
-    if sender.code[:2] == 'HR':
-        room_size = int(sender.code[2])
-        for ix in range(room_size):
-            t = Ticket(user=kw['params']['user'], fare=sender)
-            t.fare_description = sender.name + (' (Occupant %s/%s)' % (ix+1, room_size))
-            t.save()
-            kw['params']['tickets'].append(t)
-
-fare_tickets.connect(create_hotel_tickets)
 
 def create_p3_auto_assigned_conference_tickets(sender, params=None, **kws):
 

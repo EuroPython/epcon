@@ -895,14 +895,12 @@ class Fare(models.Model):
         return dict(FARE_TYPES).get(self.recipient_type, 'Regular')
 
     def calculated_price(self, qty=1, **kw):
-        from conference.listeners import fare_price
         params = dict(kw)
         params['qty'] = qty
         calc = {
             'total': self.price * qty,
             'params': params,
         }
-        fare_price.send(sender=self, calc=calc)
         return calc['total']
 
     def create_tickets(self, user):
