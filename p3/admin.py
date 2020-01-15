@@ -312,17 +312,8 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
                 data[k] = sorted(v.items())
 
 
-            dlimit = datetime.date(c.conference_start.year, 1, 1)
-            deadlines = cmodels.DeadlineContent.objects\
-                .filter(language='en')\
-                .filter(deadline__date__lte=c.conference_start, deadline__date__gte=dlimit)\
-                .select_related('deadline')\
-                .order_by('deadline__date')
-            markers = [ ((d.deadline.date - c.conference_start).days, 'CAL: ' + (d.headline or d.body)) for d in deadlines ]
-
             output[c.code] = {
                 'data': data,
-                'markers': markers,
             }
 
         return http.HttpResponse(json_dumps(output), 'text/javascript')

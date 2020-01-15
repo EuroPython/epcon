@@ -239,110 +239,6 @@ class ConferenceAdmin(admin.ModelAdmin):
         return r
 
 
-class DeadlineAdmin(admin.ModelAdmin):
-    list_display = ('date', '_headline', '_text', '_expired')
-    date_hierarchy = 'date'
-
-    def _headline(self, obj):
-        contents = dict((c.language, c) for c in obj.deadlinecontent_set.all())
-        for l, lname in settings.LANGUAGES:
-            try:
-                content = contents[l]
-            except KeyError:
-                continue
-            if content.headline:
-                return content.headline
-        else:
-            return '[No Headline]'
-    _headline.short_description = 'headline'
-    _headline.allow_tags = True
-
-    def _text(self, obj):
-        contents = dict((c.language, c) for c in obj.deadlinecontent_set.all())
-        for l, lname in settings.LANGUAGES:
-            try:
-                content = contents[l]
-            except KeyError:
-                continue
-            if content.body:
-                return content.body
-        else:
-            return '[No Body]'
-    _text.short_description = 'testo'
-    _text.allow_tags = True
-
-    def _expired(self, obj):
-        return not obj.isExpired()
-    _expired.boolean = True
-
-    # Nella pagina per la creazione/modifica di una deadline voglio mostrare
-    # una textarea per ogni lingua abilitata nei settings. Per fare questo
-    # ridefinisco due metodi di ModelAdmin:
-    #     * get_form
-    #     * save_model
-    # Con il primo aggiungo all'oggetto ModelForm ritornato dalla classe base
-    # un CharField per ogni lingua configurata; la form ritornata da questo
-    # metodo viene renderizzata nella pagina HTML.
-    # Con il secondo oltre a salvare l'istanza di Deadline creo/modifico le
-    # istanze di DeadlineContent in funzione delle lingue.
-
-    def get_fieldsets(self, request, obj=None):
-        fieldsets = super(DeadlineAdmin, self).get_fieldsets(request, obj=obj)
-
-        fields = fieldsets[0][1]['fields']
-
-        for lang_code, _ in settings.LANGUAGES:
-            fields.append('headline_' + lang_code)
-            fields.append('body_' + lang_code)
-        return fieldsets
-
-    def get_form(self, request, obj=None, **kwargs):
-        initials = {}
-        if obj:
-            initials = dict((c.language, (c.headline, c.body)) for c in obj.deadlinecontent_set.all())
-
-        class DeadlineForm(forms.ModelForm):
-            class Meta:
-                model = models.Deadline
-                fields = ('date',)
-            def __init__(self, *args, **kw):
-                super(DeadlineForm, self).__init__(*args, **kw)
-                for lang_code, _ in settings.LANGUAGES:
-                    headline = forms.CharField(max_length=200, required=False)
-                    try:
-                        headline.initial = initials[lang_code][0]
-                    except:
-                        pass
-                    self.fields['headline_' + lang_code] = headline
-
-                    body = forms.CharField(widget=forms.Textarea, required=False)
-                    try:
-                        body.initial = initials[lang_code][1]
-                    except:
-                        pass
-                    self.fields['body_' + lang_code] = body
-        return DeadlineForm
-
-    def save_model(self, request, obj, form, change):
-        obj.save()
-        data = form.cleaned_data
-        for l, _ in settings.LANGUAGES:
-            if change:
-                try:
-                    instance = models.DeadlineContent.objects.get(deadline=obj, language=l)
-                except models.DeadlineContent.DoesNotExist:
-                    instance = models.DeadlineContent()
-            else:
-                instance = models.DeadlineContent()
-            if not instance.id:
-                instance.deadline = obj
-                instance.language = l
-            instance.headline = data.get('headline_' + l, '')
-            instance.body = data.get('body_' + l, '')
-            instance.save()
-
-
-
 class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
     def __new__(mcs, name, bases, attrs):
         new_class = super(MultiLingualFormMetaClass, mcs).__new__(mcs, name, bases, attrs)
@@ -841,22 +737,6 @@ class ScheduleAdmin(admin.ModelAdmin):
         return TemplateResponse(request, 'conference/admin/schedule_expected_attendance.html', ctx)
 
 
-class HotelAdmin(admin.ModelAdmin):
-    list_display = ('name', '_contacts', 'address', 'affiliated', 'visible')
-    list_filter = ('visible', 'affiliated' )
-    search_fields = [ 'name', 'address' ]
-
-    def _contacts(self, obj):
-        h = ""
-        if obj.email:
-            h += '<a href="mailto:%s">%s</a> ' % (obj.email, obj.email)
-        if obj.telephone:
-            h+= obj.telephone
-        return h
-    _contacts.allow_tags = True
-    _contacts.short_description = 'Contatti'
-
-
 class FilterFareByTicketCode(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
@@ -1000,20 +880,8 @@ class TicketAdmin(admin.ModelAdmin):
             for k, v in data.items():
                 data[k] = sorted(v.items())
 
-            dlimit = datetime.date(c.conference_start.year, 1, 1)
-            deadlines = models.DeadlineContent.objects\
-                .filter(language=settings.LANGUAGES[0][0])\
-                .filter(deadline__date__lte=c.conference_start, deadline__date__gte=dlimit)\
-                .select_related('deadline')\
-                .order_by('deadline__date')
-            markers = [
-                ((d.deadline.date - c.conference_start).days, 'CAL: ' + (d.headline or d.body))
-                for d in deadlines
-            ]
-
             output[c.code] = {
                 'data': data,
-                'markers': markers,
             }
         return output
 
@@ -1126,10 +994,8 @@ class NewsAdmin(admin.ModelAdmin):
 admin.site.register(models.CaptchaQuestion, CaptchaQuestionAdmin)
 admin.site.register(models.Conference, ConferenceAdmin)
 admin.site.register(models.ConferenceTag, ConferenceTagAdmin)
-admin.site.register(models.Deadline, DeadlineAdmin)
 admin.site.register(models.ExchangeRate, ExchangeRateAdmin)
 admin.site.register(models.Fare, FareAdmin)
-admin.site.register(models.Hotel, HotelAdmin)
 admin.site.register(models.Schedule, ScheduleAdmin)
 admin.site.register(models.Speaker, SpeakerAdmin)
 admin.site.register(models.Sponsor, SponsorAdmin)
