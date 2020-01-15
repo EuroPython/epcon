@@ -369,7 +369,7 @@ class SpeakerAdmin(admin.ModelAdmin):
     inlines = (TalkSpeakerInlineAdmin,)
 
     def get_queryset(self, request):
-        qs = super(SpeakerAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         qs = qs.select_related('user__attendeeprofile')
         if request.GET:
             # Make sure we do an AND query, not an or one as implicit by
@@ -379,7 +379,17 @@ class SpeakerAdmin(admin.ModelAdmin):
             if conf is not None and status is not None:
                 qs = qs.filter(talk__conference=conf,
                                talk__status__exact=status)
+
+        qs = qs.filter(user__in=(models.TalkSpeaker.objects\
+                #.filter(talk__conference=settings.CONFERENCE_CONFERENCE)\
+                .values('speaker')))
         return qs
+
+    def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
+        sids = queryset.values_list('user', flat=True)
+        profiles = dataaccess.profiles_data(sids)
+        self._profiles = dict(list(zip(sids, profiles)))
+        return super(SpeakerAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
 
     def get_urls(self):
         urls = super(SpeakerAdmin, self).get_urls()

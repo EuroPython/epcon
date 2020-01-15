@@ -1,16 +1,11 @@
-from collections import defaultdict
-from decimal import Decimal
 from django import forms
 from django import http
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.conf.urls import url
 from django.contrib import admin
-from django.db.models import Q
 from django.contrib.auth.models import User
-from assopy import admin as aadmin
-from assopy import models as amodels
-from assopy import stats as astats
+
 from assopy import utils as autils
 from conference import admin as cadmin
 from conference import models as cmodels
@@ -22,6 +17,8 @@ from taggit.forms import TagField
 from taggit_labels.widgets import LabelWidget
 
 
+#TODO: This monstrosity created a joint modelform for Ticket and TicketConference instances.
+#TODO: Use inline form for the one to one relationship or merge the models.
 _TICKET_CONFERENCE_COPY_FIELDS = ('shirt_size', 'python_experience', 'diet', 'tagline', 'days', 'badge_image')
 def ticketConferenceForm():
     class _(forms.ModelForm):
@@ -59,6 +56,7 @@ def ticketConferenceForm():
             return super().__init__(*args, **kw)
 
     return TicketConferenceForm
+
 
 class TicketConferenceAdmin(cadmin.TicketAdmin):
     list_display = cadmin.TicketAdmin.list_display + (
@@ -288,36 +286,6 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
             }
 
         return http.HttpResponse(json_dumps(output), 'text/javascript')
-
-
-class SpeakerAdmin(cadmin.SpeakerAdmin):
-
-    list_display = cadmin.SpeakerAdmin.list_display + (
-        )
-    list_filter = cadmin.SpeakerAdmin.list_filter + (
-        'p3_speaker__first_time',
-        )
-
-    def get_queryset(self, request):
-        # XXX: waiting to upgrade to django 1.4, I'm implementing
-        # this bad hack filter to keep only speakers of current conference.
-        qs = super(SpeakerAdmin, self).get_queryset(request)
-        qs = qs.filter(user__in=(
-            cmodels.TalkSpeaker.objects\
-                #.filter(talk__conference=settings.CONFERENCE_CONFERENCE)\
-                .values('speaker')
-        ))
-        return qs
-
-    def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
-        sids = queryset.values_list('user', flat=True)
-        profiles = dataaccess.profiles_data(sids)
-        self._profiles = dict(list(zip(sids, profiles)))
-        return super(SpeakerAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
-
-    def _avatar(self, o):
-        return '<img src="%s" height="32" />' % (self._profiles[o.user_id]['image'],)
-    _avatar.allow_tags = True
 
 
 class VotoTalkAdmin(admin.ModelAdmin):
@@ -564,114 +532,8 @@ class TrackAdmin(admin.ModelAdmin):
 
 admin.site.register(cmodels.Track, TrackAdmin)
 
-
-### Orders Stats
-
-# For simplicity, we monkey patch the
-# assopy.stats.prezzo_biglietti_ricalcolato() function here.
-#
-# This is poor style, but until we have merged the packages into the
-# epcon package, this is the easiest way forward.
-
-def prezzo_biglietti_ricalcolato(**kw):
-    """
-    Ricalcola il ricavo dei biglietti eliminando quelli gratuiti e
-    ridistribuendo il prezzo sui rimanenti.
-    """
-    # mi interessano solo gli ordini che riguardano acquisti di biglietti
-    # "conferenza"
-    orders = amodels.Order.objects\
-        .filter(id__in=astats._orders(**kw))\
-        .values('id')\
-        .distinct()
-    fares = set(cmodels.Fare.objects\
-        .values_list('code', flat=True))
-
-    def _calc_prices(order_id, items):
-        """
-        Elimina gli item degli sconti e riduce in maniera proporzionale
-        il valore dei restanti.
-        """
-        prices = set()
-        discount = Decimal('0')
-        total = Decimal('0')
-        for item in items:
-            if item['price'] > 0:
-                prices.add(item['price'])
-                total += item['price']
-            else:
-                discount += item['price'] * -1
-
-        for ix, item in reversed(list(enumerate(items))):
-            if item['price'] > 0:
-                item['price'] = item['price'] * (total - discount) / total
-            else:
-                del items[ix]
-
-    grouped = defaultdict(list)
-    for ticket_type, ticket_type_description in cmodels.FARE_TICKET_TYPES:
-        qs = amodels.OrderItem.objects\
-            .filter(Q(ticket__isnull=True) |
-                    Q(ticket__fare__ticket_type=ticket_type),
-                    order__in=orders)\
-            .values_list('ticket__fare__code',
-                         'ticket__fare__name',
-                         'price',
-                         'order')
-        for fcode, fname, price, oid in qs:
-            if fcode in fares or price < 0:
-                grouped[oid].append({
-                    'code': fcode,
-                    'name': fname,
-                    'price': price,
-                })
-    for oid, items in grouped.items():
-        _calc_prices(oid, items)
-
-    # after using _calc_prices obtain the prices not found anymore
-    # of the ordinary rates, regroup the resulting OrderItem
-    # by rate code and new price
-    tcp = {}
-    for rows in grouped.values():
-        for item in rows:
-            code = item['code']
-            if code not in tcp:
-                tcp[code] = {
-                    'code': code,
-                    'name': item['name'],
-                    'prices': {}
-                }
-            price = item['price']
-            if price not in tcp[code]['prices']:
-                tcp[code]['prices'][price] = { 'price': price, 'count': 0 }
-            tcp[code]['prices'][price]['count'] += 1
-    return list(tcp.values())
-
-prezzo_biglietti_ricalcolato.template = '''
-<table>
-    <tr>
-        <th>Code</th>
-        <th>Qty</th>
-        <th style="width: 70px;">Price</th>
-    </tr>
-    {% for ticket in data %}
-        {% for p in ticket.prices.values %}
-        <tr>
-            {% if forloop.counter == 1 %}
-            <td title="{{ ticket.name }}" rowspan="{{ ticket.prices|length }}">{{ ticket.code }}</td>
-            {% endif %}
-            <td>{{ p.count }}</td>
-            <td>€ {{ p.price|floatformat:"2" }}</td>
-        </tr>
-        {% endfor %}
-    {% endfor %}
-</table>
-'''
-
 admin.site.unregister(cmodels.Ticket)
 admin.site.register(cmodels.Ticket, TicketConferenceAdmin)
-admin.site.unregister(cmodels.Speaker)
-admin.site.register(cmodels.Speaker, SpeakerAdmin)
 
 admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
 admin.site.register(cmodels.AttendeeProfile, AttendeeProfileAdmin)
