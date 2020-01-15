@@ -84,7 +84,7 @@ class OrderAdminForm(forms.ModelForm):
         exclude = ('method',)
 
     def __init__(self, *args, **kwargs):
-        super(OrderAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['user'].queryset = models.AssopyUser.objects.all().select_related('user')
         if self.initial:
             self.fields['method'].initial = self.instance.method
@@ -97,7 +97,7 @@ class OrderAdminForm(forms.ModelForm):
 
     def save(self, *args, **kwargs):
         self.instance.method = self.cleaned_data['method']
-        return super(OrderAdminForm, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 
 class DiscountListFilter(admin.SimpleListFilter):
@@ -152,13 +152,13 @@ class OrderAdmin(admin.ModelAdmin):
         if obj and obj.invoices.exclude(payment_date=None).exists():
             return False
         else:
-            return super(OrderAdmin, self).has_delete_permission(request, obj)
+            return super().has_delete_permission(request, obj)
 
     def get_actions(self, request):
         # elimino l'action delete per costringere l'utente ad usare il pulsante
         # nella pagina di dettaglio. La differenza tra il pulsante e questa
         # azione che l'ultima non chiama la `.delete()` del modello.
-        actions = super(OrderAdmin, self).get_actions(request)
+        actions = super().get_actions(request)
         actions.pop('delete_selected', None)
         return actions
 

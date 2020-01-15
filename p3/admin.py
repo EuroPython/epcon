@@ -91,9 +91,6 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         )
     form = ticketConferenceForm()
 
-    class Media:
-        js = ('p5/j/jquery-flot/jquery.flot.js',)
-
     def _order(self, obj):
         url = reverse('admin:assopy_order_change',
                       args=(obj.orderitem.order.id,))
@@ -260,7 +257,6 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         from common.jsonify import json_dumps
         from django.db.models import Q
         from collections import defaultdict
-        import datetime
 
         conferences = cmodels.Conference.objects\
             .order_by('conference_start')
@@ -568,12 +564,6 @@ class TrackAdmin(admin.ModelAdmin):
 
 admin.site.register(cmodels.Track, TrackAdmin)
 
-
-class ScheduleAdmin(cadmin.ScheduleAdmin):
-    pass
-
-admin.site.unregister(cmodels.Schedule)
-admin.site.register(cmodels.Schedule, ScheduleAdmin)
 
 ### Orders Stats
 

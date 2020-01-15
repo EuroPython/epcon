@@ -272,18 +272,11 @@ INSTALLED_APPS = (
     'tagging',
     'taggit',
     'taggit_labels',
-    'authority',
-    # 'pages',
     'mptt',
     'crispy_forms',
 
-    'django_xmlrpc',
-    'rosetta',
-
     'filer',
     'easy_thumbnails',
-
-    'django_crontab',
 
     'markitup',
     'cms_utils',
@@ -384,13 +377,6 @@ PAGE_LANGUAGE_MAPPING = lambda lang: PAGE_LANGUAGES[0][0]  # NOQA
 PAGE_REAL_TIME_SEARCH = False
 
 PAGE_USE_STRICT_URL = True
-
-ROSETTA_EXCLUDED_APPLICATIONS = (
-    'debug_toolbar',
-    'filebrowser',
-    'pages',
-    'rosetta',
-)
 
 CMS_LANGUAGES = {
     1: [

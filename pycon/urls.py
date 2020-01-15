@@ -45,7 +45,6 @@ urlpatterns = [
     url(r'^news/', news_list, name="news"),
     url(r'^accounts/', include('assopy.urls')),
     url(r'^admin/filebrowser/', include(fsite.urls)),
-    url(r'^admin/rosetta/', include('rosetta.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^cart/', include(cart19_urls, namespace="cart")),
     url(r'^p3/', include('p3.urls')),
@@ -90,14 +89,3 @@ if settings.DEBUG:
 urlpatterns += [
     url(r'^', include('cms.urls')),
 ]
-
-if hasattr(settings, 'ROSETTA_AFTER_SAVE'):
-    # XXX this code would be better in settings.py, unfortunately there
-    # it's impossible to import rosetta.signals because of a circular
-    # dependency problem. urls.py is not the perfect place, but should
-    # work always (with the exception of management commands).
-    import rosetta.signals
-
-    def on_rosetta_post_save(sender, **kw):
-        settings.ROSETTA_AFTER_SAVE(sender=sender, **kw)
-    rosetta.signals.post_save.connect(on_rosetta_post_save)
