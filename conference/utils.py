@@ -5,7 +5,8 @@ import subprocess
 from datetime import datetime, date, timedelta, time
 from collections import defaultdict
 
-from conference import settings
+from django.conf import settings
+
 from conference.models import VotoTalk, EventTrack, Event, Track
 
 
@@ -103,9 +104,9 @@ def voting_results():
     The returned list is a list of tuples (talk__id, talk__type, talk__language).
     If TALKS_RANKING_FILE is not set or does not exist the return value is None.
     """
-    if settings.TALKS_RANKING_FILE:
+    if settings.CONFERENCE_TALKS_RANKING_FILE:
         try:
-            with open(settings.TALKS_RANKING_FILE) as ranking_file:
+            with open(settings.CONFERENCE_TALKS_RANKING_FILE) as ranking_file:
                 results = []
                 for line in ranking_file:
                     pieces = line.split('-', 4)

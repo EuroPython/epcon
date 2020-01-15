@@ -10,16 +10,6 @@ urlpatterns = [
         views.user_profile,
         name="conference-profile",
     ),
-    url(
-        r"^talks/(?P<slug>[\w-]+)/video$",
-        views.talk_video,
-        name="conference-talk-video",
-    ),
-    url(
-        r"^talks/(?P<slug>[\w-]+)/video.mp4$",
-        views.talk_video,
-        name="conference-talk-video-mp4",
-    ),
     url(r"^talks/(?P<slug>[\w-]+)$", views.talk, name="conference-talk"),
     url(
         r"^talks/(?P<slug>[\w-]+)/social-card.png$",

@@ -6,9 +6,7 @@ import uuid
 from collections import defaultdict
 from urllib.parse import urlencode
 
-import shortuuid
-import tagging
-from django.conf import settings as dsettings
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import exceptions
 from django.core.cache import cache
@@ -19,6 +17,9 @@ from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext as _
+
+import shortuuid
+import tagging
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
 from tagging.fields import TagField
@@ -27,9 +28,7 @@ from taggit.models import GenericTaggedItemBase, ItemBase, TagBase
 
 from common.django_urls import UrlMixin
 
-from . import settings
-
-log = logging.getLogger('conference.tags')
+log = logging.getLogger('conference.models')
 
 
 CURRENT_CONFERENCE_CACHE_KEY = 'CONFERENCE_CURRENT'
@@ -85,7 +84,7 @@ class ConferenceManager(models.Manager):
         a_week = 60 * 60 * 24 * 7
 
         if data is None:
-            data = self.get(code=dsettings.CONFERENCE_CONFERENCE)
+            data = self.get(code=settings.CONFERENCE_CONFERENCE)
             cache.set(CURRENT_CONFERENCE_CACHE_KEY, data, a_week)
 
         return data
@@ -223,7 +222,7 @@ from django.contrib.contenttypes.fields import (
 class MultilingualContentManager(models.Manager):
     def setContent(self, object, content, language, body):
         if language is None:
-            language = dsettings.LANGUAGE_CODE.split('-', 1)[0]
+            language = settings.LANGUAGE_CODE.split('-', 1)[0]
         object_type = ContentType.objects.get_for_model(object)
         try:
             mc = self.get(content_type=object_type, object_id=object.pk, content=content, language=language)
@@ -236,7 +235,7 @@ class MultilingualContentManager(models.Manager):
 
     def getContent(self, object, content, language):
         if language is None:
-            language = dsettings.LANGUAGE_CODE.split('-', 1)[0]
+            language = settings.LANGUAGE_CODE.split('-', 1)[0]
         object_type = ContentType.objects.get_for_model(object)
         records = dict(
             (x.language, x)
@@ -248,7 +247,7 @@ class MultilingualContentManager(models.Manager):
             if not records:
                 return None
             else:
-                return records.get(dsettings.LANGUAGE_CODE, list(records.values())[0])
+                return records.get(settings.LANGUAGE_CODE, list(records.values())[0])
 
 class MultilingualContent(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -278,7 +277,7 @@ class _fs_upload_to(object):
             '%s%s' % (getattr(instance, self.attr), os.path.splitext(filename)[1].lower())
         )
 
-        ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
+        ipath = os.path.join(settings.MEDIA_ROOT, fpath)
 
         if os.path.exists(ipath):
             os.unlink(ipath)
@@ -464,7 +463,7 @@ class Speaker(models.Model, UrlMixin):
         return Talk.objects.filter(id__in=qs.values('talk'))
 
 
-TALK_LANGUAGES = dsettings.LANGUAGES
+TALK_LANGUAGES = settings.LANGUAGES
 
 TALK_STATUS = Choices(
     ('proposed', _('Proposed')),
@@ -704,8 +703,8 @@ class Talk(models.Model, UrlMixin):
 
     domain = models.CharField(
         max_length=20,
-        choices=dsettings.CONFERENCE_TALK_DOMAIN,
-        default=dsettings.CONFERENCE_TALK_DOMAIN.other,
+        choices=settings.CONFERENCE_TALK_DOMAIN,
+        default=settings.CONFERENCE_TALK_DOMAIN.other,
         blank=True,
     )
     domain_level = models.CharField(
@@ -1029,7 +1028,7 @@ class ScheduleManager(models.Manager):
         """
         Returns the number of participants for each of the conference schedule.
         """
-        return settings.SCHEDULE_ATTENDEES(conference, forecast)
+        return settings.CONFERENCE_SCHEDULE_ATTENDEES(conference, forecast)
 
     def events_score_by_attendance(self, conference):
         """

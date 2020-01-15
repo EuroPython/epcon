@@ -5,14 +5,13 @@ import re
 from collections import defaultdict
 
 from django import template
-from django.conf import settings as dsettings
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
 from common.jsonify import json_dumps
-from conference import dataaccess
-from conference import models
+from conference import dataaccess, models
 
 mimetypes.init()
 
@@ -53,7 +52,7 @@ class TNode(template.Node):
 def image_resized(value, size='resized'):
     if isinstance(value, str):
         url = value
-        if not url.startswith(dsettings.DEFAULT_URL_PREFIX + dsettings.MEDIA_URL):
+        if not url.startswith(settings.DEFAULT_URL_PREFIX + settings.MEDIA_URL):
             return url
     else:
         try:
@@ -123,8 +122,8 @@ def conference_multilingual_attribute(parser, token):
                     elif fallback != 'any':
                         value = contents.get(fallback)
                     else:
-                        dlang = dsettings.LANGUAGES[0][0]
-                        dlang_single = dsettings.LANGUAGES[0][0].split('-')[0]
+                        dlang = settings.LANGUAGES[0][0]
+                        dlang_single = settings.LANGUAGES[0][0].split('-')[0]
                         if dlang in contents:
                             value = contents[dlang]
                         elif dlang_single in contents:

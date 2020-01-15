@@ -65,17 +65,3 @@ class TestView(TestCase):
         self.assertRedirects(
             response, reverse('talks:talk', kwargs={'talk_slug': talk.slug}), status_code=301
         )
-
-    @unittest.skip('todo')
-    def test_conference_talk_video(self):
-        # conference-talk-video -> conference.views.talk_video
-        url = reverse('conference-talk-video')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-
-    @unittest.skip('todo')
-    def test_conference_talk_video_mp4(self):
-        # conference-talk-video-mp4 -> conference.views.talk_video
-        url = reverse('conference-talk-video-mp4')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)

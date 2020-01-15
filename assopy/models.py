@@ -1,6 +1,4 @@
 import re
-import os
-import os.path
 import logging
 from uuid import uuid4
 from datetime import date, datetime, timedelta
@@ -8,7 +6,7 @@ from decimal import Decimal
 from collections import defaultdict
 
 from django import dispatch
-from django.conf import settings as dsettings
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.admin.utils import quote
 from django.core.exceptions import ValidationError
@@ -261,7 +259,7 @@ class AssopyUser(models.Model):
         tickets = []
         ticket_for_user.send(sender=self, tickets=tickets)
         if not tickets:
-            tickets = Ticket.objects.conference(dsettings.CONFERENCE_CONFERENCE).filter(user=self.user)
+            tickets = Ticket.objects.conference(settings.CONFERENCE_CONFERENCE).filter(user=self.user)
         return tickets
 
     def invoices(self):

@@ -2,6 +2,8 @@ import datetime
 from unittest import mock
 
 from django.test import TestCase
+from django.conf import settings
+
 from django_factory_boy import auth as auth_factories
 
 from p3.models import TicketConference
@@ -54,10 +56,8 @@ class P3ProfileModelTestCase(TestCase):
         self.p3_profile = P3Profile(profile=self.profile)
 
     def test_profile_image_url(self):
-        from django.conf import settings as dsettings
-
         url = self.p3_profile.profile_image_url()
-        self.assertEqual(url, dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR)
+        self.assertEqual(url, settings.STATIC_URL + settings.P3_ANONYMOUS_AVATAR)
 
         with mock.patch('conference.gravatar.gravatar') as mock_gravatar:
             mock_gravatar.return_value = 'http://www.mockgravatar.com/'
@@ -76,12 +76,11 @@ class P3ProfileModelTestCase(TestCase):
         self.assertEqual(url, 'http://www.image.url.com')
 
     def test_public_profile_image_url(self):
-        from django.conf import settings as dsettings
         url = self.p3_profile.public_profile_image_url()
-        self.assertEqual(url, dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR)
+        self.assertEqual(url, settings.STATIC_URL + settings.P3_ANONYMOUS_AVATAR)
 
         old_visibility = self.p3_profile.profile.visibility
         self.p3_profile.profile.visibility = 'p'
         url = self.p3_profile.public_profile_image_url()
-        self.assertEqual(url, dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR)
+        self.assertEqual(url, settings.STATIC_URL + settings.P3_ANONYMOUS_AVATAR)
         self.p3_profile.profile.visibility = old_visibility

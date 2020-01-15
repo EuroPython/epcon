@@ -6,7 +6,7 @@ from io import StringIO
 from django import forms
 from django import http
 from django.contrib import admin
-from django.conf import settings as dsettings
+from django.conf import settings
 from django.conf.urls import url
 from django.contrib.contenttypes.fields import (
     ReverseGenericManyToOneDescriptor,
@@ -18,10 +18,7 @@ from django.utils.safestring import mark_safe
 
 import common.decorators
 from common.jsonify import json_dumps
-from conference import dataaccess
-from conference import models
-from conference import settings
-from conference import utils
+from conference import dataaccess, models, utils
 
 from conference.fares import (
     FARE_CODE_TYPES,
@@ -71,7 +68,7 @@ class ConferenceAdmin(admin.ModelAdmin):
 
     def schedule_view_talks(self, conf):
         tids = []
-        if conf.code == settings.CONFERENCE:
+        if conf.code == settings.CONFERENCE_CONFERENCE:
             results = utils.voting_results()
             if results is not None:
                 tids = [x[0] for x in results]
@@ -214,7 +211,7 @@ class ConferenceAdmin(admin.ModelAdmin):
                 'stat_code': '%s.%s' % (sid, rowid),
                 'form': form,
                 'preview': preview,
-                'email_log': settings.ADMIN_TICKETS_STATS_EMAIL_LOG,
+                'email_log': settings.CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG,
             },
         )
 
@@ -236,7 +233,7 @@ class ConferenceAdmin(admin.ModelAdmin):
         for row in result['data']:
             writer.writerow([ row.get(c, '').encode('utf-8') for c in colid ])
 
-        fname = '[%s] %s.csv' % (settings.CONFERENCE, stat['short_description'])
+        fname = '[%s] %s.csv' % (settings.CONFERENCE_CONFERENCE, stat['short_description'])
         r = http.HttpResponse(buff.getvalue(), content_type="text/csv")
         r['content-disposition'] = 'attachment; filename="%s"' % fname
         return r
@@ -248,7 +245,7 @@ class DeadlineAdmin(admin.ModelAdmin):
 
     def _headline(self, obj):
         contents = dict((c.language, c) for c in obj.deadlinecontent_set.all())
-        for l, lname in dsettings.LANGUAGES:
+        for l, lname in settings.LANGUAGES:
             try:
                 content = contents[l]
             except KeyError:
@@ -262,7 +259,7 @@ class DeadlineAdmin(admin.ModelAdmin):
 
     def _text(self, obj):
         contents = dict((c.language, c) for c in obj.deadlinecontent_set.all())
-        for l, lname in dsettings.LANGUAGES:
+        for l, lname in settings.LANGUAGES:
             try:
                 content = contents[l]
             except KeyError:
@@ -294,7 +291,7 @@ class DeadlineAdmin(admin.ModelAdmin):
 
         fields = fieldsets[0][1]['fields']
 
-        for lang_code, _ in dsettings.LANGUAGES:
+        for lang_code, _ in settings.LANGUAGES:
             fields.append('headline_' + lang_code)
             fields.append('body_' + lang_code)
         return fieldsets
@@ -310,7 +307,7 @@ class DeadlineAdmin(admin.ModelAdmin):
                 fields = ('date',)
             def __init__(self, *args, **kw):
                 super(DeadlineForm, self).__init__(*args, **kw)
-                for lang_code, _ in dsettings.LANGUAGES:
+                for lang_code, _ in settings.LANGUAGES:
                     headline = forms.CharField(max_length=200, required=False)
                     try:
                         headline.initial = initials[lang_code][0]
@@ -329,7 +326,7 @@ class DeadlineAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.save()
         data = form.cleaned_data
-        for l, _ in dsettings.LANGUAGES:
+        for l, _ in settings.LANGUAGES:
             if change:
                 try:
                     instance = models.DeadlineContent.objects.get(deadline=obj, language=l)
@@ -363,7 +360,7 @@ class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
         widget = attrs.get('multilingual_widget', forms.Textarea)
         form_fields = {}
         for field_name in multilingual_fields:
-            for lang, _ in dsettings.LANGUAGES:
+            for lang, _ in settings.LANGUAGES:
                 text = forms.CharField(widget=widget, required=False)
                 full_name = '{name}_{lang}'.format(name=field_name, lang=lang)
                 form_fields[full_name] = text
@@ -394,7 +391,7 @@ class MultiLingualForm(forms.ModelForm, metaclass=MultiLingualFormMetaClass):
 
     def _save_translations(self, o):
         for field_name in self.multilingual_fields:
-            for l, _ in dsettings.LANGUAGES:
+            for l, _ in settings.LANGUAGES:
                 form_field = '{name}_{lang}'.format(name=field_name, lang=l)
                 text = self.cleaned_data[form_field]
                 try:
@@ -492,7 +489,7 @@ class SpeakerAdmin(admin.ModelAdmin):
 
     def stats_list(self, request):
         qs = models.TalkSpeaker.objects\
-            .filter(talk__conference=settings.CONFERENCE)\
+            .filter(talk__conference=settings.CONFERENCE_CONFERENCE)\
             .order_by('speaker__user__first_name', 'speaker__user__last_name')\
             .distinct()\
             .values_list('speaker', flat=True)
@@ -651,7 +648,7 @@ class ScheduleAdmin(admin.ModelAdmin):
             )
             sponsor = forms.ModelChoiceField(
                 queryset=models.Sponsor.objects\
-                    .filter(sponsorincome__conference=settings.CONFERENCE)\
+                    .filter(sponsorincome__conference=settings.CONFERENCE_CONFERENCE)\
                     .order_by('sponsor'),
                 required=False
             )
@@ -679,7 +676,7 @@ class ScheduleAdmin(admin.ModelAdmin):
             )
             sponsor = forms.ModelChoiceField(
                 queryset=models.Sponsor.objects\
-                    .filter(sponsorincome__conference=settings.CONFERENCE)\
+                    .filter(sponsorincome__conference=settings.CONFERENCE_CONFERENCE)\
                     .order_by('sponsor'),
                 required=False
             )
@@ -823,7 +820,7 @@ class ScheduleAdmin(admin.ModelAdmin):
 
     def expected_attendance(self, request):
         allevents = defaultdict(dict)
-        for e, info in models.Schedule.objects.expected_attendance(settings.CONFERENCE).items():
+        for e, info in models.Schedule.objects.expected_attendance(settings.CONFERENCE_CONFERENCE).items():
             allevents[e.schedule][e] = info
         data = {}
         for s, events in allevents.items():
@@ -907,7 +904,7 @@ class FareAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         if 'conference' not in request.GET and 'conference__exact' not in request.GET:
             q = request.GET.copy()
-            q['conference'] = settings.CONFERENCE
+            q['conference'] = settings.CONFERENCE_CONFERENCE
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(FareAdmin,self).changelist_view(request, extra_context=extra_context)
@@ -956,7 +953,7 @@ class TicketAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         if not request.GET:
             q = request.GET.copy()
-            q['fare__conference'] = settings.CONFERENCE
+            q['fare__conference'] = settings.CONFERENCE_CONFERENCE
             q['fare__ticket_type__exact'] = 'conference'
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
@@ -1005,7 +1002,7 @@ class TicketAdmin(admin.ModelAdmin):
 
             dlimit = datetime.date(c.conference_start.year, 1, 1)
             deadlines = models.DeadlineContent.objects\
-                .filter(language=dsettings.LANGUAGES[0][0])\
+                .filter(language=settings.LANGUAGES[0][0])\
                 .filter(deadline__date__lte=c.conference_start, deadline__date__gte=dlimit)\
                 .select_related('deadline')\
                 .order_by('deadline__date')
