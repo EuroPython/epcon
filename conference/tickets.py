@@ -1,10 +1,8 @@
-from p3.models import TicketConference
-from django.conf import settings
 from django.db.models import Q
+
+from p3.models import TicketConference
 from conference.models import Ticket
 from conference.fares import FARE_CODE_REGEXES, FARE_CODE_VARIANTS
-from p3.utils import assign_ticket_to_user
-
 
 def reset_ticket_settings(ticket):
     tc = ticket.p3_conference

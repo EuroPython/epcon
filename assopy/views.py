@@ -1,13 +1,11 @@
 import logging
 
 from django import http
-from django.conf import settings as dsettings
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.utils import unquote
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
 
 from assopy import forms as aforms
 from assopy import models
@@ -23,7 +21,7 @@ class HttpResponseRedirectSeeOther(http.HttpResponseRedirect):
 
     def __init__(self, url):
         if not url.startswith('http'):
-            url = dsettings.DEFAULT_URL_PREFIX + url
+            url = settings.DEFAULT_URL_PREFIX + url
         super(HttpResponseRedirectSeeOther, self).__init__(url)
 
 

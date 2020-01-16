@@ -680,26 +680,10 @@ def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
     return 0
 
 
-def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
-    return True
-    if talk.conference != CONFERENCE_CONFERENCE:
-        return True
-    u = request.user
-    if u.is_anonymous:
-        return False
-    from p3.models import Ticket
-
-    qs = Ticket.objects \
-        .filter(id__in=[x.id for x in u.assopy_user.tickets()]) \
-        .filter(orderitem__order___complete=True,
-                fare__ticket_type='conference')
-    return qs.exists()
-
 #
 # XXX What is this AssoPy stuff ?
 #
 ASSOPY_BACKEND = 'https://assopy.europython.eu/conference/externalcall'
-ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = False
 ASSOPY_SEND_EMAIL_TO = ['billing-log@europython.io']
 
 #

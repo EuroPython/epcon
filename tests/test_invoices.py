@@ -1,6 +1,6 @@
 import csv
 import decimal
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 from decimal import Decimal
 import random
 import json
@@ -16,38 +16,27 @@ from django_factory_boy import auth as auth_factories
 from freezegun import freeze_time
 import responses
 
-from assopy.models import Country, Invoice, Order, Vat
+from assopy.models import Invoice, Order, Vat
 from tests.factories import AssopyUserFactory, FareFactory, OrderFactory
-from conference.models import AttendeeProfile, Ticket, Fare, Conference
-from conference import settings as conference_settings
+from conference.models import AttendeeProfile, Fare, Conference
 from conference.invoicing import (
     ACPYSS_16,
     PYTHON_ITALIA_17,
     EPS_18,
-    VAT_NOT_AVAILABLE_PLACEHOLDER,
     CSV_2018_REPORT_COLUMNS,
 )
 from conference.currencies import (
     DAILY_ECB_URL,
     EXAMPLE_ECB_DAILY_XML,
     EXAMPLE_ECB_DATE,
-    normalize_price,
     fetch_and_store_latest_ecb_exrates,
 )
 from conference.fares import (
-    SOCIAL_EVENT_FARE_CODE,
-    create_fare_for_conference,
     pre_create_typical_fares_for_conference,
 )
 from email_template.models import Email
 
-from tests.common_tools import (  # NOQA
-    template_used,
-    sequence_equals,
-    make_user,
-    serve_response,
-    serve_text,
-)
+from tests.common_tools import template_used, make_user
 
 
 def _prepare_invoice_for_basic_test(order_code, invoice_code):

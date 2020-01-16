@@ -1,51 +1,14 @@
 import logging
 from . import models
 
-from assopy.models import order_created, ticket_for_user, user_created
-from conference.listeners import fare_price, fare_tickets
-from conference.signals import attendees_connected
+from assopy.models import ticket_for_user, user_created
+from conference.listeners import fare_tickets
 from conference.models import AttendeeProfile, Ticket
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db.models.signals import post_save
-from email_template import utils
 
 log = logging.getLogger('p3')
-
-def on_order_created(sender, **kwargs):
-    if sender.method == 'bank':
-        utils.email(
-            'bank-order-complete',
-            ctx={'order': sender,},
-            to=[sender.user.user.email]
-        ).send()
-
-    ritems = kwargs['raw_items']
-    for fare, params in ritems:
-        # if the order contains hotel bookings I've to create the tickets
-        # now, because information about periods is only available using ritems
-        if fare.code[0] == 'H':
-            log.info(
-                'The newly created order "%s" includes %d hotel reservations "%s" for the period: "%s" -> "%s".',
-                sender.code,
-                params['qty'],
-                fare.code,
-                params['period'][0],
-                params['period'][1])
-            loop = params['qty']
-            if fare.code[1] == 'R':
-                loop *= int(fare.code[2])
-            for _ in range(loop):
-                t = Ticket.objects.filter(fare=fare, user=sender.user.user, p3_conference_room=None)[0]
-                room = models.TicketRoom(ticket=t)
-                room.ticket_type = fare.code[1]
-                room.room_type = models.HotelRoom.objects.get(conference=fare.conference, room_type='t%s' % fare.code[2])
-                room.checkin = params['period'][0]
-                room.checkout = params['period'][1]
-                room.save()
-
-order_created.connect(on_order_created)
 
 
 def on_ticket_for_user(sender, **kwargs):
@@ -73,34 +36,6 @@ def on_user_created(sender, **kw):
 
 user_created.connect(on_user_created)
 
-def calculate_hotel_reservation_price(sender, **kw):
-    if sender.code[0] != 'H':
-        return
-    # the cost of an hotel booking depends on the period
-    calc = kw['calc']
-    period = calc['params']['period']
-    room = models.HotelRoom.objects.get(
-        booking__conference=sender.conference,
-        room_type='t' + sender.code[2])
-    price = room.price(days=(period[1] - period[0]).days)
-    if sender.code[1] == 'R':
-        price *= int(sender.code[2])
-    calc['total'] = price * calc['params']['qty']
-
-fare_price.connect(calculate_hotel_reservation_price)
-
-def create_hotel_tickets(sender, **kw):
-    # only for bookings of full rooms I need to create multiple tickets, in
-    # all other cases it's ok the default behavior
-    if sender.code[:2] == 'HR':
-        room_size = int(sender.code[2])
-        for ix in range(room_size):
-            t = Ticket(user=kw['params']['user'], fare=sender)
-            t.fare_description = sender.name + (' (Occupant %s/%s)' % (ix+1, room_size))
-            t.save()
-            kw['params']['tickets'].append(t)
-
-fare_tickets.connect(create_hotel_tickets)
 
 def create_p3_auto_assigned_conference_tickets(sender, params=None, **kws):
 
@@ -188,21 +123,3 @@ def _user_tickets(u):
         })
     return data
 cd.user_tickets = _user_tickets
-
-def _on_attendees_connected(sender, **kw):
-    scanner = User.objects.get(id=kw['attendee1'])
-    scanned = User.objects.get(id=kw['attendee2'])
-    log.info(
-        'User link: "%s %s" (%s) -> "%s %s" (%s)',
-        scanner.first_name, scanner.last_name, scanner.id,
-        scanned.first_name, scanned.last_name, scanned.id,
-    )
-    utils.email(
-        'user-connected',
-        ctx={
-            'scanner': scanner,
-            'scanned': scanned
-        },
-        to=[scanned.email]
-    ).send()
-attendees_connected.connect(_on_attendees_connected)

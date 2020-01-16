@@ -1,10 +1,7 @@
-
-
 """
 This module takes care of a lot of user related things.
 It's a good place to put validators and user management functions/classes
 """
-
 import os
 
 

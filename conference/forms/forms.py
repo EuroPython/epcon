@@ -1,7 +1,5 @@
-
 from django import forms
-from django.conf import settings as dsettings
-from django.contrib.admin import widgets as admin_widgets
+from django.conf import settings
 from django.core import mail
 from django.forms import widgets
 from django.forms.utils import flatatt
@@ -10,7 +8,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 from conference import models
-from conference import settings
 
 from p3 import utils as p3utils
 
@@ -42,9 +39,9 @@ sent to:
 %(addresses)s
 """ % ctx)
     mail.send_mail(
-        '[%s] feedback mass mailing (admin stats)' % settings.CONFERENCE,
+        '[%s] feedback mass mailing (admin stats)' % settings.CONFERENCE_CONFERENCE,
         feedback_email,
-        dsettings.DEFAULT_FROM_EMAIL,
+        settings.DEFAULT_FROM_EMAIL,
         recipient_list=[feedback_address],
      )
 
@@ -172,7 +169,7 @@ class TalkBaseForm(forms.Form):
         required=False)
     language = forms.TypedChoiceField(
         help_text=_('Select a non-English language only if you are not comfortable in speaking English.'),
-        choices=settings.TALK_SUBMISSION_LANGUAGES,
+        choices=settings.CONFERENCE_TALK_SUBMISSION_LANGUAGES,
         required=False)
 
     level = forms.TypedChoiceField(
@@ -311,7 +308,7 @@ class SubmissionForm(forms.Form):
             sub_title=data['sub_title'],
             prerequisites=data['prerequisites'],
             abstract_short=data['abstract_short'],
-            abstract_extra=data['abstract_extra'],conference=settings.CONFERENCE,
+            abstract_extra=data['abstract_extra'],conference=settings.CONFERENCE_CONFERENCE,
             speaker=speaker,
             status='proposed',
             language=data['language'],
@@ -388,7 +385,7 @@ class TalkForm(forms.ModelForm):
                 abstract_extra=data['abstract_extra'],
                 domain=data['domain'],
                 domain_level=data['domain_level'],
-                conference=settings.CONFERENCE,
+                conference=settings.CONFERENCE_CONFERENCE,
                 speaker=speaker,
                 status='proposed',
                 language=data['language'],
@@ -456,19 +453,6 @@ class ProfileForm(forms.ModelForm):
         profile.setBio(self.cleaned_data.get('bio', ''))
         return profile
 
-class EventBookingForm(forms.Form):
-    value = forms.BooleanField(required=False)
-
-    def __init__(self, event, user, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.event = event
-        self.user = user
-
-    def clean_value(self):
-        data = self.cleaned_data.get('value', False)
-        if data and not models.EventBooking.objects.booking_available(self.event, self.user):
-            raise forms.ValidationError('sold out')
-        return data
 
 class AdminSendMailForm(forms.Form):
     """
@@ -476,7 +460,7 @@ class AdminSendMailForm(forms.Form):
         * statistics for the sold tickets
         * allow to send a mail to a group of users
     """
-    from_ = forms.EmailField(max_length=50, initial=dsettings.DEFAULT_FROM_EMAIL)
+    from_ = forms.EmailField(max_length=50, initial=settings.DEFAULT_FROM_EMAIL)
     subject = forms.CharField(max_length=200)
     body = forms.CharField(widget=forms.Textarea)
     send_email = forms.BooleanField(required=False)
@@ -486,12 +470,12 @@ class AdminSendMailForm(forms.Form):
         super().__init__(*args, **kw)
 
     def load_emails(self):
-        if not settings.ADMIN_TICKETS_STATS_EMAIL_LOG:
+        if not settings.CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG:
             return []
 
         output = []
         try:
-            with open(settings.ADMIN_TICKETS_STATS_EMAIL_LOG, 'r') as email_log_file:
+            with open(settings.CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG, 'r') as email_log_file:
                 while True:
                     try:
                         msg = {
@@ -512,10 +496,10 @@ class AdminSendMailForm(forms.Form):
         return reversed(output)
 
     def save_email(self):
-        if not settings.ADMIN_TICKETS_STATS_EMAIL_LOG:
+        if not settings.CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG:
             return False
         data = self.cleaned_data
-        with open(settings.ADMIN_TICKETS_STATS_EMAIL_LOG, 'a') as email_log_file:
+        with open(settings.CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG, 'a') as email_log_file:
             email_log_file.write('%s\n' % repr(data['from_']))
             email_log_file.write('%s\n' % repr(data['subject']))
             email_log_file.write('%s\n' % repr(data['body']))
@@ -528,8 +512,8 @@ class AdminSendMailForm(forms.Form):
 
         data = self.cleaned_data
 
-        if settings.ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY:
-            libs = '{%% load %s %%}' % ' '.join(settings.ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY)
+        if settings.CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY:
+            libs = '{%% load %s %%}' % ' '.join(settings.CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY)
         else:
             libs = ''
         tSubject = Template(libs + data['subject'])

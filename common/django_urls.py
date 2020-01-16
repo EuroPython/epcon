@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# see: http://code.google.com/p/django-urls/
-# see: http://code.djangoproject.com/wiki/ReplacingGetAbsoluteUrl
-
 from django.conf import settings
 import urllib.parse
 

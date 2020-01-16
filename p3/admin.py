@@ -1,4 +1,3 @@
-
 from collections import defaultdict
 from decimal import Decimal
 from django import forms
@@ -313,17 +312,8 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
                 data[k] = sorted(v.items())
 
 
-            dlimit = datetime.date(c.conference_start.year, 1, 1)
-            deadlines = cmodels.DeadlineContent.objects\
-                .filter(language='en')\
-                .filter(deadline__date__lte=c.conference_start, deadline__date__gte=dlimit)\
-                .select_related('deadline')\
-                .order_by('deadline__date')
-            markers = [ ((d.deadline.date - c.conference_start).days, 'CAL: ' + (d.headline or d.body)) for d in deadlines ]
-
             output[c.code] = {
                 'data': data,
-                'markers': markers,
             }
 
         return http.HttpResponse(json_dumps(output), 'text/javascript')
@@ -372,7 +362,7 @@ class VotoTalkAdmin(admin.ModelAdmin):
 
     def _name(self, o):
         url = reverse(
-            "conference-profile", kwargs={"slug": o.user.attendeeprofile.slug}
+            "profiles:profile", kwargs={"profile_slug": o.user.attendeeprofile.slug}
         )
         return '<a href="%s">%s</a>' % (url, o.user.assopy_user.name())
 
@@ -400,9 +390,7 @@ class AttendeeProfileAdmin(admin.ModelAdmin):
     ]
 
     def _name(self, o):
-        url = reverse(
-            "conference-profile", kwargs={"slug": o.slug}
-        )
+        url = reverse("profiles:profile", kwargs={"profile_slug": o.slug})
         return '<a href="%s">%s %s</a>' % (
             url,
             o.user.first_name,

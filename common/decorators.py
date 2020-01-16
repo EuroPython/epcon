@@ -3,7 +3,7 @@ import os.path
 
 from decorator import decorator
 from django import http
-from django.conf import settings as dsettings
+from django.conf import settings
 from django.forms.utils import ErrorDict
 from django.shortcuts import render
 
@@ -16,7 +16,7 @@ def render_to_json(f): # pragma: no cover
     """
     @functools.wraps(f)
     def wrapper(func, *args, **kw):
-        if dsettings.DEBUG:
+        if settings.DEBUG:
             ct = 'text/plain'
             j = lambda d: json_dumps(d, indent=2)
         else:
@@ -63,7 +63,7 @@ def render_to_template(template):  # pragma: no cover
                 tpl = template
             ct = 'text/html'
             if tpl.endswith('xml'):
-                ct = 'text/xml' if dsettings.DEBUG else 'application/xml'
+                ct = 'text/xml' if settings.DEBUG else 'application/xml'
             if isinstance(output, dict):
                 if request.is_ajax():
                     tpl = ('%s_body%s' % os.path.splitext(tpl), tpl)

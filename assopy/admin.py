@@ -3,7 +3,7 @@ from io import StringIO
 
 from django import forms
 from django import http
-from django.conf import settings as dsettings
+from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin, auth, messages
 from django.contrib.admin.utils import quote
@@ -24,7 +24,6 @@ from conference import admin as cadmin
 from conference.accounts import send_verification_email
 from conference.invoicing import render_invoice_as_html
 from conference.models import Conference, Fare, StripePayment
-from conference.settings import CONFERENCE
 
 
 class CountryAdmin(admin.ModelAdmin):
@@ -200,7 +199,7 @@ class OrderAdmin(admin.ModelAdmin):
     def _invoice(self, o):
         output = []
         # MAL: PDF generation is slower, so default to HTML
-        if 1 or dsettings.DEBUG:
+        if 1 or settings.DEBUG:
             vname = 'assopy-invoice-html'
         else:
             vname = 'assopy-invoice-pdf'
@@ -336,7 +335,7 @@ class CouponAdminForm(forms.ModelForm):
             if self.instance.pk:
                 self.fields['fares'].queryset = Fare.objects.filter(conference=self.instance.conference_id)
             else:
-                self.fields['fares'].queryset = Fare.objects.filter(conference=dsettings.CONFERENCE_CONFERENCE)
+                self.fields['fares'].queryset = Fare.objects.filter(conference=settings.CONFERENCE_CONFERENCE)
 
     def clean_code(self):
         return self.cleaned_data['code'].upper()
@@ -387,7 +386,7 @@ class CouponAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         if 'conference__code__exact' not in request.GET:
             q = request.GET.copy()
-            q['conference__code__exact'] = dsettings.CONFERENCE_CONFERENCE
+            q['conference__code__exact'] = settings.CONFERENCE_CONFERENCE
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(CouponAdmin,self).changelist_view(request, extra_context=extra_context)
@@ -462,7 +461,7 @@ class AuthUserAdmin(UserAdmin):
                 self.fields['payment'].initial = 'admin'
 
             def available_fares(self):
-                return Fare.objects.available(conference=CONFERENCE)
+                return Fare.objects.available(conference=settings.CONFERENCE_CONFERENCE)
 
             def clean_country(self):
                 data = self.cleaned_data.get('country')
@@ -479,7 +478,7 @@ class AuthUserAdmin(UserAdmin):
                 if data:
                     for c in data.split(' '):
                         try:
-                            output.append(models.Coupon.objects.get(conference=CONFERENCE, code=c))
+                            output.append(models.Coupon.objects.get(conference=settings.CONFERENCE_CONFERENCE, code=c))
                         except models.Coupon.DoesNotExist:
                             raise forms.ValidationError('invalid coupon "%s"' % c)
                 if self.cleaned_data.get('payment') == 'admin':

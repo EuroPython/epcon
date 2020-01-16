@@ -1,28 +1,32 @@
-from django.conf import settings as dsettings
+import logging
+
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext as _
-from assopy import utils as autils
 
-import conference.gravatar
-from conference.models import Ticket, ConferenceTaggedItem, AttendeeProfile
 from taggit.managers import TaggableManager
 
-import logging
+import conference.gravatar
+from assopy import utils as autils
+from conference.models import Ticket, ConferenceTaggedItem, AttendeeProfile
+
 log = logging.getLogger('p3.models')
 
 # Configurable sub-communities
-TALK_SUBCOMMUNITY = dsettings.CONFERENCE_TALK_SUBCOMMUNITY
+TALK_SUBCOMMUNITY = settings.CONFERENCE_TALK_SUBCOMMUNITY
 
 
+# TODO: This model is used in some dataaccess methods, but last instances seem to come from
+# 2018. Can probably be removed.
 class SpeakerConference(models.Model):
     speaker = models.OneToOneField('conference.Speaker', related_name='p3_speaker', on_delete=models.CASCADE)
     first_time = models.BooleanField(default=False)
 
 # Configurable t-shirt sizes, diets, experience
-TICKET_CONFERENCE_SHIRT_SIZES = dsettings.CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES
-TICKET_CONFERENCE_DIETS = dsettings.CONFERENCE_TICKET_CONFERENCE_DIETS
-TICKET_CONFERENCE_EXPERIENCES = dsettings.CONFERENCE_TICKET_CONFERENCE_EXPERIENCES
+TICKET_CONFERENCE_SHIRT_SIZES = settings.CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES
+TICKET_CONFERENCE_DIETS = settings.CONFERENCE_TICKET_CONFERENCE_DIETS
+TICKET_CONFERENCE_EXPERIENCES = settings.CONFERENCE_TICKET_CONFERENCE_EXPERIENCES
 
 
 class TicketConferenceQuerySet(models.QuerySet):
@@ -31,7 +35,6 @@ class TicketConferenceQuerySet(models.QuerySet):
         restituisce il qs con i biglietti disponibili per l'utente;
         disponibili significa comprati dall'utente o assegnati a lui.
         """
-        # TODO: drop in favor of dataaccess.user_tickets
         q1 = user.ticket_set.all()
         if conference:
             q1 = q1.conference(conference)
@@ -103,7 +106,7 @@ class TicketConference(models.Model):
 
 
 class P3ProfileManager(models.Manager):
-    def by_tags(self, tags, ignore_case=True, conf=dsettings.CONFERENCE_CONFERENCE):
+    def by_tags(self, tags, ignore_case=True, conf=settings.CONFERENCE_CONFERENCE):
         if ignore_case:
             from conference.models import ConferenceTag
             names = []
@@ -144,7 +147,7 @@ class P3Profile(models.Model):
             return self.image_url
         elif self.profile.image:
             return self.profile.image.url
-        return dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR
+        return settings.STATIC_URL + settings.P3_ANONYMOUS_AVATAR
 
     def public_profile_image_url(self):
         """ Like `profile_image_url` but takes into account the visibility rules of the profile."""
@@ -153,7 +156,7 @@ class P3Profile(models.Model):
             if url == self.image_url:
                 return reverse('p3-profile-avatar', kwargs={'slug': self.profile.slug})
             return url
-        return dsettings.STATIC_URL + dsettings.P3_ANONYMOUS_AVATAR
+        return settings.STATIC_URL + settings.P3_ANONYMOUS_AVATAR
 
 
 #TODO: what is this import doing here?!

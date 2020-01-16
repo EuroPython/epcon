@@ -6,9 +6,7 @@ import uuid
 from collections import defaultdict
 from urllib.parse import urlencode
 
-import shortuuid
-import tagging
-from django.conf import settings as dsettings
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import exceptions
 from django.core.cache import cache
@@ -19,6 +17,9 @@ from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext as _
+
+import shortuuid
+import tagging
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
 from tagging.fields import TagField
@@ -27,9 +28,7 @@ from taggit.models import GenericTaggedItemBase, ItemBase, TagBase
 
 from common.django_urls import UrlMixin
 
-from . import settings, signals
-
-log = logging.getLogger('conference.tags')
+log = logging.getLogger('conference.models')
 
 
 CURRENT_CONFERENCE_CACHE_KEY = 'CONFERENCE_CURRENT'
@@ -85,7 +84,7 @@ class ConferenceManager(models.Manager):
         a_week = 60 * 60 * 24 * 7
 
         if data is None:
-            data = self.get(code=dsettings.CONFERENCE_CONFERENCE)
+            data = self.get(code=settings.CONFERENCE_CONFERENCE)
             cache.set(CURRENT_CONFERENCE_CACHE_KEY, data, a_week)
 
         return data
@@ -166,52 +165,6 @@ class Conference(models.Model):
 
 post_save.connect(ConferenceManager.clear_cache, sender=Conference)
 
-class DeadlineManager(models.Manager):
-    def valid_news(self):
-        today = datetime.date.today()
-        return self.all().filter(date__gte = today)
-
-class Deadline(models.Model):
-    """
-    Deadline for the PyCon
-    """
-    date = models.DateField()
-
-    objects = DeadlineManager()
-
-    def __str__(self):
-        return "deadline: %s" % (self.date, )
-
-    class Meta:
-        ordering = ['date']
-
-    def isExpired(self):
-       today = datetime.date.today()
-       return today > self.date
-
-    def content(self, lang, fallback=True):
-        """
-        Return the dead line content in the specified language.
-        """
-        contents = dict((c.language, c) for c in self.deadlinecontent_set.exclude(body=''))
-        if not contents:
-            raise DeadlineContent.DoesNotExist()
-        try:
-            return contents[lang]
-        except KeyError:
-            if not fallback:
-                raise DeadlineContent.DoesNotExist()
-
-        return list(contents.values())[0]
-
-class DeadlineContent(models.Model):
-    """
-    Content of a deadline.
-    """
-    deadline = models.ForeignKey(Deadline, on_delete=models.CASCADE)
-    language = models.CharField(max_length=3)
-    headline = models.CharField(max_length=200)
-    body = models.TextField()
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import (
@@ -223,7 +176,7 @@ from django.contrib.contenttypes.fields import (
 class MultilingualContentManager(models.Manager):
     def setContent(self, object, content, language, body):
         if language is None:
-            language = dsettings.LANGUAGE_CODE.split('-', 1)[0]
+            language = settings.LANGUAGE_CODE.split('-', 1)[0]
         object_type = ContentType.objects.get_for_model(object)
         try:
             mc = self.get(content_type=object_type, object_id=object.pk, content=content, language=language)
@@ -236,7 +189,7 @@ class MultilingualContentManager(models.Manager):
 
     def getContent(self, object, content, language):
         if language is None:
-            language = dsettings.LANGUAGE_CODE.split('-', 1)[0]
+            language = settings.LANGUAGE_CODE.split('-', 1)[0]
         object_type = ContentType.objects.get_for_model(object)
         records = dict(
             (x.language, x)
@@ -248,7 +201,7 @@ class MultilingualContentManager(models.Manager):
             if not records:
                 return None
             else:
-                return records.get(dsettings.LANGUAGE_CODE, list(records.values())[0])
+                return records.get(settings.LANGUAGE_CODE, list(records.values())[0])
 
 class MultilingualContent(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -265,7 +218,6 @@ class MultilingualContent(models.Model):
 class _fs_upload_to(object):
     """Deconstructible class to avoid django migrations' limitations on
     python2. See https://code.djangoproject.com/ticket/22999 """
-
     def __init__(self, subdir, attr=None, package='conference'):
         self.subdir = subdir
         self.attr = attr if attr is not None else 'slug'
@@ -278,7 +230,7 @@ class _fs_upload_to(object):
             '%s%s' % (getattr(instance, self.attr), os.path.splitext(filename)[1].lower())
         )
 
-        ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
+        ipath = os.path.join(settings.MEDIA_ROOT, fpath)
 
         if os.path.exists(ipath):
             os.unlink(ipath)
@@ -464,7 +416,7 @@ class Speaker(models.Model, UrlMixin):
         return Talk.objects.filter(id__in=qs.values('talk'))
 
 
-TALK_LANGUAGES = dsettings.LANGUAGES
+TALK_LANGUAGES = settings.LANGUAGES
 
 TALK_STATUS = Choices(
     ('proposed', _('Proposed')),
@@ -704,8 +656,8 @@ class Talk(models.Model, UrlMixin):
 
     domain = models.CharField(
         max_length=20,
-        choices=dsettings.CONFERENCE_TALK_DOMAIN,
-        default=dsettings.CONFERENCE_TALK_DOMAIN.other,
+        choices=settings.CONFERENCE_TALK_DOMAIN,
+        default=settings.CONFERENCE_TALK_DOMAIN.other,
         blank=True,
     )
     domain_level = models.CharField(
@@ -896,14 +848,12 @@ class Fare(models.Model):
         return dict(FARE_TYPES).get(self.recipient_type, 'Regular')
 
     def calculated_price(self, qty=1, **kw):
-        from conference.listeners import fare_price
         params = dict(kw)
         params['qty'] = qty
         calc = {
             'total': self.price * qty,
             'params': params,
         }
-        fare_price.send(sender=self, calc=calc)
         return calc['total']
 
     def create_tickets(self, user):
@@ -1029,56 +979,10 @@ class ScheduleManager(models.Manager):
         """
         Returns the number of participants for each of the conference schedule.
         """
-        return settings.SCHEDULE_ATTENDEES(conference, forecast)
+        return settings.CONFERENCE_SCHEDULE_ATTENDEES(conference, forecast)
 
     def events_score_by_attendance(self, conference):
-        """
-        Using events Interest returns a "Presence score" for each event;
-        The score is proportional to the number of people who have expressed
-        interest in that event.
-        """
-        # I consider it an expression of interest, interest > 0, as the will to
-        # participate in an event and add the user among the participants. If the user
-        # has voted the most contemporary events. I consider his presence in proportion
-        # (so events can have fractional score)
-        events = defaultdict(set)
-        for x in EventInterest.objects\
-                    .filter(event__schedule__conference=conference, interest__gt=0)\
-                    .select_related('event__schedule'):
-            events[x.event].add(x.user_id)
-        # In addition to EventInterest keep account of EventBooking,
-        # the confidence in these cases in even greater.
-        for x in EventBooking.objects\
-                    .filter(event__schedule__conference=conference)\
-                    .select_related('event__schedule'):
-            events[x.event].add(x.user_id)
-
-        # Associate to each event the number of votes it has obtained;
-        # the operation is complicated by the fact that not all votes have the
-        # same weight; if a user has marked as +1 two events to occur
-        # Parallel obviously can not participate in both, so the
-        # his vote should be scaled
-        scores = defaultdict(lambda: 0.0)
-        for evt, users in events.items():
-            group = list(Event.objects.group_events_by_times(events, event=evt))[0]
-            while users:
-                u = users.pop()
-                # what is the presence of `` evt` u` for the event? If `u` does not take
-                # part in no other event of the same group, then 1, otherwise a value proportional
-                # to the number of events of interest.
-                found = [ evt ]
-                for other in group:
-                    if other != evt:
-                        try:
-                            events[other].remove(u)
-                        except KeyError:
-                            pass
-                        else:
-                            found.append(other)
-                score = 1.0 / len(found)
-                for f in found:
-                    scores[f.id] += score
-        return scores
+        return defaultdict(lambda: 0.0)
 
     def expected_attendance(self, conference, factor=0.85):
         """
@@ -1329,88 +1233,6 @@ class EventTrack(models.Model):
 
     class Meta:
         unique_together = (('track', 'event',),)
-
-
-class EventInterest(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    interest = models.IntegerField()
-
-    class Meta:
-        unique_together = (('user', 'event'),)
-
-
-class EventBookingManager(models.Manager):
-    def booking_status(self, eid):
-        seats = Event.objects.values('seats').get(id=eid)['seats']
-        if not seats:
-            seats = sum(EventTrack.objects\
-                .filter(event=eid)\
-                .values_list('track__seats', flat=True))
-        booked = list(EventBooking.objects\
-            .filter(event=eid)\
-            .values_list('user', flat=True))
-        return {
-            'seats': seats,
-            'booked': booked,
-            'available': seats - len(booked),
-        }
-
-    def booking_available(self, eid, uid):
-        st = self.booking_status(eid)
-        return (uid in st['booked']) or (st['available'] > 0)
-
-    def book_event(self, eid, uid):
-        try:
-            e = EventBooking.objects.get(event=eid, user=uid)
-        except EventBooking.DoesNotExist:
-            e = EventBooking(event_id=eid, user_id=uid)
-            e.save()
-            signals.event_booked.send(sender=Event, booked=True, event_id=eid, user_id=uid)
-        return e
-
-    def cancel_reservation(self, eid, uid):
-        try:
-            e = EventBooking.objects.get(event=eid, user=uid)
-        except EventBooking.DoesNotExist:
-            return
-        e.delete()
-        signals.event_booked.send(sender=Event, booked=False, event_id=eid, user_id=uid)
-
-
-class EventBooking(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-
-    objects = EventBookingManager()
-
-    class Meta:
-        unique_together = (('user', 'event'),)
-
-
-class Hotel(models.Model):
-    """
-    Hotels allow you to track affiliated places and not where finding accommodations during the conference.
-    """
-    name = models.CharField('Name', max_length = 100)
-    telephone = models.CharField('Phone', max_length = 50, blank = True)
-    url = models.URLField(blank = True)
-    email = models.EmailField('email', blank = True)
-    availability = models.CharField('Availability', max_length = 50, blank = True)
-    price = models.CharField('Price', max_length = 50, blank = True)
-    note = models.TextField('note', blank = True)
-    affiliated = models.BooleanField('Affiliated', default = False)
-    visible = models.BooleanField('visibile', default = True)
-    address = models.CharField('Address', max_length = 200, default = '', blank = True)
-    lng = models.FloatField('longitude', default = 0.0, blank = True)
-    lat = models.FloatField('latitude', default = 0.0, blank = True)
-    modified = models.DateField(auto_now = True)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
 
 
 class VotoTalk(models.Model):

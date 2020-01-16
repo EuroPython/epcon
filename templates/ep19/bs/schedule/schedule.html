@@ -267,13 +267,13 @@ div.cms .cms-toolbar {
                         <div class="schedule__day__inner">
                             <div class="schedule__day__talk_speakers">
                                 {% for s in talk.speakers %}
-                                    <a href="{% url "conference-profile" slug=s.slug %}">{{ s.name }}</a>{% if not forloop.last %}, {% endif %}
+                                    <a href="{% url "profiles:profile" profile_slug=s.slug %}">{{ s.name }}</a>{% if not forloop.last %}, {% endif %}
                                 {% endfor %}
                             </div>
 
                             <div class="schedule__day__talk_title">
                                 {% if talk.slug %}
-                                <a href="{% url "conference-talk" slug=talk.slug %}">
+                                <a href="{% url "talks:talk" talk_slug=talk.slug %}">
                                 {% endif %}
 
                                 {{ talk.title|safe }}

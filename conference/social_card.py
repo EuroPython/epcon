@@ -1,4 +1,5 @@
 from django import http
+from django.conf.urls import url
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 
@@ -29,3 +30,12 @@ def talk_social_card_png(request, slug):
     ).write_png()
 
     return http.HttpResponse(data, content_type="image/png")
+
+
+urlpatterns = [
+    url(
+        r"^talks/(?P<slug>[\w-]+)/social-card.png$",
+        talk_social_card_png,
+        name="conference-talk-social-card-png",
+    ),
+]

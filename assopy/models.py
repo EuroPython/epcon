@@ -1,6 +1,4 @@
 import re
-import os
-import os.path
 import logging
 from uuid import uuid4
 from datetime import date, datetime, timedelta
@@ -8,7 +6,7 @@ from decimal import Decimal
 from collections import defaultdict
 
 from django import dispatch
-from django.conf import settings as dsettings
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.admin.utils import quote
 from django.core.exceptions import ValidationError
@@ -186,19 +184,6 @@ class AssopyUserManager(models.Manager):
         return assopy_user
 
 
-
-def _fs_upload_to(subdir, attr=None):
-    if attr is None:
-        attr = lambda i: i.pk
-    def wrapper(instance, filename):
-        fpath = os.path.join('assopy', subdir, '%s%s' % (attr(instance), os.path.splitext(filename)[1].lower()))
-        ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
-        if os.path.exists(ipath):
-            os.unlink(ipath)
-        return fpath
-    return wrapper
-
-
 # segnale emesso quando assopy ha bisogno di conoscere i biglietti assegnati ad
 # un certo utente (il sender).  questo segnale permette ad altre applicazioni
 # di intervenire su questa scelta, se nessuno è in ascolto viene fatta una
@@ -274,7 +259,7 @@ class AssopyUser(models.Model):
         tickets = []
         ticket_for_user.send(sender=self, tickets=tickets)
         if not tickets:
-            tickets = Ticket.objects.conference(dsettings.CONFERENCE_CONFERENCE).filter(user=self.user)
+            tickets = Ticket.objects.conference(settings.CONFERENCE_CONFERENCE).filter(user=self.user)
         return tickets
 
     def invoices(self):
@@ -774,7 +759,7 @@ class OrderItem(models.Model):
         return (self.price * self.vat.value  / 100) / (1 + self.vat.value / 100)
 
     def get_readonly_fields(self, request, obj=None):
-	    # Make fields read-only if an invoice for the order already exists
+        # Make fields read-only if an invoice for the order already exists
         if obj and self.order.invoices.exclude(payment_date=None).exists():
             return self.readonly_fields + ('ticket', 'price', 'vat', 'code')
         return self.readonly_fields

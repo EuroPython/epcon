@@ -1,4 +1,3 @@
-
 from conference.models import Talk, Event, TalkSpeaker
 
 from django.dispatch import Signal
@@ -8,9 +7,6 @@ import logging
 
 log = logging.getLogger('conference')
 
-# Issued when a charge has to calculate its price;
-# price * qty
-fare_price = Signal(providing_args=['calc'])
 
 # Issued when a charge must create one or more tickets for a particular user.
 # The `sender` is the instance of `Fare` while params is a dict with two keys.

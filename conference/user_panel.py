@@ -31,8 +31,9 @@ from conference.models import (
     Ticket,
     ATTENDEEPROFILE_VISIBILITY,
 )
-from conference.tickets import assign_ticket_to_user, reset_ticket_settings
+from conference.tickets import reset_ticket_settings
 from p3.models import P3Profile, TicketConference
+from p3.utils import assign_ticket_to_user
 
 
 @login_required

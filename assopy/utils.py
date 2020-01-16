@@ -1,9 +1,6 @@
-
-from django.conf import settings as dsettings
+from django.conf import settings
 from django.contrib import auth
 
-
-from assopy import settings
 
 def get_user_account_from_email(email, default='raise', active_only=True):
 
@@ -41,29 +38,12 @@ def get_user_account_from_email(email, default='raise', active_only=True):
             'Found multiple records for user with email %r' % email)
 
 def send_email(force=False, *args, **kwargs):
-    if force is False and not settings.SEND_EMAIL_TO:
+    if force is False and not settings.ASSOPY_SEND_EMAIL_TO:
         return
     if 'recipient_list' not in kwargs:
-        kwargs['recipient_list'] = settings.SEND_EMAIL_TO
+        kwargs['recipient_list'] = settings.ASSOPY_SEND_EMAIL_TO
     if 'from_email' not in kwargs:
-        kwargs['from_email'] = dsettings.DEFAULT_FROM_EMAIL
+        kwargs['from_email'] = settings.DEFAULT_FROM_EMAIL
     from django.core.mail import send_mail as real_send_mail
     real_send_mail(*args, **kwargs)
 
-def dotted_import(path):
-    from importlib import import_module
-    from django.core.exceptions import ImproperlyConfigured
-    i = path.rfind('.')
-    module, attr = path[:i], path[i+1:]
-
-    try:
-        mod = import_module(module)
-    except ImportError as e:
-        raise ImproperlyConfigured('Error importing %s: "%s"' % (path, e))
-
-    try:
-        o = getattr(mod, attr)
-    except AttributeError:
-        raise ImproperlyConfigured('Module "%s" does not define "%s"' % (module, attr))
-
-    return o
