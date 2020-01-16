@@ -57,6 +57,14 @@ if 0:
 else:
     ADJUST_POSTER_SESSIONS = False
 
+# Plenary sessions will have 2-3 tracks assigned. We use the
+# plenary room in this case.
+PLENARY_ROOM = 'Smarkets'
+
+# Breaks have more than 3 tracks assigned. Since this changes between
+# the days, we don't set the room name.
+BREAK_ROOM = ''
+
 ### Helpers
 
 def profile_url(user):
@@ -184,7 +192,13 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
     else:
         time_range = event.get_time_range()
         tracks = event.tracks.all()
-        if tracks:
+        if len(tracks) > 3:
+            # Must be a break
+            room = BREAK_ROOM
+        elif len(tracks) > 1:
+            # Must be a plenary session
+            room = PLENARY_ROOM
+        elif tracks:
             room = tracks[0].title
         else:
             room = u''
@@ -356,10 +370,13 @@ class Command(BaseCommand):
 
             # Add talks from bag to data
             for talk in bag:
-                add_event(data,
-                          talk=talk,
-                          talk_events=talk_events,
-                          session_type=type_name)
+                for event in talk.get_event_list():
+                    # A talk may have multiple events associated with it
+                    add_event(data,
+                              talk=talk,
+                              event=event,
+                              talk_events=talk_events,
+                              session_type=type_name)
 
         # Add events which are not talks
         for schedule in models.Schedule.objects.filter(conference=conference):

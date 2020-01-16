@@ -39,11 +39,15 @@ from optparse import make_option
 import operator
 import markdown2
 import openpyxl
+import urlparse
 
 ### Globals
 
 # Debug output ?
 _debug = 1
+
+# Website URL to use for making the profile links absolute
+WEBSITE_URL = 'https://ep2018.europython.eu/'
 
 # These must match the talk .type or .admin_type
 from accepted_talks import TYPE_NAMES
@@ -52,8 +56,10 @@ from accepted_talks import TYPE_NAMES
 
 def profile_url(user):
 
-    return urlresolvers.reverse('conference-profile',
-                                args=[user.attendeeprofile.slug])
+    return urlparse.urljoin(
+        WEBSITE_URL,
+        urlresolvers.reverse('conference-profile',
+                             args=[user.attendeeprofile.slug]))
 
 def format_text(text, remove_tags=False, output_html=True):
 
@@ -92,6 +98,7 @@ def add_speaker(data, speaker):
     # Collect data
     first_name = user.first_name.title()
     last_name = user.last_name.title()
+    full_name = first_name + u' ' + last_name
     company = profile.company
     position = profile.job_title
     profile_text = (u'<a href="%s%s">Profile on EuroPython Website</a>' %
@@ -101,7 +108,12 @@ def add_speaker(data, speaker):
         twitter = twitter.split('/')[-1]
 
     # Skip special entries
-    full_name = first_name + u' ' + last_name
+    #
+    # Note: When filtering special entries here, we also have to
+    # filter them in the speaker_listing() in the schedule script,
+    # since when using speaker names in the Attendify schedule,
+    # Attendify complains if it cannot find the speakers listed for an
+    # event.
     if full_name in (u'To Be Announced', u'Tobey Announced'):
         return
    

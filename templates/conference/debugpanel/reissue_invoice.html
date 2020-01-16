@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <style type="text/css">
+      body {
+        font-family: monospace;
+        line-height: 1.5em;
+      }
+
+      th {
+        text-align: left;
+      }
+
+      td, th {
+        padding: .5em;
+      }
+
+      tr:hover td {
+        background: yellow;
+      }
+
+      .text-right {
+        text-align: right;
+      }
+
+      .btn { padding: 1em; border: 1px solid #aaa; background: #efe }
+    </style>
+
+  </head>
+  <body>
+    <h1>Creating new invoice from {{ old_invoice.code }}</h1>
+    <form method='POST' action='.'>
+      {% csrf_token %}
+      {{ form.as_p }}
+      <p>
+      <input type="submit" value="issue new invoice">
+      </p>
+    </form>
+  </body>
+</html>

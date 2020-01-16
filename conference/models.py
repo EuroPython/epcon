@@ -740,6 +740,12 @@ class Talk(models.Model, UrlMixin):
         except IndexError:
             return None
 
+    def get_event_list(self):
+        try:
+            return self.event_set.all()
+        except IndexError:
+            return None
+
     def get_all_speakers(self):
         return self.speakers.all()
 

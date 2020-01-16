@@ -293,7 +293,7 @@
                                   Time of supply
                                 </div>
                                 <div class="cell-content">
-                                    {{ emit_date|default:''|date:"Y-m-d" }}
+                                    {{ time_of_supply|default:''|date:"Y-m-d" }}
                                 </div>
                             </td>
                             {% else %}
@@ -328,11 +328,16 @@
                                     Customer
                                 </div>
                                 <div class="cell-content">
+                                  {# TODO: this invoice.customer is a new thing, ultimately we'd like to use just that, but we'd need to backfill invoice.customer for old data first #}
+                                  {% if invoice.customer %}
+                                    {{ invoice.customer|safe|linebreaks }}
+                                  {% else %}
                                     {{ order.card_name }} <br/>
                                     {{ order.address|safe|linebreaks }}<br/>
                                     {% if order.cf_code %}{{ order.cf_code }}<br/>{% endif %}
                                     {% if order.vat_number %}{{ order.vat_number }}<br/>{% endif %}
                                     {% if order.billing_notes %}{{ order.billing_notes|linebreaks }}<br/>{% endif %}
+                                  {% endif %}{# invoice.customer #}
                                 </div>
                             </td>
                         </tr>
