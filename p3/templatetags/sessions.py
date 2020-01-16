@@ -4,9 +4,8 @@
     to be escaped in MarkItUp CMS plugins.
 
 """
-from __future__ import unicode_literals
+
 from django import template
-from django.core import urlresolvers
 from conference import models
 
 from ..utils import profile_url, talk_title
@@ -48,13 +47,12 @@ _check_talk_types(TYPE_NAMES)
 def speaker_listing(talk):
     return [{
         'url': profile_url(speaker.user),
-        'fullname': '{} {}'.format(speaker.user.first_name,
-                                   speaker.user.last_name),
+        'fullname': '{}'.format(speaker.user.assopy_user.name()),
     } for speaker in talk.get_all_speakers()]
 
 def speaker_name(speaker):
 
-    name = u'%s %s' % (
+    name = '%s %s' % (
         speaker.user.first_name,
         speaker.user.last_name)
 
@@ -64,7 +62,7 @@ def speaker_name(speaker):
 def speaker_list_key(entry):
 
     speaker = entry[1]
-    name = u'%s %s' % (
+    name = '%s %s' % (
         speaker.user.first_name,
         speaker.user.last_name)
 
@@ -97,14 +95,26 @@ EXAMPLE_ACCEPTEDSESSIONS = """
 {% endfor %}
 """
 
-@register.assignment_tag
-def acceptedsessions(conference, filter_types=None, filter_community=None):
+# Note: Django has problems parsing multiple templatetag arguments if the
+# arguments contain underscores.  It works find with a single argument.
+
+@register.simple_tag
+def acceptedsessions(conference, filtertypes=None, filtercommunity=None,
+                     filterdomain=None, 
+                     # For b/w compatibility
+                     filter_types=None):
 
     talks = models.Talk.objects.filter(
         conference=conference, status='accepted')
-    if filter_community:
+    if filter_types is not None and filtertypes is None:
+        # For b/w compatibility
+        filtertypes = filter_types
+    if filtercommunity:
         talks = talks.filter(
-            p3_talk__sub_community=filter_community.strip())
+            p3_talk__sub_community=filtercommunity.strip())
+    if filterdomain:
+        talks = talks.filter(
+            domain=filterdomain.strip())
 
     # Group by types
     talk_types = {}
@@ -137,11 +147,11 @@ def acceptedsessions(conference, filter_types=None, filter_community=None):
         else:
             talk_types[type] = [talk]
 
-    if filter_types is not None:
-        filter_types = [x.strip() for x in filter_types.split(',')]
+    if filtertypes is not None:
+        filtertypes = [x.strip() for x in filtertypes.split(',')]
         types = [t 
                  for t in TYPE_NAMES 
-                 if t[0] in filter_types]
+                 if t[0] in filtertypes]
     else:
         types = TYPE_NAMES
 
@@ -181,7 +191,7 @@ EXAMPLE_SPEAKERS = """
 <p>{{ speakerdata.count }} speakers in total.</p>
 """
 
-@register.assignment_tag
+@register.simple_tag
 def speakers(conference, filter_types=None):
 
     talks = models.Talk.objects.filter(
@@ -200,7 +210,7 @@ def speakers(conference, filter_types=None):
             speaker_dict[speaker_name(speaker)] = speaker
 
     # Prepare list
-    speaker_list = speaker_dict.items()
+    speaker_list = list(speaker_dict.items())
     speaker_list.sort(key=speaker_list_key)
 
     data = {

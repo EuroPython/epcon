@@ -447,6 +447,7 @@
                                 </div>
                                 {% endif %}
                               </div>
+                              {% if currency != 'EUR' %}
                               <div class="cell-legend text-right" data-local-currency="{{ invoice.local_currency }}">
                                 in {{ invoice.local_currency }}(*)
                               </div>
@@ -455,6 +456,7 @@
                                   {{ invoice.vat_in_local_currency }}
                                 </div>
                               </div>
+                              {% endif %}{# local_currency #}
                             </td>
                             <td>
                                 <div class="cell-legend text-right">
@@ -474,12 +476,13 @@
                 </table>
               </div>
               <div class="clear"></div>
+              <p style='margin-top: 1em'>Service dates: {{ conference_start }} - {{ conference_end }}</p>
               {% if additional_text %}
               <div style='margin-top: 3em;'>
                 {% include additional_text %}
               </div>
               {% endif %}
-            {% if invoice.local_currency != 'EUR' %}
+            {% if currency != 'EUR' %}
             <div style='margin-top: 1em;'><em>(*) - ECB rate used for VAT is {{ invoice.exchange_rate }} {{ invoice.local_currency }}/EUR from {{ invoice.exchange_rate_date|date:"Y-m-d" }}</em></div>
             {% endif %}
 

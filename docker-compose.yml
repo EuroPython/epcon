@@ -1,26 +1,17 @@
-version: '2'
-services:
-  postgres:
-    image: postgres:9.6
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=epcon
-      - POSTGRES_PASS=epcon
-      - POSTGRES_DB=epcon
-    volumes:
-      - ./postgresql:/var/lib/postgresql
-    networks:
-      epcon_net:
-        ipv4_address: 172.15.201.10
+version: '3.7'
 
-networks:
-  epcon_net:
-    driver: bridge
-    driver_opts:
-      com.docker.network.enable_ipv6: "false"
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.15.201.0/24
-          gateway: 172.15.201.1
+services:
+  epcon:
+    stdin_open: true
+    tty: true
+    build:
+      context: .
+    environment:
+      PYTHONDONTWRITEBYTECODE: 1
+      DJANGO_SETTINGS_MODULE: "pycon.dev_settings"
+      SECRET_KEY: "secret"
+    command: ["./manage.py migrate --no-input && ./manage.py runserver 0.0.0.0:8888"]
+    volumes:
+      - .:/code
+    ports:
+      - "8888:8888"

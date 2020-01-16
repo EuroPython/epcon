@@ -8,6 +8,9 @@
             <a class="" href="{% url "admin:auser-order" uid=object_id %}">New order</a>
         </li>
         <li>
+	    <a class="" href="{% url "admin:auser-send-verification-email" uid=object_id %}">Send verification email</a>
+        </li>
+        <li>
             <a class="" href="{% url "admin:auser-create-doppelganger" uid=object_id %}">Doppelganger!</a>
         </li>
     </ul>
@@ -80,18 +83,6 @@
                     <th>Email:</th>
                     <td>{{ d.email }}</td>
                 </tr>
-                {% endwith %}
-                {% with user_data.identities as d %}
-                    {% for x in d %}
-                    <tr>
-                        {% if forloop.counter == 1 %}
-                        <th rowspan="{{ d|length }}">Identities:</th>
-                        {% endif %}
-                        <td>
-                            <div title="{{ x.identifier }}">{{ x.provider }}</div>
-                        </td>
-                    </tr>
-                    {% endfor %}
                 {% endwith %}
                 </tbody>
             </table>

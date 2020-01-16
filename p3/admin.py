@@ -1,12 +1,12 @@
-# -*- coding: UTF-8 -*-
+
 from collections import defaultdict
 from decimal import Decimal
 from django import forms
 from django import http
 from django.conf import settings
-from django.conf.urls import url, patterns
+from django.core.urlresolvers import reverse
+from django.conf.urls import url
 from django.contrib import admin
-from django.core import urlresolvers
 from django.db.models import Q
 from django.contrib.auth.models import User
 from assopy import admin as aadmin
@@ -19,6 +19,10 @@ from conference import forms as cforms
 from p3 import models
 from p3 import dataaccess
 from p3 import utils
+
+from taggit.forms import TagField
+from taggit_labels.widgets import LabelWidget
+
 
 ### Customg list filters
 
@@ -107,7 +111,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         'orderitem__order__code',
         'fare__code',
         )
-    actions = cadmin.TicketAdmin.actions + (
+    actions = (
         'do_assign_to_buyer',
         'do_update_ticket_name',
         )
@@ -117,8 +121,8 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
         js = ('p5/j/jquery-flot/jquery.flot.js',)
 
     def _order(self, obj):
-        url = urlresolvers.reverse('admin:assopy_order_change',
-                                   args=(obj.orderitem.order.id,))
+        url = reverse('admin:assopy_order_change',
+                      args=(obj.orderitem.order.id,))
         return '<a href="%s">%s</a>' % (url, obj.orderitem.order.code)
     _order.allow_tags = True
 
@@ -145,8 +149,7 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
                     else:
                         comment = ' (user inactive)'
                 if user is not None:
-                    url = urlresolvers.reverse('admin:auth_user_change',
-                                               args=(user.id,))
+                    url = reverse('admin:auth_user_change', args=(user.id,))
                     user_name = ('%s %s' %
                                  (user.first_name, user.last_name)).strip()
                     if not user_name:
@@ -274,9 +277,9 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
 
     def get_urls(self):
         urls = super(TicketConferenceAdmin, self).get_urls()
-        my_urls = patterns('',
+        my_urls = [
             url(r'^stats/data/$', self.admin_site.admin_view(self.stats_data), name='p3-ticket-stats-data'),
-        )
+        ]
         return my_urls + urls
 
     def stats_data(self, request):
@@ -325,9 +328,6 @@ class TicketConferenceAdmin(cadmin.TicketAdmin):
 
         return http.HttpResponse(json_dumps(output), 'text/javascript')
 
-admin.site.unregister(cmodels.Ticket)
-admin.site.register(cmodels.Ticket, TicketConferenceAdmin)
-
 
 class SpeakerAdmin(cadmin.SpeakerAdmin):
 
@@ -351,172 +351,74 @@ class SpeakerAdmin(cadmin.SpeakerAdmin):
     def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
         sids = queryset.values_list('user', flat=True)
         profiles = dataaccess.profiles_data(sids)
-        self._profiles = dict(zip(sids, profiles))
+        self._profiles = dict(list(zip(sids, profiles)))
         return super(SpeakerAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
 
     def _avatar(self, o):
         return '<img src="%s" height="32" />' % (self._profiles[o.user_id]['image'],)
     _avatar.allow_tags = True
 
-admin.site.unregister(cmodels.Speaker)
-admin.site.register(cmodels.Speaker, SpeakerAdmin)
-
-class DonationAdmin(admin.ModelAdmin):
-    list_display = ('_name', 'date', 'amount')
-    list_select_related = True
-    search_fields = ('user__user__first_name', 'user__user__last_name', 'user__user__email')
-    date_hierarchy = 'date'
-
-    def _name(self, o):
-        return o.user.name()
-    _name.short_description = 'name'
-    _name.admin_order_field = 'user__user__first_name'
-
-admin.site.register(models.Donation, DonationAdmin)
-
-if 0:  # FIXME: remove hotels and sim
-    class HotelBookingAdmin(admin.ModelAdmin):
-        list_display = ('conference', 'booking_start', 'booking_end', 'minimum_night')
-
-    admin.site.register(models.HotelBooking, HotelBookingAdmin)
-
-
-    class HotelRoomAdmin(admin.ModelAdmin):
-        list_display = ('_conference', 'room_type', 'quantity', 'amount',)
-        list_editable = ('quantity', 'amount',)
-        list_filter = ('booking__conference',)
-        list_select_related = True
-
-        def _conference(self, o):
-            return o.booking.conference_id
-
-        def get_urls(self):
-            urls = super(HotelRoomAdmin, self).get_urls()
-            my_urls = patterns('',
-                url(r'^tickets/$', self.admin_site.admin_view(self.ticket_list), name='p3-hotelrooms-tickets-data'),
-            )
-            return my_urls + urls
-
-        def ticket_list(self, request):
-            from common.jsonify import json_dumps
-            day_ix = int(request.GET['day'])
-            room_type = request.GET['type']
-            rdays = models.TicketRoom.objects.reserved_days()
-            day = rdays[day_ix]
-
-            qs = models.TicketRoom.objects.valid_tickets()\
-                .filter(room_type__room_type=room_type, checkin__lte=day, checkout__gte=day)\
-                .select_related('ticket__user', 'ticket__orderitem__order')\
-                .order_by('ticket__orderitem__order__created')
-
-            output = []
-            for row in qs:
-                user = row.ticket.user
-                order = row.ticket.orderitem.order
-                name = u'{0} {1}'.format(user.first_name, user.last_name)
-                if row.ticket.name and row.ticket.name != name:
-                    name = u'{0} ({1})'.format(row.ticket.name, name)
-                output.append({
-                    'user': {
-                        'id': user.id,
-                        'name': name,
-                    },
-                    'order': {
-                        'id': order.id,
-                        'code': order.code,
-                        'method': order.method,
-                        'complete': order._complete,
-                    },
-                    'period': (row.checkin, row.checkout, row.checkout == day),
-                })
-            return http.HttpResponse(json_dumps(output), 'text/javascript')
-
-    admin.site.register(models.HotelRoom, HotelRoomAdmin)
-
-    class TicketRoomAdmin(admin.ModelAdmin):
-        list_display = ('_user', '_room_type', 'ticket_type', 'checkin', 'checkout', '_order_code', '_order_date', '_order_confirmed')
-        list_select_related = True
-        search_fields = ('ticket__user__first_name', 'ticket__user__last_name', 'ticket__user__email', 'ticket__orderitem__order__code')
-        raw_id_fields = ('ticket', )
-        list_filter = ('room_type__room_type',)
-
-        def _user(self, o):
-            return o.ticket.user
-
-        def _room_type(self, o):
-            return o.room_type.get_room_type_display()
-
-        def _order_code(self, o):
-            return o.ticket.orderitem.order.code
-
-        def _order_date(self, o):
-            return o.ticket.orderitem.order.created
-
-        def _order_confirmed(self, o):
-            return o.ticket.orderitem.order._complete
-        _order_confirmed.boolean = True
-
-    admin.site.register(models.TicketRoom, TicketRoomAdmin)
-
-
-# TODO commented out becauxe it seems to be relevant only for Genro
-# class InvoiceAdmin(aadmin.InvoiceAdmin):
-#     def _invoice(self, i):
-#         return super(InvoiceAdmin, self)._invoice(i)
-#     _invoice.allow_tags = True
-#     _invoice.short_description = 'Download'
-
-# admin.site.unregister(amodels.Invoice)
-# admin.site.register(amodels.Invoice, InvoiceAdmin)
-
 
 class VotoTalkAdmin(admin.ModelAdmin):
-    list_display = ('user', '_name', 'talk', 'vote')
-    list_filter = ('talk__conference',
-                   )
-    search_fields = [ 'talk__title',
-                      'user__username',
-                      'user__last_name', 'user__first_name' ]
-    ordering = ('-talk__conference', 'talk')
+    list_display = ("user", "_name", "talk", "vote")
+    list_filter = ("talk__conference",)
+    search_fields = [
+        "talk__title",
+        "user__username",
+        "user__last_name",
+        "user__first_name",
+    ]
+    ordering = ("-talk__conference", "talk")
 
     def _name(self, o):
-        url = urlresolvers.reverse('conference-profile',
-                                   kwargs={'slug': o.user.attendeeprofile.slug})
-        return '<a href="%s">%s %s</a>' % (url, o.user.first_name, o.user.last_name)
-    _name.allow_tags = True
-    _name.admin_order_field = 'user__first_name'
+        url = reverse(
+            "conference-profile", kwargs={"slug": o.user.attendeeprofile.slug}
+        )
+        return '<a href="%s">%s</a>' % (url, o.user.assopy_user.name())
 
-admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
+    _name.allow_tags = True
+    _name.admin_order_field = "user__first_name"
 
 
 class AttendeeProfileAdmin(admin.ModelAdmin):
-    list_display = ('_name',
-                    '_user',
-                    'company', 'location', 'visibility')
-    list_filter = ('visibility',
-                   )
-    search_fields = [ 'user__username',
-                      'user__last_name', 'user__first_name',
-                      'company',
-                      'location',
-                      ]
+    list_display = (
+        "uuid",
+        "slug",
+        "_name",
+        "_user",
+        "company",
+        "location",
+        "visibility",
+    )
+    list_filter = ("visibility",)
+    search_fields = [
+        "user__username",
+        "user__last_name",
+        "user__first_name",
+        "company",
+        "location",
+    ]
 
     def _name(self, o):
-        url = urlresolvers.reverse('conference-profile',
-                                   kwargs={'slug': o.slug})
-        return '<a href="%s">%s %s</a>' % (url, o.user.first_name, o.user.last_name)
+        url = reverse(
+            "conference-profile", kwargs={"slug": o.slug}
+        )
+        return '<a href="%s">%s %s</a>' % (
+            url,
+            o.user.first_name,
+            o.user.last_name,
+        )
+
     _name.allow_tags = True
-    _name.admin_order_field = 'user__first_name'
+    _name.admin_order_field = "user__first_name"
 
     def _user(self, o):
-        url = urlresolvers.reverse('admin:auth_user_change',
-                                   args=(o.user.id,))
+        url = reverse("admin:auth_user_change", args=(o.user.id,))
         return '<a href="%s">%s</a>' % (url, o.user.username)
+
     _user.allow_tags = True
-    _user.admin_order_field = 'user__username'
+    _user.admin_order_field = "user__username"
 
-
-admin.site.register(cmodels.AttendeeProfile, AttendeeProfileAdmin)
 
 # MAL: Commented out, since we don't really have a need for this:
 #
@@ -532,40 +434,122 @@ admin.site.register(cmodels.AttendeeProfile, AttendeeProfileAdmin)
 # admin.site.unregister(cmodels.Talk)
 # admin.site.register(cmodels.Talk, TalkConferenceAdmin)
 
-class TalkAdmin(cadmin.TalkAdmin):
-    list_filter = ('conference', 'status', 'duration', 'type',
-                   'level', 'tags__name', 'language',
-                   )
-    search_fields = [ 'title',
-                      'talkspeaker__speaker__user__last_name',
-                      'talkspeaker__speaker__user__first_name',
-                      'speakers__user__attendeeprofile__company',
-                      ]
 
-    list_display = ('title', 'conference', '_speakers',
-                    '_company',
-                    'duration', 'status', 'created',
-                    'level', '_tags',
-                    '_slides', '_video',
-                    'language',
-                    )
+class CustomTalkAdminForm(cadmin.MultiLingualForm):
 
-    ordering = ('-conference', 'title')
+    tags = TagField(
+        required=True, widget=LabelWidget(model=cmodels.ConferenceTag)
+    )
+
+    class Meta:
+        model = cmodels.Talk
+        fields = "__all__"
+
+
+class TalkAdmin(admin.ModelAdmin):
+    list_filter = (
+        "conference",
+        "status",
+        "duration",
+        "type",
+        "level",
+        "tags__name",
+    )
+    list_editable = ("status",)
+    search_fields = [
+        "title",
+        "uuid",
+        "talkspeaker__speaker__user__last_name",
+        "talkspeaker__speaker__user__first_name",
+        "speakers__user__attendeeprofile__company",
+    ]
+
+    list_display = (
+        "title",
+        "uuid",
+        "conference",
+        "_speakers",
+        "_company",
+        "duration",
+        "status",
+        "created",
+        "level",
+        "domain_level",
+        "_tags",
+        "_slides",
+        "_video",
+    )
+
+    prepopulated_fields = {"slug": ("title",)}
+    ordering = ("-conference", "title")
     multilingual_widget = cforms.MarkEditWidget
+    filter_horizontal = ["tags"]
+    inlines = [cadmin.TalkSpeakerInlineAdmin]
+
+    form = CustomTalkAdminForm
 
     def _tags(self, obj):
-        return u', '.join(sorted(unicode(tag) for tag in obj.tags.all()))
+        return ", ".join(sorted(str(tag) for tag in obj.tags.all()))
+
+    def _speakers(self, obj):
+        """Warnings – this is de-optimised version of previous cached query,
+        however much easier to work with and much easier to debug"""
+
+        speakers = sorted(
+            set(
+                (
+                    speaker.user.id,
+                    speaker.user.assopy_user.name(),
+                    speaker.user.email,
+                )
+                for speaker in obj.speakers.all()
+            )
+        )
+
+        output = []
+        for speaker in speakers:
+            args = {
+                "url": reverse(
+                    "admin:conference_speaker_change", args=[speaker[0]]
+                ),
+                "name": speaker[1],
+                "mail": speaker[2],
+            }
+
+            output.append(
+                '<a href="%(url)s">%(name)s</a> '
+                '(<a href="mailto:%(mail)s">mail</a>)' % args
+            )
+
+        return "<br />".join(output)
+    _speakers.allow_tags = True
 
     def _company(self, obj):
         companies = sorted(
-            set(speaker.user.attendeeprofile.company
+            set(
+                speaker.user.attendeeprofile.company
                 for speaker in obj.speakers.all()
-                if speaker.user.attendeeprofile))
-        return u', '.join(companies)
-    _company.admin_order_field = 'speakers__user__attendeeprofile__company'
+                if speaker.user.attendeeprofile
+            )
+        )
+        return ", ".join(companies)
+    _company.admin_order_field = "speakers__user__attendeeprofile__company"
 
-admin.site.unregister(cmodels.Talk)
+    def _slides(self, obj):
+        return bool(obj.slides)
+    _slides.boolean = True
+    _slides.admin_order_field = "slides"
+
+    def _video(self, obj):
+        return bool(obj.video_type) and (
+            bool(obj.video_url) or bool(obj.video_file)
+        )
+    _video.boolean = True
+    _video.admin_order_field = "video_type"
+
+
 admin.site.register(cmodels.Talk, TalkAdmin)
+
 
 class OrderAdmin(aadmin.OrderAdmin):
     list_display = aadmin.OrderAdmin.list_display + (
@@ -736,7 +720,8 @@ def prezzo_biglietti_ricalcolato(**kw):
             if price not in tcp[code]['prices']:
                 tcp[code]['prices'][price] = { 'price': price, 'count': 0 }
             tcp[code]['prices'][price]['count'] += 1
-    return tcp.values()
+    return list(tcp.values())
+
 prezzo_biglietti_ricalcolato.template = '''
 <table>
     <tr>
@@ -758,6 +743,10 @@ prezzo_biglietti_ricalcolato.template = '''
 </table>
 '''
 
-# Monkey patch our version into assopy package:
-if 0:
-    astats.prezzo_biglietti_ricalcolato = prezzo_biglietti_ricalcolato
+admin.site.unregister(cmodels.Ticket)
+admin.site.register(cmodels.Ticket, TicketConferenceAdmin)
+admin.site.unregister(cmodels.Speaker)
+admin.site.register(cmodels.Speaker, SpeakerAdmin)
+
+admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
+admin.site.register(cmodels.AttendeeProfile, AttendeeProfileAdmin)

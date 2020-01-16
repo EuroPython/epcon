@@ -1,8 +1,7 @@
-# -*- coding: UTF-8 -*-
 
-from __future__ import print_function
+
+
 from django.core.management.base import BaseCommand
-from assopy import models as amodels
 from conference import models as cmodels
 
 def make_speaker_profiles_public_for_conference(conference):
@@ -29,11 +28,15 @@ class Command(BaseCommand):
 	Argument: <conference year>
 
     """
-    args = '<conference>'
+
+    def add_arguments(self, parser):
+
+        # Positional arguments
+        parser.add_argument('conference')
 
     def handle(self, *args, **options):
         try:
-            conference = args[0]
-        except IndexError:
+            conference = options['conference']
+        except KeyError:
             raise CommandError('conference not specified')
         make_speaker_profiles_public_for_conference(conference)

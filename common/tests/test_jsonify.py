@@ -1,8 +1,7 @@
-import decimal
 import unittest
 import datetime
 
-import simplejson
+import json
 
 from common.jsonify import json_dumps
 
@@ -14,7 +13,7 @@ class MyEncodeTestCase(unittest.TestCase):
             'datetime': now
         }
 
-        self.assertDictEqual(simplejson.loads(json_dumps(obj)), {
+        self.assertDictEqual(json.loads(json_dumps(obj)), {
             'datetime': now.strftime('%d/%m/%Y %H:%M:%S')
         })
 
@@ -24,7 +23,7 @@ class MyEncodeTestCase(unittest.TestCase):
             'date': now
         }
 
-        self.assertDictEqual(simplejson.loads(json_dumps(obj)), {
+        self.assertDictEqual(json.loads(json_dumps(obj)), {
             'date': now.strftime('%d/%m/%Y')
         })
 
@@ -35,7 +34,7 @@ class MyEncodeTestCase(unittest.TestCase):
             'time': now,
         }
 
-        self.assertDictEqual(simplejson.loads(json_dumps(obj)), {
+        self.assertDictEqual(json.loads(json_dumps(obj)), {
             'time': now.strftime('%H:%M')
         })
 
@@ -46,7 +45,7 @@ class MyEncodeTestCase(unittest.TestCase):
             'set': value,
         }
 
-        self.assertDictEqual(simplejson.loads(json_dumps(obj)), {
+        self.assertDictEqual(json.loads(json_dumps(obj)), {
             'set': [1, 2, 3],
         })
 
@@ -57,6 +56,6 @@ class MyEncodeTestCase(unittest.TestCase):
             'dict': value,
         }
 
-        self.assertDictEqual(simplejson.loads(json_dumps(obj)), {
+        self.assertDictEqual(json.loads(json_dumps(obj)), {
             'dict': value,
         })

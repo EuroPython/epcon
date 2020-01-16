@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+
 """ Create coupons for speakers:
 
     Talk        - 25%
@@ -37,22 +37,22 @@ from assopy.models import Coupon
 # Discounts
 #
 # See cmodels.TALK_TYPES; this dictionary maps the first char of the talk
-# type to a tuple (coupon_prefix, discount_code)
+# type to a tuple (coupon_prefix, discount_code, include_combined)
 #
 # The coupon_prefix must have 3 chars.
 #
 TALK_TYPE_DISCOUNTS = {
-    't': ('TLK', '25%'),  # Talk
-    'i': ('INT', '25%'),  # Interactive
-    'r': ('TRN', '100%'), # Training
-    'p': ('PST', '25%'),  # Poster
-    'n': ('PAN', '25%'),  # Panel
-    'h': ('HPD', '25%'),  # Helpdesk
+    't': ('TLK', '25%', False),  # Talk
+    'i': ('INT', '25%', False),  # Interactive
+    'r': ('TRN', '100%', True), # Training
+    'p': ('PST', '25%', False),  # Poster
+    'n': ('PAN', '25%', False),  # Panel
+    'h': ('HPD', '25%', False),  # Helpdesk
 }
 
 # Coupon prefixes used in the above dictionary
 COUPON_PREFIXES = tuple(prefix
-                        for ttype, (prefix, discount)
+                        for ttype, (prefix, discount, include_combined)
                         in TALK_TYPE_DISCOUNTS.items())
 
 # Add special keynote coupon prefix
@@ -64,28 +64,26 @@ assert 'TLK' in COUPON_PREFIXES
 
 class Command(BaseCommand):
 
-    option_list = BaseCommand.option_list + (
-        make_option('--dry-run',
-                    action='store_true',
-                    dest='dry_run',
-                    help='Do everything except create the coupons',
-                    ),
-    )
-
-    args = '<conference>'
-
     # Dry run ?
     dry_run = False
+
+    def add_arguments(self, parser):
+
+        # Positional arguments
+        parser.add_argument('conference')
+
+        # Named (optional) arguments
+        parser.add_argument('--dry-run',
+                            action='store_true',
+                            dest='dry_run',
+                            default=False,
+                            help='Do everything except create the coupons')
 
     @transaction.atomic
     def handle(self, *args, **options):
 
         self.dry_run = options.get('dry_run', False)
-
-        try:
-            conference = cmodels.Conference.objects.get(code=args[0])
-        except IndexError:
-            raise CommandError('conference missing')
+        conference = cmodels.Conference.objects.get(code=options['conference'])
 
         # Find speakers eligible for coupons
         speakers = {}
@@ -98,7 +96,8 @@ class Command(BaseCommand):
             talk_code = row.talk.type[0]
             if talk_code not in TALK_TYPE_DISCOUNTS:
                 continue
-            coupon_prefix, discount_code = TALK_TYPE_DISCOUNTS[talk_code]
+            coupon_prefix, discount_code, include_combined = \
+                TALK_TYPE_DISCOUNTS[talk_code]
             admin_type = row.talk.admin_type
             talk_status = row.talk.status
 
@@ -113,6 +112,7 @@ class Command(BaseCommand):
                 # Keynote talk
                 coupon_prefix = 'KEY'
                 discount_code = '100%'
+                include_combined = True
                 # Force an override
                 entry = None
 
@@ -145,6 +145,7 @@ class Command(BaseCommand):
                 'admin_type': row.talk.admin_type,
                 'duration': row.talk.duration,
                 'discount': discount_code,
+                'include_combined': include_combined,
                 'prefix': coupon_prefix,
                 'talk_id': row.talk.id,
                 'speaker_id': row.speaker_id,
@@ -153,7 +154,12 @@ class Command(BaseCommand):
             speakers[row.speaker_id] = entry
 
         # Valid fares (conference fares only, no training passes)
-        fares = cmodels.Fare.objects\
+        conference_fares = cmodels.Fare.objects\
+            .filter(conference=conference.code,
+                    ticket_type='conference')\
+            .exclude(code__startswith='TRT')\
+            .exclude(code__startswith='TRC')
+        combined_fares = cmodels.Fare.objects\
             .filter(conference=conference.code,
                     ticket_type='conference')\
             .exclude(code__startswith='TRT')
@@ -190,6 +196,7 @@ class Command(BaseCommand):
             'talk_id', 
             'speaker_id',
             'talk_status',
+            'include_combined',
             )
 
         # Create coupons
@@ -199,7 +206,7 @@ class Command(BaseCommand):
             # Get coupon data
             coupon_prefix = entry['prefix']
             user = entry['spk'].user
-            name = u'%s %s' % (user.first_name, user.last_name)
+            name = '%s %s' % (user.first_name, user.last_name)
             value = entry['discount']
             title = entry['title']
 
@@ -220,7 +227,7 @@ class Command(BaseCommand):
             while True:
                 # Codes: SPK-RANDOM
                 code = (coupon_prefix + '-'
-                        + ''.join(random.sample(string.uppercase, 6)))
+                        + ''.join(random.sample(string.ascii_uppercase, 6)))
                 if code not in codes:
                     codes.add(code)
                     break
@@ -241,6 +248,7 @@ class Command(BaseCommand):
                 entry['talk_id'],
                 entry['speaker_id'],
                 entry['talk_status'],
+                entry['include_combined'],
                 )
 
             # Create coupon
@@ -252,6 +260,10 @@ class Command(BaseCommand):
             c.value = value
             c.description = '[%s] %s Speaker Discount' % (
                 conference, entry['prefix'])
+            if entry['include_combined']:
+                fares = combined_fares
+            else:
+                fares = conference_fares
             if not self.dry_run:
                 c.save()
                 c.fares = fares
@@ -260,6 +272,6 @@ class Command(BaseCommand):
         # Output CSV data, UTF-8 encoded
         data.insert(0, csv_header)
         for row in data:
-            csv_data = (u'"%s"' % (unicode(x).replace(u'"', u'""'))
+            csv_data = ('"%s"' % (str(x).replace('"', '""'))
                         for x in row)
-            print (u','.join(csv_data).encode('utf-8'))
+            print(','.join(csv_data))

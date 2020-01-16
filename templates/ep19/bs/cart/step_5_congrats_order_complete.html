@@ -1,0 +1,21 @@
+{% extends "ep19/bs/cart/base.html" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+&raquo; Step 4: Confirmation and Payment
+{% endblock %}
+
+{% block content %}
+
+<div class='container page'>
+    <div class='row'>
+        <div class='col-md-12'>
+            <h1>Congrats! Order #{{ order.code }} complete.</h1>
+
+            {% include "ep19/bs/cart/_order_summary.html" %}
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% load menu_tags %}
+
+{% for child in children %}
+<li class="nav-item {% if child.children %} dropdown {% endif %}">
+	<a class="nav-link"
+	   {% if child.children %}
+	   href="{{ child.attr.redirect_url|default:child.get_absolute_url }}"
+	   role="button"
+	   aria-haspopup="true"
+	   aria-expanded="false"
+	   {% else %}
+	   href="{{ child.attr.redirect_url|default:child.get_absolute_url }}"
+	   {% endif %}
+	>
+		{{ child.get_menu_title }}
+	</a>
+	{% if child.children %}
+	<div class="dropdown-menu"
+		 aria-labelledby="navbarDropdown">
+		{% for subchild in child.children %}
+			<a class="dropdown-item"
+			   href="{{ subchild.attr.redirect_url|default:subchild.get_absolute_url }}">
+				{{ subchild.get_menu_title }}
+			</a>
+		{% endfor %}
+	</div>
+	{% endif %}
+</li>
+{% endfor %}

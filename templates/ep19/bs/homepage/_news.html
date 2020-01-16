@@ -1,0 +1,31 @@
+{% load cms_tags %}
+<div id="homepage_news" class='text-light text-left'>
+    <div class="container">
+        <!-- Example row of columns -->
+
+        <div class="row">
+            <div class="col-md-12">
+            <h1 class='text-center'>Latest News</h1>
+            </div>
+        </div>
+        
+        <div class="row" style='margin-top: 2em;'>
+            {% for news in latest_3_news %}
+            <div class="col-md-4">
+                <h3>{{ news.title }}</h3>
+                <small title="{{ news.published_date }}">{{ news.published_date|timesince }} ago</small>
+                <p style='margin-bottom: 3em'>{{ news.content|safe }}</p>
+            </div>
+            {% endfor %}
+
+        </div>
+        <div class="row text-right">
+            <div class="col-md-12">
+                <p style='margin-top: 2em;'>
+                <a href='{% url "news" %}' class='btn btn-outline-light'>Check older news &raquo;</a>
+                </p>
+            </div>
+        </div>
+        
+    </div> <!-- /container -->
+</div>

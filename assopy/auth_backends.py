@@ -1,16 +1,16 @@
-# -*- coding: UTF-8 -*-
+
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
-from django.db import transaction
 
-from assopy import models
+from assopy.models import AssopyUser, user_created
 from assopy import settings
 
 import logging
 
 log = logging.getLogger('assopy.auth')
 
-class _AssopyBackend(ModelBackend):
+
+class AssopyBackend(ModelBackend):
     def linkUser(self, user):
         """
         collega l'utente assopy passato con il backend; crea l'utente remoto se
@@ -36,41 +36,50 @@ class _AssopyBackend(ModelBackend):
         except User.DoesNotExist:
             return None
 
-class IdBackend(_AssopyBackend):
+
+class IdBackend(AssopyBackend):
     """
     backend utilizzato solo internamente per autenticare utenti dato il loro id
     (senza bisogno di password).
     """
-    def authenticate(self, uid=None):
+    def authenticate(self, request, uid=None):
         try:
-            user = User.objects.select_related('assopy_user').get(pk=uid, is_active=True)
-            auser = user.assopy_user
-            if auser is None:
+            user = User.objects.select_related('assopy_user').get(
+                pk=uid, is_active=True
+            )
+            assopy_user = user.assopy_user
+            if assopy_user is None:
                 # questo utente esiste su django ma non ha un utente assopy
                 # collegato; probabilmente è un admin inserito prima del
                 # collegamento con il backend.
-                auser = models.User(user=user)
-                auser.save()
-                models.user_created.send(sender=auser, profile_complete=True)
-            self.linkUser(auser)
+                assopy_user = AssopyUser(user=user)
+                assopy_user.save()
+                user_created.send(sender=assopy_user, profile_complete=True)
+            self.linkUser(assopy_user)
             return user
         except User.DoesNotExist:
             return None
 
-class EmailBackend(_AssopyBackend):
-    def authenticate(self, email=None, password=None):
+
+class EmailBackend(AssopyBackend):
+    def authenticate(self, request, email=None, password=None, username=None):
         try:
-            user = User.objects.select_related('assopy_user').get(email__iexact=email, is_active=True)
+            email = email or username
+            user = User.objects.select_related('assopy_user').get(
+                email__iexact=email,
+                is_active=True
+            )
             if user.check_password(password):
-                auser = user.assopy_user
-                if auser is None:
+                assopy_user = user.assopy_user
+                if assopy_user is None:
                     # questo utente esiste su django ma non ha un utente assopy
                     # collegato; probabilmente è un admin inserito prima del
                     # collegamento con il backend.
-                    auser = models.User(user=user)
-                    auser.save()
-                    models.user_created.send(sender=auser, profile_complete=True)
-                self.linkUser(auser)
+                    assopy_user = AssopyUser(user=user)
+                    assopy_user.save()
+                    user_created.send(sender=assopy_user,
+                                      profile_complete=True)
+                self.linkUser(assopy_user)
                 return user
         except User.MultipleObjectsReturned:
             return None
@@ -79,14 +88,3 @@ class EmailBackend(_AssopyBackend):
             # esserci un utente legacy nel backend di ASSOPY
             if not settings.SEARCH_MISSING_USERS_ON_BACKEND:
                 return None
-
-
-class JanRainBackend(_AssopyBackend):
-    def authenticate(self, identifier=None):
-        try:
-            i = models.UserIdentity.objects.select_related('user__user').get(identifier=identifier, user__user__is_active=True)
-        except models.UserIdentity.DoesNotExist:
-            return None
-        else:
-            self.linkUser(i.user)
-            return i.user.user

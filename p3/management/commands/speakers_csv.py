@@ -1,24 +1,18 @@
-# -*- coding: UTF-8 -*-
+import csv
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from conference import models
-from p3.models import TicketConference
 
-import csv
-import sys
 
 class Command(BaseCommand):
-    """
-    """
 
-    args = '<conference>'
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('conference')
 
     def handle(self, *args, **options):
-        try:
-            conference = models.Conference.objects.get(code=args[0])
-        except IndexError:
-            raise CommandError('conference missing')
+        conference = models.Conference.objects.get(code=options['conference'])
 
         speakers = set()
         talks = models.Talk.objects.accepted(conference.code)
@@ -36,16 +30,9 @@ class Command(BaseCommand):
             #'discounts',
             COL_NAME, COL_TITLE, COL_BIO,
         )
-        writer = csv.DictWriter(sys.stdout, columns)
-        writer.writerow(dict(zip(columns, columns)))
-        def utf8(d):
-            d = dict(d)
-            for k, v in d.items():
-                try:
-                    d[k] = v.encode('utf-8')
-                except:
-                    pass
-            return d
+        writer = csv.DictWriter(self.stdout, columns)
+        writer.writerow(dict(list(zip(columns, columns))))
+
         for s in sorted(speakers, key=lambda x: x.user.assopy_user.name()):
             profile = models.AttendeeProfile.objects.get(user=s.user)
             if profile.job_title and profile.company:
@@ -66,4 +53,4 @@ class Command(BaseCommand):
                 #'orders': ' '.join(set(t.orderitem.order.code for t in tickets)),
                 #'discounts': ' '.join(set(row.code for t in tickets for row in t.orderitem.order.orderitem_set.all() if row.price < 0)),
             }
-            writer.writerow(utf8(row))
+            writer.writerow(row)

@@ -1,0 +1,117 @@
+{% extends "ep19/bs/base.html" %}
+
+{% block content %}
+<style type="text/css">
+.voting-proposal {
+    padding: 1.5em 0;
+    border-top: 1px dotted #ddd;
+    border-bottom: 1px dotted #ddd;
+}
+</style>
+
+<div class="container page" id="voting_page">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Talk Voting</h1>
+            <h4>Filter
+                <a class='btn btn-{% if filter != "all" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?filter=all&talk_type={{ talk_type }}"
+                >
+                    All talks
+                </a>
+                <a class='btn btn-{% if filter != "not-voted" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?filter=not-voted&talk_type={{ talk_type }}"
+                >
+                    Not voted
+                </a>
+                <a class='btn btn-{% if filter != "voted" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?filter=voted&talk_type={{ talk_type }}"
+                >
+                    Voted
+                </a>
+                <a class='btn btn-{% if filter != "mine" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?filter=mine&talk_type={{ talk_type }}"
+                >
+                    My talks
+                </a>
+            </h4>
+            <h4>Talk type
+                <a class='btn btn-{% if talk_type != "all" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?talk_type=all&filter={{ filter }}"
+                >
+                    All
+                </a>
+                <a class='btn btn-{% if talk_type != "talk" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?talk_type=talk&filter={{ filter }}"
+                >
+                    Talk
+                </a>
+                <a class='btn btn-{% if talk_type != "training" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?talk_type=training&filter={{ filter }}"
+                >
+                    Training
+                </a>
+                <a class='btn btn-{% if talk_type != "poster" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?talk_type=poster&filter={{ filter }}"
+                >
+                    Poster/Panel/Interactive
+                </a>
+                <a class='btn btn-{% if talk_type != "helpdesk" %}outline-{% endif %}success'
+                   href="{% url 'talk_voting:talks' %}?talk_type=helpdesk&filter={{ filter }}"
+                >
+                    Help desk
+                </a>
+            </h4>
+            <p>Below you can see all proposals for EP2019. They are in random order</p>
+        </div>
+    </div>
+
+    <div class='row'>
+        <div class="col-md-12">
+            {% for talk in talks %}
+            <div class='voting-proposal'>
+                <h2>{{ talk.title }}</h2>
+                <h4>{{ talk.sub_title }}</h4>
+                <h5>{% for speaker in talk.get_all_speakers %}{{ speaker.user.assopy_user.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</h5>
+                <p>{% for t in talk.tags.all %}<span class='badge badge-secondary'>{{ t }}</span> {% endfor %}</p>
+                <p>{{ talk.get_abstract|linebreaks }}</p>
+                <p>
+                <code>Type: {{ talk.get_type_display }}; Python level: {{ talk.get_level_display }}; Domain level: {{ talk.get_domain_level_display }}</code>
+                </p>
+
+                {% if talk.can_vote %}
+                    {% include "ep19/bs/talk_voting/_voting_form.html" with talk=talk VotingOptions=VotingOptions db_vote=talk.votes.0 %}
+                {% endif %}
+            </div>
+            {% endfor %}{# talk in talks #}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block morejs %}
+<script type="text/javascript">
+    $(document).on('click', 'button[name=vote]', function() {
+        var form = $(this).parent('form')[0];
+        csrf_token = $(form).find('[name=csrfmiddlewaretoken]').attr('value');
+        vote = $(this).attr("value");
+
+        body = 'csrfmiddlewaretoken=' + csrf_token + '&vote=' + vote;
+        fetch(form.action, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: body,
+            headers: {
+                "X-CSRFToken": csrf_token,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        }).then(
+            (response) => response.text()
+        ).then(
+            (data) => $(form).replaceWith(data)
+        )
+        return false;
+    })
+</script>
+{% endblock %}

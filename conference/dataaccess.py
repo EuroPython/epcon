@@ -1,14 +1,9 @@
-# -*- coding: UTF-8 -*-
-
 from collections import defaultdict
 from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count
-
-import django_comments as comments
 
 from conference import cachef
 from conference import models
@@ -33,78 +28,6 @@ def _dump_fields(o):
         output[f.name] = v
     return output
 
-
-def _i_deadlines(sender, **kw):
-    years = set(x.year for x in models.Deadline.objects.all().values_list('date', flat=True))
-    years.add(None)
-    languages = set([ l[0] for l in settings.LANGUAGES ])
-    return [ 'deadlines:%s:%s' % (l, y) for l in languages for y in years ]
-
-def deadlines(lang, year=None):
-    qs = models.Deadline.objects\
-        .all()\
-        .order_by('date')
-    if year:
-        qs = qs.filter(date__year=year)
-    output = []
-    for d in qs:
-        try:
-            content = d.content(lang, False)
-        except models.DeadlineContent.DoesNotExist:
-            headline = body = ''
-        else:
-            headline = content.headline
-            body = content.body
-
-        output.append({
-            'date': d.date,
-            'expired': d.isExpired(),
-            'headline': headline,
-            'body': body,
-        })
-    return output
-
-deadlines = cache_me(
-    models=(models.Deadline, models.DeadlineContent),
-    key='deadlines:%(lang)s:%(year)s',
-    timeout=5*60)(deadlines, _i_deadlines)
-
-def sponsor(conf):
-    qs = models.SponsorIncome.objects\
-        .filter(conference=conf)\
-        .select_related('sponsor')\
-        .order_by('-income', 'sponsor__sponsor')
-    output = []
-    tags = defaultdict(set)
-    from tagging.models import TaggedItem
-    for r in TaggedItem.objects\
-                .filter(
-                    content_type=ContentType.objects.get_for_model(models.SponsorIncome),
-                    object_id__in=qs.values('id')
-                )\
-                .values('object_id', 'tag__name'):
-        tags[r['object_id']].add(r['tag__name'])
-    for i in qs:
-        data = _dump_fields(i.sponsor)
-        data.update({
-            'income': i.income,
-            'tags': tags[i.id],
-        })
-        output.append(data)
-    return output
-
-def _i_sponsor(sender, **kw):
-    income = []
-    if sender is models.Sponsor:
-        income = kw['instance'].sponsorincome_set.all()
-    else:
-        income = [ kw['instance'] ]
-
-    return [ 'sponsor:%s' % x.conference for x in income ]
-
-sponsor = cache_me(
-    models=(models.Sponsor, models.SponsorIncome,),
-    key='sponsor:%(conf)s')(sponsor, _i_sponsor)
 
 def schedule_data(sid, preload=None):
     if preload is None:
@@ -139,7 +62,7 @@ schedule_data = cache_me(
     key='schedule:%(sid)s')(schedule_data, _i_schedule_data)
 
 def schedules_data(sids):
-    cached = zip(sids, schedule_data.get_from_cache([ (x,) for x in sids ]))
+    cached = list(zip(sids, schedule_data.get_from_cache([ (x,) for x in sids ])))
     missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
 
     preload = {}
@@ -189,7 +112,7 @@ def talk_data(tid, preload=None):
             'slug': profile['slug'],
             'helper': r['helper'],
         })
-    speakers.sort()
+    speakers.sort(key=lambda speaker: speaker['id'])
 
     try:
         tags = preload['tags']
@@ -206,20 +129,13 @@ def talk_data(tid, preload=None):
     except KeyError:
         event = list(talk.event_set.all().values_list('id', flat=True))
 
-    try:
-        comment_list = preload['comments']
-    except KeyError:
-        comment_list = list(comments.get_model().objects\
-            .filter(content_type__app_label='conference', content_type__model='talk')\
-            .filter(object_pk=tid, is_public=True))
-
     output = _dump_fields(talk)
     output.update({
         'abstract': getattr(abstract, 'body', ''),
         'speakers': speakers,
         'tags': tags,
         'events_id': event,
-        'comments': comment_list,
+        'comments': [],
     })
     return output
 
@@ -228,23 +144,17 @@ def _i_talk_data(sender, **kw):
         tids = [ kw['instance'].id ]
     elif sender is models.Speaker:
         tids = kw['instance'].talks().values('id')
-    elif sender is comments.get_model():
-        o = kw['instance']
-        if o.content_type.app_label == 'conference' and o.content_type.model == 'talk':
-            tids = [ o.object_pk ]
-        else:
-            tids = []
     else:
         tids = [ kw['instance'].talk_id ]
 
     return [ 'talk_data:%s' % x for x in tids ]
 
 talk_data = cache_me(
-    models=(models.Talk, models.Speaker, models.TalkSpeaker, comments.get_model()),
+    models=(models.Talk, models.Speaker, models.TalkSpeaker),
     key='talk_data:%(tid)s')(talk_data, _i_talk_data)
 
 def talks_data(tids):
-    cached = zip(tids, talk_data.get_from_cache([ (x,) for x in tids ]))
+    cached = list(zip(tids, talk_data.get_from_cache([ (x,) for x in tids ])))
     missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
 
     preload = {}
@@ -264,9 +174,7 @@ def talks_data(tids):
             content_type=ContentType.objects.get_for_model(models.Talk),
             object_id__in=talks.values('id')
         )
-    comment_list = comments.get_model().objects\
-        .filter(content_type__app_label='conference', content_type__model='talk')\
-        .filter(object_pk__in=talks.values('id'), is_public=True)
+    comment_list = []
     events = models.Event.objects\
         .filter(talk__in=missing)\
         .values('talk', 'id')
@@ -364,7 +272,7 @@ speaker_data = cache_me(
     key='speaker_data:%(sid)s')(speaker_data, _i_speaker_data)
 
 def speakers_data(sids):
-    cached = zip(sids, speaker_data.get_from_cache([ (x,) for x in sids ]))
+    cached = list(zip(sids, speaker_data.get_from_cache([ (x,) for x in sids ])))
     missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
 
     preload = {}
@@ -481,37 +389,6 @@ def tags():
 tags = cache_me(
     models=(models.ConferenceTaggedItem,))(tags)
 
-def tags_for_talks(conference=None, status=None):
-    """
-    Return the used tags by talks, filtered by conferences and state of the
-    talk
-    """
-    talks = models.Talk.objects.all().values('id')
-    if conference:
-        talks = talks.filter(conference=conference)
-    if status:
-        talks = talks.filter(status=status)
-
-    qs = models.ConferenceTag.objects\
-        .filter(
-            conference_conferencetaggeditem_items__content_type=ContentType.objects.get_for_model(models.Talk),
-            conference_conferencetaggeditem_items__object_id__in=talks
-        )\
-        .annotate(count=Count('conference_conferencetaggeditem_items'))\
-        .extra(select={'lname': 'lower(name)'}, order_by=['lname'])
-    return list(qs)
-
-def _i_tags_for_talks(sender, **kw):
-    statuses = [ x[0] for x in models.TALK_STATUS ]
-    if sender is models.Talk:
-        conf = [ kw['instance'].conference ]
-    else:
-        conf = models.Conference.objects.all().values_list('code', flat=True)
-    return [ 'talks_data:%s:%s' % (c, s) for s in statuses for c in conf ]
-
-tags_for_talks = cache_me(
-    models=(models.Talk, models.ConferenceTaggedItem, models.ConferenceTag,),
-    key='talks_data:%(conference)s:%(status)s')(tags_for_talks, _i_tags_for_talks)
 
 def events(eids=None, conf=None):
     if eids is None:
@@ -520,7 +397,7 @@ def events(eids=None, conf=None):
             .values_list('id', flat=True)\
             .order_by('start_time')
 
-    cached = zip(eids, event_data.get_from_cache([ (x,) for x in eids ]))
+    cached = list(zip(eids, event_data.get_from_cache([ (x,) for x in eids ])))
     missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
 
     preload = {}
@@ -643,7 +520,7 @@ profile_data = cache_me(
     key='profile:%(uid)s')(profile_data, _i_profile_data)
 
 def profiles_data(pids):
-    cached = zip(pids, profile_data.get_from_cache([ (x,) for x in pids ]))
+    cached = list(zip(pids, profile_data.get_from_cache([ (x,) for x in pids ])))
     missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
 
     preload = {}
@@ -675,100 +552,3 @@ def profiles_data(pids):
         output.append(val)
 
     return output
-
-
-def fares(conference):
-    output = []
-    for f in models.Fare.objects.filter(conference=conference):
-        r = _dump_fields(f)
-        r.update({
-            'valid': f.valid()
-        })
-        output.append(r)
-    return output
-
-# XXX: Cache disabled, because the 'valid' field depends of the expiration date
-# of the decision and does not work with the cache
-#fares = cache_me(
-#    models=(models.Fare,),
-#    key='fares:%(conference)s')(fares, lambda sender, **kw: 'fares:%s' % kw['instance'].conference)
-
-def user_votes(uid, conference):
-    """
-    Get the votes of the user for one conference
-    """
-    votes = models.VotoTalk.objects\
-        .filter(user=uid, talk__conference=conference)
-    return dict([(v.talk_id, v.vote) for v in votes])
-
-def _i_user_votes(sender, **kw):
-    o = kw['instance']
-    return 'user_votes:%s:%s' % (o.user_id, o.talk.conference)
-
-user_votes = cache_me(
-    models=(models.VotoTalk,),
-    key='user_votes:%(uid)s:%(conference)s')(user_votes, _i_user_votes)
-
-def user_events_interest(uid, conference):
-    """
-    Get the interesting events for the selected user, conference.
-    """
-    interests = models.EventInterest.objects\
-        .filter(user=uid, event__schedule__conference=conference)
-    return dict([(x.event_id, x.interest) for x in interests ])
-
-def _i_user_events_interest(sender, **kw):
-    o = kw['instance']
-    return 'user_events_interest:%s:%s' % (o.user_id, o.event.schedule.conference)
-
-user_events_interest = cache_me(
-    models=(models.EventInterest,),
-    key='user_events_interest:%(uid)s:%(conference)s')(user_events_interest, _i_user_events_interest)
-
-def conference_booking_status(conference):
-    booked = models.EventBooking.objects\
-        .filter(event__schedule__conference=conference)\
-        .values_list('event', flat=True)\
-        .distinct()
-    bookable = models.Event.objects\
-        .filter(bookable=True, schedule__conference=conference)\
-        .values_list('id', flat=True)
-    output = {}
-    for e in set(list(booked) + list(bookable)):
-        output[e] = models.EventBooking.objects.booking_status(e)
-    return output
-
-def _i_conference_booking_status(sender, **kw):
-    if sender is models.EventBooking:
-        conference = kw['instance'].event.schedule.conference
-    elif sender is models.Track:
-        conference = kw['instance'].schedule.conference
-    elif sender is models.Event:
-        conference = kw['instance'].schedule.conference
-    return 'conference_booking_status:%s' % conference
-
-conference_booking_status = cache_me(
-    models=(models.EventBooking, models.Track, models.Event,),
-    key='conference_booking_status:%(conference)s')(conference_booking_status, _i_conference_booking_status)
-
-def expected_attendance(conference):
-    data = models.Schedule.objects.expected_attendance(conference)
-    vals = data.values()
-    max_score = max([ x['score'] for x in vals ])
-    for x in vals:
-        x['score_normalized'] = x['score'] / (max_score or 1)
-    return data
-
-def _i_expected_attendance(sender, **kw):
-    if sender is models.EventInterest:
-        conf = kw['instance'].event.schedule.conference
-    elif sender is models.Track:
-        conf = kw['instance'].schedule.conference
-    elif sender is models.EventTrack:
-        conf = kw['instance'].track.schedule.conference
-    return 'expected_attendance:%s' % conf
-
-expected_attendance = cache_me(
-    models=(models.EventInterest, models.Track, models.EventTrack,),
-    key='expected_attendance:%(conference)s')(expected_attendance, _i_expected_attendance)
-

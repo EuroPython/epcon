@@ -1,0 +1,73 @@
+{% extends "ep19/bs/base.html" %}
+
+{% block content %}
+
+<div class="container page" id="cfp_page">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>{{ talk_as_dict.title }}</h1>
+            <h3>{{ talk_as_dict.subtitle }}</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div>
+                Type: {{ talk_as_dict.type_display }}<br>
+                Python level: {{ talk_as_dict.python_level }}<br>
+                Domain level: {{ talk_as_dict.domain_level }}<br>
+                Tags: 
+                {% for tag in talk_as_dict.tags %}
+                <span class='btn btn-outline-info'>{{ tag }}</span>
+                {% endfor %}
+            </div>
+            <hr>
+            <div>
+                {{ talk_as_dict.abstract_short|linebreaks }}
+            </div>
+            <hr>
+            <div>
+                {{ talk_as_dict.abstract|linebreaks }}
+            </div>
+            <hr>
+            <div>
+                {{ talk_as_dict.abstract_extra|linebreaks }}
+            </div>
+            <hr>
+
+            <div style='margin-top:5em'>
+                {% if cfp_is_open and talk.created_by == request.user %}
+                <a href='{% url "cfp:update" talk.uuid %}' class='btn btn-outline-success'>Update proposal</a>
+                <a href='{% url "cfp:update_speakers" talk.uuid %}' class='btn btn-outline-success'>Update bio</a>
+                {% endif %}
+
+                {% if user.is_staff %}
+                <a href='{% url "admin:conference_talk_change" talk.id %}' class='btn btn-outline-danger'>See in Admin</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class='col-md-4'>
+            <h4>Speaker information:</h4>
+            {% for speaker in talk_as_dict.speakers %}
+            <ul>
+                <li><b>Name:</b> {{ speaker.name }}</li>
+                <li><b>Company</b> 
+                    {{ speaker.company }}
+                    <br>
+                    {{ speaker.company_homepage }}
+                </li>
+                <li>
+                    <b>Bio</b><br>
+                    {{ speaker.bio|linebreaks }}
+                </li>
+                <li>
+                    <b>Phone</b><br>
+                    {{ speaker.phone }}
+                </li>
+            </ul>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

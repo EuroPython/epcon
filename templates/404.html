@@ -1,31 +1,39 @@
-{% extends "p3/base.html" %}
-{% load p3 i18n %}
+{% extends "ep19/bs/base.html" %}
 
-{% block PAGE_TITLE %}{% trans 'Cannot find the requested page' %}{% endblock %}
+{% load meta %}
 
-{% block MAIN_CONTENT %}
-<section class="full-page-height">
-    <div class="grid-container">
-    <div class="grid-100">
+{% block meta %}
+{% render_meta title="Cannot find the request page" %}
+{% endblock meta %}
 
-        <h1>{% trans 'Cannot find the requested page' %}</h1>
-        
-        <div class="page-summary">
-            <p>Oops! We are sorry, the page you requested does not exist.</p>
-        </div>
+{% load cms_tags %}
 
-        <p>Here are a few useful links:</p>
-        <ul>
-            <li>Our <a href="http://blog.europython.eu/">blog</a></li>
-            <li>The <a href="/events/sessions/">conference session list</a></li>
-            <li>Our <a href="/sponsor/">sponsorship opportunities</a></li>
-            <li><a href="/faq/">Frequently asked questions</a> (F.A.Q.)</li>
-            <li>... or get back to the <a href="/">EuroPython Home Page</a></li>
-        </ul>
+{% block content %}
+<div id="content_page">
+    <div class="container">
+        <div class='row'>
 
-    </div> <!-- /grid -->
-    </div><!-- /grid-container -->
-</section>
+            <div class='col-md-9'>
+                <div id="content" class='epcms_content'>
+                    <h1>That's 404</h1>
+                    <p>Oops! We are sorry, the page you requested does not exist.</p>
+
+                    <p>Here are a few useful links:</p>
+                    <ul>
+                        <li>Our <a href="http://blog.europython.eu/">blog</a></li>
+                        <li>The <a href="{% page_url "submit-proposal" %}">call for proposals</a></li>
+                        <li>Our <a href="{% page_url "sponsor-europython" %}">sponsorship opportunities</a></li>
+                        <li><a href="{% page_url "faq" %}">Frequently asked questions</a> (F.A.Q.)</li>
+                        <li>... or get back to the <a href="/">EuroPython Home Page</a></li>
+                    </ul>
+
+                </div>
+            </div>
+
+            <div class='col-md-3' id="sidebar">
+            </div>
+
+        </div><!-- .row -->
+    </div>
+</div>
 {% endblock %}
-
-

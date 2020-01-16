@@ -1,6 +1,7 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 
+
+
+import django.db.models.deletion
 from django.db import migrations, models
 from django.conf import settings
 
@@ -17,12 +18,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='vatfare',
             name='fare',
-            field=models.ForeignKey(to='conference.Fare'),
+            field=models.ForeignKey(to='conference.Fare', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='vatfare',
             name='vat',
-            field=models.ForeignKey(to='assopy.Vat'),
+            field=models.ForeignKey(to='assopy.Vat', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='vat',
@@ -32,47 +33,47 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='useroauthinfo',
             name='user',
-            field=models.ForeignKey(related_name='oauth_infos', to='assopy.User'),
+            field=models.ForeignKey(related_name='oauth_infos', to='assopy.User', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='useridentity',
             name='user',
-            field=models.ForeignKey(related_name='identities', to='assopy.User'),
+            field=models.ForeignKey(related_name='identities', to='assopy.User', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='user',
             name='country',
-            field=models.ForeignKey(verbose_name='Country', blank=True, to='assopy.Country', null=True),
+            field=models.ForeignKey(verbose_name='Country', blank=True, to='assopy.Country', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='user',
             name='user',
-            field=models.OneToOneField(related_name='assopy_user', to=settings.AUTH_USER_MODEL),
+            field=models.OneToOneField(related_name='assopy_user', to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='token',
             name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='refundorderitem',
             name='orderitem',
-            field=models.ForeignKey(to='assopy.OrderItem'),
+            field=models.ForeignKey(to='assopy.OrderItem', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='refundorderitem',
             name='refund',
-            field=models.ForeignKey(to='assopy.Refund'),
+            field=models.ForeignKey(to='assopy.Refund', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='refund',
             name='credit_note',
-            field=models.OneToOneField(null=True, blank=True, to='assopy.CreditNote'),
+            field=models.OneToOneField(null=True, blank=True, to='assopy.CreditNote', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='refund',
             name='invoice',
-            field=models.ForeignKey(to='assopy.Invoice', null=True),
+            field=models.ForeignKey(to='assopy.Invoice', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='refund',
@@ -82,57 +83,57 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='orderitem',
             name='order',
-            field=models.ForeignKey(to='assopy.Order'),
+            field=models.ForeignKey(to='assopy.Order', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='orderitem',
             name='ticket',
-            field=models.OneToOneField(null=True, blank=True, to='conference.Ticket'),
+            field=models.OneToOneField(null=True, blank=True, to='conference.Ticket', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='orderitem',
             name='vat',
-            field=models.ForeignKey(to='assopy.Vat'),
+            field=models.ForeignKey(to='assopy.Vat', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='order',
             name='country',
-            field=models.ForeignKey(verbose_name='Country', to='assopy.Country', null=True),
+            field=models.ForeignKey(verbose_name='Country', to='assopy.Country', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='order',
             name='user',
-            field=models.ForeignKey(related_name='orders', to='assopy.User'),
+            field=models.ForeignKey(related_name='orders', to='assopy.User', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='invoicelog',
             name='invoice',
-            field=models.ForeignKey(to='assopy.Invoice', null=True),
+            field=models.ForeignKey(to='assopy.Invoice', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='invoicelog',
             name='order',
-            field=models.ForeignKey(to='assopy.Order', null=True),
+            field=models.ForeignKey(to='assopy.Order', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='invoice',
             name='order',
-            field=models.ForeignKey(related_name='invoices', to='assopy.Order'),
+            field=models.ForeignKey(related_name='invoices', to='assopy.Order', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='invoice',
             name='vat',
-            field=models.ForeignKey(to='assopy.Vat'),
+            field=models.ForeignKey(to='assopy.Vat', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='creditnote',
             name='invoice',
-            field=models.ForeignKey(related_name='credit_notes', to='assopy.Invoice'),
+            field=models.ForeignKey(related_name='credit_notes', to='assopy.Invoice', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='coupon',
             name='conference',
-            field=models.ForeignKey(to='conference.Conference'),
+            field=models.ForeignKey(to='conference.Conference', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='coupon',
@@ -142,7 +143,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='coupon',
             name='user',
-            field=models.ForeignKey(blank=True, to='assopy.User', null=True),
+            field=models.ForeignKey(blank=True, to='assopy.User', null=True, on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='vatfare',

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """
     Build Social Ticket Search App
     ------------------------------
@@ -25,22 +25,13 @@
     Author: Marc-Andre Lemburg, 2016-2017.
 
 """
-import sys
-
 from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from conference import models as cmodels
-from conference import utils
-from p3 import models
-
-from collections import defaultdict
-from optparse import make_option
-import operator
 
 ### Globals
 
-TEMPLATE = u"""\
+TEMPLATE = """\
 <!DOCTYPE html>
 <html>
 <title>EuroPython %(year)s Social Ticket Search App</title>
@@ -103,24 +94,28 @@ def profile_url(user):
 
 def attendee_name(ticket, profile=None):
 
-    # Determine user name from profile, if available
-    if profile is not None:
-        name = u'%s %s' % (
-            profile.user.first_name,
-            profile.user.last_name)
-    else:
-        name = ''
-
-    # Remove whitespace
-    name = name.strip()
+    # XXX For EP2019, we have to use the ticket.name, since the profile
+    #     will be referring to the buyer's profile in many cases due
+    #     to a bug in the system.
+    #     See https://github.com/EuroPython/epcon/issues/1055
 
     # Use ticket name if not set in profile
-    if not name:
-        name = ticket.name.strip()
+    name = ticket.name.strip()
         
+    # Determine user name from profile, if available
+    if not name and profile is not None:
+        name = '%s %s' % (
+            profile.user.first_name,
+            profile.user.last_name)
+        name = name.strip()
+
     # Convert to title case, if not an email address
-    if u'@' not in name:
+    if '@' not in name:
         name = name.title()
+
+    # Use email address if no ticket name set
+    if not name:
+        name = ticket.p3_conference.assigned_to.strip()
 
     return name
 
@@ -157,66 +152,56 @@ def create_app_file(conference, output_file):
             email)
 
     # Prepare list
-    attendee_list = attendee_dict.items()
+    attendee_list = list(attendee_dict.items())
     attendee_list.sort(key=attendee_list_key)
 
     # Print list of attendees
-    l = [u'<table class="striped">',
-         u'<thead>',
-         u'<tr>'
-         u'<th data-field="name">Name</th>',
-         u'<th data-field="email" class="hide-on-small-only">Email</th>',
-         u'<th data-field="tid">TID</th>',
-         u'<th data-field="tcode" class="hide-on-small-only">Code</th>',
-         u'</tr>'
-         u'</thead>',
-         u'<tbody class="list">',
+    l = ['<table class="striped">',
+         '<thead>',
+         '<tr>'
+         '<th data-field="name">Name</th>',
+         '<th data-field="email" class="hide-on-small-only">Email</th>',
+         '<th data-field="tid">TID</th>',
+         '<th data-field="tcode" class="hide-on-small-only">Code</th>',
+         '</tr>'
+         '</thead>',
+         '<tbody class="list">',
          ]
     for id, (ticket, profile, name, email) in attendee_list:
-        l.append((u'<tr>'
-                  u'<td class="name">%s</td>'
-                  u'<td class="email hide-on-small-only">%s</td>'
-                  u'<td class="tid">%s</td>'
-                  u'<td class="tcode hide-on-small-only">%s</td>'
-                  u'</tr>' %
+        l.append(('<tr>'
+                  '<td class="name">%s</td>'
+                  '<td class="email hide-on-small-only">%s</td>'
+                  '<td class="tid">%s</td>'
+                  '<td class="tcode hide-on-small-only">%s</td>'
+                  '</tr>' %
                   (name,
                    email,
                    id,
                    ticket.fare.code)))
-    l.extend([u'</tbody>',
-              u'</table>',
-              u'<p>%i attendees in total.</p>' % len(attendee_list),
+    l.extend(['</tbody>',
+              '</table>',
+              '<p>%i attendees in total.</p>' % len(attendee_list),
               ])
     output.write((TEMPLATE % {
-                      'listing': u'\n'.join(l),
+                      'listing': '\n'.join(l),
                       'year': conference[2:],
                   }).encode('utf-8'))
 
 ###
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        # make_option('--output',
-        #      action='store',
-        #      dest='talk_status',
-        #      default='accepted',
-        #      choices=['accepted', 'proposed'],
-        #      help='The status of the talks to be put in the report. '
-        #           'Choices: accepted, proposed',
-        # ),
-    )
 
     args = '<conference> [<output-file>]'
 
+    def add_arguments(self, parser):
+
+        # Positional arguments
+        parser.add_argument('conference')
+        parser.add_argument('output_file', nargs='?',
+                            default='ep-social-ticket-search-app/index.html')
+
     def handle(self, *args, **options):
-        
-        try:
-            conference = args[0]
-        except IndexError:
-            raise CommandError('conference not specified')
-        try:
-            output_file = args[1]
-        except IndexError:
-            output_file = 'ep-social-ticket-search-app/index.html'
+        conference = options['conference']
+        output_file = options['output_file']
 
         create_app_file(conference, output_file)

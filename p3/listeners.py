@@ -1,11 +1,10 @@
-# -*- coding: UTF-8 -*-
 import logging
-import models
+from . import models
 
-from assopy.models import order_created, purchase_completed, ticket_for_user, user_created, user_identity_created
+from assopy.models import order_created, ticket_for_user, user_created
 from conference.listeners import fare_price, fare_tickets
-from conference.signals import attendees_connected, event_booked
-from conference.models import AttendeeProfile, Ticket, Talk
+from conference.signals import attendees_connected
+from conference.models import AttendeeProfile, Ticket
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -15,9 +14,7 @@ from email_template import utils
 log = logging.getLogger('p3')
 
 def on_order_created(sender, **kwargs):
-    if sender.total() == 0:
-        on_purchase_completed(sender)
-    elif sender.method == 'bank':
+    if sender.method == 'bank':
         utils.email(
             'bank-order-complete',
             ctx={'order': sender,},
@@ -50,24 +47,11 @@ def on_order_created(sender, **kwargs):
 
 order_created.connect(on_order_created)
 
-def on_purchase_completed(sender, **kwargs):
-    if sender.method == 'admin':
-        return
-    utils.email(
-        'purchase-complete',
-        ctx={
-            'order': sender,
-            'student': sender.orderitem_set.filter(ticket__fare__recipient_type='s').count() > 0,
-        },
-        to=[sender.user.user.email],
-    ).send()
-
-purchase_completed.connect(on_purchase_completed)
 
 def on_ticket_for_user(sender, **kwargs):
     from p3 import dataaccess
     tickets = dataaccess.user_tickets(sender.user, settings.CONFERENCE_CONFERENCE, only_complete=True)
-    map(kwargs['tickets'].append, tickets)
+    list(map(kwargs['tickets'].append, tickets))
 
 ticket_for_user.connect(on_ticket_for_user)
 
@@ -83,21 +67,11 @@ def on_user_created(sender, **kw):
         # The user has been created using email+password form, I won't get other data
         AttendeeProfile.objects.getOrCreateForUser(sender.user)
     else:
-        # The user has been created using janrain, I don't create the profile now
+        # The user has been created, I don't create the profile now
         # waiting for the first identity
         pass
 
 user_created.connect(on_user_created)
-
-def on_user_identity_created(sender, **kw):
-    identity = kw['identity']
-    profile = AttendeeProfile.objects.getOrCreateForUser(sender.user)
-    if identity.user.identities.count() > 1:
-        # If it's not the first identity I'm not copying anything to
-        # avoiding overwriting manually edited data
-        return
-
-user_identity_created.connect(on_user_identity_created)
 
 def calculate_hotel_reservation_price(sender, **kw):
     if sender.code[0] != 'H':
@@ -232,33 +206,3 @@ def _on_attendees_connected(sender, **kw):
         to=[scanned.email]
     ).send()
 attendees_connected.connect(_on_attendees_connected)
-
-
-def _on_event_booked(sender, **kw):
-    from conference.dataaccess import event_data
-    from hcomments.models import ThreadSubscription
-
-    try:
-        talk_id = event_data(kw['event_id'])['talk']['id']
-    except Exception:
-        return
-
-    talk = Talk.objects.get(id=talk_id)
-    user = User.objects.get(id=kw['user_id'])
-
-    booked = kw['booked']
-    if booked:
-        log.info(
-            "\"%s\" has booked the event \"%s\", automatically subscribed to the talk's comments",
-            u'{0} {1}'.format(user.first_name, user.last_name), talk.title)
-    else:
-        log.info(
-            "\"%s\" has cancelled the reservation for the event \"%s\", automatically unsubscribed to the talk's comments",
-            u'{0} {1}'.format(user.first_name, user.last_name), talk.title)
-
-    if booked:
-        ThreadSubscription.objects.subscribe(talk, user)
-    else:
-        ThreadSubscription.objects.unsubscribe(talk, user)
-
-event_booked.connect(_on_event_booked)

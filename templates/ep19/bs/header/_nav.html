@@ -1,0 +1,39 @@
+{% load cms_tags menu_tags static %}
+
+<nav class="navbar navbar-expand-lg">
+    <div class='container'>
+        <a class="navbar-brand" href="/" >
+            <img src="{% static 'img/tmplogo-small.png' %}" width=30 height=30>
+            EuroPython 2019
+        </a>
+        <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#epNavbar" aria-controls="epNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+
+        <div class="navbar-collapse collapse" id="epNavbar" style="">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "news" %}">News</a>
+                </li>
+                {% show_menu 0 100 100 100 "ep19/bs/header/_nav_menu.html" %}
+                <li class="nav-item">
+                    <a class="nav-link" id="cfp-link-header" href="{% page_url "tickets" %}">Buy tickets</a>
+                </li>
+            </ul>
+            <div class="my-2 my-md-0">
+                {% if user.is_authenticated %}
+                <span style='font-size: .8em; color: white'>Logged in as
+                    <strong>{{ user.assopy_user.name }}</strong>
+                </span>
+                <a class='nav-link btn btn-outline-light' href='{% url "user_panel:dashboard" %}'>My Account</a>
+                {% else %}
+                <a class='nav-link btn btn-outline-light' href='{% url "accounts:login" %}'>
+                    <i class='fas fa-sign-in-alt'></i>
+                    Log in or sign up
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,150 @@
+/* primary: 007d8a; */
+/* primary-light: 76bdc4 */
+/* secondary: d87a00 */
+/* secondary-light: f8c48f */
+
+.text-primary-light { color: #76bdc4; }
+.text-secondary-light { color: #f8c48f; }
+
+#background_image {
+    background: url('/static/img/ep2019-background-1920px-60pc.jpg');
+    background-size: cover;
+    background-position: auto -20%;
+    color: white;
+    min-height: 90px
+}
+.jumbotron { background: transparent; color: white; }
+.text-underline { text-decoration: underline; }
+
+.page { min-height: 500px; padding-bottom: 10em; padding-top: 4em}
+#footer { background: #007d8a; padding: 1em 0; color: #f8c48f}
+#footer a { color: white; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+#footer ul { list-style-type: none; padding-left: 0}
+#footer ul li { margin: .5em 0; }
+#homepage_news { background: #007d8a; padding: 2em 0; margin 0:}
+#homepage_news a { color: #fff; text-decoration: underline;}
+#homepage_news a:hover { color: #f8c48f; text-decoration: underline;}
+.news-card { height: 300px; }
+
+#homepage_venue { background: #d87a00; padding: 1em 0; margin: 0}
+#homepage_schedule_overview { margin: 2em 0; }
+
+#tickets-link-header { color: #fff; border-bottom: 2px solid #fff; margin-right: 2px }
+#cfp-link-header { color: #fff; border-bottom: 2px solid #d87a00; margin-right: 2px }
+.navbar-toggler-icon { content: "Menu"; }
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(255, 255, 255, 0.8)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.navbar-nav .nav-link:hover, .navbar-nav .active .nav-link {
+    color: white;
+    border-bottom: 2px solid white;
+}
+a.navbar-brand:hover{
+    color: white;
+}
+
+#content_page {
+    min-height: 500px;
+    margin: 40px 0;
+}
+
+/* add more spacing, especially useful for cms pages */
+#content h2 {
+    margin-top: 1.5em;
+}
+#content h3 {
+    margin-top: 1em;
+}
+
+#sidebar ul {
+    padding-left: 0;
+}
+
+#sidebar li ul {
+    padding-left: 20px;
+}
+
+#sidebar ul.cms_menu { margin-left: 0px; padding-left: 15px; margin-bottom: 30px}
+#sidebar li.cms_menu { margin-top: .7em; list-style-type: none}
+#sidebar li.cms_menu.ancestor { background: #f6f6f6; padding: .5em; }
+#sidebar li.cms_menu.selected { font-weight: bold; }
+
+
+#user_panel {
+    min-height: 500px;
+}
+
+#login_page {
+    padding-top: 5em;
+    padding-bottom: 10em;
+    min-height: 500px;
+}
+
+.news {
+    margin: 2em 0;
+    padding: 1em 0;
+    border-bottom: 1px dashed #eee;
+}
+
+.table-of-contents-H2 {
+    list-style-type: None;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 1em
+}
+.table-of-contents-H3 {
+    margin-left: 2.5em;
+    margin-top: .5em
+}
+.table-of-contents-H4 {
+    margin-top: .5em;
+    margin-left: 5em;
+}
+
+.messagelist {
+    list-style: none;
+    margin-top: 12px;
+}
+
+/* Display nav menu on hover */
+.dropdown:hover>.dropdown-menu {
+  display: block;
+}
+
+/* Fully expand NAV when using the hamburger menu */
+@media only screen and (max-width: 992px) {
+    .dropdown>.dropdown-menu {
+        display: block;
+    }
+
+    a.nav-link {
+        color: #ffffff;
+    }
+}
+
+/* Highlight selected dropdown item */
+.dropdown-item:hover, .dropdown-item:focus {
+    text-decoration: none;
+    background-color: #8bb9e6;
+}
+
+.dropdown-item.active, .dropdown-item:active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #007d8a;
+}
+
+/* Don't show carets in the dropdown menus */
+a.nav-link.dropdown-toggle::after {
+    display: none;
+}
+
+/* Show a round photo of the user */
+img.speaker_avatar {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
+

@@ -5523,13 +5523,6 @@ nav[role=navigation].active {
  *
  * This file is non-free. See README.md for an explanation.
  */
-@media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/pycon\/_legacy\.scss}line{font-family:\000039}}
-.janrain-box {
-  width: 400px;
-  display: block;
-  /*     background: transparent url(../images/loading-janrain.png) center center no-repeat; */
-  min-height: 240px; }
-
 @media -sass-debug-info{filename{font-family:file\:\/\/\/srv\/www\/www\/pycon-sei\/p3\/static\/p6\/stylesheets\/partials\/pycon\/_legacy\.scss}line{font-family:\0000320}}
 form .field.error .errorlist {
   margin: 0;

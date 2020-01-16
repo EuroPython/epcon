@@ -1,0 +1,21 @@
+Hello!
+
+Thanks for buying tickets for EuroPython 2019.
+
+This is the summary of order {{ order.code }}:
+
+{% for item in order.orderitem_set.all %}
+– {{ item.code }} – {{ item.description }} € {{ item.price }}
+{% endfor %}
+
+
+Your tickets were created and are available on your profile page here:
+
+{{ user_panel_url }}
+
+Your invoice is also available on the same url.
+
+If you run into any issues, please contact us at helpdesk@europython.eu
+
+Kind regards,
+EuroPython2019 Team

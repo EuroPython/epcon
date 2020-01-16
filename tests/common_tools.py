@@ -1,23 +1,25 @@
-# coding: utf-8
+import http.client
+from datetime import date
+from urllib.parse import urlparse
 
-from __future__ import unicode_literals, absolute_import, print_function
-
-import httplib
 from wsgiref.simple_server import make_server
 
 from django.conf import settings
+from django.core import mail
 from django.core.cache import cache
-from django.utils import timezone
 
 from django_factory_boy import auth as auth_factories
 
-from assopy.tests.factories.user import UserFactory as AssopyUserFactory
-from cms.api import create_page
-from conference.models import AttendeeProfile
-from conference.models import Conference
-
+from assopy.models import Vat, VatFare
+from conference.accounts import get_or_create_attendee_profile_for_new_user
+from conference.models import AttendeeProfile, TALK_STATUS, Fare
+from conference.fares import pre_create_typical_fares_for_conference
+from tests.factories import (
+    AssopyUserFactory, OrderFactory, TalkFactory, SpeakerFactory, TalkSpeakerFactory, ConferenceFactory,
+)
 
 HTTP_OK = 200
+DEFAULT_VAT_RATE = "7.7"  # 7.7%
 
 
 def template_used(response, template_name, http_status=HTTP_OK):
@@ -29,7 +31,10 @@ def template_used(response, template_name, http_status=HTTP_OK):
     """
     assert response.status_code == http_status, response.status_code
     templates = [t.name for t in response.templates if t.name]
-    assert template_name in templates, templates
+    if templates:
+        assert template_name in templates, templates
+    else:
+        assert response.template_name == template_name, response.template_name
     return True
 
 
@@ -53,15 +58,6 @@ def template_paths(response):
             paths.append(path)
 
     return paths
-
-
-def create_homepage_in_cms():
-    # Need to create conference before creating pages
-    Conference.objects.get_or_create(code=settings.CONFERENCE_CONFERENCE,
-                                     name=settings.CONFERENCE_CONFERENCE)
-    create_page(title='HOME', template='django_cms/p5_homepage.html',
-                language='en', reverse_id='home', published=True,
-                publication_date=timezone.now())
 
 
 def serve_text(text, host='0.0.0.0', port=9876):
@@ -98,11 +94,11 @@ def serve_response(response, host='0.0.0.0', port=9876):
     def render(env, start_response):
         status = b'%s %s' % (
             str(response.status_code),
-            httplib.responses[response.status_code]
+            http.client.responses[response.status_code]
         )
         # ._headers is a {'content-type': ('Content-Type', 'text/html')} type
         # of dict, that's why we need just .values
-        start_response(status, response._headers.values())
+        start_response(status, list(response._headers.values()))
         return [response.content]
 
     srv = make_server(host, port, render)
@@ -124,6 +120,40 @@ def sequence_equals(sequence1, sequence2):
     return True
 
 
+def redirects_to(response, url):
+    """
+    Inspired by django's self.assertRedirects
+
+    Useful for confirming the response redirects to the specified url.
+    """
+    is_redirect = response.status_code == 302
+    parsed_url = urlparse(response.get('Location'))
+    is_url = parsed_url.path == url
+
+    return is_redirect and is_url
+
+
+def contains_message(response, message):
+    """
+    Inspired by django's self.assertRaisesMessage
+
+    Useful for confirming the response contains the provided message,
+    """
+    if len(response.context['messages']) != 1:
+        return False
+
+    full_message = str(list(response.context['messages'])[0])
+
+    return message in full_message
+
+
+def email_sent_with_subject(subject):
+    """
+    Verify an email was sent with the provided subject.
+    """
+    return [email.subject == subject for email in mail.outbox]
+
+
 def make_user(email='joedoe@example.com', **kwargs):
     user = auth_factories.UserFactory(
         email=email, is_active=True,
@@ -136,3 +166,64 @@ def make_user(email='joedoe@example.com', **kwargs):
 
 def clear_all_the_caches():
     cache.clear()
+
+
+def is_using_jinja2_template(response):
+    res = response.resolve_template(response.template_name)
+    assert res.backend.name == "jinja2", res.backed.name
+    return True
+
+
+def setup_conference_with_typical_fares(start=date(2020, 7, 20), end=date(2020, 7, 27)):
+    conference = get_default_conference(
+        conference_start=start,
+        conference_end=end,
+    )
+    default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
+    fares = pre_create_typical_fares_for_conference(
+        settings.CONFERENCE_CONFERENCE,
+        default_vat_rate
+    )
+
+    return conference, fares
+
+
+def create_valid_ticket_for_user_and_fare(user, fare=None):
+    setup_conference_with_typical_fares()
+    default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
+
+    if not fare:
+        fare = Fare.objects.first()
+    VatFare.objects.get_or_create(vat=default_vat_rate, fare=fare)
+
+    order = OrderFactory(
+        user=user.assopy_user,
+        items=[(fare, {"qty": 1}),],
+    )
+    order._complete = True
+    order.save()
+
+    ticket = order.orderitem_set.first().ticket
+    assert ticket.user == user
+    return ticket
+
+
+def get_default_conference(**kwargs):
+    return ConferenceFactory(**kwargs)
+
+
+def create_talk_for_user(user, **kwargs):
+    if user is None:
+        user = create_user()
+
+    talk = TalkFactory(**{'status': TALK_STATUS.proposed, 'created_by': user, **kwargs})
+    speaker = SpeakerFactory(user=user)
+    TalkSpeakerFactory(talk=talk, speaker=speaker)
+    return talk
+
+
+def create_user():
+    user = auth_factories.UserFactory(is_active=True)
+    AssopyUserFactory(user=user)
+    get_or_create_attendee_profile_for_new_user(user)
+    return user

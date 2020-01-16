@@ -1,14 +1,15 @@
-before_install:
-  - sudo apt-get install graphviz
-  
 language: python
 
 cache: pip
 
+git:
+  depth: 1
+
 python:
-  - "2.7"
+  - "3.6"
 
 install:
+  - export SECRET_KEY="secret"
   - pip install -r requirements-dev.txt
 
-script: "py.test -c pytest_ci.ini"
+script: "pytest -c pytest_ci.ini"

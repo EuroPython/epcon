@@ -1,0 +1,35 @@
+{% extends "ep19/bs/base.html" %}
+
+{% load crispy_forms_tags static %}
+
+{% block morecss %}
+<link href="{% static 'taggit_labels/css/taggit_labels.css' %}" type="text/css" media="all" rel="stylesheet" />
+{% endblock %}
+
+{% block morejs %}
+<script src="{% static '/js/taggit_labels_customised_with_max_number_of_tags.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container page" id="talk_page">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'user_panel:dashboard' %}">User panel</a></li>
+            <li class="breadcrumb-item"><a href="{{ talk.get_absolute_url }}">{{ talk.title }}</a></li>
+            <li class="breadcrumb-item active">Talk update<li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-12">
+            <form method='POST' action='.' class='form' enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ talk_update_form|crispy }}
+
+                <button class="btn btn-success btn-lg btn-block">Update</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

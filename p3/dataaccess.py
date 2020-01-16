@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 from conference import cachef
 from conference import dataaccess as cdata
 from conference import models as cmodels
@@ -67,30 +67,8 @@ profile_data = cache_me(
     key='profile:%(uid)s')(profile_data, _i_profile_data)
 
 
-def talk_data(tid, preload=None):
-    if preload is None:
-        preload = {}
-    talk = cdata.talk_data(tid)
-    try:
-        p3t = preload['talk']
-    except KeyError:
-        p3t = models.P3Talk.objects\
-            .get(talk=tid)
-    talk['sub_community'] = (p3t.sub_community, p3t.get_sub_community_display())
-    return talk
-
-
-def _i_talk_data(sender, **kw):
-    # invalidation signal is handled by cachef
-    return 'talk:%s' % (kw['instance'].talk_id,)
-
-talk_data = cache_me(
-    signals=(cdata.talk_data.invalidated,),
-    models=(models.P3Talk,),
-    key='talk:%(tid)s')(talk_data, _i_talk_data)
-
 def profiles_data(uids):
-    cached = zip(uids, profile_data.get_from_cache([ (x,) for x in uids ]))
+    cached = list(zip(uids, profile_data.get_from_cache([ (x,) for x in uids ])))
     missing = [ x[0] for x in cached if x[1] is cache_me.CACHE_MISS ]
 
     preload = {}
@@ -180,6 +158,11 @@ def _i_all_user_tickets(sender, **kw):
     So it's a signal(?) that invalidates the all_user_tickets caching.
 
     However this signal doesnt seem to be attached to anything.
+
+    NOTE(umgelurgel)(2018-10-20)
+    This is connected to using the p3.dataaccess.all_user_tickets call that
+    generates the post_save and pre_delete signals in
+    conference.cachef.CacheFunction._decorator
     """
     o = kw['instance']
     if sender is models.TicketConference:

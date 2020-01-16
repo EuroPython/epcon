@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+
 """ Update an Attendify schedule XLSX file with the currently accepted
     talks.
 
@@ -27,12 +27,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core import urlresolvers
 from django.utils.html import strip_tags
 from conference import models
-from conference import utils
 
 import datetime
-from collections import defaultdict
-from optparse import make_option
-import operator
 import markdown2
 import openpyxl
 
@@ -42,7 +38,16 @@ import openpyxl
 _debug = 0
 
 # These must match the talk .type or .admin_type
-from accepted_talks import TYPE_NAMES
+TYPE_NAMES = (
+    ('k', 'Keynotes', ''),
+    ('t', 'Talks', ''),
+    ('r', 'Training sessions', ''),
+    ('p', 'Poster sessions', ''),
+    ('i', 'Interactive sessions', ''),
+    ('n', 'Panels', ''),
+    ('h', 'Help desks', 'Help desks provide slots for attendees to discuss their problems one-on-one with experts from the projects.'),
+    ('m', 'EuroPython sessions', 'The EuroPython sessions are intended for anyone interested in helping with the EuroPython organization in the coming years.'),
+    )
 
 # Special handling of poster sessions
 if 0:
@@ -51,13 +56,13 @@ if 0:
     ADJUST_POSTER_SESSIONS = True
     POSTER_START = datetime.datetime(2016,7,19,15,15) # TBD
     POSTER_DURATION = datetime.timedelta(minutes=90)
-    POSTER_ROOM = u'Exhibition Hall'
+    POSTER_ROOM = 'Exhibition Hall'
 else:
     ADJUST_POSTER_SESSIONS = False
 
 # Plenary sessions will have 2-3 tracks assigned. We use the
 # plenary room in this case.
-PLENARY_ROOM = 'Smarkets'
+PLENARY_ROOM = 'MongoDB'
 
 # Breaks have more than 3 tracks assigned. Since this changes between
 # the days, we don't set the room name.
@@ -74,14 +79,14 @@ def speaker_listing(talk, filter_special_entries=True):
 
     l = []
     for speaker in talk.get_all_speakers():
-        full_name =  u'%s %s' % (
+        full_name =  '%s %s' % (
             speaker.user.first_name.title(),
             speaker.user.last_name.title())
         if filter_special_entries:
-            if full_name in (u'To Be Announced', u'Tobey Announced'):
+            if full_name in ('To Be Announced', 'Tobey Announced'):
                 continue
         l.append(full_name)
-    return u', '.join(l)
+    return ', '.join(l)
 
 def format_text(text, remove_tags=False, output_html=True):
 
@@ -143,7 +148,7 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
             raise TypeError('need either talk or event given')
         title = event_title(event)
         abstract = event_abstract(event)
-        speakers = u''
+        speakers = ''
     else:
         title = talk_title(talk)
         abstract = talk_abstract(talk)
@@ -159,9 +164,9 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
                           POSTER_START + POSTER_DURATION)
             room = POSTER_ROOM
         else:
-            print ('Talk %r (type %r) does not have an event '
-                   'associated with it; skipping' %
-                   (title, talk.type))
+            print('Talk %r (type %r) does not have an event '
+                  'associated with it; skipping' %
+                  (title, talk.type))
             return
     else:
         time_range = event.get_time_range()
@@ -175,7 +180,7 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
         elif tracks:
             room = tracks[0].title
         else:
-            room = u''
+            room = ''
         if talk_events is not None:
             talk_events[event.pk] = event
         
@@ -189,7 +194,7 @@ def add_event(data, talk=None, event=None, session_type='', talk_events=None):
     stop_time = time_range[1].strftime('%H:%M')
     
     # UID
-    uid = u''
+    uid = ''
     
     data.append((
         title,
@@ -216,14 +221,14 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
 
     # Load workbook
     wb = openpyxl.load_workbook(schedule_xlsx)
-    assert wb.sheetnames == [u'Instructions', u'Schedule', u'System']
+    assert wb.sheetnames == ['Instructions', 'Schedule', 'System']
     ws = wb['Schedule']
 
     # Extract data values
     ws_data = list(ws.values)[SCHEDULE_WS_START_DATA:]
-    print ('read %i data lines' % len(ws_data))
-    print ('first line: %r' % ws_data[:1])
-    print ('last line: %r' % ws_data[-1:])
+    print('read %i data lines' % len(ws_data))
+    print('first line: %r' % ws_data[:1])
+    print('last line: %r' % ws_data[-1:])
 
     # Reconcile UIDs / talks
     uids = {}
@@ -238,8 +243,8 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
     for line in new_data:
         key = tuple(line[:SCHEDULE_UNIQUE_COLS])
         if key not in uids:
-            print ('New or rescheduled talk %s found' % (key,))
-            uid = u''
+            print('New or rescheduled talk %s found' % (key,))
+            uid = ''
         else:
             uid = uids[key]
         line = tuple(line[:SCHEDULE_UID_COLUMN]) + (uid,)
@@ -249,13 +254,13 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
     # Replace old data with new data
     old_data_rows = len(ws_data)
     new_data_rows = len(new_data)
-    print ('new data: %i data lines' % new_data_rows)
+    print('new data: %i data lines' % new_data_rows)
     offset = SCHEDULE_WS_START_DATA + 1
-    print ('new_data = %i rows' % len(new_data))
+    print('new_data = %i rows' % len(new_data))
     for j, row in enumerate(ws[offset: offset + new_data_rows - 1]):
         new_row = new_data[j]
         if _debug:
-            print ('updating row %i with %r' % (j, new_row))
+            print('updating row %i with %r' % (j, new_row))
         if len(row) > len(new_row):
             row = row[:len(new_row)]
         for i, cell in enumerate(row):
@@ -266,7 +271,7 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
         for j, row in enumerate(ws[offset + new_data_rows + 1:
                                    offset + old_data_rows + 1]):
             if _debug:
-                print ('clearing row %i' % (j,))
+                print('clearing row %i' % (j,))
             for i, cell in enumerate(row):
                 cell.value = None
 
@@ -278,27 +283,18 @@ def update_schedule(schedule_xlsx, new_data, updated_xlsx=None):
 ###
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        # make_option('--option',
-        #     action='store',
-        #     dest='option_attr',
-        #     default=0,
-        #     type='int',
-        #     help='Help text',
-        # ),
-    )
 
     args = '<conference> <xlsx-file>'
 
+    def add_arguments(self, parser):
+
+        # Positional arguments
+        parser.add_argument('conference')
+        parser.add_argument('xlsx')
+
     def handle(self, *args, **options):
-        try:
-            conference = args[0]
-        except IndexError:
-            raise CommandError('conference not specified')
-        try:
-            schedule_xlsx = args[1]
-        except IndexError:
-            raise CommandError('XLSX file not specified')
+        conference = options['conference']
+        schedule_xlsx = options['xlsx']
 
         talks = (models.Talk.objects
                  .filter(conference=conference,

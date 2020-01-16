@@ -1,0 +1,33 @@
+{% extends "ep19/bs/base.html" %}
+
+{% block content %}
+<div id="news_panel">
+    <div class='container'>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class='breadcrumb-item'><a href="/">Home</a></li>
+                <li class='breadcrumb-item'>News<li>
+                        {% block breadcrumbs %}{% endblock breadcrumbs %}
+            </ol>
+        </nav>
+
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Latest News</h1>
+            </div>
+
+            {% for n in news %}
+            <div class="col-md-4">
+                <h3>{{ n.title }}</h3>
+                <small title="{{ n.published_date }}">{{ n.published_date|timesince }} ago</small>
+                <p style='margin-bottom: 3em'>{{ n.content|safe }}</p>
+            </div>
+            {% endfor %}
+
+            {# TODO(artcz): Add pagination #}
+            {# Probably we won't have enough news here to paginate but who knows... #}
+        </div>
+
+    </div>
+</div>
+{% endblock content %}

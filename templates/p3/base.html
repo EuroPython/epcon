@@ -94,7 +94,6 @@
     <script type="text/javascript" src="{{ STATIC_URL }}p6/javascripts/utils.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p6/javascripts/parallax.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p6/javascripts/rateit/src/jquery.rateit.min.js"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}hcomments/j/hcomments.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}p6/javascripts/slick.min.js"></script>
     <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
     {% block EXTRA_HEAD %}{% endblock %}
@@ -139,7 +138,7 @@
                 {% else %}
 
                     <a href="/accounts/login/?next={{ request.META.PATH_INFO }}">Log in</a>
-                    <a href="{% url "assopy-new-account" %}?next={{ next }}">Sign up</a>
+                    <a href="{% url "accounts:signup_step_1_create_account" %}?next={{ next }}">Sign up</a>
                 {% endif %}
                 </li>
             </ul>

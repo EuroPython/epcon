@@ -1,22 +1,18 @@
-# -*- coding: UTF-8 -*-
-from django.conf import settings as dsettings
-from django.core.cache import cache
-from django.core.mail import send_mail as real_send_mail
-from django.core.urlresolvers import reverse
-
-from conference import settings
-from conference.models import VotoTalk, EventTrack
-
-import json
 import logging
 import os.path
 import re
 import subprocess
-import tempfile
-import urllib2
 from collections import defaultdict
 
+from django.conf import settings as dsettings
+from django.core.mail import send_mail as real_send_mail
+
+from conference import settings
+from conference.models import VotoTalk, EventTrack
+
+
 log = logging.getLogger('conference')
+
 
 def dotted_import(path):
     from importlib import import_module
@@ -26,7 +22,7 @@ def dotted_import(path):
 
     try:
         mod = import_module(module)
-    except ImportError, e:
+    except ImportError as e:
         raise ImproperlyConfigured('Error importing %s: "%s"' % (path, e))
 
     try:
@@ -74,7 +70,7 @@ def _input_for_ranking_of_talks(talks, missing_vote=5):
 
     for votes in users.values():
         # All the unrated talks by thte user get the standard 'missing_vote' vote.
-        missing = tids - set(sum(votes.values(), []))
+        missing = tids - set(sum(list(votes.values()), []))
         if missing:
             votes[missing_vote].extend(missing)
 
@@ -83,7 +79,7 @@ def _input_for_ranking_of_talks(talks, missing_vote=5):
         # cand1 > cand2 -> cand1 had more than cand2 preferences
         # cand1 = cand2 > cand3 -> cand1 equals cand2 both greater than cand3
         input_line = []
-        ballot = sorted(votes.items(), reverse=True)
+        ballot = sorted(list(votes.items()), reverse=True)
         for vote, tid in ballot:
             input_line.append('='.join(map(str, tid)))
         vinput.append('>'.join(input_line))
@@ -92,10 +88,10 @@ def _input_for_ranking_of_talks(talks, missing_vote=5):
 
 def ranking_of_talks(talks, missing_vote=5):
     import conference
-    vengine = os.path.join(os.path.dirname(conference.__file__), 'utils', 'voteengine-0.99', 'voteengine.py')
+    vengine = os.path.join(os.path.dirname(conference.__file__), 'tools', 'voteengine-0.99', 'voteengine.py')
 
     talks_map = dict((t.id, t) for t in talks)
-    in_ = _input_for_ranking_of_talks(talks_map.values(), missing_vote=missing_vote)
+    in_ = _input_for_ranking_of_talks(list(talks_map.values()), missing_vote=missing_vote)
 
     pipe = subprocess.Popen(
         [vengine],
@@ -114,23 +110,21 @@ def voting_results():
     The returned list is a list of tuples (talk__id, talk__type, talk__language).
     If TALKS_RANKING_FILE is not set or does not exist the return value is None.
     """
-    # FIXME: Rewrite this part with 'with open(settings.TALKS_RANKING_FILE)'
     if settings.TALKS_RANKING_FILE:
         try:
-            f = file(settings.TALKS_RANKING_FILE)
-        except IOError:
-            pass
-        else:
-            results = []
-            for line in f:
-                pieces = line.split('-', 4)
-                if len(pieces) != 5:
-                    continue
-                type = pieces[2].strip()
-                language = pieces[3].strip()
-                tid = int(pieces[1].strip())
-                results.append((tid, type, language))
+            with open(settings.TALKS_RANKING_FILE) as ranking_file:
+                results = []
+                for line in ranking_file:
+                    pieces = line.split('-', 4)
+                    if len(pieces) != 5:
+                        continue
+                    type = pieces[2].strip()
+                    language = pieces[3].strip()
+                    tid = int(pieces[1].strip())
+                    results.append((tid, type, language))
             return results
+        except OSError:
+            pass
     return None
 
 from datetime import datetime, date, timedelta, time
@@ -209,7 +203,7 @@ class TimeTable2(object):
         tracks = set(Track.objects\
             .filter(id__in=tids)\
             .values_list('track', flat=True))
-        for t in tt.events.keys():
+        for t in list(tt.events.keys()):
             if t not in tracks:
                 del tt.events[t]
         return tt
@@ -359,7 +353,7 @@ class TimeTable2(object):
             'id': None,
             'name': '',
             'custom': '',
-            'tracks': self.events.keys(),
+            'tracks': list(self.events.keys()),
             'tags': set(),
             'talk': None,
             'time': None,
@@ -392,7 +386,7 @@ def collapse_events(tt, threshold):
     """
     if isinstance(threshold, int):
         threshold = { None: threshold }
-    
+
     output = []
     for time, events in tt.iterOnTimes():
         limits = []
@@ -452,7 +446,7 @@ class TimeTable(object):
         t2._data = dict(self._data)
         t2.errors = list(self.errors)
 
-        for key in list(t2._data):
+        for key in t2._data:
             if (start and key[0] < start) or (end and key[0] >= end):
                 del t2._data[key]
 
@@ -485,7 +479,7 @@ class TimeTable(object):
         for r in rows[1:]:
             ref = TimeTable.Reference(time, r, evt, flex)
             self._setEvent(ref, flex)
-            
+
         step = self.sumTime(time, self.slot)
         while count > 1:
             for r in rows:
@@ -631,72 +625,9 @@ class TimeTable(object):
 
         return output
 
-def render_event_video_cover(eid, thumb=(256, 256)):
-    """
-    Helper function; utilizza la settings.VIDEO_COVER_IMAGE per generare la
-    cover dell'evento passato e copiarla sotto la MEDIA_ROOT.
-    """
-    import os
-    import os.path
-    from conference import dataaccess
-    from conference import settings
-    from django.conf import settings as dsettings
-
-    event = dataaccess.event_data(eid)
-    conference = event['conference']
-    base = os.path.join(dsettings.MEDIA_ROOT, 'conference', 'covers', conference)
-    if not os.path.exists(base):
-        os.makedirs(base)
-
-    if event.get('talk'):
-        fname = event['talk']['slug']
-    else:
-        fname = 'event-%d' % eid
-
-    image = settings.VIDEO_COVER_IMAGE(eid)
-    if image is None:
-        return False
-    image.save(os.path.join(base, fname + '.jpg'), 'JPEG')
-
-    image = settings.VIDEO_COVER_IMAGE(eid, thumb=thumb)
-    image.save(os.path.join(base, fname + '.jpg.thumb'), 'JPEG')
-
-    return True
-
-def render_badge(tickets, cmdargs=None, stderr=subprocess.PIPE):
-    """
-    Prepare the badges of the past tickets.
-
-    The tickets are processed by the function settings.TICKET_BADGE_PREPARE_FUNCTION that can group them as they wish;
-    each group is stored in a different directory.
-
-    The output contains a tuple of three elements for each group returned from preparation function:
-    * Name of the group (v. settings.TICKET_BADGE_PREPARE_FUNCTION)
-    * Directory containing the badge
-    * JSON document passed as input to the rendering function.
-    """
-    cmdargs = cmdargs or []
-    output = []
-    for group in settings.TICKET_BADGE_PREPARE_FUNCTION(tickets):
-        temp_dir = tempfile.mkdtemp(prefix='%s-' % group['name'])
-        args = [settings.TICKED_BADGE_PROG ] + cmdargs + [ '-c', group['plugin'], temp_dir]
-        p = subprocess.Popen(
-            args,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=stderr,
-            close_fds=True,
-        )
-        data = json.dumps(group['tickets'])
-        sout, serr = p.communicate(data)
-        if p.returncode:
-            log.warn('badge maker exit with "%s"', p.returncode)
-            log.warn('badge maker stderr: %s', serr)
-        output.append((group['name'], temp_dir, data))
-    return output
 
 def archive_dir(directory):
-    from cStringIO import StringIO
+    from io import StringIO
     import tarfile
 
     archive = StringIO()
@@ -709,59 +640,6 @@ def archive_dir(directory):
     tar.close()
     return archive.getvalue()
 
-def timetables2ical(tts, altf=lambda d, comp: d):
-    from conference import ical
-    from conference import dataaccess
-    from datetime import timedelta
-    from django.utils.html import strip_tags
-
-    import pytz
-    from pytz import timezone
-    utc = pytz.utc
-    tz = timezone(dsettings.TIME_ZONE)
-
-    cal = altf({
-        'uid': '1',
-        'events': [],
-    }, 'calendar')
-    for tt in tts:
-        sdata = dataaccess.schedule_data(tt.sid)
-        for time, events in tt.iterOnTimes():
-            uniq = set()
-            for e in events:
-                if e['id'] in uniq:
-                    continue
-                uniq.add(e['id'])
-                track = strip_tags(sdata['tracks'][e['tracks'][0]].title)
-                # iCal supports dates in a different timezone to UTC through TZID parameter:
-                # DTSTART;TZID=Europe/Rome:20120702T093000
-                #
-                # So, decided to convert the time in UTC.
-                start = utc.normalize(tz.localize(e['time']).astimezone(utc))
-                end = utc.normalize(tz.localize(e['time'] + timedelta(seconds=e['duration']*60)).astimezone(utc))
-                ce = {
-                    'uid': e['id'],
-                    'start': start,
-                    #'duration': timedelta(seconds=e['duration']*60),
-                    'end': end,
-                    'location': 'Track: %s' % track,
-                }
-                if e['talk']:
-                    url = dsettings.DEFAULT_URL_PREFIX + reverse('conference-talk', kwargs={'slug': e['talk']['slug']})
-                    ce['summary'] = (e['talk']['title'], {'ALTREP': url})
-                else:
-                    ce['summary'] = e['name']
-                cal['events'].append(ical.Event(**altf(ce, 'event')))
-    return ical.Calendar(**cal)
-
-def conference2ical(conf, altf=lambda d, comp: d):
-    from conference import models
-
-    sids = models.Schedule.objects\
-        .filter(conference=conf)\
-        .values_list('id', flat=True)
-    tts = map(TimeTable2.fromSchedule, sids)
-    return timetables2ical(tts, altf=altf)
 
 def oembed(url, **kw):
     for pattern, sub in settings.OEMBED_URL_FIX:

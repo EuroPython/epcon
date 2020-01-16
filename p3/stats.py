@@ -1,12 +1,14 @@
-# -*- coding: UTF-8 -*-
 from collections import defaultdict
-from conference.models import Ticket, Speaker, Talk
+
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db.models import Q, Count
+
 from p3 import models
 from conference import models as cmodels
+from conference.models import Ticket, Speaker, Talk, TALK_STATUS
+from conference.tickets import sold_training_tickets_including_combined_tickets
 
 
 def _create_option(id, title, total_qs, **kwargs):
@@ -54,6 +56,10 @@ def _tickets_with_unique_email(conf, ticket_type='conference'):
     return assigned_tickets.filter(
         ~Q(id__in=duplicate_email_ids))
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> fbe11d2250baeca477a299ff135a1827ec1b9880
 def _assigned_tickets(conf, ticket_type='conference'):
     return _tickets(conf, ticket_type)\
         .exclude(p3_conference=None)\
@@ -131,7 +137,7 @@ def presence_days(conf, code=None):
     }
     for key in qs:
         for x in qs[key]['c'].values_list('p3_conference__days', flat=True):
-            val = filter(None, map(lambda v: v.strip(), x.split(',')))
+            val = [_f for _f in [v.strip() for v in x.split(',')] if _f]
             if not val:
                 days[key]['x'] += 1
             else:
@@ -156,6 +162,7 @@ def presence_days(conf, code=None):
                 'total_nc': int(round(nc)),
             })
     return output
+
 presence_days.short_description = "Conference attendance"
 
 
@@ -168,10 +175,6 @@ def tickets_status(conf, code=None):
         .values('p3_conference__assigned_to')\
         .annotate(total=Count('id'))\
         .filter(total__gt=1)
-    if 0: # FIXME: remove hotels and sim
-        sim_tickets = _tickets(conf, fare_code='SIM%')\
-            .filter(Q(p3_conference_sim=None)|Q(name='')|Q(p3_conference_sim__document=''))\
-            .select_related('p3_conference_sim')
     voupe03 = _tickets(conf, fare_code='VOUPE03')
     from p3.utils import spam_recruiter_by_conf
     spam_recruiting = spam_recruiter_by_conf(conf)
@@ -184,12 +187,23 @@ def tickets_status(conf, code=None):
                                        spam_recruiting,
                                        voupe03)
     else:
+<<<<<<< HEAD
         if code in ('ticket_sold', 'assigned_tickets',
                     'unassigned_tickets', 'multiple_assignments',
                     'tickets_with_unique_email'):
             output = ticket_status_for_un_assigned_sold_tickets(code,
                                                                 conf,
                                                                 multiple_assignments)
+=======
+        if code in (
+                'ticket_sold',
+                'assigned_tickets',
+                'unassigned_tickets',
+                'multiple_assignments',
+                'tickets_with_unique_email'
+        ):
+            output = ticket_status_for_un_assigned_sold_tickets(code, conf, multiple_assignments)
+>>>>>>> fbe11d2250baeca477a299ff135a1827ec1b9880
 
         elif code in ('orphan_tickets',):
             output = ticket_status_for_orphant_tickets(code, orphan_tickets)
@@ -200,10 +214,29 @@ def tickets_status(conf, code=None):
         elif code == 'spam_recruiting':
             output = ticket_status_for_spam_recruiting(spam_recruiting)
 
-        if 0:
-            # elif code in ('sim_tickets',):
-            #     output = ticket_status_for_sim_tickets(code, sim_tickets)
-            pass
+        elif code == 'training_tickets_sold':
+            output = ticket_status_for_training_tickets_including_combined(conference_code=conf)
+
+    return output
+
+
+def ticket_status_for_training_tickets_including_combined(conference_code):
+    output = {
+        'columns': (
+            ('ticket', 'Ticket'),
+            ('name', 'Attendee name'),
+            ('email', 'Email'),
+        ),
+        'data': [],
+    }
+    tickets = sold_training_tickets_including_combined_tickets(conference_code=conference_code)
+
+    for ticket in tickets:
+        output['data'].append({
+            'name': ticket.user.assopy_user.name(),
+            'email': ticket.user.email,
+            'ticket': ticket,
+        })
 
     return output
 
@@ -232,6 +265,8 @@ def ticket_status_for_un_assigned_sold_tickets(code, conf, multiple_assignments)
         qs = _tickets(conf, 'conference') \
             .filter(p3_conference__assigned_to__in=multiple_assignments \
                     .values('p3_conference__assigned_to'))
+    elif code == 'tickets_with_unique_email':
+        qs = _tickets_with_unique_email(conf)
     else:
         raise ValueError('Unsupported stats code: %r' % code)
     qs = qs.select_related('p3_conference', 'user')
@@ -375,52 +410,30 @@ def ticket_status_for_voupe03_tickets(code, voupe03):
     return output
 
 
-if 0: # FIXME: remove hotels and sim
-    def ticket_status_for_sim_tickets(code, sim_tickets):
-        output = {
-            'columns': (
-                ('ticket', 'Ticket'),
-                ('name', 'Attendee name'),
-                ('email', 'Email'),
-                ('fare', 'Fare code'),
-            ),
-            'data': [],
-        }
-        if code == 'sim_tickets':
-            qs = sim_tickets
-        else:
-            raise ValueError('Unsupported stats code: %r' % code)
-        qs = qs.select_related('user', 'fare')
-        data = output['data']
-        for x in qs:
-            ticket = '<a href="%s">%s</a>' % (
-                reverse('admin:conference_ticket_change', args=(x.id,)),
-                x.id)
-            buyer = '<a href="%s">%s %s</a>' % (
-                reverse('admin:auth_user_change', args=(x.user.id,)),
-                x.user.first_name,
-                x.user.last_name)
-            data.append({
-                'ticket': ticket,
-                'name': buyer,
-                'email': x.user.email,
-                'fare': x.fare.code,
-                'uid': x.user.id,
-            })
-        return output
-
-
 def ticket_status_no_code(conf, multiple_assignments, orphan_tickets, spam_recruiting, voupe03):
     return [
         _create_option('ticket_sold', 'Sold tickets', _tickets(conf, 'conference')),
+<<<<<<< HEAD
         _create_option('tickets_with_unique_email', 'Sold tickets with unique email', _tickets_with_unique_email(conf, 'conference')),
+=======
+        {
+            'id': 'training_tickets_sold',
+            'title': 'Sold training tickets (including combined)',
+            'total': sold_training_tickets_including_combined_tickets(conference_code=conf).count(),
+        },
+        _create_option(
+            'tickets_with_unique_email',
+            'Sold tickets with unique email',
+            _tickets_with_unique_email(conf, 'conference')
+        ),
+>>>>>>> fbe11d2250baeca477a299ff135a1827ec1b9880
         _create_option('assigned_tickets', 'Assigned tickets', _assigned_tickets(conf)),
         _create_option('unassigned_tickets', 'Unassigned tickets', _unassigned_tickets(conf)),
         # _create_option('sim_tickets', 'Tickets with SIM card orders', sim_tickets),  # FIXME: remove hotels and sim
         _create_option('voupe03_tickets', 'Social event tickets (VOUPE03)', voupe03),
         _create_option('spam_recruiting', 'Recruiting emails (opt-in)', spam_recruiting),
         _create_option('multiple_assignments', 'Tickets assigned to the same person', multiple_assignments),
-        _create_option('orphan_tickets', 'Assigned tickets without user record (orphaned)', orphan_tickets)
+        _create_option('orphan_tickets', 'Assigned tickets without user record (orphaned)', orphan_tickets),
     ]
 
 
@@ -487,13 +500,20 @@ def conference_speakers(conf, code=None):
     accepted_spks = Speaker.objects.byConference(conf)
     not_scheduled = Speaker.objects\
         .filter(talkspeaker__talk__in=Talk.objects\
-            .filter(conference=conf, status='accepted', event=None))\
+            .filter(conference=conf, status=TALK_STATUS.accepted, event=None))\
         .distinct()
+    no_slides = Speaker.objects.filter(
+        Q(talkspeaker__talk__conference=conf) &
+        Q(talkspeaker__talk__status=TALK_STATUS.accepted) &
+        Q(talkspeaker__talk__slides='') &
+        Q(talkspeaker__talk__slides_url='')
+    ).distinct()
     if code is None:
         return [
             _create_option('all_speakers', 'All speakers', all_spks),
             _create_option('accepted_speakers', 'Speakers with accepted talks', accepted_spks),
             _create_option('speakers_not_scheduled', 'Speakers with unscheduled accepted talks', not_scheduled),
+            _create_option('speakers_no_slides', 'Speakers who have not uploaded slides', no_slides),
         ]
     else:
         if code == 'all_speakers':
@@ -502,10 +522,13 @@ def conference_speakers(conf, code=None):
             qs = accepted_spks
         elif code == 'speakers_not_scheduled':
             qs = not_scheduled
+        elif code == 'speakers_no_slides':
+            qs = no_slides
         output = {
             'columns': (
                 ('name', 'Name'),
                 ('email', 'Email'),
+                ('talks', 'Talks'),
             ),
             'data': [],
         }
@@ -514,12 +537,20 @@ def conference_speakers(conf, code=None):
             .select_related('user')\
             .order_by('user__first_name', 'user__last_name')
         for x in qs:
+            talks = x.talks().filter(conference=conf, status=TALK_STATUS.accepted)
+            if code == 'speakers_no_slides':
+                talks = talks.filter(Q(talkspeaker__talk__slides='') & Q(talkspeaker__talk__slides_url=''))
+
             data.append({
                 'name': '<a href="%s">%s %s</a>' % (
                     reverse('admin:auth_user_change', args=(x.user_id,)),
                     x.user.first_name,
                     x.user.last_name),
                 'email': x.user.email,
+                'talks': '<br/>'.join([
+                    f"<a href={reverse('admin:conference_talk_change', args=(talk.id,))}>{talk.title}</a>"
+                    for talk in talks
+                ]),
                 'uid': x.user_id,
             })
     return output
@@ -570,7 +601,7 @@ def conference_speakers_day(conf, code=None):
                     models.TicketSIM.objects\
                         .filter(ticket__in=tickets)\
                         .values_list('number', flat=True))
-            p['phones'] = filter(None, p['phones'])
+            p['phones'] = [_f for _f in p['phones'] if _f]
             for talk in talks_data(p['talks']):
                 for event_id in talk['events_id']:
                     if conf_events[event_id]['time'].date().strftime('%Y-%m-%d') == code[1:]:

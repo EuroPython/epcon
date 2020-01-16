@@ -1,10 +1,11 @@
 import datetime
+import json
 import functools
 
-import simplejson
+from django.utils.deprecation import CallableBool
 
 
-class MyEncode(simplejson.JSONEncoder):  # pragma: no cover
+class MyEncode(json.JSONEncoder):  # pragma: no cover
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.strftime('%d/%m/%Y %H:%M:%S')
@@ -14,7 +15,11 @@ class MyEncode(simplejson.JSONEncoder):  # pragma: no cover
             return obj.strftime('%H:%M')
         elif isinstance(obj, set):
             return list(obj)
+        elif isinstance(obj, CallableBool):
+            # required to support User.is_authenticated from Django 1.10 onwards
+            # and avoid depracation warnings
+            return obj == True
 
-        return simplejson.JSONEncoder.default(self, obj)
+        return json.JSONEncoder.default(self, obj)
 
-json_dumps = functools.partial(simplejson.dumps, cls=MyEncode)
+json_dumps = functools.partial(json.dumps, cls=MyEncode)

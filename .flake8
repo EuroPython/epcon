@@ -1,8 +1,0 @@
-[flake8]
-# E272 - spaces before keyword
-# E221 – spaces before operator
-# E222 – spaces after operator
-# E251 – spaces after operator
-# E241 - multiple spaces after ':'
-# E131 - continuation line unaligned for hanging indent
-ignore = E221, E272, E241, W503, E251, E222, E131
