@@ -10,7 +10,6 @@ from assopy import utils as autils
 from conference import admin as cadmin
 from conference import models as cmodels
 from p3 import models
-from p3 import dataaccess
 from p3 import utils
 
 from taggit.forms import TagField
@@ -459,12 +458,10 @@ class TalkAdmin(admin.ModelAdmin):
     _video.admin_order_field = "video_type"
 
 
-admin.site.register(cmodels.Talk, TalkAdmin)
-
-
 class EventTrackInlineAdmin(admin.TabularInline):
     model = cmodels.EventTrack
     extra = 3
+
 
 class EventAdmin(admin.ModelAdmin):
     list_display = ('schedule',
@@ -494,7 +491,6 @@ class EventAdmin(admin.ModelAdmin):
         else:
             return obj.talk
 
-admin.site.register(cmodels.Event, EventAdmin)
 
 class TrackAdmin(admin.ModelAdmin):
     list_display = ('schedule',
@@ -530,10 +526,12 @@ class TrackAdmin(admin.ModelAdmin):
     def _date(self, obj):
         return obj.schedule.date
 
-admin.site.register(cmodels.Track, TrackAdmin)
 
 admin.site.unregister(cmodels.Ticket)
 admin.site.register(cmodels.Ticket, TicketConferenceAdmin)
 
+admin.site.register(cmodels.Track, TrackAdmin)
+admin.site.register(cmodels.Talk, TalkAdmin)
+admin.site.register(cmodels.Event, EventAdmin)
 admin.site.register(cmodels.VotoTalk, VotoTalkAdmin)
 admin.site.register(cmodels.AttendeeProfile, AttendeeProfileAdmin)
