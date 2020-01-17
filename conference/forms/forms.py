@@ -1,3 +1,5 @@
+import logging
+
 from django import forms
 from django.conf import settings
 from django.core import mail
@@ -7,13 +9,10 @@ from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from conference import models
-
-from p3 import utils as p3utils
-
 from taggit.forms import TagField
 
-import logging
+from p3 import utils as p3utils
+from conference import models
 
 log = logging.getLogger('conference.tags')
 
@@ -92,53 +91,8 @@ class TagWidget(widgets.TextInput):
             final_attrs['value'] = force_text(self._format_value(value))
         return mark_safe('<input%s />' % flatatt(final_attrs))
 
-class ReadonlyTagWidget(widgets.TextInput):
-    def render(self, name, value, attrs=None, renderer=None):
-        if value is None:
-            value = ''
-        else:
-            if not isinstance(value, str):
-                names = []
-                for v in value:
-                    if isinstance(v, str):
-                        names.append(v)
-                    elif isinstance(v, models.ConferenceTag):
-                        names.append(v.name)
-                    else:
-                        names.append(v.tag.name)
-                value = ','.join(names)
-        final_attrs = self.build_attrs(attrs, extra_attrs=dict(type='text', name=name))
-        final_attrs['class'] = (final_attrs.get('class', '') + ' readonly-tag-field').strip()
-        if value != '':
-            # Only add the 'value' attribute if a value is non-empty.
-            final_attrs['value'] = force_text(self._format_value(value))
-        return mark_safe('<input%s /><script>setup_tag_field("#%s")</script>' % (flatatt(final_attrs), final_attrs['id']))
-
-# MarkEditWidget we have adapted the code
-# http://tstone.github.com/jquery-markedit/
-
-class MarkEditWidget(forms.Textarea):
-    class Media:
-        css = {
-            'all': ('conference/jquery-markedit/jquery.markedit.css',),
-        }
-        js =  (
-            'conference/jquery-markedit/showdown.js',
-            'conference/jquery-markedit/jquery.markedit.js',
-        )
-
-    def render(self, name, value, attrs=None):
-        if attrs is None:
-            attrs = {}
-        else:
-            attrs = dict(attrs)
-        attrs['class'] = (attrs.get('class', '') + ' markedit-widget').strip()
-        return super().render(name, value, attrs)
-
-
 
 class TalkBaseForm(forms.Form):
-
     # Talk details
     title = forms.CharField(
         label=_('Title'),
@@ -196,217 +150,12 @@ class TalkBaseForm(forms.Form):
         widget=forms.Textarea,
         required=False)
 
-# This form is used for new talk submissions and only when the speaker
-# has not yet submitted another talk; see TalkForm for talk
-# editing and additional talks.
-
-class SubmissionForm(forms.Form):
-    """
-    Submission Form for the first paper, it will contain the fields
-    which populates the user profile and the data of the talk,
-    only essential data is required.
-    """
-
-    # Speaker details
-    first_name = forms.CharField(
-        label=_('First name'),
-        max_length=30)
-    last_name = forms.CharField(
-        label=_('Last name'),
-        max_length=30)
-    birthday = forms.DateField(
-        label=_('Date of birth'),
-        help_text=_('Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published. We require date of birth for speakers to accomodate for laws regarding minors.'),
-        input_formats=('%Y-%m-%d',),
-        widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}))
-    job_title = forms.CharField(
-        label=_('Job title'),
-        help_text=_('eg: student, developer, CTO, js ninja, BDFL'),
-        max_length=50,
-        required=False,)
-    phone = forms.CharField(
-        help_text=_('We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published.'),
-        max_length=30)
-    company = forms.CharField(
-        label=_('Your company'),
-        max_length=50,
-        required=False)
-    company_homepage = forms.URLField(
-        label=_('Company homepage'),
-        required=False)
-    bio = forms.CharField(
-        label=_('Compact biography'),
-        help_text=_('Please enter a short biography (one or two paragraphs) <br />Do not paste your CV!'),
-        widget=forms.Textarea())
-
-    # Talk details
-    title = TalkBaseForm.base_fields['title']
-    sub_title = TalkBaseForm.base_fields['sub_title']
-    abstract = TalkBaseForm.base_fields['abstract']
-    abstract_short = TalkBaseForm.base_fields['abstract_short']
-    prerequisites = TalkBaseForm.base_fields['prerequisites']
-    language = TalkBaseForm.base_fields['language']
-    level = TalkBaseForm.base_fields['level']
-    domain_level = TalkBaseForm.base_fields['level']
-    tags = TalkBaseForm.base_fields['tags']
-    abstract_extra = TalkBaseForm.base_fields['abstract_extra']
-
-    def __init__(self, user, *args, **kwargs):
-        try:
-            profile = user.attendeeprofile
-        except models.AttendeeProfile.DoesNotExist:
-            profile = None
-        data = {
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-        }
-        if profile:
-            if profile.birthday is None:
-                birthday_value = None
-            else:
-                birthday_value = profile.birthday.strftime('%Y-%m-%d')
-
-            data.update({
-                'phone': profile.phone,
-                'birthday': birthday_value,
-                'job_title': profile.job_title,
-                'company': profile.company,
-                'company_homepage': profile.company_homepage,
-                'bio': getattr(profile.getBio(), 'body', ''),
-            })
-        data.update(kwargs.get('initial', {}))
-        kwargs['initial'] = data
-        super().__init__(*args, **kwargs)
-        self.user = user
-
-    #@transaction.atomic
-    def save(self):
-        data = self.cleaned_data
-
-        user = self.user
-        user.first_name = data['first_name'].strip()
-        user.last_name = data['last_name'].strip()
-        user.save()
-
-        profile = models.AttendeeProfile.objects.getOrCreateForUser(user)
-        profile.phone = data['phone']
-        profile.birthday = data['birthday']
-        profile.job_title = data['job_title']
-        profile.company = data['company']
-        profile.company_homepage = data['company_homepage']
-        profile.save()
-        profile.setBio(data['bio'])
-
-        try:
-            speaker = user.speaker
-        except models.Speaker.DoesNotExist:
-            speaker = models.Speaker(user=user)
-            speaker.save()
-
-        talk = models.Talk.objects.createFromTitle(
-            title=data['title'],
-            sub_title=data['sub_title'],
-            prerequisites=data['prerequisites'],
-            abstract_short=data['abstract_short'],
-            abstract_extra=data['abstract_extra'],conference=settings.CONFERENCE_CONFERENCE,
-            speaker=speaker,
-            status='proposed',
-            language=data['language'],
-            domain=data['domain'],
-            domain_level=data['domain_level'],
-            level=data['level'],
-            type=data['type']
-        )
-
-        talk.save()
-        talk.setAbstract(data['abstract'])
-
-        if 'tags' in data:
-            valid_tags = validate_tags(data['tags'])
-
-            talk.tags.set(*(valid_tags))
-
-        return talk
-
-
-# This form is used in case the speaker has already proposed a talk
-# and for editing talks
-
-class TalkForm(forms.ModelForm):
-
-    # Talk details
-    title = TalkBaseForm.base_fields['title']
-    sub_title = TalkBaseForm.base_fields['sub_title']
-    abstract = TalkBaseForm.base_fields['abstract']
-    abstract_short = TalkBaseForm.base_fields['abstract_short']
-    prerequisites = TalkBaseForm.base_fields['prerequisites']
-    language = TalkBaseForm.base_fields['language']
-    level = TalkBaseForm.base_fields['level']
-    tags = TalkBaseForm.base_fields['tags']
-    abstract_extra = TalkBaseForm.base_fields['abstract_extra']
-
-    class Meta:
-        model = models.Talk
-        fields = ('title', 'sub_title','prerequisites', 'abstract_short', 'abstract_extra', 'type', 'language', 'level', 'slides', 'teaser_video', 'tags')
-        widgets = {
-            'tags': TagWidget,
-        }
-
-    def __init__(self, *args, **kw):
-        if kw.get('instance'):
-            o = kw['instance']
-            initial = kw.get('initial', {})
-            data = {}
-            abstract = o.getAbstract()
-            if abstract:
-                data['abstract'] = abstract.body
-            data.update(initial)
-            kw['initial'] = data
-        super().__init__(*args, **kw)
-
-    def save(self, commit=True, speaker=None):
-        assert commit, "commit==False not supported yet"
-        data = self.cleaned_data
-        pk = self.instance.pk
-
-        tags = None
-
-        if 'tags' in self.cleaned_data:
-            tags = self.cleaned_data['tags']
-            del self.cleaned_data['tags']
-
-        if not pk:
-            assert speaker is not None
-            self.instance = models.Talk.objects.createFromTitle(
-                title=data['title'],
-                sub_title=data['sub_title'],
-                prerequisites=data['prerequisites'],
-                abstract_short=data['abstract_short'],
-                abstract_extra=data['abstract_extra'],
-                domain=data['domain'],
-                domain_level=data['domain_level'],
-                conference=settings.CONFERENCE_CONFERENCE,
-                speaker=speaker,
-                status='proposed',
-                language=data['language'],
-                level=data['level'],
-                type=data['type']
-            )
-        talk = super().save(commit=commit)
-        talk.setAbstract(data['abstract'])
-
-        if tags:
-            valid_tags = validate_tags(tags)
-
-            talk.tags.set(*(valid_tags))
-
-        return talk
-
 
 class TrackForm(forms.ModelForm):
     class Meta:
         model = models.Track
         exclude = ('schedule', 'track',)
+
 
 class EventForm(forms.ModelForm):
     event_tracks = forms.ModelMultipleChoiceField(queryset=models.Track.objects.all())
@@ -428,30 +177,6 @@ class EventForm(forms.ModelForm):
         if not data['talk'] and not data['custom']:
             raise forms.ValidationError('set the talk or the custom text')
         return data
-
-class ProfileForm(forms.ModelForm):
-    bio = forms.CharField(
-        label=_('Compact biography'),
-        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
-        widget=forms.Textarea(),
-        required=False,)
-
-    class Meta:
-        model = models.AttendeeProfile
-        exclude = ('user', 'slug',)
-
-    def __init__(self, *args, **kwargs):
-        i = kwargs.get('instance')
-        if i:
-           initial = kwargs.get('initial', {})
-           initial['bio'] = getattr(i.getBio(), 'body', '')
-           kwargs['initial'] = initial
-        super().__init__(*args, **kwargs)
-
-    def save(self, commit=True):
-        profile = super().save(commit)
-        profile.setBio(self.cleaned_data.get('bio', ''))
-        return profile
 
 
 class AdminSendMailForm(forms.Form):

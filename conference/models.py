@@ -1,5 +1,4 @@
 import datetime
-import logging
 import os
 import os.path
 import uuid
@@ -27,8 +26,6 @@ from taggit.managers import TaggableManager
 from taggit.models import GenericTaggedItemBase, ItemBase, TagBase
 
 from common.django_urls import UrlMixin
-
-log = logging.getLogger('conference.models')
 
 
 CURRENT_CONFERENCE_CACHE_KEY = 'CONFERENCE_CURRENT'

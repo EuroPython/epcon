@@ -1,12 +1,10 @@
 Django>=1.11,<2.0
 
-pyjwkest==1.4.0
 requests
 requests-oauthlib
 shortuuid
 
 django-classy-tags
-django-authority
 django_extensions
 django-model-utils==3.1.1
 django-crispy-forms
@@ -22,7 +20,6 @@ social-auth-app-django
 # Fixes https://github.com/python-social-auth/social-app-django/issues/178
 social-auth-core[openidconnect]
 
-python-oembed
 markdown2
 
 django-cms>=3.6,<3.7
@@ -47,11 +44,6 @@ phonenumbers
 # payments
 stripe
 
-# I don't think we use this anywhere anymore...
-django-xmlrpc
-django-rosetta
-django-crontab
-
 WeasyPrint
 unicodecsv==0.14.1
 
@@ -60,7 +52,6 @@ ipython
 decorator
 
 lxml  # for currencies
-Jinja2
 dataclasses
 
 gunicorn>=19.9,<20.0
