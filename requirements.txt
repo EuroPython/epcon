@@ -21,7 +21,7 @@ django-appconf==1.0.3     # via cmsplugin-filer
 django-classy-tags==0.9.0
 django-cms==3.6.0
 django-crispy-forms==1.8.1
-django-extensions==2.2.5
+django-extensions==2.2.6
 django-filebrowser-no-grappelli==3.8.0
 django-filer==1.5.0
 django-formtools==2.2     # via django-cms
@@ -57,7 +57,7 @@ oauthlib==3.1.0           # via requests-oauthlib, social-auth-core
 openpyxl==2.4.8
 parso==0.5.2              # via jedi
 pexpect==4.7.0            # via ipython
-phonenumbers==8.11.1
+phonenumbers==8.11.2
 pickleshare==0.7.5        # via ipython
 pillow==7.0.0             # via cairosvg, djangocms-text-ckeditor, easy-thumbnails
 prompt-toolkit==3.0.2     # via ipython
