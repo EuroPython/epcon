@@ -27,7 +27,7 @@ django-appconf==1.0.3     # via cmsplugin-filer
 django-classy-tags==0.9.0
 django-cms==3.6.0
 django-crispy-forms==1.8.1
-django-extensions==2.2.5
+django-extensions==2.2.6
 django-factory-boy==1.0.0
 django-filebrowser-no-grappelli==3.8.0
 django-filer==1.5.0
@@ -78,7 +78,7 @@ parso==0.5.2              # via jedi
 pathspec==0.7.0           # via black
 pdbpp==0.10.2
 pexpect==4.7.0            # via ipython
-phonenumbers==8.11.1
+phonenumbers==8.11.2
 pickleshare==0.7.5        # via ipython
 pillow==7.0.0             # via cairosvg, djangocms-text-ckeditor, easy-thumbnails
 pip-tools==4.3.0
