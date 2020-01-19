@@ -241,12 +241,24 @@ def test_talk_voting_hides_accepted_talks(mock_allowed_to_vote, user_client):
     assert talk.title not in response.content.decode()
 
 
-def test_vote_submission(user_client):
+def test_vote_submission_allowed_for_users_with_talk_proposal(user_client):
     get_default_conference()
+    create_talk_for_user(user=user_client.user)
     talk = TalkFactory()
     speaker = SpeakerFactory(user=make_user())
     TalkSpeakerFactory(talk=talk, speaker=speaker)
+    url = reverse("talk_voting:vote", kwargs={'talk_uuid': talk.uuid})
 
+    user_client.post(url, data={'vote': VotingOptions.maybe})
+
+    assert VotoTalk.objects.count() == 1
+
+
+def test_vote_submission_allowed_for_users_with_ticket(user_client):
+    get_default_conference()
+    TicketFactory(user=user_client.user)
+    talk = TalkFactory()
+    TalkSpeakerFactory(talk=talk)
     url = reverse("talk_voting:vote", kwargs={'talk_uuid': talk.uuid})
 
     user_client.post(url, data={'vote': VotingOptions.maybe})
@@ -271,7 +283,6 @@ def test_vote_submission_not_allowed_for_talk_created_by_user(user_client):
 def test_vote_submission_not_allowed_for_talk_where_user_is_speaker(user_client):
     get_default_conference()
     talk = TalkFactory(status=TALK_STATUS.proposed, created_by=user_client.user)
-
     url = reverse("talk_voting:vote", kwargs={'talk_uuid': talk.uuid})
 
     user_client.post(url, data={'vote': VotingOptions.maybe})
@@ -279,7 +290,18 @@ def test_vote_submission_not_allowed_for_talk_where_user_is_speaker(user_client)
     assert VotoTalk.objects.count() == 0
 
 
-def test_dont_vote_talks_without_speaker_details(db, user_client):
+def test_vote_submission_not_allowed_with_no_ticket_or_talk_proposal(user_client):
+    get_default_conference()
+    talk = TalkFactory(status=TALK_STATUS.proposed)
+    url = reverse("talk_voting:vote", kwargs={'talk_uuid': talk.uuid})
+
+    response = user_client.post(url, data={'vote': VotingOptions.maybe})
+
+    assert response.status_code == 403
+    assert VotoTalk.objects.count() == 0
+
+
+def test_dont_vote_talks_without_speaker_details(user_client):
     get_default_conference()
     talk = TalkFactory(status=TALK_STATUS.proposed)
 
@@ -290,7 +312,8 @@ def test_dont_vote_talks_without_speaker_details(db, user_client):
     assert VotoTalk.objects.count() == 0
 
 
-def test_vote_talks_with_speaker_details(db, user_client):
+@mock.patch('conference.talk_voting.is_user_allowed_to_vote', return_value=True)
+def test_vote_talks_with_speaker_details(mock_allowed_to_vote, user_client):
     get_default_conference()
     talk = TalkFactory(status=TALK_STATUS.proposed)
 
@@ -320,7 +343,7 @@ def test_view_talks_without_speaker_details_not_visible(mock_allowed_to_vote, us
     assert talk2.title in response.content.decode("utf8")
 
 
-def test_helper_query_talks_without_speaker_details_not_visible(db, user_client):
+def test_helper_query_talks_without_speaker_details_not_visible(user_client):
     get_default_conference()
     talk = TalkFactory(status=TALK_STATUS.proposed, title="DeadBeef")
     talk2 = TalkFactory(status=TALK_STATUS.proposed, title="TestProposalForTests")
