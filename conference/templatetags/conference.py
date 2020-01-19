@@ -1,16 +1,10 @@
 import mimetypes
-import os
-import os.path
 import re
-from collections import defaultdict
 
 from django import template
-from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.utils.safestring import mark_safe
 
-from common.jsonify import json_dumps
 from conference import dataaccess, models
 
 mimetypes.init()
@@ -109,11 +103,6 @@ def profile_data(uid):
 
 
 @register.filter
-def json_(val):
-    return mark_safe(json_dumps(val))
-
-
-@register.filter
 def attrib_(ob, attrib):
     try:
         return ob[attrib]
@@ -126,36 +115,3 @@ def attrib_(ob, attrib):
             return getattr(ob, attrib, None)
         else:
             return [ attrib_(x, attrib) for x in ob ]
-
-
-@register.simple_tag()
-def conference_js_data(tags=None):
-    """
-    Javascript Initialization for the conference app. The use of 'conference_js_data'
-    injects on the 'conference' window, a variable with some information about the conference.
-    """
-    if tags is None:
-        tags = dataaccess.tags()
-
-    cts = dict(ContentType.objects.all().values_list('id', 'model'))
-    items = {}
-    for t, objects in tags.items():
-        key = t.name
-        if key not in items:
-            items[key] = {}
-        for ctid, oid in objects:
-            k = cts[ctid]
-            if k not in items[key]:
-                items[key][k] = 0
-            items[key][k] += 1
-
-    tdata = defaultdict(list)
-    for x in tags:
-        tdata[x.category].append(x.name)
-
-    data = {
-        'tags': dict(tdata),
-        'taggeditems': items,
-    }
-
-    return mark_safe('window.conference = {};'.format(json_dumps(data)))
