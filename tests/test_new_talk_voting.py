@@ -241,6 +241,18 @@ def test_talk_voting_hides_accepted_talks(mock_allowed_to_vote, user_client):
     assert talk.title not in response.content.decode()
 
 
+@mock.patch('conference.talk_voting.is_user_allowed_to_vote', return_value=True)
+def test_vote_submission_forbidden_outside_of_talk_voting_period(mock_allowed_to_vote, user_client):
+    get_default_conference(voting_start=timezone.now() + timedelta(days=1))
+    talk = TalkFactory()
+    TalkSpeakerFactory(talk=talk)
+    url = reverse("talk_voting:vote", kwargs={'talk_uuid': talk.uuid})
+
+    response = user_client.post(url, data={'vote': VotingOptions.maybe})
+
+    assert response.status_code == 403
+
+
 def test_vote_submission_allowed_for_users_with_talk_proposal(user_client):
     get_default_conference()
     create_talk_for_user(user=user_client.user)
