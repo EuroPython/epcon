@@ -2,6 +2,7 @@ import random
 
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 from django.db.models import Q, Prefetch, Case, When, Value, BooleanField
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
@@ -139,6 +140,13 @@ def is_user_allowed_to_vote(user):
 @login_required
 def vote_on_a_talk(request, talk_uuid):
     talk = get_object_or_404(Talk, uuid=talk_uuid)
+
+    current_conference = Conference.objects.current()
+    if not current_conference.voting():
+        return HttpResponseForbidden('Voting closed.')
+
+    if not is_user_allowed_to_vote(request.user):
+        return HttpResponseForbidden('Only users with tickets or talk proposals can vote this year.')
 
     # Users can't vote on their own talks.
     if (
