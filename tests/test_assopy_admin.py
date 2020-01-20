@@ -1,8 +1,6 @@
 from unittest import mock
 from pytest import mark
 
-from django.conf import settings
-from django.core import mail
 from django.core.urlresolvers import reverse
 from django_factory_boy import auth as auth_factories
 
