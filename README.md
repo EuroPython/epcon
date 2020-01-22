@@ -64,6 +64,18 @@ $ docker-compose up
 
 You can access the admin pages using the `admin` username. You can login to the public pages using either `alice@europython.eu` or `bob@europython.eu`. All users' passwords are `europython`.
 
+## Debugging with VS Code
+
+To start a server with the VS Code debugger enabled, run:
+
+```bash
+$ docker -f docker-compose.yml -f docker-compose-vscode-debugger.yml up
+```
+
+Next, run "Start Debugging" command in VS Code (otherwise, the `docker-compose up`
+command will be *stuck* waiting for the debugger to attach).
+Now you can put breakpoints in your code (even in the Django template files).
+
 ## Testing
 
 ```bash

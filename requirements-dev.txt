@@ -6,6 +6,7 @@
 #
 apipkg==1.5               # via execnet
 appdirs==1.4.3            # via black
+appnope==0.1.0            # via ipython
 attrs==19.3.0             # via black, pytest
 babel==2.8.0              # via django-phonenumber-field
 backcall==0.1.0           # via ipython
@@ -84,6 +85,8 @@ pillow==7.0.0             # via cairosvg, djangocms-text-ckeditor, easy-thumbnai
 pip-tools==4.3.0
 pluggy==0.13.1            # via pytest
 prompt-toolkit==3.0.2     # via ipython
+polib==1.1.0              # via django-rosetta
+ptvsd==4.3.2
 ptyprocess==0.6.0         # via pexpect
 py==1.8.1                 # via pytest
 pyasn1==0.4.8             # via python-jose, rsa
