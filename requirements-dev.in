@@ -14,5 +14,6 @@ black
 
 django-pdb
 pdbpp
+ptvsd
 
 pip-tools
