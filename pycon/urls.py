@@ -1,18 +1,14 @@
 from django.conf import settings
-from django.conf.urls import (
-    include,
-    url,
-)
+from django.conf.urls import include
 from django.contrib import admin
-from django.views import (
-    defaults,
-    static,
-)
+from django.views import defaults, static
 from django.views.generic import RedirectView
+from django.urls import re_path
+
 from filebrowser.sites import site as fsite
 
 from conference.accounts import urlpatterns as accounts_urls
-from conference.cart import urlpatterns_ep19 as cart19_urls
+from conference.cart import urlpatterns_ep19 as cart_urls
 from conference.cfp import urlpatterns as cfp_urls
 from conference.debug_panel import urlpatterns as debugpanel_urls
 from conference.homepage import (
@@ -32,60 +28,59 @@ admin.autodiscover()
 admin.site.index_template = 'p3/admin/index.html'
 
 urlpatterns = [
-    url(r'^$', homepage, name='homepage'),
-    url(r'^generic-content-page/$', generic_content_page),
-    url(r'^generic-content-page/with-sidebar/$', generic_content_page_with_sidebar),
-    url(r'^user-panel/', include(user_panel_urls, namespace="user_panel")),
-    url(r'^accounts/', include(accounts_urls, namespace="accounts")),
-    url(r'^cfp/', include(cfp_urls, namespace="cfp")),
-    url(r'^talks/', include(talks_urls, namespace="talks")),
-    url(r'^profiles/', include(profiles_urls, namespace="profiles")),
-    url(r'^talk-voting/', include(talk_voting_urls, namespace="talk_voting")),
-    url(r'^schedule/', include(schedule_urls, namespace="schedule")),
-    url(r'^news/', news_list, name="news"),
-    url(r'^accounts/', include('assopy.urls')),
-    url(r'^admin/filebrowser/', include(fsite.urls)),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^cart/', include(cart19_urls, namespace="cart")),
-    url(r'^p3/', include('p3.urls')),
-    url(r'^conference/', include(social_urls)),
-    url(r'^i18n/', include('django.conf.urls.i18n')),
-    url(r'^markitup/', include('markitup.urls')),
+    re_path(r'^$', homepage, name='homepage'),
+    re_path(r'^generic-content-page/$', generic_content_page),
+    re_path(r'^generic-content-page/with-sidebar/$', generic_content_page_with_sidebar),
+    re_path(r'^user-panel/', include((user_panel_urls, 'user_panel'), namespace="user_panel")),
+    re_path(r'^accounts/', include((accounts_urls, 'accounts'), namespace="accounts")),
+    re_path(r'^cfp/', include((cfp_urls, 'cfp'), namespace="cfp")),
+    re_path(r'^talks/', include((talks_urls, 'talks'), namespace="talks")),
+    re_path(r'^profiles/', include((profiles_urls, 'profiles'), namespace="profiles")),
+    re_path(r'^talk-voting/', include((talk_voting_urls, 'talk_voting'), namespace="talk_voting")),
+    re_path(r'^schedule/', include((schedule_urls, 'schedule'), namespace="schedule")),
+    re_path(r'^news/', news_list, name="news"),
+    re_path(r'^accounts/', include('assopy.urls')),
+    re_path(r'^admin/filebrowser/', fsite.urls),
+    re_path(r'^admin/', admin.site.urls),
+    re_path(r'^cart/', include((cart_urls, 'cart'), namespace="cart")),
+    re_path(r'^p3/', include('p3.urls')),
+    re_path(r'^conference/', include((social_urls, 'social_urls'))),
+    re_path(r'^i18n/', include('django.conf.urls.i18n')),
 
-    url('', include('social.apps.django_app.urls', namespace='social')),
+    re_path('', include('social.apps.django_app.urls', namespace='social')),
     # TODO umgelurgel: See if the django.auth.urls are used anywhere and if they can be removed
-    url(r'^login/', RedirectView.as_view(pattern_name='auth:login', permanent=False)),
-    url('', include('django.contrib.auth.urls', namespace='auth')),
+    re_path(r'^login/', RedirectView.as_view(pattern_name='auth:login', permanent=False)),
+    re_path('', include(('django.contrib.auth.urls', 'auth'), namespace='auth')),
 
     # production debug panel, doesn't even have a name=
-    url(r'^nothing-to-see-here/', include(debugpanel_urls)),
+    re_path(r'^nothing-to-see-here/', include((debugpanel_urls, 'debugpanel'))),
 ]
 
 if settings.DEBUG:
     urlpatterns += [
-        url(
+        re_path(
             r"^media/(?P<path>.*)$",
             static.serve,
             {"document_root": settings.MEDIA_ROOT},
         ),
-        url(
+        re_path(
             r"^500/$", defaults.server_error, kwargs={"exception": Exception()}
         ),
-        url(
+        re_path(
             r"^404/$",
             defaults.page_not_found,
             kwargs={"exception": Exception()},
         ),
-        url(
+        re_path(
             r"^403/$",
             defaults.permission_denied,
             kwargs={"exception": Exception()},
         ),
-        url(
+        re_path(
             r"^400/$", defaults.bad_request, kwargs={"exception": Exception()}
         ),
     ]
 
 urlpatterns += [
-    url(r'^', include('cms.urls')),
+    re_path(r'^', include('cms.urls')),
 ]

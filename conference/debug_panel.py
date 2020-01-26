@@ -274,7 +274,7 @@ def reissue_invoice(request, invoice_id):
             new_invoice.html = render_invoice_as_html(new_invoice)
             new_invoice.save()
 
-            return redirect('debug_panel_invoice_export_for_tax_report')
+            return redirect('debugpanel:debug_panel_invoice_export_for_tax_report')
     else:
         customer = (
             old_invoice.customer

@@ -10,7 +10,7 @@ from django.contrib.admin.utils import quote
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.urlresolvers import reverse
+from django.urls import reverse, re_path
 from django.shortcuts import get_object_or_404, redirect
 from django.template import Template, Context
 from django.template.response import TemplateResponse
@@ -225,9 +225,9 @@ class OrderAdmin(admin.ModelAdmin):
         urls = super(OrderAdmin, self).get_urls()
         admin_view = self.admin_site.admin_view
         my_urls = [
-            url(r'^invoices/$', admin_view(self.edit_invoices), name='assopy-edit-invoices'),
-            url(r'^stats/$', admin_view(self.stats), name='assopy-order-stats'),
-            url(
+            re_path(r'^invoices/$', admin_view(self.edit_invoices), name='assopy-edit-invoices'),
+            re_path(r'^stats/$', admin_view(self.stats), name='assopy-order-stats'),
+            re_path(
                 r'^(?P<order_id>.+)/invoices/latest$',
                 admin_view(self.latest_invoice),
                 name='assopy-order-latest-invoice'
@@ -418,10 +418,10 @@ class AuthUserAdmin(UserAdmin):
     def get_urls(self):
         f = self.admin_site.admin_view
         urls = [
-            url(r'^(?P<uid>\d+)/login/$', f(self.create_doppelganger), name='auser-create-doppelganger'),
-            url(r'^(?P<uid>\d+)/order/$', f(self.new_order), name='auser-order'),
-            url(r'^(?P<uid>\d+)/send_verification_email$', f(self.send_verification_email), name='auser-send-verification-email'),
-            url(r'^kill_doppelganger/$', self.kill_doppelganger, name='auser-kill-doppelganger'),
+            re_path(r'^(?P<uid>\d+)/login/$', f(self.create_doppelganger), name='auser-create-doppelganger'),
+            re_path(r'^(?P<uid>\d+)/order/$', f(self.new_order), name='auser-order'),
+            re_path(r'^(?P<uid>\d+)/send_verification_email$', f(self.send_verification_email), name='auser-send-verification-email'),
+            re_path(r'^kill_doppelganger/$', self.kill_doppelganger, name='auser-kill-doppelganger'),
         ]
         return urls + super(AuthUserAdmin, self).get_urls()
 
@@ -629,17 +629,17 @@ class InvoiceAdmin(admin.ModelAdmin):
         urls = super().get_urls()
         admin_view = self.admin_site.admin_view
         my_urls = [
-            url(
+            re_path(
                 r'^(?P<invoice_id>.+)/regenerate$',
                 admin_view(self.regenerate_invoice),
                 name='assopy-invoice-regenerate'
             ),
-            url(
+            re_path(
                 r'^(?P<invoice_id>.+)/order',
                 admin_view(self.associated_order),
                 name='assopy-invoice-associated-order'
             ),
-            url(
+            re_path(
                 r'^(?P<invoice_id>.+)/preview',
                 admin_view(self.preview),
                 name='assopy-invoice-preview'

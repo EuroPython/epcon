@@ -4,7 +4,7 @@ from unittest import mock
 
 from pytest import mark, raises, approx
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.contrib.messages import constants as messages_constants
 from django.test import override_settings

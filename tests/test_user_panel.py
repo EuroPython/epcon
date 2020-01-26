@@ -5,7 +5,7 @@ from datetime import date
 from django.conf import settings
 from django.utils import timezone
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 import responses
 

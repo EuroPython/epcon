@@ -2,7 +2,8 @@
 
 
 from django.db import migrations, models
-import markitup.fields
+# TODO: Don't merge before fixing this JAKUB - going to have to fix it in PRs leading to this one
+# import markitup.fields
 
 
 class Migration(migrations.Migration):
@@ -15,8 +16,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='MarkitUpPluginModel',
             fields=[
-                ('cmsplugin_ptr', models.OneToOneField(parent_link=True, related_name='cms_utils_markituppluginmodel', auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
-                ('body', markitup.fields.MarkupField(no_rendered_field=True)),
+                ('cmsplugin_ptr', models.OneToOneField(on_delete=models.deletion.CASCADE, parent_link=True, related_name='cms_utils_markituppluginmodel', auto_created=True, primary_key=True, serialize=False, to='cms.CMSPlugin')),
+                # ('body', markitup.fields.MarkupField(no_rendered_field=True)),
                 ('_body_rendered', models.TextField(editable=False, blank=True)),
             ],
             options={

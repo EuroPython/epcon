@@ -26,7 +26,6 @@
 
 """
 from django.core.management.base import BaseCommand, CommandError
-from django.core import urlresolvers
 from conference import models as cmodels
 
 ### Globals
@@ -86,11 +85,6 @@ var ticketList = new List('ticket-list', {
 """
 
 ### Helpers
-
-def profile_url(user):
-
-    return urlresolvers.reverse('profiles:profile',
-                                args=[user.attendeeprofile.slug])
 
 def attendee_name(ticket, profile=None):
 

@@ -2,7 +2,7 @@ from datetime import timedelta
 
 import pytest
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
@@ -16,7 +16,7 @@ pytestmark = [pytest.mark.django_db]
 def test_talk_view_as_anonymous(client):
     original_abstract = "Hello!\nGoto http://example.com"
     # newlines should become BR, urls should be linked
-    expected_abstract = ('Hello!<br />Goto <a href="http://example.com" rel="nofollow">'
+    expected_abstract = ('Hello!<br>Goto <a href="http://example.com" rel="nofollow">'
                          'http://example.com</a>')
     get_default_conference()
     talk = TalkFactory()

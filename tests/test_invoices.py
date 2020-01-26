@@ -8,17 +8,16 @@ import json
 from django.http import QueryDict
 from pytest import mark
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.utils import timezone
 
-from django_factory_boy import auth as auth_factories
 from freezegun import freeze_time
 import responses
 
 from assopy.models import Invoice, Order, Vat
-from tests.factories import AssopyUserFactory, FareFactory, OrderFactory
-from conference.models import AttendeeProfile, Fare, Conference
+from tests.factories import FareFactory, OrderFactory
+from conference.models import Fare, Conference
 from conference.invoicing import (
     ACPYSS_16,
     PYTHON_ITALIA_17,
@@ -36,7 +35,7 @@ from conference.fares import (
 )
 from email_template.models import Email
 
-from tests.common_tools import template_used, make_user
+from tests.common_tools import make_user
 
 
 def _prepare_invoice_for_basic_test(order_code, invoice_code):
@@ -297,7 +296,7 @@ def test_export_invoice_csv(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse("debug_panel_invoice_export_for_tax_report_csv")
+        reverse("debugpanel:debug_panel_invoice_export_for_tax_report_csv")
         + "?"
         + query_string
     )
@@ -352,7 +351,7 @@ def test_export_invoice_csv_before_period(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse("debug_panel_invoice_export_for_tax_report_csv")
+        reverse("debugpanel:debug_panel_invoice_export_for_tax_report_csv")
         + "?"
         + query_string
     )
@@ -388,7 +387,7 @@ def test_export_invoice(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse("debug_panel_invoice_export_for_tax_report")
+        reverse("debugpanel:debug_panel_invoice_export_for_tax_report")
         + "?"
         + query_string
     )
@@ -423,7 +422,7 @@ def test_export_invoice_accounting_json(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse("debug_panel_invoice_export_for_payment_reconciliation_json")
+        reverse("debugpanel:debug_panel_invoice_export_for_payment_reconciliation_json")
         + "?"
         + query_string
     )
@@ -452,7 +451,7 @@ def test_reissue_invoice(admin_client):
     assert Invoice.objects.all().count() == 1
     assert NEW_CUSTOMER not in Invoice.objects.latest("id").html
 
-    url = reverse("debug_panel_reissue_invoice", args=[invoice.id])
+    url = reverse("debugpanel:debug_panel_reissue_invoice", args=[invoice.id])
     response = admin_client.get(url)
     assert response.status_code == 200
 

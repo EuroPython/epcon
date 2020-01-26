@@ -15,7 +15,7 @@ that it's easier to figure out which template is being used.
 from datetime import date
 from decimal import Decimal
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils import timezone
 
 from django_factory_boy import auth as auth_factories

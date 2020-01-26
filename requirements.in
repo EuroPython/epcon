@@ -1,4 +1,4 @@
-Django>=1.11.27,<2.0
+Django>=2.2.9,<3.0
 
 requests
 requests-oauthlib
@@ -11,8 +11,10 @@ django-crispy-forms
 
 # we can probably remove tagging - taggit is used with custom models for cfp
 django-tagging==0.4.6
-django-taggit==0.22.1
-django-taggit-labels==0.6.0
+django-taggit
+# django-taggit-labels has django 2.2 support in the master branch, but hasn't been released in a while
+# long term, we should aim to replace it with another library
+git+git://github.com/bennylope/django-taggit-labels.git@b814f277779d14745d679adadc6d5bbcbbb7eba2#egg=django-taggit-labels
 
 python3-openid
 python-social-auth==0.3.6
@@ -22,16 +24,11 @@ social-auth-core[openidconnect]
 
 markdown2
 
-django-cms>=3.6,<3.7
+django-cms
 djangocms-admin-style
 djangocms-text-ckeditor
-djangocms-grid
-# Upgrading to a newer version breaks cmsplugin-filer (that's deprecated)
-django-filer<=1.5
-cmsplugin-filer
+django-filer
 django-filebrowser-no-grappelli~=3.6
-
-django-markitup~=3.0
 
 # django settings enhancements
 python-decouple

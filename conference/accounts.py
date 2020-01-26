@@ -10,7 +10,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import slugify
@@ -295,41 +295,34 @@ urlpatterns = [
     # Password reset, using default django views.
     url(
         r"^password-reset/$",
-        auth_views.password_reset,
-        kwargs={
-            "template_name": "ep19/bs/accounts/password_reset.html",
-            "post_reset_redirect": reverse_lazy(
-                "accounts:password_reset_done"
-            ),
-            "email_template_name": "ep19/emails/password_reset_email.txt",
-            "subject_template_name": "ep19/emails/password_reset_subject.txt",
-        },
+        auth_views.PasswordResetView.as_view(
+            template_name="ep19/bs/accounts/password_reset.html",
+            success_url=reverse_lazy("accounts:password_reset_done"),
+            email_template_name="ep19/emails/password_reset_email.txt",
+            subject_template_name="ep19/emails/password_reset_subject.txt",
+        ),
         name="password_reset",
     ),
     url(
         r"^password-reset/done/$",
-        auth_views.password_reset_done,
-        kwargs={"template_name": "ep19/bs/accounts/password_reset_done.html"},
+        auth_views.PasswordResetDoneView.as_view(
+            template_name="ep19/bs/accounts/password_reset_done.html",
+        ),
         name="password_reset_done",
     ),
     url(
         r"^reset/(?P<uidb64>[\w-]+)/(?P<token>[\w]{1,13}-[\w]{1,20})/$",
-        auth_views.password_reset_confirm,
-        kwargs={
-            "set_password_form": auth_forms.SetPasswordForm,
-            "template_name": "ep19/bs/accounts/password_reset_confirm.html",
-            "post_reset_redirect": reverse_lazy(
-                "accounts:password_reset_complete"
-            ),
-        },
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name="ep19/bs/accounts/password_reset_confirm.html",
+            success_url=reverse_lazy("accounts:password_reset_complete"),
+        ),
         name="password_reset_confirm",
     ),
     url(
         r"^reset/done/$",
-        auth_views.password_reset_complete,
-        kwargs={
-            "template_name": "ep19/bs/accounts/password_reset_complete.html"
-        },
+        auth_views.PasswordResetCompleteView.as_view(
+            template_name="ep19/bs/accounts/password_reset_complete.html",
+        ),
         name="password_reset_complete",
     ),
 ]

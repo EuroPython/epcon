@@ -1,7 +1,7 @@
 from http.client import OK as HTTP_OK_200
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils import timezone
 from django.test import TestCase
 

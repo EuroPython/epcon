@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from pytest import mark
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils import timezone
 
 from conference.models import Conference, Talk, TALK_TYPE_CHOICES, TALK_LEVEL

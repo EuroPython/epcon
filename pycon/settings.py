@@ -5,7 +5,7 @@ import os.path
 import dj_database_url
 from decouple import config
 
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 
 from model_utils import Choices
 
@@ -211,7 +211,6 @@ TEMPLATES = [
 
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -257,13 +256,6 @@ INSTALLED_APPS = (
     'email_template',
 
     'djangocms_text_ckeditor',
-    'cmsplugin_filer_file',
-    'cmsplugin_filer_folder',
-    'cmsplugin_filer_link',
-    'cmsplugin_filer_image',
-    'cmsplugin_filer_teaser',
-    'cmsplugin_filer_video',
-    'djangocms_grid',
 
     'treebeard',
     'cms',
@@ -278,7 +270,6 @@ INSTALLED_APPS = (
     'filer',
     'easy_thumbnails',
 
-    'markitup',
     'cms_utils',
     'social_django',
 )
@@ -406,7 +397,6 @@ PAGE_TEMPLATES = (
 CMS_PLUGIN_PROCESSORS = (
     'cms_utils.processors.process_templatetags',
 )
-MARKITUP_FILTER = ('markdown2.markdown', {'safe_mode': False})
 
 CKEDITOR_SETTINGS = {
     'height': 300,
@@ -440,12 +430,6 @@ THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.filters',
 )
 THUMBNAIL_HIGH_RESOLUTION = True
-
-DJANGOCMS_GRID_CONFIG = {
-    'COLUMNS': 100,
-    'TOTAL_WIDTH': 960,
-    'GUTTER': 20,
-}
 
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"

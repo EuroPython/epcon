@@ -24,7 +24,7 @@
         <td>{{ invoice.payment_date }}</td>
         <td class='text-right'>{{ invoice.price }}</td>
         <td>
-          <a href='{% url 'debug_panel_invoice_forcepreview' invoice.id %}'>Preview PDF</a>
+          <a href='{% url 'debugpanel:debug_panel_invoice_forcepreview' invoice.id %}'>Preview PDF</a>
           | <a href='{{ invoice.get_admin_url }}'>See in admin</a>
           | <a href='{{ invoice.get_absolute_url }}'>URL for user</a>
         </td>

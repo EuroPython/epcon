@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.db import transaction
 from django.db.models import Q, Case, When, Value, BooleanField
 from django.http import HttpResponse
@@ -551,22 +551,19 @@ urlpatterns = [
     url(r"^assign-ticket/(?P<ticket_id>\d+)/$", assign_ticket, name="assign_ticket"),
     url(r"^privacy-settings/$", privacy_settings, name="privacy_settings"),
     url(r"^profile-settings/$", profile_settings, name="profile_settings"),
-    # Password change, using default django views.
-    # TODO(artcz): Those are Removed in Django21 and we should replcethem with
-    # class based PasswordChange{,Done}View
     url(
         r"^password/change/$",
-        auth_views.password_change,
-        kwargs={
-            "template_name": "ep19/bs/user_panel/password_change.html",
-            "post_change_redirect": reverse_lazy("user_panel:password_change_done"),
-        },
+        auth_views.PasswordChangeView.as_view(
+            template_name="ep19/bs/user_panel/password_change.html",
+            success_url=reverse_lazy("user_panel:password_change_done"),
+        ),
         name="password_change",
     ),
     url(
         r"^password/change/done/$",
-        auth_views.password_change_done,
-        kwargs={"template_name": "ep19/bs/user_panel/password_change_done.html"},
+        auth_views.PasswordChangeDoneView.as_view(
+            template_name="ep19/bs/user_panel/password_change_done.html"
+        ),
         name="password_change_done",
     ),
 ]

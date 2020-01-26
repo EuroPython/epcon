@@ -1,7 +1,7 @@
 from unittest import mock
 from pytest import mark
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django_factory_boy import auth as auth_factories
 
 from tests import factories
