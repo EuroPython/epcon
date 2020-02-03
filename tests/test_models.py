@@ -1,10 +1,9 @@
 import datetime
 from unittest import mock
 
-from django.test import TestCase
 from django.conf import settings
 
-from django_factory_boy import auth as auth_factories
+import pytest
 
 from p3.models import TicketConference
 from p3.models import P3Profile
@@ -16,71 +15,81 @@ from tests.factories import (
     TicketConferenceFactory
 )
 
-
-class TicketConferenceModelTestCase(TestCase):
-    def setUp(self):
-        self.user = auth_factories.UserFactory()
-
-        self.conference = ConferenceFactory(conference_start=datetime.date.today())
-        self.fare = FareFactory(conference=self.conference.code)
-
-    def test_available(self):
-        ticket = TicketFactory(user=self.user, fare=self.fare)
-
-        ticket_availables = TicketConference.objects.available(self.user, conference=self.conference)
-
-        self.assertEqual(ticket_availables.count(), 1)
-
-        ticket_availables = TicketConference.objects.available(self.user, conference=None)
-        self.assertEqual(ticket_availables.count(), 1)
-
-    def test_profile(self):
-        attendee_profile = AttendeeProfileFactory(user=self.user)
-        ticket = TicketFactory(user=self.user)
-        ticket_conference = TicketConferenceFactory(ticket=ticket)
-
-        profile = ticket_conference.profile()
-        self.assertEqual(attendee_profile, profile)
-
-        ticket = TicketFactory(user=self.user, fare=ticket.fare)
-        ticket_conference = TicketConferenceFactory(ticket=ticket, assigned_to=self.user.email)
-        profile =ticket_conference.profile()
-
-        self.assertEqual(attendee_profile, profile)
+pytestmark = pytest.mark.django_db
 
 
-class P3ProfileModelTestCase(TestCase):
-    def setUp(self):
-        self.user = auth_factories.UserFactory()
-        self.profile = AttendeeProfileFactory(user=self.user)
-        self.p3_profile = P3Profile(profile=self.profile)
+@pytest.fixture
+def p3_profile(user):
+    profile = AttendeeProfileFactory(user=user)
+    return P3Profile(profile=profile)
 
-    def test_profile_image_url(self):
-        url = self.p3_profile.profile_image_url()
-        self.assertEqual(url, settings.STATIC_URL + settings.P3_ANONYMOUS_AVATAR)
 
-        with mock.patch('conference.gravatar.gravatar') as mock_gravatar:
-            mock_gravatar.return_value = 'http://www.mockgravatar.com/'
-            self.p3_profile.image_gravatar = True
-            url = self.p3_profile.profile_image_url()
-            self.assertEqual(url, 'http://www.mockgravatar.com/')
-            self.p3_profile.image_gravatar = False
+def test_available_tickets(user):
+    conference = ConferenceFactory(conference_start=datetime.date.today())
+    fare = FareFactory(conference=conference.code)
 
-        self.p3_profile.image_url = 'http://www.image_url.com'
-        url = self.p3_profile.profile_image_url()
-        self.assertEqual(url, 'http://www.image_url.com')
-        self.p3_profile.image_url = None
+    TicketFactory(user=user, fare=fare)
+    ticket_availables = TicketConference.objects.available(user, conference=conference)
+    assert ticket_availables.count() == 1
 
-        self.p3_profile.profile.image = mock.Mock(url='http://www.image.url.com')
-        url = self.p3_profile.profile_image_url()
-        self.assertEqual(url, 'http://www.image.url.com')
+    ticket_availables = TicketConference.objects.available(user, conference=None)
+    assert ticket_availables.count() == 1
 
-    def test_public_profile_image_url(self):
-        url = self.p3_profile.public_profile_image_url()
-        self.assertEqual(url, settings.STATIC_URL + settings.P3_ANONYMOUS_AVATAR)
 
-        old_visibility = self.p3_profile.profile.visibility
-        self.p3_profile.profile.visibility = 'p'
-        url = self.p3_profile.public_profile_image_url()
-        self.assertEqual(url, settings.STATIC_URL + settings.P3_ANONYMOUS_AVATAR)
-        self.p3_profile.profile.visibility = old_visibility
+def test_atendee_profile(user):
+    attendee_profile = AttendeeProfileFactory(user=user)
+    ticket = TicketFactory(user=user)
+    ticket_conference = TicketConferenceFactory(ticket=ticket)
+
+    profile = ticket_conference.profile()
+    assert attendee_profile == profile
+
+    ticket = TicketFactory(user=user, fare=ticket.fare)
+    ticket_conference = TicketConferenceFactory(ticket=ticket, assigned_to=user.email)
+    profile = ticket_conference.profile()
+
+    assert attendee_profile == profile
+
+
+@pytest.mark.parametrize(
+    "email_input,email_expected",
+    [
+        ("User.Test@example.test", "user.test@example.test"),
+        ("  User.Test@example.test    ", "user.test@example.test"),
+        ("USER-TEST3@EXAMPLE.test", "user-test3@example.test"),
+    ]
+)
+def test_email_is_lowercased_and_stripped(email_input, email_expected, user):
+    ticket = TicketFactory(user=user)
+    ticket_conference = TicketConferenceFactory(ticket=ticket, assigned_to=email_input)
+    assert ticket_conference.assigned_to == email_expected
+
+
+def test_profile_image_url(p3_profile):
+    url = p3_profile.profile_image_url()
+    assert url == settings.STATIC_URL + settings.P3_ANONYMOUS_AVATAR
+
+    with mock.patch('conference.gravatar.gravatar') as mock_gravatar:
+        mock_gravatar.return_value = 'http://www.mockgravatar.test/'
+        p3_profile.image_gravatar = True
+        url = p3_profile.profile_image_url()
+        assert url == 'http://www.mockgravatar.test/'
+        p3_profile.image_gravatar = False
+
+    p3_profile.image_url = 'http://www.image_url.test'
+    url = p3_profile.profile_image_url()
+    assert url == 'http://www.image_url.test'
+    p3_profile.image_url = None
+
+    p3_profile.profile.image = mock.Mock(url='http://www.image.url.test')
+    url = p3_profile.profile_image_url()
+    assert url == 'http://www.image.url.test'
+
+
+def test_public_profile_image_url(p3_profile):
+    url = p3_profile.public_profile_image_url()
+    assert url == settings.STATIC_URL + settings.P3_ANONYMOUS_AVATAR
+
+    p3_profile.profile.visibility = 'p'
+    url = p3_profile.public_profile_image_url()
+    assert url == settings.STATIC_URL + settings.P3_ANONYMOUS_AVATAR

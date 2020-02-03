@@ -7,6 +7,13 @@ from tests.factories import AssopyUserFactory
 
 
 @pytest.fixture
+def user():
+    return auth_factories.UserFactory(
+        email="john.doe@example.test", is_active=True
+    )
+
+
+@pytest.fixture
 def user_client(client):
     user = auth_factories.UserFactory(
         email="joedoe@example.com", is_active=True

@@ -103,13 +103,10 @@ clean: clean-docker clean-py
 clean-docker:
 	docker-compose down -t 60
 	docker system prune -f
-	docker volume prune -f
 
 clean-py:
 	find . -name '*.pyc' -delete
 	find . -name '*.pyo' -delete
 	find . -name '.coverage' -delete
-	find . -name '.pytest_cache' | xargs rm -rf
-	find . -name '__pycache__' | xargs rm -rf
 
 -include Makefile.local
