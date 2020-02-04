@@ -10,7 +10,6 @@ RUN apt-get update && \
                     libxrender-dev \
                     libxml2-dev \
                     libxslt1-dev \
-                    wkhtmltopdf \
                     wget \
                     curl \
                     git
