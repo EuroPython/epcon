@@ -29,6 +29,10 @@ help:
 	@echo "clean-docker - stop docker containers and remove orphaned images and volumes"
 	@echo "clean-py - remove test, coverage and Python file artifacts"
 
+	@echo "\n[PRODUCTION]"
+	@echo "deployment-requirements - run pip compile and rebuild the production requirements files"
+	@echo "install - install production dependencies"
+
 install-docker-ubuntu:
 	sudo apt-get remove docker docker-engine docker.io containerd runc
 	sudo apt-get update
@@ -108,5 +112,16 @@ clean-py:
 	find . -name '*.pyc' -delete
 	find . -name '*.pyo' -delete
 	find . -name '.coverage' -delete
+
+deployment-requirements:
+	pip install -U pip==19.3.1
+	pip install -U pip-tools
+	pip-compile --upgrade requirements.in -o requirements.txt
+	chmod a+r requirements.txt
+
+install:
+	pip install -U pip==19.3.1
+	pip install -U pip-tools
+	pip-sync requirements.txt
 
 -include Makefile.local
