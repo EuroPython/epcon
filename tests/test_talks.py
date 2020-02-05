@@ -288,3 +288,26 @@ def test_view_slides_remote_url_on_talk_detail_page(client):
     response = client.get(url)
 
     assert 'view slides' in response.content.decode().lower()
+
+
+def test_video_url_on_talk_detail_page(client):
+    """
+    The view recording button only appears if the video url has been updated.
+    """
+    setup_conference_with_typical_fares()
+    talk = TalkFactory(status=TALK_STATUS.accepted)
+    url = talk.get_absolute_url()
+
+    # Slides URL does not appear when the slides haven't been uploaded
+    response = client.get(url)
+
+    assert not talk.slides
+    assert 'view recording' not in response.content.decode().lower()
+
+    # Slides URL does appear when the slides have been uploaded
+    talk.video_url = 'https://ep2019.europython.eu/video'
+    talk.save()
+
+    response = client.get(url)
+
+    assert 'view recording' in response.content.decode().lower()
