@@ -69,7 +69,7 @@ You can access the admin pages using the `admin` username. You can login to the 
 To start a server with the VS Code debugger enabled, run:
 
 ```bash
-$ docker -f docker-compose.yml -f docker-compose-vscode-debugger.yml up
+$ docker-compose -f docker-compose.yml -f docker-compose-vscode-debugger.yml up
 ```
 
 Next, run "Start Debugging" command in VS Code (otherwise, the `docker-compose up`

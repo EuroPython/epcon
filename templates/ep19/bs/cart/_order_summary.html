@@ -4,19 +4,27 @@
     <tr>
         <th>code</th>
         <th>ticket</th>
-        <th>&euro;</th>
-        <th class='text-right'>Manage</th>
+        {% if order.is_complete %}
+            <th>&euro;</th>
+            <th class='text-right'>Manage</th>
+        {% else %}
+            <th class='text-right'>&euro;</th>
+        {% endif %}
     </tr>
 
     {% for item in order.orderitem_set.all %}
     <tr>
         <td>{{ item.code }}</td>
         <td>{% if item.ticket %}{{ item.ticket }}{% else %}{{ item.description }}{% endif %}</td>
-        <td>{{ item.price }}</td>
-        <td class='text-right'>
-            <a class='btn btn-outline-primary' href='{% url "user_panel:manage_ticket" item.ticket.id %}'>Configure ticket</a>
-            <a class='btn btn-outline-primary' href='{% url "user_panel:assign_ticket" item.ticket.id %}'>Assign ticket</a>
-        </td>
+        {% if order.is_complete %}
+            <td>{{ item.price }}</td>
+            <td class='text-right'>
+                <a class='btn btn-outline-primary' href='{% url "user_panel:manage_ticket" item.ticket.id %}'>Configure ticket</a>
+                <a class='btn btn-outline-primary' href='{% url "user_panel:assign_ticket" item.ticket.id %}'>Assign ticket</a>
+            </td>
+        {% else %}
+            <td class='text-right'>{{ item.price }}</td>
+        {% endif %}
 
     </tr>
     {% endfor %}
