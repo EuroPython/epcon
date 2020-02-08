@@ -164,8 +164,6 @@ def cart_step4_payment(request, order_uuid):
             return redirect(
                 "cart:step5_congrats_order_complete", order_uuid=order.uuid
             )
-        else:
-            XXX
 
 
     # sanity/security check to make sure we don't publish the the wrong key
