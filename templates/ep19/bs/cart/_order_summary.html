@@ -13,10 +13,12 @@
         <td>{{ item.code }}</td>
         <td>{% if item.ticket %}{{ item.ticket }}{% else %}{{ item.description }}{% endif %}</td>
         <td>{{ item.price }}</td>
+        {% if item.ticket %}
         <td class='text-right'>
             <a class='btn btn-outline-primary' href='{% url "user_panel:manage_ticket" item.ticket.id %}'>Configure ticket</a>
             <a class='btn btn-outline-primary' href='{% url "user_panel:assign_ticket" item.ticket.id %}'>Assign ticket</a>
         </td>
+        {% endif %}
 
     </tr>
     {% endfor %}

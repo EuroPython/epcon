@@ -33,7 +33,7 @@ from .orders import (
     is_business_order,
     is_non_conference_ticket_order,
 )
-from .payments import PaymentError, charge_for_payment
+from .payments import PaymentError, prepare_for_payment, verify_payment
 
 
 GLOBAL_MAX_PER_FARE_TYPE = 6
@@ -164,21 +164,50 @@ def cart_step4_payment(request, order_uuid):
             return redirect(
                 "cart:step5_congrats_order_complete", order_uuid=order.uuid
             )
+        else:
+            XXX
 
-        stripe_payment = StripePayment.objects.create(
-            order=order,
-            user=request.user,
-            uuid=str(uuid.uuid4()),
-            amount=order.total(),
-            token=request.POST.get("stripeToken"),
-            token_type=request.POST.get("stripeTokenType"),
-            email=request.POST.get("stripeEmail"),
-            description=f"payment for order {order.pk} by {request.user.email}",
+
+    # sanity/security check to make sure we don't publish the the wrong key
+    stripe_key = settings.STRIPE_PUBLISHABLE_KEY
+    assert stripe_key.startswith("pk_")
+    stripe_session_id = None
+    if total_for_stripe > 0:
+        stripe_session = prepare_for_payment(
+            request,
+            order = order,
+            description = f"payment for order {order.pk} by {request.user.email}"
         )
+        stripe_session_id = stripe_session.id
+
+    return TemplateResponse(
+        request,
+        "ep19/bs/cart/step_4_payment.html",
+        {
+            "order": order,
+            "payment": payments,
+            "stripe_key": stripe_key,
+            "total_for_stripe": total_for_stripe,
+            "stripe_session_id": stripe_session_id,
+        },
+    )
+
+
+@login_required
+def cart_step4b_verify_payment(request, payment_uuid, session_id):
+    payment = get_object_or_404(StripePayment, uuid=payment_uuid)
+    order = payment.order
+    if payment.status != 'SUCCESSFUL':
         try:
-            # Save the payment information as soon as it goes through to
-            # avoid data loss.
-            charge_for_payment(stripe_payment)
+            verify_payment(payment, session_id)
+        except PaymentError:
+            return redirect("cart:step4_payment", order_uuid=order.uuid)
+
+        if order.payment_date != None:
+            # XXX This order was already paid for(!)
+            payment.message = 'Duplicate payment?!?'
+            payment.save()
+        else:
             order.payment_date = timezone.now()
             order.save()
 
@@ -187,33 +216,12 @@ def cart_step4_payment(request, order_uuid):
                 current_site = get_current_site(request)
                 send_order_confirmation_email(order, current_site)
 
-                return redirect(
-                    "cart:step5_congrats_order_complete", order_uuid=order.uuid
-                )
-        except PaymentError:
-            # Redirect to the same page, show information about failed
-            # payment(s) and reshow the same Pay with Card button
-            return redirect(".")
-
-    # sanity/security check to make sure we don't publish the the wrong key
-    stripe_key = settings.STRIPE_PUBLISHABLE_KEY
-    assert stripe_key.startswith("pk_")
-
-    return TemplateResponse(
-        request,
-        "ep19/bs/cart/step_4_payment.html",
-        {
-            "order": order,
-            "payments": payments,
-            "stripe_key": stripe_key,
-            "total_for_stripe": total_for_stripe,
-        },
-    )
-
+    return redirect("cart:step5_congrats_order_complete", order.uuid)
 
 @login_required
 def cart_step5_congrats_order_complete(request, order_uuid):
     order = get_object_or_404(Order, uuid=order_uuid)
+
     return TemplateResponse(
         request,
         "ep19/bs/cart/step_5_congrats_order_complete.html",
@@ -350,6 +358,11 @@ urlpatterns_ep19 = [
         r"^payment/(?P<order_uuid>[\w-]+)/$",
         cart_step4_payment,
         name="step4_payment",
+    ),
+    url(
+        r"^verify/(?P<payment_uuid>[\w-]+)/(?P<session_id>[-_\w{}]+)/$",
+        cart_step4b_verify_payment,
+        name="step4b_verify_payment",
     ),
     url(
         r"^thanks/(?P<order_uuid>[\w-]+)/$",

@@ -18,31 +18,31 @@
 
         <div class='col-md-12'>
             {% include "ep19/bs/cart/_order_summary.html" %}
-
             {% if not order.is_complete %}
-            <form action="." method="POST" class='form' style='margin-top: 5em'>
+            {% if total_for_stripe == 0 %}
+              <form action="." method="POST" class='form' style='margin-top: 5em'>
                 {% csrf_token %}
-                {% if total_for_stripe == 0 %}
-                    <button class="btn btn-primary btn-lg">Confirm Order</button>
-                {% else %}
-                    <script
-                                 src="https://checkout.stripe.com/checkout.js"
-                                 class="stripe-button"
-                                 data-key="{{ stripe_key }}"
-                                 data-amount="{{ total_for_stripe }}"
-                                 data-currency='eur'
-                                 data-label="Finalize order and pay now"
-                                 data-name="Stripe.com"
-                                 data-description="EuroPython Order {{ order.code }}"
-                                 data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
-                                 data-locale="auto"
-                                 data-zip-code="false">
-                    </script>
-                {% endif %}
-            </form>
+                <button class="btn btn-primary btn-lg">Confirm Order</button>
+              </form>
+              {% else %}
+            <script src="https://js.stripe.com/v3/"></script>
+            <script type="text/javascript">
+                var stripe = Stripe("{{ stripe_key }}");
+                function do_stripe() {
+                    stripe.redirectToCheckout({
+                        sessionId: "{{ stripe_session_id }}"
+                    }).then(function (result) {
+                        // XXX make this pretty, and give retry button
+                        alert(result.error.message);
+                    });
+                }
+            </script>
+              <button class="btn btn-primary btn-lg"
+              onclick="do_stripe()">Pay now!</button>
+              {% endif %}
             {% else %}
-            This order was paid in full on {{ order.payment_date|date:"Y-m-d" }}
-            <a href='{% url "cart:step5_congrats_order_complete" order.uuid %}'>See the confirmation page</a>
+            <div style="font-size: 1.5em">This order was paid in full on {{ order.payment_date|date:"Y-m-d" }}
+            <a href='{% url "cart:step5_congrats_order_complete" order.uuid%}'>See the confirmation page</a></div>
             {% endif %}{# order.is_complete #}
 
             {% if payments %}
