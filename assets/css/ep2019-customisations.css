@@ -7,11 +7,12 @@
 .text-secondary-light { color: #f8c48f; }
 
 #background_image {
-    background: url('/static/img/ep2019-background-1920px-60pc.jpg');
+    background: url('/static/img/ep2020-background-ccd.jpg');
     background-size: cover;
     background-position: auto -20%;
     color: white;
-    min-height: 90px
+    min-height: 90px;
+    height: 100vh;
 }
 .jumbotron { background: transparent; color: white; }
 .text-underline { text-decoration: underline; }
@@ -148,3 +149,7 @@ img.speaker_avatar {
     border-radius: 50%;
 }
 
+/* Handle hover-over dropdown menusin nav */
+div.dropdown-menu {
+    margin-top: 0;
+}
