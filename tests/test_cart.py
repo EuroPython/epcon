@@ -624,7 +624,7 @@ def test_cart_fourth_step_requires_auth(db, client):
     assert redirects_to(response, reverse('accounts:login'))
 
 
-@mark.xfail('Need to investigate why this failes in CI')
+@mark.xfail(reason='Need to investigate why this failes in CI')
 @override_settings(STRIPE_PUBLISHABLE_KEY='pk_fake')
 def test_cart_fourth_step_renders_correctly(db, user_client):
     _, fares = setup_conference_with_typical_fares()
@@ -656,7 +656,7 @@ def test_cart_payment_with_zero_total(db, user_client):
     assert email_sent_with_subject(ORDER_CONFIRMATION_EMAIL_SUBJECT)
 
 
-@mark.xfail('Need to investigate why this failes in CI')
+@mark.xfail(reason='Need to investigate why this failes in CI')
 @mock.patch('conference.cart.prepare_for_payment')
 @mock.patch('conference.cart.verify_payment')
 def test_cart_payment_with_non_zero_total(mock_prepare_for_payment, mock_verify_payment, db, user_client):
