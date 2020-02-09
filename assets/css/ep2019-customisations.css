@@ -1,15 +1,34 @@
-/* primary: 007d8a; */
-/* primary-light: 76bdc4 */
-/* secondary: d87a00 */
-/* secondary-light: f8c48f */
+/* primary: #15653B; */
+/* primary-light/info: #47A71C */
+/* secondary: #E88100 */
+/* secondary-light/warning: #FFCB96 */
 
-.text-primary-light { color: rgb(0, 112, 65); }
-.text-secondary-light { color: rgb(67, 176, 42); }
+.text-primary-light { color: #47A71C; }
+.text-secondary-light { color: #FFCB96; }
+
+/* Fonts for ep2020*/
+@font-face {
+    font-family: "Galyon";
+    src: url("Galyon-Regular.otf");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Galyon";
+    src: url("Galyon-Bold.otf");
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Galyon";
+    src: url("Galyon-Italic.otf");
+    font-weight: normal;
+    font-style: italic;
+}
 
 #background_image {
-    background: url('/static/img/ep2020-background-ccd.jpg');
+    background: url("/static/img/ep2020-background-ccd.jpg");
     background-size: cover;
-    background-position: auto -20%;
     color: white;
     min-height: 90px;
 }
@@ -113,10 +132,6 @@ a.navbar-brand:hover{
   display: block;
 }
 
-a {
-    color: #EF8903;
-}
-
 /* Fully expand NAV when using the hamburger menu */
 @media only screen and (max-width: 992px) {
     .dropdown>.dropdown-menu {
@@ -138,6 +153,10 @@ a {
     color: #fff;
     text-decoration: none;
     background-color: #136F43;
+}
+
+a.nav-link, a.navbar-brand {
+    color: #E88100;
 }
 
 /* Don't show carets in the dropdown menus */
