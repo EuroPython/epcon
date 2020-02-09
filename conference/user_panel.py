@@ -206,6 +206,10 @@ class TicketConferenceConfigForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(),
         required=False,
     )
+    name = forms.CharField(
+        help_text="Please contact support to update how your name is displayed on your ticket.",
+        disabled=True,
+    )
 
     class Meta:
         model = TicketConference
