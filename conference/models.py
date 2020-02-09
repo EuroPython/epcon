@@ -1351,6 +1351,7 @@ class StripePayment(models.Model):
     token = models.CharField(max_length=100)
     token_type = models.CharField(max_length=20)
     charge_id = models.CharField(max_length=100, null=True)
+    session_id = models.CharField(max_length=100, null=True)
     email = models.CharField(max_length=255)
 
     user = models.ForeignKey(get_user_model())
