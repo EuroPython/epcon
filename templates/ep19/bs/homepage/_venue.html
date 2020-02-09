@@ -4,38 +4,35 @@
     <div class="container">
         <!-- Example row of columns -->
         <div class="row">
-            <div class="col-md-6 text-left">
-                <h2>Conference Venue</h2>
-                <h3>Congress Center Basel (CCB)</h3>
-                <p>
-                Congress Center Basel<br>
-                Messeplatz 21 | Reception 2nd Floor<br>
-                4058 Basel | Switzerland<br>
-                </p>
-                <p style='margin-top: 2.5em;'> {# temporary hack #}
-                <img width="100%" src="{% static 'img/conference_venue.png' %}">
-                </p>
-                <p>
-                <a href='{{ BCC_GOOGLEMAPS_URL }}' target="_blank" class='btn btn-outline-light'>CCB on Google Maps</a>
-                <a href='{{ BCC_OSM_URL }}' target="_blank" class='btn btn-outline-light'>CCB on OSM</a>
-                </p>
+            <div id='venue-description' class="col-md-6 text-left">
+                <div >
+                    <h2>Conference and Workshop Venue</h2>
+                    <h3>The Convention Centre Dublin (CCD)</h3>
+                </div>
+                <div >
+                    <p>
+                        The Convention Centre Dublin<br>
+                        Spencer Dock | North Wall Quay<br>
+                        Dublin | D01 T1W6 | Ireland<br>
+                    </p>
+                </div>
+                <div >
+                    <a href='{{ CCD_GOOGLEMAPS_URL }}' target="_blank" class='btn btn-outline-light'>CCD on Google Maps</a>
+                    <a href='{{ CCD_OSM_URL }}' target="_blank" class='btn btn-outline-light'>CCD on OSM</a>
+                </div>
             </div>
-            <div class="col-md-6 text-right">
-                <h2>Trainings &amp; Sprints Venue</h2>
-                <h3>FHNW Muttenz</h3>
-                <p>FHNW University of Applied Sciences and Arts<br>
-                Northwestern Switzerland<br>
-                Hofackerstrasse 30<br>
-                4132 Muttenz</p>
-                <p>
-                <img width="100%" src="{% static 'img/sprints_venue.png' %}">
-                </p>
-                <p>
-                <a href='{{ FHNW_OSM_URL }}' target="_blank" class='btn btn-outline-light' target="_blank">FHNW on OSM</a>
-                <a href='{{ FHNW_GOOGLEMAPS_URL }}' target="_blank" class='btn btn-outline-light' target="_blank">FHNW on GoogleMaps</a>
-                </p>
+            <div class="col-md-6 text-left">
+                <img width="100%" src="{% static 'img/ep2020-conference-venue-from-above.jpg' %}">
             </div>
         </div>
 
     </div> <!-- /container -->
 </div>
+
+<style>
+#venue-description {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+</style>
