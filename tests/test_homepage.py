@@ -19,7 +19,7 @@ def test_get_homepage(db, client):
     assert template_used(response, "ep19/bs/homepage/_sponsors.html")
     assert template_used(response, "ep19/bs/homepage/_schedule_overview.html")
     assert template_used(response, "ep19/bs/header/_with_jumbotron.html")
-    assert b"EuroPython 2019" in response.content
+    assert b"EuroPython 2020" in response.content
 
 
 def test_homepage_contains_last_3_news_for_current_conference(db, client):
