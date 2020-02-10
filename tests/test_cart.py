@@ -379,6 +379,16 @@ def test_cart_computes_discounts_correctly(db, user_client):
 
 
 @mark.xfail
+def test_manage_and_assign_ticket_urls_not_shown_in_step_3(db):
+    assert False
+
+
+@mark.xfail
+def test_manage_and_assign_ticket_urls_not_shown_in_step_4(db):
+    assert False
+
+
+@mark.xfail
 def test_cart_only_allows_to_buy_less_than_max_number_of_tickets(db):
     # TODO: This is now only enforced on the frontend - the backend implementation is missing
     assert False
