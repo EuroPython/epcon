@@ -174,7 +174,7 @@ def is_using_jinja2_template(response):
     return True
 
 
-def setup_conference_with_typical_fares(start=date(2020, 7, 20), end=date(2020, 7, 27)):
+def setup_conference_with_typical_fares(start=date(2020, 7, 20), end=date(2020, 7, 26)):
     conference = get_default_conference(
         conference_start=start,
         conference_end=end,
