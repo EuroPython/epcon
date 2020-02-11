@@ -16,7 +16,7 @@ def render_meta(context, title=""):
 
     description = ""
     page_title = (
-        f"{title}EuroPython 2020 &middot; Dublin, Ireland, 20-27 July 2020"
+        f"{title}EuroPython 2020 &middot; Dublin, Ireland, 20-26 July 2020"
     )
     page_url = context["CURRENT_URL"]
 
