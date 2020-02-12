@@ -1,6 +1,13 @@
 name: EuroPython website
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+    - master
+    - dev/ep*
+  pull_request:
+    branches: 
+    - dev/ep*
 
 jobs:
   build:
