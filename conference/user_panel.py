@@ -30,6 +30,7 @@ from conference.models import (
     TalkSpeaker,
     Ticket,
     ATTENDEEPROFILE_VISIBILITY,
+    ATTENDEEPROFILE_GENDER,
 )
 from conference.tickets import reset_ticket_settings
 from p3.models import P3Profile, TicketConference
@@ -285,11 +286,21 @@ class ProfileSettingsForm(forms.ModelForm):
         help_text=(
             "We require a mobile phone number for all speakers "
             "for last minute contacts and in case we need "
-            "timely clarification (if no reponse to previous emails).<br>"
-            "Use the international format, eg: +39-055-123456.<br />"
-            "This number will <strong>never</strong> be published."
+            "timely clarification (if no reponse to previous emails). "
+            "Use the international format (e.g.: +44 123456789). "
+            "This field will <strong>never</strong> be published."
         ),
         max_length=30,
+        required=False,
+    )
+    gender = forms.ChoiceField(
+        help_text=(
+            "We use this information for statistics related to conference "
+            "attendance diversity. "
+            "This field will <strong>never</strong> be published."
+        ),
+        choices=ATTENDEEPROFILE_GENDER,
+        widget=forms.Select,
         required=False,
     )
 
@@ -332,6 +343,7 @@ class ProfileSettingsForm(forms.ModelForm):
             "last_name",
             "is_minor",
             "phone",
+            "gender",
             "email",
             # second section
             "picture_options",
@@ -385,10 +397,17 @@ class ProfileSettingsForm(forms.ModelForm):
             ),
             Div(
                 Div("email", css_class="col-md-6"),
-                Div("phone", css_class="col-md-6"),
                 css_class="row",
             ),
-            Div(Div("is_minor", css_class="col-md-6"), css_class="row"),
+            Div(
+                Div("phone", css_class="col-md-6"),
+                Div("gender", css_class="col-md-6"),
+                css_class="row",
+            ),
+            Div(
+                Div("is_minor", css_class="col-md-6"),
+                css_class="row",
+            ),
             HTML("<h1>Profile picture</h1>"),
             Div(
                 HTML(

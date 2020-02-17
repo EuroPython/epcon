@@ -309,9 +309,16 @@ class AttendeeProfileManager(models.Manager):
 
 
 ATTENDEEPROFILE_VISIBILITY = Choices(
-    ('p', "PUBLIC", 'Publicly available'),
-    ('m', "PARTICIPANTS_ONLY", 'Visible to EuroPython attendees'),
-    ('x', "PRIVATE", 'Visible only to you'),
+    ("p", "PUBLIC", "Publicly available"),
+    ("m", "PARTICIPANTS_ONLY", "Visible to EuroPython attendees"),
+    ("x", "PRIVATE", "Visible only to you"),
+)
+
+ATTENDEEPROFILE_GENDER = Choices(
+    ("m", "MALE", "Male"),
+    ("f", "FEMALE", "Female"),
+    ("o", "OTHER", "Other"),
+    ("", "PREFER_NOT_TO_SAY", "Prefer not to say"),
 )
 
 
@@ -336,9 +343,15 @@ class AttendeeProfile(models.Model):
     phone = models.CharField(
         _('Phone'),
         max_length=30, blank=True,
-        help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
+        help_text=_(
+            'Enter a phone number where we can contact you in case of '
+            'administrative issues.<br>Use the international format, '
+            'eg: +39-055-123456'
+        ),
     )
-    gender = models.CharField(max_length=32, blank=True)
+    gender = models.CharField(
+        max_length=1, choices=ATTENDEEPROFILE_GENDER, blank=True, default=""
+    )
 
     personal_homepage = models.URLField(_('Personal homepage'), blank=True)
     company = models.CharField(_('Company'), max_length=50, blank=True)

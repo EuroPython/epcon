@@ -189,7 +189,7 @@ def test_if_user_can_add_a_speaker_to_a_proposal(user_client):
             "users_given_name": "Joe",
             "users_family_name": "Doe",
             "phone": "+48523456789",
-            "gender": "M",
+            "gender": "m",
             "bio": "ASdf bio",
         },
     )
@@ -462,7 +462,7 @@ def test_update_speaker_updated_speaker(user_client):
         is_minor=True,
         job_title="goat",
         phone="+48123456789",
-        gender="yes",
+        gender="m",
         company="widgets inc",
         company_homepage="www.widgets.inc",
         bio="this is my bio",
