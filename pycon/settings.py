@@ -508,19 +508,19 @@ CONFERENCE_TALK_DOMAIN = Choices(
 # TODO: Make that into Choices
 CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES = (
     (None, 'Please select your shirt size!'),
-    ('fs', 'S (female)'),
-    ('fm', 'M (female)'),
-    ('fl', 'L (female)'),
-    ('fxl', 'XL (female)'),
-    ('fxxl', 'XXL (female)'),
-    ('fxxxl', '3XL (female)'),
-    ('s', 'S (male)'),
-    ('m', 'M (male)'),
-    ('l', 'L (male)'),
-    ('xl', 'XL (male)'),
-    ('xxl', 'XXL (male)'),
-    ('xxxl', '3XL (male)'),
-    ('xxxxl', '4XL (male)'),
+    ('fs', 'S (fitted cut)'),
+    ('fm', 'M (fitted cut)'),
+    ('fl', 'L (fitted cut)'),
+    ('fxl', 'XL (fitted cut)'),
+    ('fxxl', 'XXL (fitted cut)'),
+    ('fxxxl', '3XL (fitted cut)'),
+    ('s', 'S (straight cut)'),
+    ('m', 'M (straight cut)'),
+    ('l', 'L (straight cut)'),
+    ('xl', 'XL (straight cut)'),
+    ('xxl', 'XXL (straight cut)'),
+    ('xxxl', '3XL (straight cut)'),
+    ('xxxxl', '4XL (straight cut)'),
 )
 
 # Available diets
