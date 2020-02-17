@@ -4,6 +4,7 @@ from p3.models import TicketConference
 from conference.models import Ticket
 from conference.fares import FARE_CODE_REGEXES, FARE_CODE_VARIANTS
 
+
 def reset_ticket_settings(ticket):
     tc = ticket.p3_conference
     new_tc = TicketConference()  # won't save this, created just to copy defaults from it

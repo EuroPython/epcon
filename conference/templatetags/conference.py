@@ -93,7 +93,7 @@ def admin_urlname_fromct(ct, action, id=None):
         args = (str(id),)
     try:
         return reverse(r, args=args)
-    except:
+    except Exception:
         return None
 
 
@@ -114,4 +114,4 @@ def attrib_(ob, attrib):
         except TypeError:
             return getattr(ob, attrib, None)
         else:
-            return [ attrib_(x, attrib) for x in ob ]
+            return [attrib_(x, attrib) for x in ob]
