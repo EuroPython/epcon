@@ -62,6 +62,8 @@ Get the project up and running:
 $ docker-compose up
 ```
 
+You should be able to access the local instance of the website at http://localhost:8888.
+
 You can access the admin pages using the `admin` username. You can login to the public pages using either `alice@europython.eu` or `bob@europython.eu`. All users' passwords are `europython`.
 
 ## Debugging with VS Code

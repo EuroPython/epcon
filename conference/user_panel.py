@@ -299,7 +299,7 @@ class ProfileSettingsForm(forms.ModelForm):
             "attendance diversity. "
             "This field will <strong>never</strong> be published."
         ),
-        choices=ATTENDEEPROFILE_GENDER,
+        choices=(("", "---", "---"),) + ATTENDEEPROFILE_GENDER,
         widget=forms.Select,
         required=False,
     )
@@ -397,15 +397,12 @@ class ProfileSettingsForm(forms.ModelForm):
             ),
             Div(
                 Div("email", css_class="col-md-6"),
+                Div("is_minor", css_class="col-md-6 mt-4"),
                 css_class="row",
             ),
             Div(
                 Div("phone", css_class="col-md-6"),
                 Div("gender", css_class="col-md-6"),
-                css_class="row",
-            ),
-            Div(
-                Div("is_minor", css_class="col-md-6"),
                 css_class="row",
             ),
             HTML("<h1>Profile picture</h1>"),

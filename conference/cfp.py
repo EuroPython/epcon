@@ -21,6 +21,7 @@ from conference.models import (
     Speaker,
     Talk,
     TalkSpeaker,
+    ATTENDEEPROFILE_GENDER,
 )
 from conference.talks import dump_relevant_talk_information_to_dict
 
@@ -300,15 +301,20 @@ class AddSpeakerToTalkForm(forms.ModelForm):
         help_text=(
             "We require a mobile phone number for all speakers "
             "for last minute contacts and in case we need "
-            "timely clarification (if no reponse to previous emails).<br>"
-            "Use the international format, eg: +39-055-123456.<br />"
-            "This number will <strong>never</strong> be published."
+            "timely clarification (if no reponse to previous emails). "
+            "Use the international format (e.g.: +44 123456789). "
+            "This field will <strong>never</strong> be published."
         ),
         max_length=30,
     )
-    gender = forms.CharField(
-        label="Type your gender",
-        max_length=32,
+    gender = forms.ChoiceField(
+        help_text=(
+            "We use this information for statistics related to conference "
+            "attendance diversity. "
+            "This field will <strong>never</strong> be published."
+        ),
+        choices=(("", "---", "---"),) + ATTENDEEPROFILE_GENDER,
+        widget=forms.Select,
         required=False,
     )
     company = forms.CharField(
@@ -332,10 +338,10 @@ class AddSpeakerToTalkForm(forms.ModelForm):
             'users_given_name',
             'users_family_name',
             'job_title',
-            'phone',
-            'bio',
-            'gender',
             'is_minor',
+            'phone',
+            'gender',
+            'bio',
             'company',
             'company_homepage',
         ]
