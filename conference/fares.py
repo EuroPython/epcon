@@ -27,7 +27,9 @@ FARE_CODE_VARIANTS = Choices(
 FARE_CODE_GROUPS = Choices(
     ("S", "STUDENT",  "Student"),
     ("P", "PERSONAL", "Personal"),
-    ("C", "COMPANY",  "Company"),
+    ("C", "COMPANY",  "Business"),
+    # Note: We are using the term "Business ticket" on the website, but
+    # Company ticket in the code (for historical reasons)
 )
 
 FARE_CODE_REGEXES = {
