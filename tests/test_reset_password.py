@@ -46,7 +46,7 @@ def test_reset_password(client):
     # --------
     email = mail.outbox[0]
     assert email.to == ["joedoe@example.com"]
-    assert email.subject == "EuroPython2019: Reset password link"
+    assert email.subject == "EuroPython 2020: Reset password link"
     # get a relative url from the middle of the email.
     url_from_email = email.body.splitlines()[6].split("example.com")[1]
 
