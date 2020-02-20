@@ -1,6 +1,6 @@
 Hello!
 
-Thanks for buying tickets for EuroPython 2019.
+Thanks for buying tickets for EuroPython 2020.
 
 This is the summary of order {{ order.code }}:
 
@@ -18,4 +18,6 @@ Your invoice is also available on the same url.
 If you run into any issues, please contact us at helpdesk@europython.eu
 
 Kind regards,
-EuroPython2019 Team
+-- 
+EuroPython 2020 Team
+https://ep2020.europython.eu
