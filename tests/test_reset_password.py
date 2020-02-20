@@ -48,7 +48,7 @@ def test_reset_password(client):
     assert email.to == ["joedoe@example.com"]
     assert email.subject == "EuroPython 2020: Reset password link"
     # get a relative url from the middle of the email.
-    url_from_email = email.body.splitlines()[6].split("example.com")[1]
+    url_from_email = email.body.splitlines()[7].split("example.com")[1]
 
     response = client.get(url_from_email)
     # This should be a template with two password inputs
