@@ -20,6 +20,8 @@
             <div class='col-md-4'>
                 <p class='cart-step1-description'>
                 For people enjoying Python from home.
+                If you are programming Python in your free time or as a freelancer
+                and don't need a VAT invoice, this option is for you.
                 </p>
                 <p>
                 <a class='btn btn-outline-primary btn-lg btn-block' href='{% url "cart:step2_pick_tickets" "personal" %}'>Personal Tickets</a>
@@ -29,18 +31,22 @@
             <div class='col-md-4'>
                 <p class='cart-step1-description'>
                 For people using Python to make a living.
-                Is your employer paying for the tickets?
-                Are you buying tickets for multiple people in your company?
-                Choose this option.
+                If your employer is paying for the ticket or you are
+                buying tickets for other people in your company and need
+                a VAT invoice, please choose this option.
                 </p>
                 <p>
-                <a class='btn btn-outline-primary btn-lg btn-block' href='{% url "cart:step2_pick_tickets" "company" %}'>Company tickets</a>
+                <a class='btn btn-outline-primary btn-lg btn-block' href='{% url "cart:step2_pick_tickets" "company" %}'>Business tickets</a>
                 </p>
             </div>
 
             <div class='col-md-4'>
                 <p class='cart-step1-description'>
-                Only available for pupils, students and postdoctoral researchers. Please bring your student card or declaration from University, stating your affiliation, starting and end dates of your contract.
+                For people coding in Python while still in education.
+                This highly subsidized option is only available for pupils,
+                students and postdoctoral researchers.
+                Please bring your student card or declaration from University,
+                stating your affiliation, starting and end dates of your contract.
                 </p>
                 <p>
                 <a class='btn btn-outline-primary btn-lg btn-block' href='{% url "cart:step2_pick_tickets" "student" %}'><span>Student &amp; Academia Tickets</span></a>

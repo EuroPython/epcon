@@ -9,7 +9,7 @@ backcall==0.1.0           # via ipython
 cairocffi==1.1.0          # via cairosvg, weasyprint
 cairosvg==2.4.2           # via weasyprint
 certifi==2019.11.28       # via requests
-cffi==1.13.2              # via cairocffi, weasyprint
+cffi==1.14.0              # via cairocffi, weasyprint
 chardet==3.0.4            # via requests
 cssselect2==0.2.2         # via cairosvg, weasyprint
 dataclasses==0.7
@@ -19,7 +19,7 @@ dj-database-url==0.5.0
 django-classy-tags==1.0.0
 django-cms==3.7.1
 django-crispy-forms==1.8.1
-django-extensions==2.2.6
+django-extensions==2.2.8
 django-filebrowser-no-grappelli==3.8.0
 django-filer==1.6.0
 django-formtools==2.2     # via django-cms
@@ -43,7 +43,7 @@ gunicorn==19.10.0
 html5lib==1.0.1           # via djangocms-text-ckeditor, weasyprint
 idna==2.8                 # via requests
 ipython-genutils==0.2.0   # via traitlets
-ipython==7.11.1
+ipython==7.12.0
 jdcal==1.4.1              # via openpyxl
 jedi==0.16.0              # via ipython
 lxml==4.4.2
@@ -55,7 +55,7 @@ pexpect==4.8.0            # via ipython
 phonenumbers==8.11.2
 pickleshare==0.7.5        # via ipython
 pillow==7.0.0             # via cairosvg, djangocms-text-ckeditor, easy-thumbnails
-prompt-toolkit==3.0.2     # via ipython
+prompt-toolkit==3.0.3     # via ipython
 ptyprocess==0.6.0         # via pexpect
 pyasn1==0.4.8             # via python-jose, rsa
 pycparser==2.19           # via cffi

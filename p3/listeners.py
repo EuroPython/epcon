@@ -1,12 +1,15 @@
 import logging
-from . import models
 
-from assopy.models import ticket_for_user, user_created
-from conference.listeners import fare_tickets
-from conference.models import AttendeeProfile, Ticket
 from django.conf import settings
 from django.urls import reverse
 from django.db.models.signals import post_save
+
+from assopy.models import ticket_for_user, user_created
+from assopy import dataaccess as cd
+from conference.listeners import fare_tickets
+from conference.models import AttendeeProfile, Ticket
+
+from . import models
 
 log = logging.getLogger('p3')
 
@@ -16,6 +19,7 @@ def on_ticket_for_user(sender, **kwargs):
     tickets = dataaccess.user_tickets(sender.user, settings.CONFERENCE_CONFERENCE, only_complete=True)
     list(map(kwargs['tickets'].append, tickets))
 
+
 ticket_for_user.connect(on_ticket_for_user)
 
 
@@ -23,7 +27,9 @@ def on_profile_created(sender, **kw):
     if kw['created']:
         models.P3Profile(profile=kw['instance']).save()
 
+
 post_save.connect(on_profile_created, sender=AttendeeProfile)
+
 
 def on_user_created(sender, **kw):
     if kw['profile_complete']:
@@ -34,12 +40,12 @@ def on_user_created(sender, **kw):
         # waiting for the first identity
         pass
 
+
 user_created.connect(on_user_created)
 
 
 def create_p3_auto_assigned_conference_tickets(sender, params=None, **kws):
-
-    #print ('create_p3_conference_tickets: %r %r %r' % (sender, params, kws))
+    # print ('create_p3_conference_tickets: %r %r %r' % (sender, params, kws))
     fare = sender
 
     # Only create conference tickets with this helper
@@ -49,6 +55,7 @@ def create_p3_auto_assigned_conference_tickets(sender, params=None, **kws):
     # Get parameters sent by Fare.create_tickets()
     if params is None:
         return
+
     created_tickets = params['tickets']
     user = params['user']
 
@@ -68,23 +75,29 @@ def create_p3_auto_assigned_conference_tickets(sender, params=None, **kws):
     for ticket in created_tickets:
         utils.assign_ticket_to_user(ticket, user)
 
+
 fare_tickets.connect(create_p3_auto_assigned_conference_tickets)
 
+
 # redefining user_tickets of assopy to include assined tickets
-from assopy import dataaccess as cd
 _original = cd.user_tickets
+
+
 def _user_tickets(u):
     data = _original(u)
     # adding to already selected tickets the email of the person to who
     # they've been assigned to
     from p3.models import TicketConference
-    tids = [ x['id'] for x in data ]
-    info = dict([
-        (x['ticket'], x['assigned_to'])
-        for x in TicketConference.objects\
-            .filter(ticket__in=tids)\
-            .exclude(assigned_to="")\
-            .values('ticket', 'assigned_to')])
+
+    tids = [x['id'] for x in data]
+    tickets = (
+        TicketConference.objects
+            .filter(ticket__in=tids)
+            .exclude(assigned_to="")
+            .values('ticket', 'assigned_to')
+    )
+    info = dict([(x['ticket'], x['assigned_to']) for x in tickets])
+
     for x in data:
         try:
             x['note'] = 'to: %s' % info[x['id']]
@@ -92,16 +105,18 @@ def _user_tickets(u):
             continue
 
     # adding tickets assigned to the user
-    qs = Ticket.objects\
-        .filter(p3_conference__assigned_to__iexact=u.email)\
-        .order_by('-fare__conference')\
-        .select_related('fare')
+    qs = (
+        Ticket.objects
+            .filter(p3_conference__assigned_to__iexact=u.email)
+            .order_by('-fare__conference')
+            .select_related('fare')
+    )
 
     from assopy.models import Order
+
     def order(t):
         try:
-            o = Order.objects\
-                .get(orderitem__ticket=t)
+            o = Order.objects.get(orderitem__ticket=t)
         except models.Order.DoesNotExist:
             return {}
         return {
@@ -109,6 +124,7 @@ def _user_tickets(u):
             'created': o.created,
             'url': reverse('admin:assopy_order_change', args=(o.id,)),
         }
+
     for t in qs:
         data.append({
             'id': t.id,
@@ -122,4 +138,6 @@ def _user_tickets(u):
             'order': order(t),
         })
     return data
-cd.user_tickets = _user_tickets
+
+
+cd.user_tickets = _user_tickets  # noqa

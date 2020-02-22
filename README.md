@@ -1,5 +1,5 @@
-[![Travis-CI Status](https://travis-ci.org/EuroPython/epcon.svg?branch=default)](https://travis-ci.org/EuroPython/epcon)
-[![Documentation Status](https://readthedocs.org/projects/epcon/badge/?version=latest)](https://readthedocs.org/projects/epcon/?badge=latest)
+[![Tests Build](https://github.com/EuroPython/epcon/workflows/Tests%20Build/badge.svg)](https://github.com/EuroPython/epcon/actions?query=workflow%3A%22Tests+Build%22)
+[![Documentation Status](https://readthedocs.org/projects/epcon/badge/?version=latest)](https://epcon.readthedocs.io/en/latest/)
 
 # README
 
@@ -69,7 +69,7 @@ You can access the admin pages using the `admin` username. You can login to the 
 To start a server with the VS Code debugger enabled, run:
 
 ```bash
-$ docker -f docker-compose.yml -f docker-compose-vscode-debugger.yml up
+$ docker-compose -f docker-compose.yml -f docker-compose-vscode-debugger.yml up
 ```
 
 Next, run "Start Debugging" command in VS Code (otherwise, the `docker-compose up`

@@ -141,13 +141,9 @@ def test_user_panel_update_ticket(client):
     ticket1 = invoice1.order.orderitem_set.get().ticket
     ticketconference = TicketConference.objects.get(ticket=ticket1)
 
-    assert ticket1.name == ticketconference.name
-    newname = ticket1.name + " changed"
-
     response = client.post(
         reverse("user_panel:manage_ticket", kwargs={"ticket_id": ticket1.id}),
         {
-            "name": newname,
             "diet": "other",
             "shirt_size": "xxxl",
             "tagline": "xyz",
@@ -157,12 +153,41 @@ def test_user_panel_update_ticket(client):
 
     ticket1.refresh_from_db()
     ticketconference.refresh_from_db()
-    assert ticket1.name == newname
-    assert ticketconference.name == newname
+    assert ticket1.name == ticketconference.name
     assert ticketconference.diet == "other"
     assert ticketconference.shirt_size == "xxxl"
     assert ticketconference.tagline == "xyz"
     assert ticketconference.days == "2019-07-10"
+
+
+@responses.activate
+def test_user_panel_update_ticket_cannot_update_name(client):
+    get_default_conference()
+    Email.objects.create(code="purchase-complete")
+    fare = FareFactory()
+    user = make_user(is_staff=True)
+
+    client.login(email=user.email, password="password123")
+
+    invoice1 = create_order_and_invoice(user.assopy_user, fare)
+    ticket1 = invoice1.order.orderitem_set.get().ticket
+    ticketconference = TicketConference.objects.get(ticket=ticket1)
+
+    assert ticket1.name == ticketconference.name
+    old_name = ticket1.name
+    new_name = ticket1.name + " changed"
+
+    response = client.post(
+        reverse("user_panel:manage_ticket", kwargs={"ticket_id": ticket1.id}),
+        {
+            "name": new_name
+        },
+    )
+
+    ticket1.refresh_from_db()
+    ticketconference.refresh_from_db()
+    assert ticket1.name == old_name
+    assert ticketconference.name == old_name
 
 
 def test_ticket_buyer_is_shown_assign_ticket_link(db, user_client):
