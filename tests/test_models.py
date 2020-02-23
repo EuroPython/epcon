@@ -1,7 +1,7 @@
-import datetime
 from unittest import mock
 
 from django.conf import settings
+from django.utils import timezone
 
 import pytest
 
@@ -25,7 +25,7 @@ def p3_profile(user):
 
 
 def test_available_tickets(user):
-    conference = ConferenceFactory(conference_start=datetime.date.today())
+    conference = ConferenceFactory(conference_start=timezone.now().date())
     fare = FareFactory(conference=conference.code)
 
     TicketFactory(user=user, fare=fare)

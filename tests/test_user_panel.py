@@ -1,6 +1,5 @@
 import pytest
 import uuid
-from datetime import date
 
 from django.conf import settings
 from django.utils import timezone
@@ -111,7 +110,7 @@ def test_user_panel_manage_ticket(client):
     client.login(email=user.email, password="password123")
 
     order = create_order(user.assopy_user, fare)
-    order.payment_date = date.today()
+    order.payment_date = timezone.now().date()
     order.save()
 
     create_invoices_for_order(order)

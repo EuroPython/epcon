@@ -1,6 +1,6 @@
 import csv
 import decimal
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal
 import random
 import json

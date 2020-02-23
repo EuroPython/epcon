@@ -9,13 +9,13 @@ This module handles all things related to creating a new invoice, including
 """
 from collections import OrderedDict
 from decimal import Decimal
-import datetime
 
 import unicodecsv as csv
 
 from django.template.loader import render_to_string
 from django.db.models import Max
 from django.db import transaction
+from django.utils import timezone
 
 from assopy.models import Invoice, Order
 
@@ -318,9 +318,10 @@ CSV_REPORT_COLUMNS = [
 # For b/w compatibility
 CSV_2018_REPORT_COLUMNS = CSV_REPORT_COLUMNS
 
+
 def export_invoices_to_tax_report(start_date, end_date=None):
     if end_date is None:
-        end_date = datetime.date.today()
+        end_date = timezone.now().date()
 
     invoices = Invoice.objects.filter(
         emit_date__range=(start_date, end_date),
@@ -365,7 +366,7 @@ def export_invoices_to_tax_report_csv(fp, start_date, end_date=None):
 
 def export_invoices_for_payment_reconciliation(start_date, end_date=None):
     if end_date is None:
-        end_date = datetime.date.today()
+        end_date = timezone.now().date()
 
     invoices = Invoice.objects.filter(
         emit_date__range=(start_date, end_date),
