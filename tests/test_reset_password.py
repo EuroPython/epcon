@@ -3,9 +3,8 @@ from pytest import mark
 from django.core import mail
 from django.urls import reverse
 
-from django_factory_boy import auth as auth_factories
-
-from tests.common_tools import template_used
+from .common_tools import template_used
+from . import factories
 
 
 @mark.django_db
@@ -31,7 +30,7 @@ def test_reset_password(client):
     assert len(mail.outbox) == 0
 
     # --------
-    auth_factories.UserFactory(email="joedoe@example.com")
+    factories.UserFactory(email="joedoe@example.com")
 
     response = client.post(url, {"email": "joedoe@example.com"})
     # successful redirect, and one email sent because user exists

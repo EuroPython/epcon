@@ -39,7 +39,7 @@ from tests.common_tools import make_user
 
 
 def _prepare_invoice_for_basic_test(order_code, invoice_code):
-    # default password is 'password123' per django_factory_boy
+    # default password is 'password123'
     user = make_user()
 
     # FYI(artcz): Order.objects.create is overloaded method on

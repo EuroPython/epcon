@@ -22,7 +22,7 @@ def gravatar(email, size=80, default='identicon', rating='r',
         # Encode it!
         lowercase_email = lowercase_email.encode('utf-8')
 
-    gravatar_url = f'{host}/avatar/{hashlib.md5(lowercase_email).hexdigest()}?'
+    gravatar_url = '{}/avatar/{}?'.format(host, hashlib.md5(lowercase_email).hexdigest())
     gravatar_url += urllib.parse.urlencode({
         'default': default,
         'size': size,

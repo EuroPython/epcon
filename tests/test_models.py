@@ -8,7 +8,6 @@ import pytest
 from p3.models import TicketConference
 from p3.models import P3Profile
 from tests.factories import (
-    AttendeeProfileFactory,
     ConferenceFactory,
     TicketFactory,
     FareFactory,
@@ -20,8 +19,7 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def p3_profile(user):
-    profile = AttendeeProfileFactory(user=user)
-    return P3Profile(profile=profile)
+    return P3Profile(profile=user.attendeeprofile)
 
 
 def test_available_tickets(user):
@@ -37,7 +35,7 @@ def test_available_tickets(user):
 
 
 def test_atendee_profile(user):
-    attendee_profile = AttendeeProfileFactory(user=user)
+    attendee_profile = user.attendeeprofile
     ticket = TicketFactory(user=user)
     ticket_conference = TicketConferenceFactory(ticket=ticket)
 

@@ -118,7 +118,7 @@ def send_verification_email(user, current_site) -> None:
     verification_path = reverse(
         "accounts:handle_verification_token", args=[new_token.token]
     )
-    full_url = f'https://{current_site.domain}{verification_path}'
+    full_url = 'https://{}{}'.format(current_site.domain, verification_path)
 
     content = render_to_string("ep19/emails/signup_verification_email.txt", {
         'new_token': new_token,
@@ -164,13 +164,13 @@ def get_or_create_attendee_profile_for_new_user(user):
 
 
 def slug_for_user(user) -> str:
-    name = f'{user.first_name} {user.last_name}'
+    name = '{} {}'.format(user.first_name, user.last_name)
     slug = slugify(name)
 
     while AttendeeProfile.objects.filter(slug=slug).exists():
         # add random 6 digit number as long as clashes occur
         noise = random.randint(1e5, 1e6)
-        slug = f'{slug}-{noise}'
+        slug = '{}-{}'.format(slug, noise)
 
     return slug
 

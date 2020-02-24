@@ -765,9 +765,8 @@ class TalkSpeaker(models.Model):
     class Meta:
         unique_together = (('talk', 'speaker'),)
 
-
     def __str__(self):
-        return f'[{self.speaker.user}] for {self.talk.title}'
+        return '[{}] for {}'.format(self.speaker.user, self.talk.title)
 
 
 class FareQuerySet(models.QuerySet):
@@ -1363,7 +1362,7 @@ class StripePayment(models.Model):
     message = models.CharField(max_length=255, blank=True, default='')
 
     def __str__(self):
-        return f'StripePayment(uuid={self.uuid}, status={self.status})'
+        return 'StripePayment(uuid={}, status={})'.format(self.uuid, self.status)
 
     def amount_for_stripe(self):
         # 9.99 becomes 999

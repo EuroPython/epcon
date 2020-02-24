@@ -726,7 +726,7 @@ class OrderItem(models.Model):
     vat = models.ForeignKey(Vat, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.code} {self.description} -- {self.price}'
+        return '{} {} -- {}'.format(self.code, self.description, self.price)
 
     def invoice(self):
         """
