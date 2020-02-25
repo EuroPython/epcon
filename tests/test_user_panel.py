@@ -110,7 +110,7 @@ def test_user_panel_manage_ticket(client):
     client.login(email=user.email, password="password123")
 
     order = create_order(user.assopy_user, fare)
-    order.payment_date = timezone.now().date()
+    order.payment_date = timezone.now()
     order.save()
 
     create_invoices_for_order(order)

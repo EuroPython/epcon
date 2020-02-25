@@ -201,7 +201,7 @@ def cart_step4b_verify_payment(request, payment_uuid, session_id):
         except PaymentError:
             return redirect("cart:step4_payment", order_uuid=order.uuid)
 
-        if order.payment_date != None:
+        if order.payment_date is not None:
             # XXX This order was already paid for(!)
             payment.message = 'Duplicate payment?!?'
             payment.save()
