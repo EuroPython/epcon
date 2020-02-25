@@ -1,4 +1,4 @@
-from pycon.settings import *  # noqa
+from .test_settings import *  # noqa
 
 # DEFAULT_URL_PREFIX='http://localhost:8000'
 # DEBUG=True
@@ -9,7 +9,6 @@ DISABLE_CACHING = {
         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     }
 }
-
 
 # however for some tests we *do* want to test caches, hence we're going to use
 # @override_settings(CACHES=settings.ENABLE_LOCMEM_CACHE)
