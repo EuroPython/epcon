@@ -5,6 +5,7 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+    atomic = False
     dependencies = [
         ('assopy', '0008_remove_user_oauth_info_model'),
         ('p3', '0002_remove_unused_models'),
