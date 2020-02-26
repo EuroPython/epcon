@@ -1,4 +1,4 @@
-name: Tests Build
+name: CI Pipeline
 
 on:
   push:
@@ -12,10 +12,8 @@ on:
     - ep20*
 
 jobs:
-  build:
-
-    runs-on: ubuntu-18.04
-
+  tests:
+    runs-on: buster
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.6
