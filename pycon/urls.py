@@ -48,7 +48,6 @@ urlpatterns = [
     re_path(r'^i18n/', include('django.conf.urls.i18n')),
 
     re_path('', include('social.apps.django_app.urls', namespace='social')),
-    # TODO umgelurgel: See if the django.auth.urls are used anywhere and if they can be removed
     re_path(r'^login/', RedirectView.as_view(pattern_name='auth:login', permanent=False)),
     re_path('', include(('django.contrib.auth.urls', 'auth'), namespace='auth')),
 
