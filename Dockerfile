@@ -4,15 +4,7 @@ FROM python:3.6-buster
 # Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-                    build-essential \
-                    locales \
-                    libssl-dev \
-                    libxrender-dev \
-                    libxml2-dev \
-                    libxslt1-dev \
-                    wget \
-                    curl \
-                    git
+                    sqlite3
 
 RUN pip install pip --upgrade
 

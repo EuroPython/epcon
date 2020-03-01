@@ -270,6 +270,7 @@ INSTALLED_APPS = (
     'filer',
     'easy_thumbnails',
 
+    'markitup',
     'cms_utils',
     'social_django',
 )
@@ -397,6 +398,7 @@ PAGE_TEMPLATES = (
 CMS_PLUGIN_PROCESSORS = (
     'cms_utils.processors.process_templatetags',
 )
+MARKITUP_FILTER = ('markdown2.markdown', {'safe_mode': False})
 
 CKEDITOR_SETTINGS = {
     'height': 300,

@@ -11,11 +11,15 @@ from django.core import exceptions
 from django.core.cache import cache
 from django.urls import reverse
 from django.db import models, transaction
-from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext as _
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import (
+    GenericForeignKey,
+    GenericRelation
+)
 
 import shortuuid
 import tagging
@@ -160,15 +164,6 @@ class Conference(models.Model):
         today = timezone.now().date()
         return today > self.conference_end
 
-post_save.connect(ConferenceManager.clear_cache, sender=Conference)
-
-
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import (
-    GenericForeignKey,
-    GenericRelation
-)
-
 
 class MultilingualContentManager(models.Manager):
     def setContent(self, object, content, language, body):
@@ -199,6 +194,7 @@ class MultilingualContentManager(models.Manager):
                 return None
             else:
                 return records.get(settings.LANGUAGE_CODE, list(records.values())[0])
+
 
 class MultilingualContent(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -234,6 +230,7 @@ class _fs_upload_to(object):
 
         return fpath
 
+
 class AttendeeProfileManager(models.Manager):
     def findSlugForUser(self, user):
         name = '%s %s' % (user.first_name, user.last_name)
@@ -254,13 +251,12 @@ class AttendeeProfileManager(models.Manager):
                 last = counter
 
         if last is not None:
-            slug = '%s-%d' % (slug, last+1)
+            slug = '%s-%d' % (slug, last + 1)
         elif not slug:
             # if there is no slug, because the firstname or the lastname are empties,
             # we will return '-1'
             slug = '-1'
         return slug
-
 
     def randomUUID(self, length=6):
         import string
@@ -336,7 +332,11 @@ class AttendeeProfile(models.Model):
     phone = models.CharField(
         _('Phone'),
         max_length=30, blank=True,
-        help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
+        help_text=_(
+            'Enter a phone number where we can contact you in case of '
+            'administrative issues.<br />Use the international format, '
+            'eg: +39-055-123456'
+        ),
     )
     gender = models.CharField(max_length=32, blank=True)
 
@@ -358,9 +358,7 @@ class AttendeeProfile(models.Model):
     def clean(self):
         from django.core.exceptions import ValidationError
         if self.visibility != 'p':
-            if TalkSpeaker.objects\
-                .filter(speaker__user=self.user_id, talk__status='accepted')\
-                .count()>0:
+            if TalkSpeaker.objects.filter(speaker__user=self.user_id, talk__status='accepted').count() > 0:
                 raise ValidationError('This profile must be public')
 
     def setBio(self, body, language=None):
@@ -490,6 +488,7 @@ class TalkQuerySet(models.QuerySet):
             # FIXME: This part should be done in one transaction.
             TalkSpeaker(talk=talk, speaker=speaker).save()
         return talk
+
 
 # Previous definition of TALK_TYPE, kept around, since some of the
 # code in the system uses the codes to checks.
@@ -781,6 +780,7 @@ class FareQuerySet(models.QuerySet):
 
 # TODO(artcz) Convert those to Choices for easier enum-like interface
 
+
 FARE_TICKET_TYPES = Choices(
     ('conference', 'Conference ticket'),
     ('partner', 'Partner Program'),
@@ -799,6 +799,8 @@ FARE_TYPES = Choices(
     ('p', 'personal', 'Personal'),
     ('s', 'student', 'Student'),
 )
+
+
 class Fare(models.Model):
     conference = models.CharField(help_text='Conference code', max_length=20)
     code = models.CharField(max_length=10)
@@ -825,7 +827,7 @@ class Fare(models.Model):
         unique_together = (('conference', 'code'),)
 
     def valid(self):
-        #numb = len(list(Ticket.objects.all()))
+        # numb = len(list(Ticket.objects.all()))
         today = timezone.now().date()
         try:
             validity = self.start_validity <= today <= self.end_validity
@@ -834,7 +836,7 @@ class Fare(models.Model):
             # both) are set to None. That by default means fare is invalid
             # right now.
             validity = False
-        #validity = numb < settings.MAX_TICKETS
+        # validity = numb < settings.MAX_TICKETS
         return validity
 
     def fare_type(self):
@@ -896,6 +898,7 @@ TICKET_TYPE = (
     ('staff', 'staff'),
 )
 
+
 class Ticket(models.Model):
     user = models.ForeignKey(
         get_user_model(),
@@ -910,9 +913,11 @@ class Ticket(models.Model):
     frozen = models.BooleanField(
         default=False,
         verbose_name=_('ticket canceled / invalid / frozen'),
-        help_text=_('If a ticket was canceled or otherwise needs to be marked as '
-                    'invalid, please check this checkbox to indicate this.'),
-        )
+        help_text=_(
+            'If a ticket was canceled or otherwise needs to be marked as '
+            'invalid, please check this checkbox to indicate this.'
+        ),
+    )
     ticket_type = models.CharField(max_length=8, choices=TICKET_TYPE, default='standard')
 
     objects = TicketQuerySet.as_manager()
@@ -985,15 +990,11 @@ class ScheduleManager(models.Manager):
         Return for each event prediction of participation based on EventInterest
         """
         seats_available = defaultdict(lambda: 0)
-        for row in EventTrack.objects\
-                    .filter(event__schedule__conference=conference)\
-                    .values('event', 'track__seats'):
+        for row in EventTrack.objects.filter(event__schedule__conference=conference).values('event', 'track__seats'):
             seats_available[row['event']] += row['track__seats']
 
         scores = self.events_score_by_attendance(conference)
-        events = Event.objects\
-            .filter(schedule__conference=conference)\
-            .select_related('schedule')
+        events = Event.objects.filter(schedule__conference=conference).select_related('schedule')
 
         output = {}
         # Now I have to make the forecast of the participants for each event,
@@ -1011,10 +1012,9 @@ class ScheduleManager(models.Manager):
 
         for event in events:
             score = scores[event.id]
-            group = list(Event.objects\
-                .group_events_by_times(event_by_day[event.schedule_id], event=event))[0]
+            group = list(Event.objects.group_events_by_times(event_by_day[event.schedule_id], event=event))[0]
 
-            group_score = sum([ scores[e.id] for e in group ])
+            group_score = sum([scores[e.id] for e in group])
             if group_score:
                 k = score / group_score
             else:
@@ -1182,7 +1182,7 @@ class Event(models.Model):
         It is of special type
         """
         # XXX: Use the tag template get track event that hunts the query
-        dbtracks = dict( (t.track, t) for t in self.schedule.track_set.all())
+        dbtracks = dict((t.track, t) for t in self.schedule.track_set.all())
         for t in tagging.models.Tag.objects.get_for_object(self):
             if t.name in dbtracks:
                 return dbtracks[t.name]
@@ -1242,8 +1242,6 @@ class VotoTalk(models.Model):
         unique_together = (('user', 'talk'),)
         verbose_name = 'Talk voting'
         verbose_name_plural = 'Talk votings'
-
-from conference import listeners
 
 
 # ========================================
@@ -1367,4 +1365,3 @@ class StripePayment(models.Model):
     def amount_for_stripe(self):
         # 9.99 becomes 999
         return int(self.amount * 100)
-

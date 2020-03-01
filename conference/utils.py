@@ -18,7 +18,7 @@ def dotted_import(path):
     from importlib import import_module
     from django.core.exceptions import ImproperlyConfigured
     i = path.rfind('.')
-    module, attr = path[:i], path[i+1:]
+    module, attr = path[:i], path[i + 1:]
 
     try:
         mod = import_module(module)
@@ -95,7 +95,7 @@ def ranking_of_talks(talks, missing_vote=5):
     if pipe.returncode != 0:
         raise RuntimeError("voteengine.py exits with code: %s; %s" % (pipe.returncode, err))
 
-    return [ talks_map[int(tid)] for tid in re.findall(r'\d+', out.split('\n')[-2]) ]
+    return [talks_map[int(tid)] for tid in re.findall(r'\d+', out.split('\n')[-2])]
 
 
 def voting_results():
@@ -131,10 +131,7 @@ class TimeTable2(object):
         self._analyzed = False
         self.events = events
         # Track list in the right order
-        self._tracks = list(Track.objects\
-            .filter(schedule=sid)\
-            .order_by('order')\
-            .values_list('track', flat=True))
+        self._tracks = list(Track.objects.filter(schedule=sid).order_by('order').values_list('track', flat=True))
 
     def __str__(self):
         return 'TimeTable2: %s - %s' % (self.sid, ', '.join(self._tracks))
@@ -192,9 +189,7 @@ class TimeTable2(object):
             .distinct()
         assert len(sids) == 1
         tt = cls.fromEvents(sids[0]['schedule'], qs)
-        tracks = set(Track.objects\
-            .filter(id__in=tids)\
-            .values_list('track', flat=True))
+        tracks = set(Track.objects.filter(id__in=tids).values_list('track', flat=True))
         for t in list(tt.events.keys()):
             if t not in tracks:
                 del tt.events[t]
@@ -202,10 +197,7 @@ class TimeTable2(object):
 
     @classmethod
     def fromSchedule(cls, sid):
-        qs = EventTrack.objects\
-            .filter(event__schedule=sid)\
-            .values('event')\
-            .distinct()
+        qs = EventTrack.objects.filter(event__schedule=sid).values('event').distinct()
         return cls.fromEvents(sid, qs)
 
     def _analyze(self):
@@ -220,7 +212,7 @@ class TimeTable2(object):
                 events[e['id']] = e
                 timeline.append(row)
             for ix, e1 in enumerate(timeline):
-                for e2 in timeline[ix+1:]:
+                for e2 in timeline[ix + 1:]:
                     # http://stackoverflow.com/questions/9044084/efficient-data-range-overlap-calculation-in-python
                     latest_start = max(e1[0], e2[0])
                     earliest_end = min(e1[1], e2[1])
@@ -281,13 +273,13 @@ class TimeTable2(object):
 
         step = step * 60 if step is not None else 0
         previous = None
-        for time, events in sorted(trasposed.items()):
+        for _time, events in sorted(trasposed.items()):
             if step and previous:
-                while (time-previous).seconds > step:
+                while (_time - previous).seconds > step:
                     previous = previous + timedelta(seconds=step)
                     yield previous, []
-            yield time, events
-            previous = time
+            yield _time, events
+            previous = _time
 
     def limits(self):
         """
@@ -297,7 +289,7 @@ class TimeTable2(object):
         for e in self.events.values():
             if start is None or e[0]['time'] < start:
                 start = e[0]['time']
-            x = e[-1]['time'] + timedelta(seconds=e[-1]['duration']*60)
+            x = e[-1]['time'] + timedelta(seconds=e[-1]['duration'] * 60)
             if end is None or x > end:
                 end = x
         return start, end

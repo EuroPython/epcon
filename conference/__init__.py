@@ -1,3 +1,1 @@
-"""
-Package contains all the views and models
-"""
+default_app_config = 'conference.apps.ConferenceConfig'
