@@ -352,7 +352,7 @@ class AttendeeProfile(models.Model):
     )
 
     gender = models.CharField(
-        max_length=1, choices=ATTENDEEPROFILE_GENDER, blank=True,
+        max_length=1, choices=ATTENDEEPROFILE_GENDER,
         help_text=_(
             "We use this information for statistics related to conference "
             "attendance diversity."

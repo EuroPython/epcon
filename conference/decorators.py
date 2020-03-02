@@ -2,11 +2,28 @@ import functools
 
 from django import http
 from django.conf import settings
+from django.contrib import messages
+from django.urls import reverse
+from django.shortcuts import redirect
 
 from conference import models
 
 
-def profile_access(f): # pragma: no cover
+def full_profile_required(func):
+    @functools.wraps(func)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.attendeeprofile or not request.user.attendeeprofile.gender:
+            messages.warning(
+                request,
+                "Please update your profile to continue using the EuroPython website."
+            )
+            return redirect(reverse('user_panel:profile_settings'))
+
+        return func(request, *args, **kwargs)
+    return wrapper
+
+
+def profile_access(f):  # pragma: no cover
     """
     Decorator which protect the relative view to a profile.
     """
@@ -33,7 +50,7 @@ def profile_access(f): # pragma: no cover
                 # if the community voting is open and the profile belongs to a speaker
                 # with the talk in the race page is visible
                 conf = models.Conference.objects.current()
-                if not (settings.CONFERENCE_VOTING_OPENED(conf, request.user) and settings.CONFERENCE_VOTING_ALLOWED(request.user)):
+                if not (settings.CONFERENCE_VOTING_OPENED(conf, request.user) and settings.CONFERENCE_VOTING_ALLOWED(request.user)):  # noqa
                     if profile.visibility == 'x':
                         return http.HttpResponseForbidden()
                     elif profile.visibility == 'm' and request.user.is_anonymous:

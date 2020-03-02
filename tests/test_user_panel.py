@@ -122,6 +122,7 @@ def test_user_panel_manage_ticket(client):
     response = client.get(
         reverse("user_panel:manage_ticket", kwargs={"ticket_id": ticket1.id})
     )
+    assert response.status_code == 200
 
     ticketconference = TicketConference.objects.get(ticket=ticket1)
     assert ticket1.name == ticketconference.name == user.assopy_user.name()
@@ -150,6 +151,7 @@ def test_user_panel_update_ticket(client):
             "days": "2019-07-10",
         },
     )
+    assert response.status_code == 302
 
     ticket1.refresh_from_db()
     ticketconference.refresh_from_db()
@@ -183,6 +185,7 @@ def test_user_panel_update_ticket_cannot_update_name(client):
             "name": new_name
         },
     )
+    assert response.status_code == 200
 
     ticket1.refresh_from_db()
     ticketconference.refresh_from_db()
@@ -390,6 +393,7 @@ def test_profile_settings_updates_user_data(user_client):
     payload = dict(
         first_name='One',
         last_name='Two',
+        gender='x',
         email='one@two.three',
         tagline='I am the one',
         twitter='one',
@@ -402,6 +406,7 @@ def test_profile_settings_updates_user_data(user_client):
     assert template_used(response, "ep19/bs/user_panel/profile_settings.html")
     assert payload['first_name'] in response.content.decode()
     assert payload['last_name'] in response.content.decode()
+    assert payload['gender'] in response.content.decode()
     assert payload['email'] in response.content.decode()
     assert payload['tagline'] in response.content.decode()
     assert payload['twitter'] in response.content.decode()
@@ -437,6 +442,7 @@ def test_profile_settings_update_show_no_image(user_client):
         "first_name": user.first_name,
         "last_name": user.last_name,
         "email": user.email,
+        "gender": "x",
     }
 
     # Show no image
@@ -459,6 +465,7 @@ def test_profile_settings_update_show_url_image(user_client):
         "first_name": user.first_name,
         "last_name": user.last_name,
         "email": user.email,
+        "gender": "x",
     }
 
     # Provide image url
@@ -485,6 +492,7 @@ def test_profile_settings_update_use_gravatar(user_client):
         "first_name": user.first_name,
         "last_name": user.last_name,
         "email": user.email,
+        "gender": "x",
     }
 
     # Use gravatar
@@ -510,6 +518,7 @@ def test_profile_settings_update_use_uploaded_image(user_client):
         "first_name": user.first_name,
         "last_name": user.last_name,
         "email": user.email,
+        "gender": "x",
     }
 
     # Upload an image

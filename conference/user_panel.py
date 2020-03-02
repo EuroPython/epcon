@@ -20,9 +20,12 @@ from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 
 from assopy.models import Invoice, Order
-from conference.accounts import get_or_create_attendee_profile_for_new_user
-from conference.cfp import AddSpeakerToTalkForm
-from conference.models import (
+from p3.models import P3Profile, TicketConference
+from p3.utils import assign_ticket_to_user
+
+from .accounts import get_or_create_attendee_profile_for_new_user
+from .cfp import AddSpeakerToTalkForm
+from .models import (
     AttendeeProfile,
     TALK_STATUS,
     Conference,
@@ -32,12 +35,12 @@ from conference.models import (
     ATTENDEEPROFILE_VISIBILITY,
     ATTENDEEPROFILE_GENDER,
 )
-from conference.tickets import reset_ticket_settings
-from p3.models import P3Profile, TicketConference
-from p3.utils import assign_ticket_to_user
+from .tickets import reset_ticket_settings
+from .decorators import full_profile_required
 
 
 @login_required
+@full_profile_required
 def user_dashboard(request):
     proposals = get_proposals_for_current_conference(request.user)
     orders = get_orders_for_current_conference(request.user)
@@ -299,13 +302,12 @@ class ProfileSettingsForm(forms.ModelForm):
             "attendance diversity. "
             "This field will <strong>never</strong> be published."
         ),
-        choices=(("", "---", "---"),) + ATTENDEEPROFILE_GENDER,
+        choices=(("", "", ""),) + ATTENDEEPROFILE_GENDER,
         widget=forms.Select,
-        required=False,
+        required=True,
     )
 
     is_minor = AddSpeakerToTalkForm.base_fields["is_minor"]
-
     job_title = AddSpeakerToTalkForm.base_fields["job_title"]
     company = AddSpeakerToTalkForm.base_fields["company"]
     company_homepage = AddSpeakerToTalkForm.base_fields["company_homepage"]
