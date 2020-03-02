@@ -2,7 +2,7 @@ from datetime import timedelta
 from unittest import mock
 
 import pytest
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils import timezone
 
 from conference.models import Conference, VotoTalk, TALK_STATUS, TALK_TYPE_CHOICES, TALK_ADMIN_TYPE

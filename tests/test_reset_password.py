@@ -1,11 +1,10 @@
 from pytest import mark
 
 from django.core import mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
-from django_factory_boy import auth as auth_factories
-
-from tests.common_tools import template_used
+from .common_tools import template_used
+from . import factories
 
 
 @mark.django_db
@@ -15,7 +14,6 @@ def test_reset_password(client):
     through sending email with unique token, to using that url to change the
     password.
     """
-
     url = reverse("accounts:password_reset")
     assert url == "/accounts/password-reset/"
     response = client.get(url)
@@ -32,7 +30,7 @@ def test_reset_password(client):
     assert len(mail.outbox) == 0
 
     # --------
-    auth_factories.UserFactory(email="joedoe@example.com")
+    factories.UserFactory(email="joedoe@example.com")
 
     response = client.post(url, {"email": "joedoe@example.com"})
     # successful redirect, and one email sent because user exists
@@ -50,7 +48,7 @@ def test_reset_password(client):
     # get a relative url from the middle of the email.
     url_from_email = email.body.splitlines()[7].split("example.com")[1]
 
-    response = client.get(url_from_email)
+    response = client.get(url_from_email, follow=True)
     # This should be a template with two password inputs
     assert template_used(
         response, "ep19/bs/accounts/password_reset_confirm.html"
@@ -59,10 +57,11 @@ def test_reset_password(client):
     assert 'name="new_password1"' in response.content.decode("utf-8")
     assert 'name="new_password2"' in response.content.decode("utf-8")
 
-    print(email.body)
     # --------
     response = client.post(
-        url_from_email,
+        # Django reset password view removes the token from the url and saves it in the
+        # user session, redirecting a user to a different url
+        response.wsgi_request.get_full_path(),
         {"new_password1": "asdf", "new_password2": "asdf"},
         follow=True,
     )
