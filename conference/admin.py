@@ -1012,40 +1012,6 @@ class TicketAdmin(admin.ModelAdmin):
         ]
         return my_urls + urls
 
-    def stats_data(self):
-        from django.db.models import Q
-        from collections import defaultdict
-        import datetime
-
-        conferences = models.Conference.objects\
-            .order_by('conference_start')
-
-        output = {}
-        for c in conferences:
-            tickets = models.Ticket.objects\
-                .filter(fare__conference=c, frozen=False)\
-                .filter(Q(orderitem__order___complete=True) | Q(orderitem__order__method__in=('bank', 'admin')))\
-                .select_related('fare', 'orderitem__order')
-            data = {
-                'conference': defaultdict(lambda: 0),
-                'partner': defaultdict(lambda: 0),
-                'event': defaultdict(lambda: 0),
-                'other': defaultdict(lambda: 0),
-            }
-            for t in tickets:
-                tt = t.fare.ticket_type
-                date = t.orderitem.order.created.date()
-                offset = date - c.conference_start
-                data[tt][offset.days] += 1
-
-            for k, v in data.items():
-                data[k] = sorted(v.items())
-
-            output[c.code] = {
-                'data': data,
-            }
-        return output
-
     def stats_data_view(self, request):
         output = self.stats_data()
         return http.HttpResponse(json_dumps(output), 'text/javascript')
@@ -1167,11 +1133,11 @@ class TicketAdmin(admin.ModelAdmin):
         from django.db.models import Q
         from collections import defaultdict
 
-        conferences = models.Conference.objects\
-            .order_by('conference_start')
+        conferences = list(models.Conference.objects
+            .order_by('conference_start'))
 
         output = {}
-        for c in conferences:
+        for c in conferences[-3:]:
             tickets = models.Ticket.objects\
                 .filter(fare__conference=c)\
                 .filter(Q(orderitem__order___complete=True) | Q(orderitem__order__method__in=('bank', 'admin')))\
@@ -1190,7 +1156,6 @@ class TicketAdmin(admin.ModelAdmin):
 
             for k, v in data.items():
                 data[k] = sorted(v.items())
-
 
             output[c.code] = {
                 'data': data,
