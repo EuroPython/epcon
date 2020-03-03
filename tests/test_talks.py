@@ -172,7 +172,7 @@ def test_author_can_get_submit_slides(user_client):
     response = user_client.get(url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/talks/update_talk.html")
+    assert template_used(response, "conference/talks/update_talk.html")
 
 
 def test_author_can_post_submit_slides(user_client):

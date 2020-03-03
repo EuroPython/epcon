@@ -1,0 +1,53 @@
+{% extends "conference/base.html" %}
+
+{% load menu_tags cms_tags static %}
+
+{% block content %}
+<div id="content_page">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                {% show_breadcrumb 0 "conference/content/_breadcrumbs_bar.html" 0 %}
+
+                <h1>{% page_attribute "title" %}</h1>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-lg-9 col-12 order-lg-1 order-2">
+                <div id="content" class="epcms_content">
+                    {% placeholder "text" %}
+                </div>
+            </div>
+
+            <div  id="sidebar" class="col-lg-3 col-12 order-lg-2 order-1">
+
+                <div id="toc">
+                    {# NOTE: This entire thing is/should be replaced via javascript that generates ToC from the headers on the page #}
+                    <h3>Table of contents</h3>
+                </div>
+
+                {% comment %}
+                <ul>
+                    {% show_menu 0 100 100 100 "conference/content/_menu.html" %}
+                </ul>
+                {% endcomment %}
+            </div>
+
+        </div><!-- .row -->
+    </div>
+</div>
+{% endblock %}
+
+{% block morejs %}
+<script src="{% static "/js/generate_toc_for_cms.js" %}"></script>
+{% endblock morejs %}
+
+{% block morecss %}
+<style>
+    img.filer_image {
+        max-width: 100%;
+        height: auto;
+    }
+</style>
+{% endblock morecss %}

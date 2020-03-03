@@ -26,7 +26,7 @@ def talk(request, talk_slug):
 
     return TemplateResponse(
         request,
-        "ep19/bs/talks/talk.html",
+        "conference/talks/talk.html",
         {
             "title": talk.title,
             "talk": talk,
@@ -64,7 +64,7 @@ def update_talk(request, talk_slug):
 
     return TemplateResponse(
         request,
-        "ep19/bs/talks/update_talk.html",
+        "conference/talks/update_talk.html",
         {"talk": talk, "talk_update_form": talk_update_form},
     )
 
@@ -93,7 +93,7 @@ def submit_slides(request, talk_slug):
 
     return TemplateResponse(
         request,
-        "ep19/bs/talks/update_talk.html",
+        "conference/talks/update_talk.html",
         {"talk": talk, "talk_update_form": talk_slides_form},
     )
 

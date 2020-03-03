@@ -393,13 +393,13 @@ CMS_LANGUAGES = {
     }
 }
 CMS_TEMPLATES = (
-    # ('ep19/bs/content/generic_content_page.html', 'Generic Content Page'),
-    # ('ep19/bs/homepage/home.html', 'Homepage'),
-    ('ep19/bs/content/generic_content_page_with_sidebar.html',
+    # ('conference/content/generic_content_page.html', 'Generic Content Page'),
+    # ('conference/homepage/home.html', 'Homepage'),
+    ('conference/content/generic_content_page_with_sidebar.html',
      'Generic Content Page (with sidebar)'),
 )
 PAGE_TEMPLATES = (
-    ('ep19/bs/content/generic_content_page_with_sidebar.html',
+    ('conference/content/generic_content_page_with_sidebar.html',
      'Generic Content Page (with sidebar)'),
 )
 CMS_PLUGIN_PROCESSORS = (

@@ -37,11 +37,11 @@ def test_change_password(client, user):
     response = client.get(user_dashboard_url)
     assert "Change your password" in response.content.decode("utf-8")
     assert change_password_url in response.content.decode("utf-8")
-    assert template_used(response, "ep19/bs/user_panel/dashboard.html")
+    assert template_used(response, "conference/user_panel/dashboard.html")
 
     response = client.get(change_password_url)
     assert template_used(
-        response, "ep19/bs/user_panel/password_change.html"
+        response, "conference/user_panel/password_change.html"
     )
     assert "Django Administration" not in response.content.decode("utf-8")
 
@@ -56,7 +56,7 @@ def test_change_password(client, user):
     )
 
     assert template_used(
-        response, "ep19/bs/user_panel/password_change_done.html"
+        response, "conference/user_panel/password_change_done.html"
     )
     assert user_dashboard_url in response.content.decode("utf-8")
     assert "Password updated" in response.content.decode("utf-8")

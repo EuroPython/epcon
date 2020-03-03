@@ -21,7 +21,7 @@ def talk_social_card_png(request, slug):
     )
 
     content = render_to_string(
-        "ep19/bs/conference/talk_social_card.html",
+        "conference/conference/talk_social_card.html",
         {"title": talk.title, "subtitle": subtitle},
     )
 

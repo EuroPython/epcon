@@ -49,7 +49,7 @@ def user_dashboard(request):
 
     return TemplateResponse(
         request,
-        "ep19/bs/user_panel/dashboard.html",
+        "conference/user_panel/dashboard.html",
         {
             # Because in the template TALK_STATUS.accepted will be expanded to
             # the verbose name, and therefore comparison in the template will
@@ -96,7 +96,7 @@ def manage_ticket(request, ticket_id):
 
     return TemplateResponse(
         request,
-        "ep19/bs/user_panel/configure_ticket.html",
+        "conference/user_panel/configure_ticket.html",
         {"ticket_configuration_form": ticket_configuration_form, "ticket": ticket},
     )
 
@@ -128,7 +128,7 @@ def assign_ticket(request, ticket_id):
 
     return TemplateResponse(
         request,
-        "ep19/bs/user_panel/assign_ticket.html",
+        "conference/user_panel/assign_ticket.html",
         {"ticket": ticket, "assignment_form": assignment_form},
     )
 
@@ -147,7 +147,7 @@ def privacy_settings(request):
 
     return TemplateResponse(
         request,
-        "ep19/bs/user_panel/privacy_settings.html",
+        "conference/user_panel/privacy_settings.html",
         {"privacy_form": privacy_form},
     )
 
@@ -169,7 +169,7 @@ def profile_settings(request):
 
     return TemplateResponse(
         request,
-        "ep19/bs/user_panel/profile_settings.html",
+        "conference/user_panel/profile_settings.html",
         {"profile_form": profile_form},
     )
 
@@ -257,15 +257,15 @@ class ProfileSpamControlForm(forms.ModelForm):
         self.helper.layout = Layout(
             Div(
                 "spam_recruiting",
-                template="ep19/bs/user_panel/forms/privacy_settings_recruiting.html",
+                template="conference/user_panel/forms/privacy_settings_recruiting.html",
             ),
             Div(
                 "spam_user_message",
-                template="ep19/bs/user_panel/forms/privacy_settings_user_messages.html",
+                template="conference/user_panel/forms/privacy_settings_user_messages.html",
             ),
             Div(
                 "spam_sms",
-                template="ep19/bs/user_panel/forms/privacy_settings_sms_messages.html",
+                template="conference/user_panel/forms/privacy_settings_sms_messages.html",
             ),
             ButtonHolder(Submit("update", "Update", css_class="btn btn-primary")),
         )
@@ -411,7 +411,7 @@ class ProfileSettingsForm(forms.ModelForm):
             Div(
                 HTML(
                     render_to_string(
-                        "ep19/bs/user_panel/forms/profile_settings_picture.html",
+                        "conference/user_panel/forms/profile_settings_picture.html",
                         context={
                             "selected_picture_option": selected_image_option,
                             "profile_image_url": image_url,
@@ -579,7 +579,7 @@ urlpatterns = [
     url(
         r"^password/change/$",
         auth_views.PasswordChangeView.as_view(
-            template_name="ep19/bs/user_panel/password_change.html",
+            template_name="conference/user_panel/password_change.html",
             success_url=reverse_lazy("user_panel:password_change_done"),
         ),
         name="password_change",
@@ -587,7 +587,7 @@ urlpatterns = [
     url(
         r"^password/change/done/$",
         auth_views.PasswordChangeDoneView.as_view(
-            template_name="ep19/bs/user_panel/password_change_done.html"
+            template_name="conference/user_panel/password_change_done.html"
         ),
         name="password_change_done",
     ),

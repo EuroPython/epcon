@@ -60,7 +60,7 @@ def test_first_step_of_cart_is_available_without_auth(db, client):
     response = client.get(url)
     assert response.status_code == 200
     assert template_used(
-        response, "ep19/bs/cart/step_1_choose_type_of_order.html"
+        response, "conference/cart/step_1_choose_type_of_order.html"
     )
 
 
@@ -319,7 +319,7 @@ def test_step2_no_fares_selected(db, user_client):
     )
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/cart/step_2_pick_tickets.html")
+    assert template_used(response, "conference/cart/step_2_pick_tickets.html")
     assert contains_message(response, 'Please select some tickets')
 
 
@@ -332,7 +332,7 @@ def test_step2_invalid_fare_code_for_fares_outside_of_validity_window(db, user_c
     )
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/cart/step_2_pick_tickets.html")
+    assert template_used(response, "conference/cart/step_2_pick_tickets.html")
     assert contains_message(response, 'A selected fare is not available')
 
 
@@ -356,7 +356,7 @@ def test_step2_apply_discount_with_invalid_coupon(db, user_client):
 
     assert response.status_code == 200
     assert template_used(
-        response, "ep19/bs/cart/step_2_pick_tickets.html"
+        response, "conference/cart/step_2_pick_tickets.html"
     )
     assert contains_message(response, 'The discount code provided expired or is invalid')
 
@@ -384,7 +384,7 @@ def test_cart_computes_discounts_correctly(db, user_client):
     )
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/cart/step_2_pick_tickets.html")
+    assert template_used(response, "conference/cart/step_2_pick_tickets.html")
 
     # No order or tickets should be created
     assert not Order.objects.all().exists()
@@ -664,7 +664,7 @@ def test_cart_fourth_step_renders_correctly(db, user_client):
     response = user_client.get(payment_step_url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/cart/step_4_payment.html")
+    assert template_used(response, "conference/cart/step_4_payment.html")
 
 
 def test_cart_payment_with_zero_total(db, user_client):
@@ -738,7 +738,7 @@ def test_cart_fifth_step_renders_correctly(db, user_client):
 
     assert response.status_code == 200
     assert template_used(
-        response, "ep19/bs/cart/step_5_congrats_order_complete.html"
+        response, "conference/cart/step_5_congrats_order_complete.html"
     )
 
 

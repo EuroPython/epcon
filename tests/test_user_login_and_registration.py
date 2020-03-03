@@ -53,9 +53,9 @@ def test_user_registration(client):
     response = client.get(sign_up_url)
     assert response.status_code == 200
 
-    assert template_used(response, "ep19/bs/accounts/signup.html")
-    assert template_used(response, "ep19/bs/accounts/_login_with_google.html")
-    assert template_used(response, "ep19/bs/base.html")
+    assert template_used(response, "conference/accounts/signup.html")
+    assert template_used(response, "conference/accounts/_login_with_google.html")
+    assert template_used(response, "conference/base.html")
     assert PRIVACY_POLICY_CHECKBOX in response.content.decode("utf-8")
 
     assert AssopyUser.objects.all().count() == 0
@@ -92,9 +92,9 @@ def test_user_registration(client):
 
     # check if redirect was correct
     assert template_used(
-        response, "ep19/bs/accounts/signup_please_verify_email.html"
+        response, "conference/accounts/signup_please_verify_email.html"
     )
-    assert template_used(response, "ep19/bs/base.html")
+    assert template_used(response, "conference/base.html")
 
     user = AssopyUser.objects.get()
     assert user.name() == "Joe Doe"
@@ -109,7 +109,7 @@ def test_user_registration(client):
     assert is_logged_in is False  # user is inactive
 
     response = client.get("/")
-    assert template_used(response, "ep19/bs/homepage/home.html")
+    assert template_used(response, "conference/homepage/home.html")
     assert "Joe Doe" not in response.content.decode("utf-8")
     assert "Log out" not in response.content.decode("utf-8")
 
@@ -123,7 +123,7 @@ def test_user_registration(client):
     assert is_logged_in
 
     response = client.get("/")
-    assert template_used(response, "ep19/bs/homepage/home.html")
+    assert template_used(response, "conference/homepage/home.html")
     # checking if user is logged in.
     assert "Joe Doe" in response.content.decode("utf-8")
     assert "My Account" in response.content.decode("utf-8")

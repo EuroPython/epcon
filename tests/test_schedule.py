@@ -61,7 +61,7 @@ def test_names_are_not_abbreviated(client):
 
     response = client.get(schedule_url)
     assert response.status_code == HTTP_OK_200
-    assert template_used(response, 'ep19/bs/schedule/schedule.html')
+    assert template_used(response, 'conference/schedule/schedule.html')
     assert 'J. Doedoe' not in response.content.decode()
     assert 'Joejoe Doedoe' in response.content.decode()
 

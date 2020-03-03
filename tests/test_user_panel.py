@@ -378,7 +378,7 @@ def test_profile_settings_gets_initial_data(user_client):
     response = user_client.get(url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/user_panel/profile_settings.html")
+    assert template_used(response, "conference/user_panel/profile_settings.html")
     assert user.first_name in response.content.decode()
     assert user.last_name in response.content.decode()
     assert user.email in response.content.decode()
@@ -402,7 +402,7 @@ def test_profile_settings_updates_user_data(user_client):
     response = user_client.post(url, data=payload)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/user_panel/profile_settings.html")
+    assert template_used(response, "conference/user_panel/profile_settings.html")
     assert payload['first_name'] in response.content.decode()
     assert payload['last_name'] in response.content.decode()
     assert payload['gender'] in response.content.decode()
@@ -424,7 +424,7 @@ def test_profile_settings_forbids_using_registered_email(user_client):
     response = user_client.post(url, data=payload)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/user_panel/profile_settings.html")
+    assert template_used(response, "conference/user_panel/profile_settings.html")
     user.refresh_from_db()
     assert user.email == original_email
 
