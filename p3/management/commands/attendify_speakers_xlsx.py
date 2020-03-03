@@ -25,7 +25,7 @@
     Row A6: Start of data
 
 """
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils.html import strip_tags
 

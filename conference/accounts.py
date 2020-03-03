@@ -2,7 +2,7 @@ import random
 
 from django import forms
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.contrib import messages
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import views as auth_views
@@ -24,7 +24,7 @@ from conference.models import CaptchaQuestion, AttendeeProfile
 from p3.models import P3Profile
 
 
-LOGIN_TEMPLATE = "ep19/bs/accounts/login.html"
+LOGIN_TEMPLATE = "conference/accounts/login.html"
 
 PRIVACY_POLICY_CHECKBOX = (
     "I consent to the use of my data subject to the "
@@ -100,7 +100,7 @@ def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
 
             return redirect('accounts:signup_step_2_please_verify_email')
 
-    return TemplateResponse(request, "ep19/bs/accounts/signup.html", {
+    return TemplateResponse(request, "conference/accounts/signup.html", {
         'form': form,
         'next': request.GET.get('next', '/'),
     })
@@ -108,7 +108,7 @@ def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
 
 def signup_step_2_please_verify_email(request):
     return TemplateResponse(
-        request, "ep19/bs/accounts/signup_please_verify_email.html", {}
+        request, "conference/accounts/signup_please_verify_email.html", {}
     )
 
 
@@ -120,7 +120,7 @@ def send_verification_email(user, current_site) -> None:
     )
     full_url = 'https://{}{}'.format(current_site.domain, verification_path)
 
-    content = render_to_string("ep19/emails/signup_verification_email.txt", {
+    content = render_to_string("conference/emails/signup_verification_email.txt", {
         'new_token': new_token,
         'verification_email_url': full_url,
     })
@@ -268,60 +268,60 @@ class NewAccountForm(forms.Form):
 
 
 urlpatterns = [
-    url(
+    re_path(
         r"^login/$",
         auth_views.LoginView.as_view(
             authentication_form=LoginForm, template_name=LOGIN_TEMPLATE
         ),
         name="login",
     ),
-    url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
-    url(
+    re_path(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
+    re_path(
         r"^signup/$",
         signup_step_1_create_account,
         name="signup_step_1_create_account",
     ),
-    url(
+    re_path(
         r"^signup/thanks/$",
         signup_step_2_please_verify_email,
         name="signup_step_2_please_verify_email",
     ),
-    url(
+    re_path(
         # 22 not 36 because we use short uuid
         r"^signup/verify-email/(?P<token>\w{22})/$",
         handle_verification_token,
         name="handle_verification_token",
     ),
     # Password reset, using default django views.
-    url(
+    re_path(
         r"^password-reset/$",
         auth_views.PasswordResetView.as_view(
-            template_name="ep19/bs/accounts/password_reset.html",
+            template_name="conference/accounts/password_reset.html",
             success_url=reverse_lazy("accounts:password_reset_done"),
-            email_template_name="ep19/emails/password_reset_email.txt",
-            subject_template_name="ep19/emails/password_reset_subject.txt",
+            email_template_name="conference/emails/password_reset_email.txt",
+            subject_template_name="conference/emails/password_reset_subject.txt",
         ),
         name="password_reset",
     ),
-    url(
+    re_path(
         r"^password-reset/done/$",
         auth_views.PasswordResetDoneView.as_view(
-            template_name="ep19/bs/accounts/password_reset_done.html",
+            template_name="conference/accounts/password_reset_done.html",
         ),
         name="password_reset_done",
     ),
-    url(
+    re_path(
         r"^reset/(?P<uidb64>[\w-]+)/(?P<token>[\w]{1,13}-[\w]{1,20})/$",
         auth_views.PasswordResetConfirmView.as_view(
-            template_name="ep19/bs/accounts/password_reset_confirm.html",
+            template_name="conference/accounts/password_reset_confirm.html",
             success_url=reverse_lazy("accounts:password_reset_complete"),
         ),
         name="password_reset_confirm",
     ),
-    url(
+    re_path(
         r"^reset/done/$",
         auth_views.PasswordResetCompleteView.as_view(
-            template_name="ep19/bs/accounts/password_reset_complete.html",
+            template_name="conference/accounts/password_reset_complete.html",
         ),
         name="password_reset_complete",
     ),

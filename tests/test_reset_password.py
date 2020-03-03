@@ -17,7 +17,7 @@ def test_reset_password(client):
     url = reverse("accounts:password_reset")
     assert url == "/accounts/password-reset/"
     response = client.get(url)
-    assert template_used(response, "ep19/bs/accounts/password_reset.html")
+    assert template_used(response, "conference/accounts/password_reset.html")
     # make sure that we're not using default template from django admin
     assert "Django Administration" not in response.content.decode("utf-8")
     assert 'input type="email"' in response.content.decode("utf-8")
@@ -39,7 +39,7 @@ def test_reset_password(client):
     assert len(mail.outbox) == 1
 
     response = client.get(reverse("accounts:password_reset_done"))
-    assert template_used(response, "ep19/bs/accounts/password_reset_done.html")
+    assert template_used(response, "conference/accounts/password_reset_done.html")
 
     # --------
     email = mail.outbox[0]
@@ -51,7 +51,7 @@ def test_reset_password(client):
     response = client.get(url_from_email, follow=True)
     # This should be a template with two password inputs
     assert template_used(
-        response, "ep19/bs/accounts/password_reset_confirm.html"
+        response, "conference/accounts/password_reset_confirm.html"
     )
     assert "Django Administration" not in response.content.decode("utf-8")
     assert 'name="new_password1"' in response.content.decode("utf-8")
@@ -66,6 +66,6 @@ def test_reset_password(client):
         follow=True,
     )
     assert template_used(
-        response, "ep19/bs/accounts/password_reset_complete.html"
+        response, "conference/accounts/password_reset_complete.html"
     )
     assert "Django Administration" not in response.content.decode("utf-8")

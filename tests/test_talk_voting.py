@@ -34,7 +34,7 @@ def test_new_talk_voting_is_unavailable_to_user_without_tickets(
     response = user_client.get(url)
     assert response.status_code == 200
     assert template_used(
-        response, "ep19/bs/talk_voting/voting_is_unavailable.html"
+        response, "conference/talk_voting/voting_is_unavailable.html"
     )
 
 
@@ -53,5 +53,5 @@ def test_new_talk_voting_can_be_access_with_user_who_has_tickets(
     response = user_client.get(url)
     assert response.status_code == 200
     assert template_used(
-        response, "ep19/bs/talk_voting/voting.html"
+        response, "conference/talk_voting/voting.html"
     )

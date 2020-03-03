@@ -67,7 +67,7 @@ def test_if_cfp_pages_are_unavailable_if_cfp_is_undefined(user_client):
 
     response = user_client.get(step1_url)
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/cfp/cfp_is_closed.html")
+    assert template_used(response, "conference/cfp/cfp_is_closed.html")
 
 
 def test_if_cfp_pages_are_unavailable_if_cfp_is_in_the_future(user_client):
@@ -80,7 +80,7 @@ def test_if_cfp_pages_are_unavailable_if_cfp_is_in_the_future(user_client):
 
     response = user_client.get(step1_url)
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/cfp/cfp_is_closed.html")
+    assert template_used(response, "conference/cfp/cfp_is_closed.html")
 
 
 def test_if_cfp_pages_are_unavailable_if_cfp_is_in_the_past(user_client):
@@ -94,7 +94,7 @@ def test_if_cfp_pages_are_unavailable_if_cfp_is_in_the_past(user_client):
 
     response = user_client.get(step1_url)
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/cfp/cfp_is_closed.html")
+    assert template_used(response, "conference/cfp/cfp_is_closed.html")
 
 
 def test_if_cfp_pages_are_available_if_cfp_is_active(user_client):
@@ -108,7 +108,7 @@ def test_if_cfp_pages_are_available_if_cfp_is_active(user_client):
 
     response = user_client.get(step1_url)
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/cfp/step1_talk_info.html")
+    assert template_used(response, "conference/cfp/step1_talk_info.html")
 
 
 def test_validation_errors_are_handled_on_step1(user_client):
@@ -126,7 +126,7 @@ def test_validation_errors_are_handled_on_step1(user_client):
     step1_url = reverse("cfp:step1_submit_proposal")
     response = user_client.post(step1_url, {})
     # POST rerenders the same template
-    assert template_used(response, "ep19/bs/cfp/step1_talk_info.html")
+    assert template_used(response, "conference/cfp/step1_talk_info.html")
 
 
 def test_if_user_can_submit_talk_details_and_is_redirect_to_step2(user_client):
@@ -190,7 +190,7 @@ def test_validation_errors_are_handled_on_step2(user_client):
     step2_url = reverse("cfp:step2_add_speakers", args=[talk.uuid])
     response = user_client.post(step2_url, {})
     # POST rerenders the same template
-    assert template_used(response, "ep19/bs/cfp/step2_add_speaker.html")
+    assert template_used(response, "conference/cfp/step2_add_speaker.html")
 
 
 def test_if_user_can_add_a_speaker_to_a_proposal(user_client):
@@ -204,7 +204,7 @@ def test_if_user_can_add_a_speaker_to_a_proposal(user_client):
     step2_url = reverse("cfp:step2_add_speakers", args=[talk.uuid])
 
     response = user_client.get(step2_url)
-    assert template_used(response, "ep19/bs/cfp/step2_add_speaker.html")
+    assert template_used(response, "conference/cfp/step2_add_speaker.html")
 
     response = user_client.post(
         step2_url,
@@ -237,7 +237,7 @@ def test_if_correct_thanks_page_is_rendered(user_client):
     step3_url = reverse("cfp:step3_thanks", args=[talk.uuid])
 
     response = user_client.get(step3_url)
-    assert template_used(response, "ep19/bs/cfp/step3_thanks.html")
+    assert template_used(response, "conference/cfp/step3_thanks.html")
 
 
 def test_thanks_page_contains_link_to_preview_proposal(user_client):
@@ -346,8 +346,8 @@ def test_admin_user_can_access_program_wg_download(admin_client):
 @mark.parametrize(
     "page_name, template",
     [
-        ("cfp:update", "ep19/bs/cfp/update_proposal.html"),
-        ("cfp:update_speakers", "ep19/bs/cfp/update_speakers.html"),
+        ("cfp:update", "conference/cfp/update_proposal.html"),
+        ("cfp:update_speakers", "conference/cfp/update_speakers.html"),
     ],
 )
 def test_update_pages_work_if_cfp_is_open_and_user_is_author(
@@ -426,7 +426,7 @@ def test_validation_errors_are_handled_on_update_proposal(user_client):
     response = user_client.post(update_url, {})
 
     # POST rerenders the same template
-    assert template_used(response, "ep19/bs/cfp/update_proposal.html")
+    assert template_used(response, "conference/cfp/update_proposal.html")
 
 
 def test_update_proposal_updates_proposal(user_client):

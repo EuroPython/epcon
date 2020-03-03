@@ -50,7 +50,7 @@ def cart_step1_choose_type_of_order(request):
     special_fares = get_available_fares_for_type(TicketType.other)
     context = {"show_special": bool(special_fares)}
     return TemplateResponse(
-        request, "ep19/bs/cart/step_1_choose_type_of_order.html", context
+        request, "conference/cart/step_1_choose_type_of_order.html", context
     )
 
 
@@ -117,7 +117,7 @@ def cart_step2_pick_tickets(request, type_of_tickets):
             )
 
     return TemplateResponse(
-        request, "ep19/bs/cart/step_2_pick_tickets.html", context
+        request, "conference/cart/step_2_pick_tickets.html", context
     )
 
 
@@ -142,7 +142,7 @@ def cart_step3_add_billing_info(request, order_uuid):
 
     return TemplateResponse(
         request,
-        "ep19/bs/cart/step_3_add_billing_info.html",
+        "conference/cart/step_3_add_billing_info.html",
         {"form": form, "order": order},
     )
 
@@ -184,7 +184,7 @@ def cart_step4_payment(request, order_uuid):
 
     return TemplateResponse(
         request,
-        "ep19/bs/cart/step_4_payment.html",
+        "conference/cart/step_4_payment.html",
         {
             "order": order,
             "payment": payments,
@@ -227,7 +227,7 @@ def cart_step5_congrats_order_complete(request, order_uuid):
 
     return TemplateResponse(
         request,
-        "ep19/bs/cart/step_5_congrats_order_complete.html",
+        "conference/cart/step_5_congrats_order_complete.html",
         {"order": order},
     )
 
@@ -255,7 +255,7 @@ def send_order_confirmation_email(order: Order, current_site) -> None:
     user_panel_url = f"https://{current_site.domain}{user_panel_path}"
 
     content = render_to_string(
-        "ep19/emails/order_confirmation_email.txt",
+        "conference/emails/order_confirmation_email.txt",
         {"order": order, "user_panel_url": user_panel_url},
     )
 
@@ -345,7 +345,7 @@ class BusinessBillingForm(forms.ModelForm):
         labels = {"card_name": "Name of the buyer"}
 
 
-urlpatterns_ep19 = [
+urlpatterns = [
     url(r"^$", cart_step1_choose_type_of_order, name="step1_choose_type"),
     url(
         r"^(?P<type_of_tickets>\w+)/$",

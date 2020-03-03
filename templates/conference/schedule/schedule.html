@@ -1,0 +1,319 @@
+{% extends "conference/base.html" %}
+{% load conference assopy_tags i18n %}
+
+{% block body %}
+
+{% include "conference/header/_regular.html" %}
+
+<style>
+.schedule {
+    width: calc(100vw - (100vw - 100%));
+    overflow-x: auto;
+}
+
+.schedule > h2 {
+    margin: 20px 0;
+}
+
+.schedule__row {
+    width: calc((100vw + 20px) * 7);
+}
+.schedule__time {
+    position: sticky;
+    top: 0;
+    left: 0;
+    background: white;
+}
+.schedule__talk {
+    --base-width: calc(100vw - 20px);
+    --multiplier: 1;
+    width: calc(var(--base-width) * var(--multiplier) - 20px);
+    display: inline-block;
+    border: 1px solid purple;
+    margin: 10px;
+    vertical-align: top;
+    position: relative;
+}
+.schedule__talk--length-2 {
+    --multiplier: 2;
+}
+.schedule__talk--length-3 {
+    --multiplier: 3;
+}
+.schedule__talk--length-4 {
+    --multiplier: 4;
+}
+.schedule__talk--length-5 {
+    --multiplier: 5;
+}
+.schedule__talk--length-6 {
+    --multiplier: 6;
+}
+.schedule__talk--length-7 {
+    --multiplier: 7;
+}
+.schedule__row--length-1 .schedule__talk--length-1 {
+    --multiplier: 7;
+}
+@media (min-width: 600px) {
+    .schedule__talk {
+        --base-width: 150px;
+    }
+}
+.schedule__day {
+    display: flex;
+    width: 100%;
+    position: relative;
+}
+.schedule__day > :first-child {
+    position: sticky;
+    left: 0;
+    z-index: 30;
+    background: white;
+}
+.schedule__grid {
+    --cols: 1;
+    --rows: 1;
+    --height: 15px;
+    --min-width: calc(100vw - 60px);
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(var(--min-width), 1fr));
+    grid-template-rows: repeat(var(--rows), var(--height));
+    grid-gap: 5px;
+}
+.schedule__grid--header {
+    --height: 50px;
+}
+.schedule__grid--header > div {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #d4d2cd;
+}
+.schedule__day--sidebar {
+    grid-template-columns: 50px;
+    margin-right: 5px;
+}
+.schedule__day--sidebar {
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+}
+.schedule__grid > div {
+    {% comment %} border: 1px solid red; {% endcomment %}
+}
+.schedule__day__talk_title {
+    font-weight: bold;
+    font-size: 12px;
+    line-height: 1.4;
+}
+.schedule__day__talk_title .language {
+    width: 20px;
+    height: auto;
+}
+.schedule__day__talk_speakers {
+    font-size: 10px;
+    margin-bottom: 5px;
+}
+.schedule__day__talk {
+    --level-color: gray;
+    background: #EFECDF;
+    position: relative;
+}
+.schedule__day__talk.talk-selected {
+    background: #ababab;
+}
+.schedule__day__level_indicator {
+    display: block;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: var(--level-color);
+    padding-left: 6px;
+    color: #ffffff;
+    font-size: 0.7em;
+    min-height: 1.5em;
+}
+.talk-level--beginner {
+    --level-color: #738023;
+}
+.talk-level--intermediate {
+    --level-color: #e7c30f;
+}
+.talk-level--advanced {
+    --level-color: #DA2300;
+}
+.schedule__day__inner {
+    width: 100%;
+    height: 100%;
+    max-width: calc(100vw - 60px);
+    padding: 0 10px 20px 10px;
+    display: flex;
+    flex-direction: column;
+}
+.schedule__day__footer {
+    margin-top: auto;
+}
+.schedule__day__footer button {
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    cursor: pointer;
+}
+@media (min-width: 600px) {
+    .schedule__grid {
+        --min-width: 150px;
+    }
+}
+
+#days-navbar {
+    background-color: #DE8524;
+    {% comment %} position: sticky; {% endcomment %}
+    top: 0;
+    z-index: 100;
+    padding-left: 55px;
+}
+
+#days-navbar .nav-link {
+    color: black;
+}
+
+#days-navbar .nav-link:hover, #days-navbar .active .nav-link {
+    margin-bottom: -2px;
+}
+
+div.cms .cms-toolbar {
+    position: absolute!important;
+}
+
+.schedule__talks_header, .schedule__time {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: white;
+}
+
+.schedule__time {
+    top: 50px;
+}
+
+#days-navbar>.navbar-nav {
+    justify-content: center;
+    width: 100%;
+}
+
+@media (max-width: 991px) {
+    #days-navbar>.navbar-nav {
+        width: auto;
+    }
+}
+
+</style>
+
+{% load cms_tags menu_tags %}
+<nav class="navbar navbar-expand-lg" id="days-navbar">
+     <ul class="navbar-nav mr-auto">
+        {% for day in days %}
+        <li class="nav-item{% if day == schedule.day %} active{% endif %}">
+            <a
+                class="nav-link"
+                href="{% url "schedule:schedule" day=day.day month=day|date:"F"|lower %}"
+            >
+                {{ day|date:"l, jS" }}
+            </a>
+        </li>
+        {% endfor %}
+        </ul>
+</nav>
+
+
+<div class="schedule">
+    <div class="schedule__day">
+        <div>
+            <div class="schedule__grid schedule__grid--header schedule__day--sidebar" style="--cols: 1; --rows: 1;">
+                <div style="background: white;"></div>
+            </div>
+
+            <div class="schedule__grid schedule__day--sidebar" style="--cols: 1; --rows: {{ schedule.grid.rows }};">
+                {% for time in schedule.grid.times %}
+                    <div class="schedule__time" style="
+                        grid-row: {{ time.start_row }} / {{ time.end_row }};
+                        grid-column: 1 / 1;
+                    ">
+                        {{ time.time|date:"H:i" }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div>
+            <div class="schedule__grid schedule__grid--header schedule__talks_header" style="--cols: {{ schedule.grid.cols }}; --rows: 1;">
+                {% for track in schedule.tracks %}
+                    <div>{{ track }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="schedule__grid" style="--cols: {{ schedule.grid.cols }}; --rows: {{ schedule.grid.rows }};">
+                {% for talk in schedule.talks %}
+                    <div
+                        class="schedule__day__talk {% if talk.level %}talk-level--{{ talk.level }}{% endif %} {% if talk.selected %}talk-selected{% endif %}"
+                        style="
+                            grid-row: {{ talk.start_row }} / {{ talk.end_row }};
+                            grid-column: {{ talk.start_column }} / {{ talk.end_column }};
+                        "
+                    >
+                        <div class="schedule__day__inner">
+                            <div class="schedule__day__talk_speakers">
+                                {% for s in talk.speakers %}
+                                    <a href="{% url "profiles:profile" profile_slug=s.slug %}">{{ s.name }}</a>{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </div>
+
+                            <div class="schedule__day__talk_title">
+                                {% if talk.slug %}
+                                <a href="{% url "talks:talk" talk_slug=talk.slug %}">
+                                {% endif %}
+
+                                {{ talk.title|safe }}
+
+                                {% if talk.slug %}
+                                </a>
+                                {% endif %}
+                            </div>
+
+                            {% comment "the starring behaviour is not fully implemented" %}
+                            {% if talk.can_be_starred %}
+                            <div class="schedule__day__footer">
+                                <button
+                                    data-url="/conference/schedule/{{ conference }}/{{ sdata.slug }}/{{ talk.id }}/interest" class="star"
+                                    class="{% if talk.starred %}active{% endif %}"
+                                >
+                                    {% if talk.starred %}
+                                        ⭐
+                                    {% else %}
+                                        ☆
+                                    {% endif %}
+                                </button>
+                            </div>
+                            {% endif %}
+                            {% endcomment %}
+
+                            <div class="schedule__day__level_indicator">
+                                {% if talk.level %}
+                                    {{ talk.level }}
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "conference/footer/footer.html" %}
+
+{% endblock body %}

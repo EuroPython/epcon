@@ -18,11 +18,10 @@
     Author: Marc-Andre Lemburg, 2017.
 
 """
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.utils.html import strip_tags
 from conference import models
 
-import datetime
 import markdown2
 import openpyxl
 
@@ -61,7 +60,10 @@ PLENARY_ROOM = 'Smarkets'
 BREAK_ROOM = ''
 
 ### Helpers
+<<<<<<< HEAD
 
+=======
+>>>>>>> dev/ep2020
 def speaker_listing(talk):
 
     return ', '.join(

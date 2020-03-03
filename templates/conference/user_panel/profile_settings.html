@@ -1,0 +1,30 @@
+{% extends "conference/user_panel/base.html" %}
+
+{% load cms_tags crispy_forms_tags %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+<li class='breadcrumb-item'>
+    <a href=".">Profile settings</a>
+</li>
+{% endblock breadcrumbs %}
+
+{% block user_content %}
+<div class='row' style='margin-top: 3em'>
+
+    <div class="col-md-12">
+        <form method="POST" action="." enctype="multipart/form-data">
+            {% csrf_token %}
+            {% crispy profile_form %}
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block morecss %}
+<style>
+    h1 {
+        margin-bottom: 14px;
+    }
+</style>
+{% endblock %}

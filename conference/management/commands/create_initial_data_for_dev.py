@@ -120,7 +120,7 @@ class Command(BaseCommand):
                     title=title,
                     language="en",
                     template=(
-                        "ep19/bs/content/"
+                        "conference/content/"
                         "generic_content_page_with_sidebar.html"
                     ),
                     published=True,

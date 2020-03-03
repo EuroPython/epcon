@@ -181,7 +181,7 @@ def schedule(request, day=None, month=None):
 
     ctx = {"conference": settings.CONFERENCE_CONFERENCE, "schedule": schedule, "days": days}
 
-    return render(request, "ep19/bs/schedule/schedule.html", ctx)
+    return render(request, "conference/schedule/schedule.html", ctx)
 
 
 @dataclass

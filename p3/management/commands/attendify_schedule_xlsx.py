@@ -23,11 +23,10 @@
     Row A6: Start of data
 
 """
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from django.utils.html import strip_tags
 from conference import models
 
-import datetime
 import markdown2
 import openpyxl
 

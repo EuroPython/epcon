@@ -274,7 +274,7 @@ def reissue_invoice(request, invoice_id):
             new_invoice.html = render_invoice_as_html(new_invoice)
             new_invoice.save()
 
-            return redirect('debugpanel:debug_panel_invoice_export_for_tax_report')
+            return redirect('debug_panel:invoice_export_for_tax_report')
     else:
         customer = (
             old_invoice.customer
@@ -342,31 +342,31 @@ class FareSetup:
 
 
 urlpatterns = [
-    url(r'^$', debug_panel_index, name='debug_panel_index'),
+    url(r'^$', debug_panel_index, name='index'),
     url(r'^invoices/$',
         debug_panel_invoice_placeholders,
-        name='debug_panel_invoice_placeholders'),
+        name='invoice_placeholders'),
     url(r'^invoices/(?P<invoice_id>\d+)/$',
         debug_panel_invoice_force_preview,
-        name="debug_panel_invoice_forcepreview"),
+        name="invoice_forcepreview"),
     url(r'^invoices_export/$',
         debug_panel_invoice_export_for_tax_report,
-        name='debug_panel_invoice_export_for_tax_report'),
+        name='invoice_export_for_tax_report'),
     url(r'^invoices_export.csv$',
         debug_panel_invoice_export_for_tax_report_csv,
-        name='debug_panel_invoice_export_for_tax_report_csv'),
+        name='invoice_export_for_tax_report_csv'),
     url(r'^invoices_export_for_accounting.json$',
         debug_panel_invoice_export_for_payment_reconciliation_json,
-        name='debug_panel_invoice_export_for_payment_reconciliation_json'),
+        name='invoice_export_for_payment_reconciliation_json'),
     url(r'^invoices/reissue/(?P<invoice_id>\d+)/$',
         reissue_invoice,
-        name='debug_panel_reissue_invoice'),
+        name='reissue_invoice'),
 
     url(r'^fares/setup/$',
         debugpanel_fares_setup,
-        name='debug_panel_fares_setup'),
+        name='fares_setup'),
 
     url(r'^invoice-example/$',
         debug_panel_invoice_example,
-        name='debug_panel_invoice_example'),
+        name='invoice_example'),
 ]

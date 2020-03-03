@@ -582,7 +582,7 @@ class Talk(models.Model, UrlMixin):
         default=random_shortuuid,
         editable=False,
     )
-    created_by = models.ForeignKey(get_user_model(), blank=True, null=True, on_delete=models.PROTECT)
+    created_by = models.ForeignKey(get_user_model(), blank=True, null=True, on_delete=models.deletion.PROTECT)
 
     title = models.CharField("Talk title", max_length=80)
     sub_title = models.CharField(
@@ -1326,7 +1326,7 @@ class News(TimeStampedModel):
     # CharField because sqlite
     uuid = models.CharField(unique=True, max_length=40, default=uuid.uuid4)
 
-    conference = models.ForeignKey(Conference, on_delete=models.CASCADE)
+    conference = models.ForeignKey(Conference, on_delete=models.deletion.PROTECT)
     title = models.CharField(max_length=255)
     slug = models.SlugField()
     content = models.TextField()
@@ -1366,8 +1366,8 @@ class StripePayment(models.Model):
     session_id = models.CharField(max_length=100, null=True)
     email = models.CharField(max_length=255)
 
-    user = models.ForeignKey(get_user_model(), on_delete=models.PROTECT)
-    order = models.ForeignKey('assopy.Order', on_delete=models.PROTECT)
+    user = models.ForeignKey(get_user_model(), on_delete=models.deletion.PROTECT)
+    order = models.ForeignKey('assopy.Order', on_delete=models.deletion.PROTECT)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=255)
 

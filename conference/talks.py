@@ -26,13 +26,13 @@ def talk(request, talk_slug):
 
     return TemplateResponse(
         request,
-        "ep19/bs/talks/talk.html",
+        "conference/talks/talk.html",
         {
             "title": talk.title,
             "talk": talk,
             "talk_as_dict": talk_as_dict,
             "social_image_url": request.build_absolute_uri(
-                reverse("social_urls:conference-talk-social-card-png", kwargs={"slug": talk.slug})
+                reverse("conference:conference-talk-social-card-png", kwargs={"slug": talk.slug})
             ),
             "can_update_talk": can_update_talk,
             "can_submit_slides": can_submit_slides,
@@ -64,7 +64,7 @@ def update_talk(request, talk_slug):
 
     return TemplateResponse(
         request,
-        "ep19/bs/talks/update_talk.html",
+        "conference/talks/update_talk.html",
         {"talk": talk, "talk_update_form": talk_update_form},
     )
 
@@ -93,7 +93,7 @@ def submit_slides(request, talk_slug):
 
     return TemplateResponse(
         request,
-        "ep19/bs/talks/update_talk.html",
+        "conference/talks/update_talk.html",
         {"talk": talk, "talk_update_form": talk_slides_form},
     )
 

@@ -8,7 +8,6 @@ from conference import models as cmodels
 from p3.utils import profile_url
 
 ### Helpers
-
 def speaker_listing(talk):
 
     return ', '.join(

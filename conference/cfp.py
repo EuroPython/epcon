@@ -34,7 +34,7 @@ def submit_proposal_step1_talk_info(request):
     """
     conf = Conference.objects.current()
     if not conf.cfp():
-        return TemplateResponse(request, "ep19/bs/cfp/cfp_is_closed.html", {
+        return TemplateResponse(request, "conference/cfp/cfp_is_closed.html", {
             'conf': conf
         })
 
@@ -53,7 +53,7 @@ def submit_proposal_step1_talk_info(request):
                 send_talk_details_to_backup_email(talk)
                 return redirect("cfp:step2_add_speakers", talk_uuid=talk.uuid)
 
-    return TemplateResponse(request, "ep19/bs/cfp/step1_talk_info.html", {
+    return TemplateResponse(request, "conference/cfp/step1_talk_info.html", {
         "proposal_form": proposal_form,
     })
 
@@ -106,7 +106,7 @@ def submit_proposal_step2_add_speakers(request, talk_uuid):
                 messages.success(request, "Speaker added successfully.")
                 return redirect("cfp:step3_thanks", talk_uuid=talk.uuid)
 
-    return TemplateResponse(request, "ep19/bs/cfp/step2_add_speaker.html", {
+    return TemplateResponse(request, "conference/cfp/step2_add_speaker.html", {
         "talk": talk,
         "speaker_form": speaker_form,
     })
@@ -119,7 +119,7 @@ def submit_proposal_step3_thanks(request, talk_uuid):
     Step3 - thanks for proposal
     """
     talk = get_object_or_404(Talk, uuid=talk_uuid)
-    return TemplateResponse(request, "ep19/bs/cfp/step3_thanks.html", {
+    return TemplateResponse(request, "conference/cfp/step3_thanks.html", {
         "talk": talk,
     })
 
@@ -149,7 +149,7 @@ def update_proposal(request, talk_uuid):
             messages.success(request, "Proposal updated")
             return redirect('cfp:preview', talk_slug=talk.slug)
 
-    return TemplateResponse(request, "ep19/bs/cfp/update_proposal.html", {
+    return TemplateResponse(request, "conference/cfp/update_proposal.html", {
         "talk": talk,
         "proposal_edit_form": proposal_edit_form,
     })
@@ -184,7 +184,7 @@ def update_speakers(request, talk_uuid):
                 messages.success(request, "Speaker updated successfully.",)
                 return redirect("cfp:preview", talk_slug=talk.slug)
 
-    return TemplateResponse(request, "ep19/bs/cfp/update_speakers.html", {
+    return TemplateResponse(request, "conference/cfp/update_speakers.html", {
         "talk": talk,
         "speaker_edit_form": speaker_form,
     })
@@ -198,7 +198,7 @@ def preview_proposal(request, talk_slug):
     talk = get_object_or_404(Talk, slug=talk_slug)
     talk_as_dict = dump_relevant_talk_information_to_dict(talk)
     conf = Conference.objects.current()
-    return TemplateResponse(request, "ep19/bs/cfp/preview.html", {
+    return TemplateResponse(request, "conference/cfp/preview.html", {
         "talk": talk,
         "talk_as_dict": talk_as_dict,
         "cfp_is_open": conf.cfp(),
