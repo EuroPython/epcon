@@ -1,5 +1,3 @@
-import uuid
-
 from django import forms
 from django.conf import settings
 from django.conf.urls import url
@@ -14,15 +12,17 @@ from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 from django.utils import timezone
 
-from conference.models import StripePayment
+from conference.models import StripePayment, Ticket
 
 from .fares import (
     FARE_CODE_GROUPS,
     FARE_CODE_REGEXES,
     FARE_TICKET_TYPES,
+    FARE_CODE_TYPES,
     FareIsNotAvailable,
     get_available_fares,
     is_fare_code_valid,
+    disable_early_bird_fares,
 )
 from .invoicing import create_invoices_for_order
 from .orders import (
@@ -218,6 +218,8 @@ def cart_step4b_verify_payment(request, payment_uuid, session_id):
                 current_site = get_current_site(request)
                 send_order_confirmation_email(order, current_site)
 
+        handle_early_bird_ticket_limit()
+
     return redirect("cart:step5_congrats_order_complete", order.uuid)
 
 
@@ -265,6 +267,18 @@ def send_order_confirmation_email(order: Order, current_site) -> None:
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[order.user.user.email],
     )
+
+
+def handle_early_bird_ticket_limit():
+    eb_ticket_orders = Ticket.objects.filter(
+        fare__conference=settings.CONFERENCE_CONFERENCE,
+        frozen=False,
+        # orderitem__order___complete=True,
+        fare__code__regex=FARE_CODE_REGEXES["types"][FARE_CODE_TYPES.EARLY_BIRD]
+    )
+
+    if eb_ticket_orders.count() > settings.EARLY_BIRD_ORDER_LIMIT:
+        disable_early_bird_fares()
 
 
 class TicketType:
