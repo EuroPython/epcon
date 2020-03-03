@@ -35,6 +35,29 @@ def test_if_cfp_pages_are_login_required(client, url):
     assert redirects_to(response, "/accounts/login/")
 
 
+@mark.parametrize(
+    "url",
+    [
+        reverse("cfp:step1_submit_proposal"),
+        # using some random uuid because we just need to resolve url
+        reverse("cfp:step2_add_speakers", args=["ABCDEFI"]),
+        reverse("cfp:step3_thanks", args=["ABCDEFI"]),
+        reverse("cfp:update", args=["ABCDEFI"]),
+        reverse("cfp:update_speakers", args=["ABCDEFI"]),
+    ],
+)
+def test_cfp_requires_full_profile_data(user_client, url):
+    user = user_client.user
+    attendee_profile = user.attendeeprofile
+    attendee_profile.gender = ""
+    attendee_profile.save()
+    attendee_profile.refresh_from_db()
+
+    response = user_client.get(url)
+    assert response.status_code == 302
+    assert response.url == reverse("user_panel:profile_settings")
+
+
 def test_if_cfp_pages_are_unavailable_if_cfp_is_undefined(user_client):
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,

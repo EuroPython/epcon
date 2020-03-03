@@ -84,6 +84,7 @@ def send_talk_details_to_backup_email(talk: Talk):
 
 
 @login_required
+@full_profile_required
 def submit_proposal_step2_add_speakers(request, talk_uuid):
     """
     Step2 of adding proposal - information about the speakers
@@ -112,6 +113,7 @@ def submit_proposal_step2_add_speakers(request, talk_uuid):
 
 
 @login_required
+@full_profile_required
 def submit_proposal_step3_thanks(request, talk_uuid):
     """
     Step3 - thanks for proposal
@@ -123,6 +125,7 @@ def submit_proposal_step3_thanks(request, talk_uuid):
 
 
 @login_required
+@full_profile_required
 def update_proposal(request, talk_uuid):
     """
     Update/Edit proposal view
@@ -153,6 +156,7 @@ def update_proposal(request, talk_uuid):
 
 
 @login_required
+@full_profile_required
 def update_speakers(request, talk_uuid):
     """
     Update/Edit proposal's speaker(s) view
