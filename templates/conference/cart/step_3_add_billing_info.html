@@ -21,8 +21,9 @@
                 {% csrf_token %}
 
                 {{ form|crispy }}
-                <p style='margin-top: 3em'>
-                <input type=submit class='btn btn-outline-primary btn-lg btn-block' value='Go to payment'>
+                <p style='margin-top: 2em'>To proceed with the purchase, we will need you to accept our <a href='/terms/'>terms & conditions</a> for EuroPython 2020.</p>
+                <p>
+                    <input type=submit class='btn btn-outline-primary btn-lg btn-block' value='Accept & proceed to payment'>
                 </p>
             </form>
 
