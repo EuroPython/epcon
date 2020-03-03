@@ -1,5 +1,5 @@
 # Base image
-FROM python:3.6-stretch
+FROM python:3.6-buster
 
 # Install system dependencies
 RUN apt-get update && \
@@ -10,6 +10,7 @@ RUN apt-get update && \
                     libxrender-dev \
                     libxml2-dev \
                     libxslt1-dev \
+                    sqlite3 \
                     wget \
                     curl \
                     git
