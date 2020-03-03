@@ -69,6 +69,7 @@ class AttendeeProfileFactory(factory.django.DjangoModelFactory):
     slug = factory.LazyAttribute(
         lambda o: slugify("{} {}".format(o.user.first_name, o.user.last_name))
     )
+    gender = "x"
 
     @factory.lazy_attribute
     def uuid(self):

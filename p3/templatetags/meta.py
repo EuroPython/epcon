@@ -21,7 +21,7 @@ def render_meta(context, title=""):
     page_url = context["CURRENT_URL"]
 
     image_url = context.get("social_image_url") or request.build_absolute_uri(
-        static("img/ep2020-social-dark.png")
+        static("img/ep2020-social-card.jpg")
     )
 
     TEMPLATE = f"""

@@ -34,12 +34,14 @@ from .orders import (
     is_non_conference_ticket_order,
 )
 from .payments import PaymentError, prepare_for_payment, verify_payment
+from .decorators import full_profile_required
 
 
 GLOBAL_MAX_PER_FARE_TYPE = 6
 ORDER_CONFIRMATION_EMAIL_SUBJECT = "EuroPython2020: Order confirmation"
 
 
+@full_profile_required
 def cart_step1_choose_type_of_order(request):
     """
     This view is not login required because we want to display some summary of
@@ -53,6 +55,7 @@ def cart_step1_choose_type_of_order(request):
 
 
 @login_required
+@full_profile_required
 def cart_step2_pick_tickets(request, type_of_tickets):
     """
     Only submit this form if user is authenticated, otherwise display some
@@ -119,6 +122,7 @@ def cart_step2_pick_tickets(request, type_of_tickets):
 
 
 @login_required
+@full_profile_required
 def cart_step3_add_billing_info(request, order_uuid):
     order = get_object_or_404(Order, uuid=order_uuid)
 
@@ -144,6 +148,7 @@ def cart_step3_add_billing_info(request, order_uuid):
 
 
 @login_required
+@full_profile_required
 def cart_step4_payment(request, order_uuid):
     order = get_object_or_404(Order, uuid=order_uuid)
     total_for_stripe = int(order.total() * 100)
@@ -164,7 +169,6 @@ def cart_step4_payment(request, order_uuid):
             return redirect(
                 "cart:step5_congrats_order_complete", order_uuid=order.uuid
             )
-
 
     # sanity/security check to make sure we don't publish the the wrong key
     stripe_key = settings.STRIPE_PUBLISHABLE_KEY
@@ -215,6 +219,7 @@ def cart_step4b_verify_payment(request, payment_uuid, session_id):
                 send_order_confirmation_email(order, current_site)
 
     return redirect("cart:step5_congrats_order_complete", order.uuid)
+
 
 @login_required
 def cart_step5_congrats_order_complete(request, order_uuid):

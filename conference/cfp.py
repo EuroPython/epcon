@@ -14,23 +14,24 @@ from django.views.generic import RedirectView
 
 from phonenumber_field.formfields import PhoneNumberField
 
-from conference.forms import ProposalForm
-from conference.models import (
+from .forms import ProposalForm
+from .models import (
     Conference,
     AttendeeProfile,
     Speaker,
     Talk,
     TalkSpeaker,
 )
-from conference.talks import dump_relevant_talk_information_to_dict
+from .talks import dump_relevant_talk_information_to_dict
+from .decorators import full_profile_required
 
 
 @login_required
+@full_profile_required
 def submit_proposal_step1_talk_info(request):
     """
-    Main submit_proposal view for ep2019+
+    Main submit_proposal view
     """
-
     conf = Conference.objects.current()
     if not conf.cfp():
         return TemplateResponse(request, "ep19/bs/cfp/cfp_is_closed.html", {
@@ -47,8 +48,7 @@ def submit_proposal_step1_talk_info(request):
                 talk = proposal_form.save(request.user)
                 messages.success(
                     request,
-                    "Proposal added, "
-                    "now please add information about the speaker",
+                    "Proposal added, now please add information about the speaker",
                 )
                 send_talk_details_to_backup_email(talk)
                 return redirect("cfp:step2_add_speakers", talk_uuid=talk.uuid)
@@ -84,11 +84,11 @@ def send_talk_details_to_backup_email(talk: Talk):
 
 
 @login_required
+@full_profile_required
 def submit_proposal_step2_add_speakers(request, talk_uuid):
     """
     Step2 of adding proposal - information about the speakers
     """
-
     talk = get_object_or_404(Talk, uuid=talk_uuid)
 
     speaker_form = AddSpeakerToTalkForm(
@@ -103,11 +103,7 @@ def submit_proposal_step2_add_speakers(request, talk_uuid):
                     request.user, speaker_form.cleaned_data
                 )
                 add_speaker_to_talk(speaker, talk)
-
-                messages.success(
-                    request,
-                    "Speaker added successfully.",
-                )
+                messages.success(request, "Speaker added successfully.")
                 return redirect("cfp:step3_thanks", talk_uuid=talk.uuid)
 
     return TemplateResponse(request, "ep19/bs/cfp/step2_add_speaker.html", {
@@ -117,11 +113,11 @@ def submit_proposal_step2_add_speakers(request, talk_uuid):
 
 
 @login_required
+@full_profile_required
 def submit_proposal_step3_thanks(request, talk_uuid):
     """
     Step3 - thanks for proposal
     """
-
     talk = get_object_or_404(Talk, uuid=talk_uuid)
     return TemplateResponse(request, "ep19/bs/cfp/step3_thanks.html", {
         "talk": talk,
@@ -129,6 +125,7 @@ def submit_proposal_step3_thanks(request, talk_uuid):
 
 
 @login_required
+@full_profile_required
 def update_proposal(request, talk_uuid):
     """
     Update/Edit proposal view
@@ -149,10 +146,7 @@ def update_proposal(request, talk_uuid):
 
         if proposal_edit_form.is_valid():
             proposal_edit_form.save(request.user)
-            messages.success(
-                request,
-                "Proposal updated"
-            )
+            messages.success(request, "Proposal updated")
             return redirect('cfp:preview', talk_slug=talk.slug)
 
     return TemplateResponse(request, "ep19/bs/cfp/update_proposal.html", {
@@ -162,6 +156,7 @@ def update_proposal(request, talk_uuid):
 
 
 @login_required
+@full_profile_required
 def update_speakers(request, talk_uuid):
     """
     Update/Edit proposal's speaker(s) view
@@ -186,11 +181,7 @@ def update_speakers(request, talk_uuid):
                 save_information_from_speaker_form(
                     request.user, speaker_form.cleaned_data
                 )
-
-                messages.success(
-                    request,
-                    "Speaker updated successfully.",
-                )
+                messages.success(request, "Speaker updated successfully.",)
                 return redirect("cfp:preview", talk_slug=talk.slug)
 
     return TemplateResponse(request, "ep19/bs/cfp/update_speakers.html", {
@@ -233,7 +224,6 @@ def extract_initial_speaker_data_from_user(user):
         'users_given_name': given_name,
         'users_family_name': family_name,
         'is_minor': attendee.is_minor,
-        'gender': attendee.gender,
         'job_title': attendee.job_title,
         'bio': getattr(attendee.getBio(), "body", ""),
         'company': attendee.company,
@@ -260,7 +250,6 @@ def save_information_from_speaker_form(user, cleaned_data):
     ap = user.attendeeprofile
     ap.phone = cleaned_data['phone']
     ap.is_minor = cleaned_data['is_minor']
-    ap.gender = cleaned_data['gender']
     ap.job_title = cleaned_data['job_title']
     ap.company = cleaned_data['company']
     ap.company_homepage = cleaned_data['company_homepage']
@@ -277,7 +266,6 @@ def add_speaker_to_talk(speaker, talk):
 
 
 class AddSpeakerToTalkForm(forms.ModelForm):
-
     users_given_name = forms.CharField(label="Given name of the speaker")
     users_family_name = forms.CharField(label="Family name of the speaker")
     is_minor = forms.BooleanField(
@@ -300,16 +288,11 @@ class AddSpeakerToTalkForm(forms.ModelForm):
         help_text=(
             "We require a mobile phone number for all speakers "
             "for last minute contacts and in case we need "
-            "timely clarification (if no reponse to previous emails).<br>"
-            "Use the international format, eg: +39-055-123456.<br />"
-            "This number will <strong>never</strong> be published."
+            "timely clarification (if no reponse to previous emails). "
+            "Use the international format (e.g.: +44 123456789). "
+            "This field will <strong>never</strong> be published."
         ),
         max_length=30,
-    )
-    gender = forms.CharField(
-        label="Type your gender",
-        max_length=32,
-        required=False,
     )
     company = forms.CharField(
         label="Your company", max_length=50, required=False
@@ -332,10 +315,9 @@ class AddSpeakerToTalkForm(forms.ModelForm):
             'users_given_name',
             'users_family_name',
             'job_title',
+            'is_minor',
             'phone',
             'bio',
-            'gender',
-            'is_minor',
             'company',
             'company_homepage',
         ]

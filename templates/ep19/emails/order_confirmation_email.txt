@@ -5,7 +5,7 @@ Thanks for buying tickets for EuroPython 2020.
 This is the summary of order {{ order.code }}:
 
 {% for item in order.orderitem_set.all %}
-– {{ item.code }} – {{ item.description }} € {{ item.price }}
+{% if item.ticket %}Ticket number: {{ item.ticket.id }}{% endif %} – {{ item.code }} – {{ item.description }} € {{ item.price }}
 {% endfor %}
 
 

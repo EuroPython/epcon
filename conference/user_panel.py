@@ -20,9 +20,12 @@ from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 
 from assopy.models import Invoice, Order
-from conference.accounts import get_or_create_attendee_profile_for_new_user
-from conference.cfp import AddSpeakerToTalkForm
-from conference.models import (
+from p3.models import P3Profile, TicketConference
+from p3.utils import assign_ticket_to_user
+
+from .accounts import get_or_create_attendee_profile_for_new_user
+from .cfp import AddSpeakerToTalkForm
+from .models import (
     AttendeeProfile,
     TALK_STATUS,
     Conference,
@@ -30,13 +33,14 @@ from conference.models import (
     TalkSpeaker,
     Ticket,
     ATTENDEEPROFILE_VISIBILITY,
+    ATTENDEEPROFILE_GENDER,
 )
-from conference.tickets import reset_ticket_settings
-from p3.models import P3Profile, TicketConference
-from p3.utils import assign_ticket_to_user
+from .tickets import reset_ticket_settings
+from .decorators import full_profile_required
 
 
 @login_required
+@full_profile_required
 def user_dashboard(request):
     proposals = get_proposals_for_current_conference(request.user)
     orders = get_orders_for_current_conference(request.user)
@@ -285,16 +289,25 @@ class ProfileSettingsForm(forms.ModelForm):
         help_text=(
             "We require a mobile phone number for all speakers "
             "for last minute contacts and in case we need "
-            "timely clarification (if no reponse to previous emails).<br>"
-            "Use the international format, eg: +39-055-123456.<br />"
-            "This number will <strong>never</strong> be published."
+            "timely clarification (if no reponse to previous emails). "
+            "Use the international format (e.g.: +44 123456789). "
+            "This field will <strong>never</strong> be published."
         ),
         max_length=30,
         required=False,
     )
+    gender = forms.ChoiceField(
+        help_text=(
+            "We use this information for statistics related to conference "
+            "attendance diversity. "
+            "This field will <strong>never</strong> be published."
+        ),
+        choices=(("", "", ""),) + ATTENDEEPROFILE_GENDER,
+        widget=forms.Select,
+        required=True,
+    )
 
     is_minor = AddSpeakerToTalkForm.base_fields["is_minor"]
-
     job_title = AddSpeakerToTalkForm.base_fields["job_title"]
     company = AddSpeakerToTalkForm.base_fields["company"]
     company_homepage = AddSpeakerToTalkForm.base_fields["company_homepage"]
@@ -332,6 +345,7 @@ class ProfileSettingsForm(forms.ModelForm):
             "last_name",
             "is_minor",
             "phone",
+            "gender",
             "email",
             # second section
             "picture_options",
@@ -385,10 +399,14 @@ class ProfileSettingsForm(forms.ModelForm):
             ),
             Div(
                 Div("email", css_class="col-md-6"),
-                Div("phone", css_class="col-md-6"),
+                Div("is_minor", css_class="col-md-6 mt-4"),
                 css_class="row",
             ),
-            Div(Div("is_minor", css_class="col-md-6"), css_class="row"),
+            Div(
+                Div("phone", css_class="col-md-6"),
+                Div("gender", css_class="col-md-6"),
+                css_class="row",
+            ),
             HTML("<h1>Profile picture</h1>"),
             Div(
                 HTML(
