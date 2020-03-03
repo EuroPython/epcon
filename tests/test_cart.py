@@ -34,6 +34,27 @@ from tests.common_tools import (
 from tests.factories import CouponFactory, CountryFactory, OrderFactory, VatFactory, FareFactory
 
 
+@mark.parametrize(
+    "url",
+    [
+        reverse("cart:step1_choose_type"),
+        reverse("cart:step2_pick_tickets", args=["other"]),
+        reverse("cart:step3_add_billing_info", args=["ABCDEFGH"]),
+        reverse("cart:step4_payment", args=["ABCDEFGH"]),
+    ],
+)
+def test_cart_requires_full_profile_data(db, user_client, url):
+    user = user_client.user
+    attendee_profile = user.attendeeprofile
+    attendee_profile.gender = ""
+    attendee_profile.save()
+    attendee_profile.refresh_from_db()
+
+    response = user_client.get(url)
+    assert response.status_code == 302
+    assert response.url == reverse("user_panel:profile_settings")
+
+
 def test_first_step_of_cart_is_available_without_auth(db, client):
     url = reverse("cart:step1_choose_type")
     response = client.get(url)

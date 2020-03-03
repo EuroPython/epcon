@@ -35,6 +35,29 @@ def test_if_cfp_pages_are_login_required(client, url):
     assert redirects_to(response, "/accounts/login/")
 
 
+@mark.parametrize(
+    "url",
+    [
+        reverse("cfp:step1_submit_proposal"),
+        # using some random uuid because we just need to resolve url
+        reverse("cfp:step2_add_speakers", args=["ABCDEFI"]),
+        reverse("cfp:step3_thanks", args=["ABCDEFI"]),
+        reverse("cfp:update", args=["ABCDEFI"]),
+        reverse("cfp:update_speakers", args=["ABCDEFI"]),
+    ],
+)
+def test_cfp_requires_full_profile_data(user_client, url):
+    user = user_client.user
+    attendee_profile = user.attendeeprofile
+    attendee_profile.gender = ""
+    attendee_profile.save()
+    attendee_profile.refresh_from_db()
+
+    response = user_client.get(url)
+    assert response.status_code == 302
+    assert response.url == reverse("user_panel:profile_settings")
+
+
 def test_if_cfp_pages_are_unavailable_if_cfp_is_undefined(user_client):
     Conference.objects.create(
         code=settings.CONFERENCE_CONFERENCE,
@@ -189,7 +212,6 @@ def test_if_user_can_add_a_speaker_to_a_proposal(user_client):
             "users_given_name": "Joe",
             "users_family_name": "Doe",
             "phone": "+48523456789",
-            "gender": "M",
             "bio": "ASdf bio",
         },
     )
@@ -462,7 +484,6 @@ def test_update_speaker_updated_speaker(user_client):
         is_minor=True,
         job_title="goat",
         phone="+48123456789",
-        gender="yes",
         company="widgets inc",
         company_homepage="www.widgets.inc",
         bio="this is my bio",
@@ -481,7 +502,6 @@ def test_update_speaker_updated_speaker(user_client):
     assert attendee_profile.phone == speaker_data["phone"]
     assert attendee_profile.is_minor == speaker_data["is_minor"]
     assert attendee_profile.job_title == speaker_data["job_title"]
-    assert attendee_profile.gender == speaker_data["gender"]
     assert attendee_profile.company == speaker_data["company"]
     assert speaker_data["company_homepage"] in attendee_profile.company_homepage
     assert attendee_profile.getBio().body == speaker_data["bio"]
@@ -530,7 +550,6 @@ def test_speaker_form_accepts_valid_international_mobile_numbers(valid_phone):
             "users_given_name": "Joe",
             "users_family_name": "Doe",
             "phone": valid_phone,
-            "gender": "",
             "bio": "ASdf bio",
         }
     )
@@ -550,7 +569,6 @@ def test_speaker_form_doesnt_accept_invalid_international_mobile_numbers(
             "users_given_name": "Joe",
             "users_family_name": "Doe",
             "phone": invalid_phone,
-            "gender": "",
             "bio": "ASdf bio",
         }
     )
