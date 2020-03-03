@@ -1,13 +1,11 @@
 import functools
 import random
 import uuid
-from datetime import date, timedelta
+from datetime import timedelta
 from random import randint
 
 import factory
 import factory.django
-import factory.fuzzy
-from django_factory_boy import auth as auth_factories
 from faker import Faker
 
 from django.conf import settings
@@ -43,11 +41,15 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "auth.User"
 
-    username = factory.fuzzy.FuzzyText()
-    password = factory.PostGenerationMethodCall("set_password", "123456")
+    username = factory.LazyAttribute(lambda o: fake.user_name())
+    password = factory.PostGenerationMethodCall("set_password", "password123")
+    first_name = factory.LazyAttribute(lambda o: fake.first_name())
+    last_name = factory.LazyAttribute(lambda o: fake.last_name())
+    email = factory.LazyAttribute(lambda o: fake.safe_email())
     is_active = True
-    email = factory.fuzzy.FuzzyText(suffix="@bar.it")
+
     assopy_user = factory.RelatedFactory("tests.factories.AssopyUserFactory", "user")
+    attendeeprofile = factory.RelatedFactory("tests.factories.AttendeeProfileFactory", "user")
 
 
 class AssopyUserFactory(factory.django.DjangoModelFactory):
@@ -56,6 +58,24 @@ class AssopyUserFactory(factory.django.DjangoModelFactory):
 
     user = factory.SubFactory(
         UserFactory, assopy_user=factory.LazyAttribute(lambda assopy_user: assopy_user)
+    )
+
+
+class AttendeeProfileFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "conference.AttendeeProfile"
+
+    user = factory.SubFactory(UserFactory)
+    slug = factory.LazyAttribute(
+        lambda o: slugify("{} {}".format(o.user.first_name, o.user.last_name))
+    )
+
+    @factory.lazy_attribute
+    def uuid(self):
+        return AttendeeProfile.objects.randomUUID(6)
+
+    birthday = factory.LazyAttribute(
+        lambda o: fake.date_between(start_date='-50y', end_date='-15y')
     )
 
 
@@ -190,13 +210,6 @@ class OrderFactory(factory.django.DjangoModelFactory):
         return instance
 
 
-class AssopyUserFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = "assopy.AssopyUser"
-
-    user = factory.SubFactory(auth_factories.UserFactory)
-
-
 class CreditCardOrderFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "assopy.Order"
@@ -229,23 +242,6 @@ class CouponFactory(factory.django.DjangoModelFactory):
                 self.fares.add(fare)
         else:
             self.fares.add(*Fare.objects.all())
-
-
-class AttendeeProfileFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = "conference.AttendeeProfile"
-
-    user = factory.SubFactory(auth_factories.UserFactory)
-    slug = factory.LazyAttribute(
-        lambda a: slugify("%s %s" % (a.user.first_name, a.user.last_name))
-    )
-    gender = "x"
-
-    @factory.lazy_attribute
-    def uuid(self):
-        return AttendeeProfile.objects.randomUUID(6)
-
-    birthday = factory.fuzzy.FuzzyDate(start_date=date(1950, 1, 1))
 
 
 class ConferenceTagFactory(factory.django.DjangoModelFactory):
@@ -285,7 +281,7 @@ class TicketFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "conference.Ticket"
 
-    user = factory.SubFactory(auth_factories.UserFactory)
+    user = factory.SubFactory(UserFactory)
     name = factory.Faker("sentence", nb_words=4, variable_nb_words=True)
     fare = factory.SubFactory(FareFactory)
     frozen = factory.Faker("random_element", elements=(True, False))
@@ -347,7 +343,7 @@ class SpeakerFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = "conference.Speaker"
 
-    user = factory.SubFactory(auth_factories.UserFactory)
+    user = factory.SubFactory(UserFactory)
 
 
 class TalkSpeakerFactory(factory.django.DjangoModelFactory):

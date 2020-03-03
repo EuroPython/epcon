@@ -1,11 +1,10 @@
 import pytest
 import uuid
-from datetime import date
 
 from django.conf import settings
 from django.utils import timezone
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 import responses
 
@@ -22,20 +21,20 @@ from conference.currencies import (
     fetch_and_store_latest_ecb_exrates,
 )
 
-from tests.common_tools import (
+from .common_tools import (
     make_user,
     create_valid_ticket_for_user_and_fare,
     get_default_conference,
     redirects_to,
     template_used,
 )
-from tests.factories import FareFactory, OrderFactory, TicketFactory, UserFactory
+from . import factories
 
 pytestmark = [pytest.mark.django_db]
 
 
 def create_order_and_invoice(assopy_user, fare):
-    order = OrderFactory(user=assopy_user, items=[(fare, {"qty": 1})])
+    order = factories.OrderFactory(user=assopy_user, items=[(fare, {"qty": 1})])
 
     with responses.RequestsMock() as rsps:
         # mocking responses for the invoice VAT exchange rate feature
@@ -105,13 +104,13 @@ def test_privacy_settings_updates_profile(user_client):
 def test_user_panel_manage_ticket(client):
     get_default_conference()
     Email.objects.create(code="purchase-complete")
-    fare = FareFactory()
+    fare = factories.FareFactory()
     user = make_user(is_staff=True)
 
     client.login(email=user.email, password="password123")
 
     order = create_order(user.assopy_user, fare)
-    order.payment_date = date.today()
+    order.payment_date = timezone.now()
     order.save()
 
     create_invoices_for_order(order)
@@ -132,7 +131,7 @@ def test_user_panel_manage_ticket(client):
 def test_user_panel_update_ticket(client):
     get_default_conference()
     Email.objects.create(code="purchase-complete")
-    fare = FareFactory()
+    fare = factories.FareFactory()
     user = make_user(is_staff=True)
 
     client.login(email=user.email, password="password123")
@@ -166,7 +165,7 @@ def test_user_panel_update_ticket(client):
 def test_user_panel_update_ticket_cannot_update_name(client):
     get_default_conference()
     Email.objects.create(code="purchase-complete")
-    fare = FareFactory()
+    fare = factories.FareFactory()
     user = make_user(is_staff=True)
 
     client.login(email=user.email, password="password123")
@@ -193,7 +192,7 @@ def test_user_panel_update_ticket_cannot_update_name(client):
     assert ticketconference.name == old_name
 
 
-def test_ticket_buyer_is_shown_assign_ticket_link(db, user_client):
+def test_ticket_buyer_is_shown_assign_ticket_link(user_client):
     ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
 
     url = reverse('user_panel:dashboard')
@@ -205,9 +204,9 @@ def test_ticket_buyer_is_shown_assign_ticket_link(db, user_client):
     assert reverse('user_panel:assign_ticket', args=[ticket.id]) in response.content.decode().lower()
 
 
-def test_ticket_buyer_can_assign_ticket(db, user_client):
+def test_ticket_buyer_can_assign_ticket(user_client):
     ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
-    assignee = UserFactory()
+    assignee = factories.UserFactory()
 
     url = reverse('user_panel:assign_ticket', args=[ticket.id])
     payload = {'email': assignee.email}
@@ -220,8 +219,8 @@ def test_ticket_buyer_can_assign_ticket(db, user_client):
     assert ticket.user == assignee
 
 
-def test_ticket_assignee_is_not_shown_assign_ticket_link(db, user_client):
-    buyer = UserFactory()
+def test_ticket_assignee_is_not_shown_assign_ticket_link(user_client):
+    buyer = factories.UserFactory()
     ticket = create_valid_ticket_for_user_and_fare(user=buyer)
     ticket.user = user_client.user
 
@@ -234,8 +233,8 @@ def test_ticket_assignee_is_not_shown_assign_ticket_link(db, user_client):
     assert reverse('user_panel:assign_ticket', args=[ticket.id]) not in response.content.decode().lower()
 
 
-def test_ticket_assignee_cannot_reassign_ticket(db, user_client):
-    buyer = UserFactory()
+def test_ticket_assignee_cannot_reassign_ticket(user_client):
+    buyer = factories.UserFactory()
     ticket = create_valid_ticket_for_user_and_fare(user=buyer)
     ticket.user = user_client.user
 
@@ -246,10 +245,10 @@ def test_ticket_assignee_cannot_reassign_ticket(db, user_client):
     assert response.status_code == 403
 
 
-def test_assigning_tickets_uses_case_insensitive_email_address(db, user_client):
+def test_assigning_tickets_uses_case_insensitive_email_address(user_client):
     ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
     target_email = 'MiXeDc4sE@test.tESt'
-    target_user = UserFactory(email=target_email.lower())
+    target_user = factories.UserFactory(email=target_email.lower())
 
     url = reverse('user_panel:assign_ticket', args=[ticket.id])
     payload = {'email': target_email}
@@ -260,9 +259,9 @@ def test_assigning_tickets_uses_case_insensitive_email_address(db, user_client):
     assert ticket.user == target_user
 
 
-def test_assigning_ticket_to_inactive_user_displays_error(db, user_client):
+def test_assigning_ticket_to_inactive_user_displays_error(user_client):
     ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
-    target_user = UserFactory(is_active=False)
+    target_user = factories.UserFactory(is_active=False)
     target_email = target_user.email
 
     url = reverse('user_panel:assign_ticket', args=[ticket.id])
@@ -278,7 +277,7 @@ def test_assigning_ticket_to_inactive_user_displays_error(db, user_client):
     assert "user does not exist" in response.content.decode()
 
 
-def test_frozen_ticket_not_shown_in_dashboard(db, user_client):
+def test_frozen_ticket_not_shown_in_dashboard(user_client):
     ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
     ticket.frozen = True
     ticket.save()
@@ -294,7 +293,7 @@ def test_frozen_ticket_not_shown_in_dashboard(db, user_client):
     assert reverse('user_panel:manage_ticket', args=[ticket.id]) not in response.content.decode().lower()
 
 
-def test_frozen_ticket_cannot_be_assigned(db, user_client):
+def test_frozen_ticket_cannot_be_assigned(user_client):
     ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
     ticket.frozen = True
     ticket.save()
@@ -305,7 +304,7 @@ def test_frozen_ticket_cannot_be_assigned(db, user_client):
     assert response.status_code == 403
 
 
-def test_frozen_ticket_cannot_be_managed(db, user_client):
+def test_frozen_ticket_cannot_be_managed(user_client):
     ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
     ticket.frozen = True
     ticket.save()
@@ -316,10 +315,10 @@ def test_frozen_ticket_cannot_be_managed(db, user_client):
     assert response.status_code == 403
 
 
-def test_other_fares_tickets_can_be_reassigned(db, user_client):
-    fare = FareFactory(ticket_type=FARE_TICKET_TYPES.other, conference=settings.CONFERENCE_CONFERENCE)
+def test_other_fares_tickets_can_be_reassigned(user_client):
+    fare = factories.FareFactory(ticket_type=FARE_TICKET_TYPES.other, conference=settings.CONFERENCE_CONFERENCE)
     ticket = create_valid_ticket_for_user_and_fare(user=user_client.user, fare=fare)
-    target_user = UserFactory()
+    target_user = factories.UserFactory()
     target_email = target_user.email
 
     url = reverse('user_panel:assign_ticket', args=[ticket.id])
@@ -331,10 +330,10 @@ def test_other_fares_tickets_can_be_reassigned(db, user_client):
     assert ticket.user == target_user
 
 
-def test_other_fares_tickets_cannot_be_managed(db, user_client):
+def test_other_fares_tickets_cannot_be_managed(user_client):
     get_default_conference()
-    ticket = TicketFactory(user=user_client.user, fare__ticket_type=FARE_TICKET_TYPES.other)
-    target_user = UserFactory()
+    ticket = factories.TicketFactory(user=user_client.user, fare__ticket_type=FARE_TICKET_TYPES.other)
+    target_user = factories.UserFactory()
     target_email = target_user.email
 
     url = reverse('user_panel:manage_ticket', args=[ticket.id])
@@ -344,9 +343,9 @@ def test_other_fares_tickets_cannot_be_managed(db, user_client):
     assert response.status_code == 403
 
 
-def test_assigning_resets_tickets(db, user_client):
+def test_assigning_resets_tickets(user_client):
     ticket = create_valid_ticket_for_user_and_fare(user=user_client.user)
-    asignee = UserFactory()
+    asignee = factories.UserFactory()
 
     url = reverse('user_panel:assign_ticket', args=[ticket.id])
     payload = {'email': asignee.email}
@@ -512,8 +511,7 @@ def test_profile_settings_update_use_gravatar(user_client):
 def test_profile_settings_update_use_uploaded_image(user_client):
     url = reverse('user_panel:profile_settings')
     user = user_client.user
-    attendee_profile = user.attendeeprofile
-    p3_profile = attendee_profile.p3_profile
+
     required_fields = {
         "first_name": user.first_name,
         "last_name": user.last_name,
@@ -529,8 +527,14 @@ def test_profile_settings_update_use_uploaded_image(user_client):
     })
 
     assert response.status_code == 200
+
+    user.refresh_from_db()
+    attendee_profile = user.attendeeprofile
+    p3_profile = attendee_profile.p3_profile
+
     attendee_profile.refresh_from_db()
     p3_profile.refresh_from_db()
+
     assert attendee_profile.image
     assert p3_profile.image_url == ""
     assert p3_profile.image_gravatar is False

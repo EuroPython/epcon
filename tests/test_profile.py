@@ -1,6 +1,6 @@
 import pytest
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from conference.models import ATTENDEEPROFILE_VISIBILITY, TALK_STATUS
 

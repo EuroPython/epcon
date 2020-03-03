@@ -8,15 +8,12 @@ from django.conf import settings
 from django.core import mail
 from django.core.cache import cache
 
-from django_factory_boy import auth as auth_factories
-
 from assopy.models import Vat, VatFare
 from conference.accounts import get_or_create_attendee_profile_for_new_user
 from conference.models import AttendeeProfile, TALK_STATUS, Fare
 from conference.fares import pre_create_typical_fares_for_conference
-from tests.factories import (
-    AssopyUserFactory, OrderFactory, TalkFactory, SpeakerFactory, TalkSpeakerFactory, ConferenceFactory,
-)
+
+from . import factories
 
 HTTP_OK = 200
 DEFAULT_VAT_RATE = "7.7"  # 7.7%
@@ -155,12 +152,10 @@ def email_sent_with_subject(subject):
 
 
 def make_user(email='joedoe@example.com', **kwargs):
-    user = auth_factories.UserFactory(
+    user = factories.UserFactory(
         email=email, is_active=True,
         **kwargs
     )
-    AssopyUserFactory(user=user)
-    AttendeeProfile.objects.getOrCreateForUser(user=user)
     return user
 
 
@@ -196,7 +191,7 @@ def create_valid_ticket_for_user_and_fare(user, fare=None):
         fare = Fare.objects.first()
     VatFare.objects.get_or_create(vat=default_vat_rate, fare=fare)
 
-    order = OrderFactory(
+    order = factories.OrderFactory(
         user=user.assopy_user,
         items=[(fare, {"qty": 1}),],
     )
@@ -209,21 +204,19 @@ def create_valid_ticket_for_user_and_fare(user, fare=None):
 
 
 def get_default_conference(**kwargs):
-    return ConferenceFactory(**kwargs)
+    return factories.ConferenceFactory(**kwargs)
 
 
 def create_talk_for_user(user, **kwargs):
     if user is None:
         user = create_user()
 
-    talk = TalkFactory(**{'status': TALK_STATUS.proposed, 'created_by': user, **kwargs})
-    speaker = SpeakerFactory(user=user)
-    TalkSpeakerFactory(talk=talk, speaker=speaker)
+    talk = factories.TalkFactory(**{'status': TALK_STATUS.proposed, 'created_by': user, **kwargs})
+    speaker = factories.SpeakerFactory(user=user)
+    factories.TalkSpeakerFactory(talk=talk, speaker=speaker)
     return talk
 
 
 def create_user():
-    user = auth_factories.UserFactory(is_active=True)
-    AssopyUserFactory(user=user)
-    get_or_create_attendee_profile_for_new_user(user)
+    user = factories.UserFactory(is_active=True)
     return user
