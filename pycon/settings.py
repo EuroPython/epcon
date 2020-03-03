@@ -5,7 +5,7 @@ import os.path
 import dj_database_url
 from decouple import config
 
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 
 from model_utils import Choices
 
@@ -263,7 +263,6 @@ INSTALLED_APPS = (
     'cmsplugin_filer_image',
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
-    'djangocms_grid',
 
     'treebeard',
     'cms',
@@ -440,13 +439,6 @@ THUMBNAIL_PROCESSORS = (
     'easy_thumbnails.processors.filters',
 )
 THUMBNAIL_HIGH_RESOLUTION = True
-
-DJANGOCMS_GRID_CONFIG = {
-    'COLUMNS': 100,
-    'TOTAL_WIDTH': 960,
-    'GUTTER': 20,
-}
-
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 

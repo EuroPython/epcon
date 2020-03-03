@@ -1,7 +1,7 @@
 import logging
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models.signals import post_save
 
 from assopy.models import ticket_for_user, user_created

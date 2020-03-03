@@ -9,7 +9,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import exceptions
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
@@ -119,7 +119,7 @@ class Conference(models.Model):
         if self.conference_start and self.conference_end:
             d = self.conference_start
             step = datetime.timedelta(days=1)
-            while d<= self.conference_end:
+            while d <= self.conference_end:
                 output.append(d)
                 d += step
         return output
@@ -587,7 +587,7 @@ class Talk(models.Model, UrlMixin):
         default=random_shortuuid,
         editable=False,
     )
-    created_by = models.ForeignKey(get_user_model(), blank=True, null=True)
+    created_by = models.ForeignKey(get_user_model(), blank=True, null=True, on_delete=models.deletion.PROTECT)
 
     title = models.CharField("Talk title", max_length=80)
     sub_title = models.CharField(
@@ -791,7 +791,7 @@ class TalkSpeaker(models.Model):
 
 class FareQuerySet(models.QuerySet):
     def available(self, conference=None):
-        today = datetime.date.today()
+        today = timezone.now().date()
         q1 = models.Q(start_validity=None, end_validity=None)
         q2 = models.Q(start_validity__lte=today, end_validity__gte=today)
         qs = self.filter(q1 | q2)
@@ -846,7 +846,7 @@ class Fare(models.Model):
 
     def valid(self):
         #numb = len(list(Ticket.objects.all()))
-        today = datetime.date.today()
+        today = timezone.now().date()
         try:
             validity = self.start_validity <= today <= self.end_validity
         except TypeError:
@@ -1333,7 +1333,7 @@ class News(TimeStampedModel):
     # CharField because sqlite
     uuid = models.CharField(unique=True, max_length=40, default=uuid.uuid4)
 
-    conference = models.ForeignKey(Conference)
+    conference = models.ForeignKey(Conference, on_delete=models.deletion.PROTECT)
     title = models.CharField(max_length=255)
     slug = models.SlugField()
     content = models.TextField()
@@ -1373,8 +1373,8 @@ class StripePayment(models.Model):
     session_id = models.CharField(max_length=100, null=True)
     email = models.CharField(max_length=255)
 
-    user = models.ForeignKey(get_user_model())
-    order = models.ForeignKey('assopy.Order')
+    user = models.ForeignKey(get_user_model(), on_delete=models.deletion.PROTECT)
+    order = models.ForeignKey('assopy.Order', on_delete=models.deletion.PROTECT)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=255)
 

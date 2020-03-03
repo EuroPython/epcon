@@ -3,17 +3,11 @@
 
 """
 from django.core.management.base import BaseCommand
-from django.core import urlresolvers
 
 from conference import models as cmodels
+from p3.utils import profile_url
 
 ### Helpers
-
-def profile_url(user):
-
-    return urlresolvers.reverse('profiles:profile',
-                                args=[user.attendeeprofile.slug])
-
 def speaker_listing(talk):
 
     return ', '.join(

@@ -8,11 +8,11 @@ from django import http
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.contrib.contenttypes.fields import (
     ReverseGenericManyToOneDescriptor,
 )
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
@@ -93,20 +93,20 @@ class ConferenceAdmin(admin.ModelAdmin):
     def get_urls(self):
         admin_view = self.admin_site.admin_view
         urls = [
-            url(r'^(?P<cid>[\w-]+)/schedule/$',
+            re_path(r'^(?P<cid>[\w-]+)/schedule/$',
                 admin_view(self.schedule_view),
                 name='conference-conference-schedule'),
-            url(r'^(?P<cid>[\w-]+)/schedule/(?P<sid>\d+)/(?P<tid>\d+)/$',
+            re_path(r'^(?P<cid>[\w-]+)/schedule/(?P<sid>\d+)/(?P<tid>\d+)/$',
                 admin_view(self.schedule_view_track),
                 name='conference-conference-schedule-track'),
 
-            url(r'^(?P<cid>[\w-]+)/stats/$',
+            re_path(r'^(?P<cid>[\w-]+)/stats/$',
                 admin_view(self.stats_list),
                 name='conference-ticket-stats'),
-            url(r'^(?P<cid>[\w-]+)/stats/details$',
+            re_path(r'^(?P<cid>[\w-]+)/stats/details$',
                 admin_view(self.stats_details),
                 name='conference-ticket-stats-details'),
-            url(r'^(?P<cid>[\w-]+)/stats/details.csv$',
+            re_path(r'^(?P<cid>[\w-]+)/stats/details.csv$',
                 admin_view(self.stats_details_csv),
                 name='conference-ticket-stats-details-csv'),
         ]
@@ -439,7 +439,7 @@ class SpeakerAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(SpeakerAdmin, self).get_urls()
         my_urls = [
-            url(r'^stats/list/$', self.admin_site.admin_view(self.stats_list), name='conference-speaker-stat-list'),
+            re_path(r'^stats/list/$', self.admin_site.admin_view(self.stats_list), name='conference-speaker-stat-list'),
         ]
         return my_urls + urls
 
@@ -549,16 +549,16 @@ class ScheduleAdmin(admin.ModelAdmin):
         urls = super(ScheduleAdmin, self).get_urls()
         v = self.admin_site.admin_view
         my_urls = [
-            url(r'^stats/$',
+            re_path(r'^stats/$',
                 v(self.expected_attendance),
                 name='conference-schedule-expected_attendance'),
-            url(r'^(?P<sid>\d+)/events/$',
+            re_path(r'^(?P<sid>\d+)/events/$',
                 v(self.events),
                 name='conference-schedule-events'),
-            url(r'^(?P<sid>\d+)/events/(?P<eid>\d+)$',
+            re_path(r'^(?P<sid>\d+)/events/(?P<eid>\d+)$',
                 v(self.event),
                 name='conference-schedule-event'),
-            url(r'^(?P<sid>\d+)/tracks/(?P<tid>[\d]+)$',
+            re_path(r'^(?P<sid>\d+)/tracks/(?P<tid>[\d]+)$',
                 v(self.tracks),
                 name='conference-schedule-tracks'),
         ]
@@ -1008,7 +1008,7 @@ class TicketAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(TicketAdmin, self).get_urls()
         my_urls = [
-            url(r'^stats/data/$', self.admin_site.admin_view(self.stats_data_view), name='conference-ticket-stats-data'),
+            re_path(r'^stats/data/$', self.admin_site.admin_view(self.stats_data_view), name='conference-ticket-stats-data'),
         ]
         return my_urls + urls
 
@@ -1124,7 +1124,7 @@ class TicketAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [
-            url(r'^stats/data/$', self.admin_site.admin_view(self.stats_data), name='p3-ticket-stats-data'),
+            re_path(r'^stats/data/$', self.admin_site.admin_view(self.stats_data), name='p3-ticket-stats-data'),
         ]
         return my_urls + urls
 
@@ -1176,7 +1176,7 @@ class ConferenceTagAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(ConferenceTagAdmin, self).get_urls()
         my_urls = [
-            url(r'^merge/$', self.admin_site.admin_view(self.merge_tags), name='conference-conferencetag-merge'),
+            re_path(r'^merge/$', self.admin_site.admin_view(self.merge_tags), name='conference-conferencetag-merge'),
         ]
         return my_urls + urls
 

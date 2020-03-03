@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
@@ -32,7 +32,7 @@ def talk(request, talk_slug):
             "talk": talk,
             "talk_as_dict": talk_as_dict,
             "social_image_url": request.build_absolute_uri(
-                reverse("conference-talk-social-card-png", kwargs={"slug": talk.slug})
+                reverse("conference:conference-talk-social-card-png", kwargs={"slug": talk.slug})
             ),
             "can_update_talk": can_update_talk,
             "can_submit_slides": can_submit_slides,

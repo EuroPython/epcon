@@ -14,7 +14,6 @@
 
 """
 from django.core.management.base import BaseCommand, CommandError
-from django.core import urlresolvers
 from django.utils.html import strip_tags
 from conference import models
 
@@ -45,11 +44,6 @@ POSTER_DURATION = datetime.timedelta(minutes=90)
 POSTER_ROOM = 'Exhibition Hall'
 
 ### Helpers
-
-def profile_url(user):
-
-    return urlresolvers.reverse('profiles:profile',
-                                args=[user.attendeeprofile.slug])
 
 def speaker_listing(talk):
 

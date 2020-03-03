@@ -2,7 +2,7 @@ from assopy import models
 from conference import cachef
 from conference.models import Ticket
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 
 cache_me = cachef.CacheFunction(prefix='assopy:')
