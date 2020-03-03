@@ -1,6 +1,6 @@
 import csv
 import decimal
-from datetime import date, datetime
+from datetime import date
 from decimal import Decimal
 import random
 import json
@@ -8,17 +8,16 @@ import json
 from django.http import QueryDict
 from pytest import mark
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.utils import timezone
 
-from django_factory_boy import auth as auth_factories
 from freezegun import freeze_time
 import responses
 
 from assopy.models import Invoice, Order, Vat
-from tests.factories import AssopyUserFactory, FareFactory, OrderFactory
-from conference.models import AttendeeProfile, Fare, Conference
+from tests.factories import FareFactory, OrderFactory
+from conference.models import Fare, Conference
 from conference.invoicing import (
     ACPYSS_16,
     PYTHON_ITALIA_17,
@@ -36,11 +35,11 @@ from conference.fares import (
 )
 from email_template.models import Email
 
-from tests.common_tools import template_used, make_user
+from tests.common_tools import make_user
 
 
 def _prepare_invoice_for_basic_test(order_code, invoice_code):
-    # default password is 'password123' per django_factory_boy
+    # default password is 'password123'
     user = make_user()
 
     # FYI(artcz): Order.objects.create is overloaded method on

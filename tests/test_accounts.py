@@ -1,16 +1,17 @@
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import mail
 from django.test.client import RequestFactory
-from django_factory_boy import auth as auth_factories
 from pytest import mark
 
 from conference.accounts import send_verification_email
 
+from . import factories
+
 
 @mark.django_db
 def test_send_verification_email():
-    user = auth_factories.UserFactory()
-    
+    user = factories.UserFactory()
+
     user.is_active = False
     user.save()
 

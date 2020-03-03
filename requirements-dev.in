@@ -7,7 +7,6 @@ pytest-xdist
 freezegun
 responses
 factory_boy
-django_factory_boy  # consider retiring this dependency
 
 flake8
 black

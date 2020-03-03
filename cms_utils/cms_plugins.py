@@ -10,4 +10,5 @@ class MarkItUpPlugin(CMSPluginBase):
     model = MarkitUpPluginModel
     render_template = 'djangocms_markitup/markitup.html'
 
+
 plugin_pool.register_plugin(MarkItUpPlugin)

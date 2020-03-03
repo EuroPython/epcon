@@ -2,7 +2,7 @@ from datetime import timedelta
 
 import pytest
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 

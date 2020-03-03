@@ -1,7 +1,7 @@
 
 from pytest import mark
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from tests.factories import (
     ConferenceFactory, ConferenceTagFactory, EventFactory, ScheduleFactory, TrackFactory,
