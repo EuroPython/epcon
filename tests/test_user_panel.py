@@ -538,3 +538,17 @@ def test_profile_settings_update_use_uploaded_image(user_client):
     assert attendee_profile.image
     assert p3_profile.image_url == ""
     assert p3_profile.image_gravatar is False
+
+
+def test_profile_missing_gender_redirects_to_settings(user_client):
+    url = reverse('user_panel:dashboard')
+
+    user = user_client.user
+    attendee_profile = user.attendeeprofile
+    attendee_profile.gender = ""
+    attendee_profile.save()
+    attendee_profile.refresh_from_db()
+
+    response = user_client.get(url)
+    assert response.status_code == 302
+    assert response.url == reverse('user_panel:profile_settings')

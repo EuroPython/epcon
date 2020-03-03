@@ -43,6 +43,7 @@ def test_865_attendee_profile_editable_in_django_admin(admin_client):
         'slug': 'different-slug',
         'uuid': '12345',
         'user': user.id,
+        'gender': 'o',
         'visibility': ATTENDEEPROFILE_VISIBILITY.PRIVATE,
     })
     EDIT_OK_302 = 302
@@ -51,3 +52,4 @@ def test_865_attendee_profile_editable_in_django_admin(admin_client):
     ap.refresh_from_db()
     assert ap.slug == 'different-slug'
     assert ap.uuid == '12345'
+    assert ap.gender == 'o'
