@@ -1,6 +1,6 @@
 import random
 
-from django.conf.urls import url
+from django.urls import re_path
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.db.models import Q, Prefetch, Case, When, Value, BooleanField
@@ -212,6 +212,6 @@ class VotingOptions:
 
 
 urlpatterns = [
-    url(r"^$", talk_voting, name="talks"),
-    url(r"^vote-on/(?P<talk_uuid>[\w]+)/$", vote_on_a_talk, name="vote"),
+    re_path(r"^$", talk_voting, name="talks"),
+    re_path(r"^vote-on/(?P<talk_uuid>[\w]+)/$", vote_on_a_talk, name="vote"),
 ]

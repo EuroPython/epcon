@@ -1,11 +1,10 @@
 from django import forms
 from django.conf import settings
-from django.conf.urls import url
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, re_path
 from django.db import transaction
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -328,41 +327,41 @@ class UpdateAttendeeProfile(AddSpeakerToTalkForm):
 
 
 urlpatterns = [
-    url(
+    re_path(
         r'^$',
         RedirectView.as_view(url=reverse_lazy("cfp:step1_submit_proposal"))
     ),
-    url(
+    re_path(
         r"^submit-proposal/$",
         submit_proposal_step1_talk_info,
         name="step1_submit_proposal",
     ),
-    url(
+    re_path(
         r"^submit-proposal/(?P<talk_uuid>[\w-]+)/add-speakers/$",
         submit_proposal_step2_add_speakers,
         name="step2_add_speakers",
     ),
-    url(
+    re_path(
         r"^submit-proposal/(?P<talk_uuid>[\w-]+)/thanks/$",
         submit_proposal_step3_thanks,
         name="step3_thanks",
     ),
-    url(
+    re_path(
         r"^preview/(?P<talk_slug>[\w-]+)/$",
         preview_proposal,
         name="preview",
     ),
-    url(
+    re_path(
         r"^update/(?P<talk_uuid>[\w-]+)/speakers/$",
         update_speakers,
         name="update_speakers",
     ),
-    url(
+    re_path(
         r"^update/(?P<talk_uuid>[\w-]+)/$",
         update_proposal,
         name="update",
     ),
-    url(
+    re_path(
         r"^program-wg/download-all-talks/$",
         program_wg_download_all_talks_for_current_conference,
         name="program_wg_download_all_talks",

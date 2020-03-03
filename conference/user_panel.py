@@ -6,7 +6,7 @@ from phonenumber_field.formfields import PhoneNumberField
 from model_utils import Choices
 
 from django import forms
-from django.conf.urls import url
+from django.urls import re_path
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
@@ -568,12 +568,12 @@ def get_orders_for_current_conference(user):
 
 
 urlpatterns = [
-    url(r"^$", user_dashboard, name="dashboard"),
-    url(r"^manage-ticket/(?P<ticket_id>\d+)/$", manage_ticket, name="manage_ticket"),
-    url(r"^assign-ticket/(?P<ticket_id>\d+)/$", assign_ticket, name="assign_ticket"),
-    url(r"^privacy-settings/$", privacy_settings, name="privacy_settings"),
-    url(r"^profile-settings/$", profile_settings, name="profile_settings"),
-    url(
+    re_path(r"^$", user_dashboard, name="dashboard"),
+    re_path(r"^manage-ticket/(?P<ticket_id>\d+)/$", manage_ticket, name="manage_ticket"),
+    re_path(r"^assign-ticket/(?P<ticket_id>\d+)/$", assign_ticket, name="assign_ticket"),
+    re_path(r"^privacy-settings/$", privacy_settings, name="privacy_settings"),
+    re_path(r"^profile-settings/$", profile_settings, name="profile_settings"),
+    re_path(
         r"^password/change/$",
         auth_views.PasswordChangeView.as_view(
             template_name="conference/user_panel/password_change.html",
@@ -581,7 +581,7 @@ urlpatterns = [
         ),
         name="password_change",
     ),
-    url(
+    re_path(
         r"^password/change/done/$",
         auth_views.PasswordChangeDoneView.as_view(
             template_name="conference/user_panel/password_change_done.html"

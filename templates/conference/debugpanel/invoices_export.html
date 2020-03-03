@@ -55,11 +55,7 @@
         {% for v in to_export.values %}
         <td>{{ v }}</td>
         {% endfor %}
-<<<<<<< HEAD
-        <td><a href='{% url "debugpanel:debug_panel_reissue_invoice" invoice.id %}'>Reissue invoice</a></td>
-=======
         <td><a href='{% url "debug_panel:reissue_invoice" invoice.id %}'>Reissue invoice</a></td>
->>>>>>> dev/ep2020
         <td><a href='{{ invoice.get_absolute_url }}'>Invoice URL</a></td>
       </tr>
       {% endfor %}{# invoice in output #}
