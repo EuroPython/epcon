@@ -1,0 +1,34 @@
+{% extends "conference/user_panel/base.html" %}
+
+{% load static cms_tags crispy_forms_tags %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+
+<li class='breadcrumb-item'>
+    <a href=".">Configure ticket #{{ ticket.id }}</a>
+</li>
+{% endblock breadcrumbs %}
+
+{% block user_content %}
+<div class='row' style='margin-top: 3em'>
+
+    <div class="col-md-8">
+        <h1>Configure ticket #{{ ticket.id }}</h1>
+
+        <form method="POST" action=".">
+            {% csrf_token %}
+            {{ ticket_configuration_form | crispy }}
+            <input type="submit" class="btn btn-primary" value="Save">
+        </form>
+    </div>
+    <div class="col-md-4 mt-4">
+      <h3>Shirt size guide</h3>
+      <h6>All sizes shown are in centimeters</h6>
+      <h4 class="mt-2">Fitted cut</h4>
+      <img src="{% static 'img/fitted-cut-size-guide.png' %}" class="img-fluid" alt="Fitted cut size guide">
+      <h4 class="mt-4">Straight cut</h4>
+      <img src="{% static 'img/straight-cut-size-guide.png' %}" class="img-fluid" alt="Straight cut size guide">
+    </div>
+</div>
+{% endblock %}

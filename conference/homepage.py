@@ -22,7 +22,7 @@ def homepage(request):
 
     return TemplateResponse(
         request,
-        "ep19/bs/homepage/home.html",
+        "conference/homepage/home.html",
         {
             "latest_3_news": latest_3_news,
             "sponsors": sponsors,
@@ -34,7 +34,7 @@ def homepage(request):
 
 def generic_content_page(request):
     return TemplateResponse(
-        request, 'ep19/bs/content/generic_content_page.html', {
+        request, 'conference/content/generic_content_page.html', {
             'lorem_words': words,
             'lorem_paragraphs': paragraphs,
         }
@@ -43,7 +43,7 @@ def generic_content_page(request):
 
 def generic_content_page_with_sidebar(request):
     return TemplateResponse(
-        request, 'ep19/bs/content/generic_content_page_with_sidebar.html', {
+        request, 'conference/content/generic_content_page_with_sidebar.html', {
             'lorem_words': words,
             'lorem_paragraphs': paragraphs,
         }

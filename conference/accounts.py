@@ -24,7 +24,7 @@ from conference.models import CaptchaQuestion, AttendeeProfile
 from p3.models import P3Profile
 
 
-LOGIN_TEMPLATE = "ep19/bs/accounts/login.html"
+LOGIN_TEMPLATE = "conference/accounts/login.html"
 
 PRIVACY_POLICY_CHECKBOX = (
     "I consent to the use of my data subject to the "
@@ -100,7 +100,7 @@ def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
 
             return redirect('accounts:signup_step_2_please_verify_email')
 
-    return TemplateResponse(request, "ep19/bs/accounts/signup.html", {
+    return TemplateResponse(request, "conference/accounts/signup.html", {
         'form': form,
         'next': request.GET.get('next', '/'),
     })
@@ -108,7 +108,7 @@ def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
 
 def signup_step_2_please_verify_email(request):
     return TemplateResponse(
-        request, "ep19/bs/accounts/signup_please_verify_email.html", {}
+        request, "conference/accounts/signup_please_verify_email.html", {}
     )
 
 
@@ -120,7 +120,7 @@ def send_verification_email(user, current_site) -> None:
     )
     full_url = f'https://{current_site.domain}{verification_path}'
 
-    content = render_to_string("ep19/emails/signup_verification_email.txt", {
+    content = render_to_string("conference/emails/signup_verification_email.txt", {
         'new_token': new_token,
         'verification_email_url': full_url,
     })
@@ -296,24 +296,24 @@ urlpatterns = [
     re_path(
         r"^password-reset/$",
         auth_views.PasswordResetView.as_view(
-            template_name="ep19/bs/accounts/password_reset.html",
+            template_name="conference/accounts/password_reset.html",
             success_url=reverse_lazy("accounts:password_reset_done"),
-            email_template_name="ep19/emails/password_reset_email.txt",
-            subject_template_name="ep19/emails/password_reset_subject.txt",
+            email_template_name="conference/emails/password_reset_email.txt",
+            subject_template_name="conference/emails/password_reset_subject.txt",
         ),
         name="password_reset",
     ),
     re_path(
         r"^password-reset/done/$",
         auth_views.PasswordResetDoneView.as_view(
-            template_name="ep19/bs/accounts/password_reset_done.html",
+            template_name="conference/accounts/password_reset_done.html",
         ),
         name="password_reset_done",
     ),
     re_path(
         r"^reset/(?P<uidb64>[\w-]+)/(?P<token>[\w]{1,13}-[\w]{1,20})/$",
         auth_views.PasswordResetConfirmView.as_view(
-            template_name="ep19/bs/accounts/password_reset_confirm.html",
+            template_name="conference/accounts/password_reset_confirm.html",
             success_url=reverse_lazy("accounts:password_reset_complete"),
         ),
         name="password_reset_confirm",
@@ -321,7 +321,7 @@ urlpatterns = [
     re_path(
         r"^reset/done/$",
         auth_views.PasswordResetCompleteView.as_view(
-            template_name="ep19/bs/accounts/password_reset_complete.html",
+            template_name="conference/accounts/password_reset_complete.html",
         ),
         name="password_reset_complete",
     ),

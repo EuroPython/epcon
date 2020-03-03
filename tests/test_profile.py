@@ -18,18 +18,18 @@ def test_profile_page_available_during_voting_with_proposal(client):
 
     # Profile unavailable for unauthenticated users.
     response = client.get(url)
-    assert template_used(response, "ep19/bs/profiles/profile_unavailable.html")
+    assert template_used(response, "conference/profiles/profile_unavailable.html")
 
     # Profile unavailable for authenticated users that are no legible to vote (never bought tickets).
     request_user = make_user()
     client.force_login(request_user)
     response = client.get(url)
-    assert template_used(response, "ep19/bs/profiles/profile_unavailable.html")
+    assert template_used(response, "conference/profiles/profile_unavailable.html")
 
     # Requesting user needs to be eligible to vote, i.e. have bought a ticket for any of the conferences
     TicketFactory(user=request_user)
     response = client.get(url)
-    assert template_used(response, "ep19/bs/profiles/profile.html")
+    assert template_used(response, "conference/profiles/profile.html")
 
 
 def test_profile_page_available_if_public(client):
@@ -41,13 +41,13 @@ def test_profile_page_available_if_public(client):
 
     # Profile available for unauthenticated users.
     response = client.get(url)
-    assert template_used(response, "ep19/bs/profiles/profile.html")
+    assert template_used(response, "conference/profiles/profile.html")
 
     # Profile available for authenticated users.
     request_user = make_user()
     client.force_login(request_user)
     response = client.get(url)
-    assert template_used(response, "ep19/bs/profiles/profile.html")
+    assert template_used(response, "conference/profiles/profile.html")
 
 
 def test_profile_page_available_if_participant_only_and_authenticated(client):
@@ -59,13 +59,13 @@ def test_profile_page_available_if_participant_only_and_authenticated(client):
 
     # Profile unavailable for unauthenticated users.
     response = client.get(url)
-    assert template_used(response, "ep19/bs/profiles/profile_unavailable.html")
+    assert template_used(response, "conference/profiles/profile_unavailable.html")
 
     # Profile available for authenticated users.
     request_user = make_user()
     client.force_login(request_user)
     response = client.get(url)
-    assert template_used(response, "ep19/bs/profiles/profile.html")
+    assert template_used(response, "conference/profiles/profile.html")
 
 
 def test_profile_page_available_if_has_accepted_talks(client):
@@ -78,13 +78,13 @@ def test_profile_page_available_if_has_accepted_talks(client):
 
     # Profile unavailable for unauthenticated users.
     response = client.get(url)
-    assert template_used(response, "ep19/bs/profiles/profile.html")
+    assert template_used(response, "conference/profiles/profile.html")
 
     # Profile unavailable for authenticated users that are no legible to vote (never bought tickets).
     request_user = make_user()
     client.force_login(request_user)
     response = client.get(url)
-    assert template_used(response, "ep19/bs/profiles/profile.html")
+    assert template_used(response, "conference/profiles/profile.html")
 
 
 def test_profile_page_fields_empty_profile(client):
@@ -101,7 +101,7 @@ def test_profile_page_fields_empty_profile(client):
 
     response = client.get(url)
 
-    assert template_used(response, "ep19/bs/profiles/profile.html")
+    assert template_used(response, "conference/profiles/profile.html")
     assert 'id="biography"' in response.content.decode().lower()
     assert 'id="company"' in response.content.decode().lower()
     assert 'id="job-title"' in response.content.decode().lower()
@@ -131,7 +131,7 @@ def test_profile_page_fields(client):
 
     response = client.get(url)
 
-    assert template_used(response, "ep19/bs/profiles/profile.html")
+    assert template_used(response, "conference/profiles/profile.html")
     assert 'id="biography"' in response.content.decode().lower()
     assert 'id="company"' in response.content.decode().lower()
     assert 'id="job-title"' in response.content.decode().lower()

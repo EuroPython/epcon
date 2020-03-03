@@ -20,7 +20,7 @@ def test_talk_voting_unavailable_before_talk_voting_start(user_client):
     response = user_client.get(url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/talk_voting/voting_is_closed.html")
+    assert template_used(response, "conference/talk_voting/voting_is_closed.html")
 
 
 def test_talk_voting_unavailable_after_talk_voting_end(user_client):
@@ -30,7 +30,7 @@ def test_talk_voting_unavailable_after_talk_voting_end(user_client):
     response = user_client.get(url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/talk_voting/voting_is_closed.html")
+    assert template_used(response, "conference/talk_voting/voting_is_closed.html")
 
 
 def test_talk_voting_unavailable_without_a_ticket(user_client):
@@ -41,7 +41,7 @@ def test_talk_voting_unavailable_without_a_ticket(user_client):
 
     assert response.status_code == 200
     assert not user_client.user.ticket_set.exists()
-    assert template_used(response, "ep19/bs/talk_voting/voting_is_unavailable.html")
+    assert template_used(response, "conference/talk_voting/voting_is_unavailable.html")
 
 
 def test_talk_voting_available_with_ticket(user_client):
@@ -52,7 +52,7 @@ def test_talk_voting_available_with_ticket(user_client):
     response = user_client.get(url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/talk_voting/voting.html")
+    assert template_used(response, "conference/talk_voting/voting.html")
 
 
 def test_talk_voting_available_with_proposal(user_client):
@@ -63,7 +63,7 @@ def test_talk_voting_available_with_proposal(user_client):
     response = user_client.get(url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/talk_voting/voting.html")
+    assert template_used(response, "conference/talk_voting/voting.html")
 
 
 @mock.patch('conference.talk_voting.is_user_allowed_to_vote', return_value=True)
@@ -78,7 +78,7 @@ def test_talk_voting_lists_proposed_talks(mock_allowed_to_vote, user_client):
     response = user_client.get(url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/talk_voting/voting.html")
+    assert template_used(response, "conference/talk_voting/voting.html")
     assert talk.title in response.content.decode()
     assert training.title in response.content.decode()
     assert poster.title in response.content.decode()
@@ -98,7 +98,7 @@ def test_if_talk_voting_doesnt_contain_duplicates_if_there_are_more_speakers(
     response = user_client.get(url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/talk_voting/voting.html")
+    assert template_used(response, "conference/talk_voting/voting.html")
     assert talk.speakers.count() == 2
     assert response.content.decode().count(talk.title) == 1
 
@@ -121,7 +121,7 @@ def test_talk_voting_vote_filters(mock_allowed_to_vote, user_client):
     response = user_client.get(url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/talk_voting/voting.html")
+    assert template_used(response, "conference/talk_voting/voting.html")
     assert not_voted.title in response.content.decode()
     assert voted.title in response.content.decode()
     assert user_talk.title in response.content.decode()
@@ -161,7 +161,7 @@ def test_talk_voting_type_filters(mock_allowed_to_vote, user_client):
     response = user_client.get(url, data={'talk_type': 'talk'})
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/talk_voting/voting.html")
+    assert template_used(response, "conference/talk_voting/voting.html")
     assert talk.title in response.content.decode()
     assert training.title not in response.content.decode()
     assert poster.title not in response.content.decode()
@@ -200,7 +200,7 @@ def test_talk_voting_both_filters(mock_allowed_to_vote, user_client):
     response = user_client.get(url, data={'talk_type': 'talk', 'filter': 'voted'})
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/talk_voting/voting.html")
+    assert template_used(response, "conference/talk_voting/voting.html")
     assert not_voted_talk.title not in response.content.decode()
     assert voted_training.title not in response.content.decode()
 
@@ -224,7 +224,7 @@ def test_talk_voting_hides_admin_talks(mock_allowed_to_vote, user_client):
     response = user_client.get(url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/talk_voting/voting.html")
+    assert template_used(response, "conference/talk_voting/voting.html")
     assert talk.title not in response.content.decode()
 
 
@@ -237,7 +237,7 @@ def test_talk_voting_hides_accepted_talks(mock_allowed_to_vote, user_client):
     response = user_client.get(url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/talk_voting/voting.html")
+    assert template_used(response, "conference/talk_voting/voting.html")
     assert talk.title not in response.content.decode()
 
 

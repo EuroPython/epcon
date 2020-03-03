@@ -1,0 +1,38 @@
+{% extends "conference/base.html" %}
+
+{% load crispy_forms_tags static %}
+
+{% block morecss %}
+<link href="{% static "taggit_labels/css/taggit_labels.css" %}" type="text/css" media="all" rel="stylesheet" />
+{% endblock %}
+
+{% block morejs %}
+<script src="{% static "/js/taggit_labels_customised_with_max_number_of_tags.js" %}"></script>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container page" id="cfp_page">
+    {% include "conference/cfp/_steps.html" with step_no=1 %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Submit Your Proposal</h1>
+        </div>
+    </div>
+
+    <div class='row'>
+        <div class="col-md-6">
+            <form method='POST' action='.' class='form'>
+                {% csrf_token %}
+                {{ proposal_form|crispy }}
+
+                <button class="btn btn-success btn-lg btn-block">Submit Proposal</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+        </div>
+    </div>
+</div>
+{% endblock %}

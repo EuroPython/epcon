@@ -1,0 +1,80 @@
+{% extends "conference/base.html" %}
+
+{% load static meta %}
+
+{% block meta %}
+{% render_meta title=talk.title %}
+{% endblock meta %}
+
+{% block content %}
+<style type="text/css">
+.speakers {
+    margin-top: 2em;
+    padding-top: 2em;
+    border-top: 1px solid #eee;
+}
+.speaker { margin-bottom: 2em; }
+</style>
+
+
+<div class="container page" id="talk_page">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">{# TODO: replace hardcoded paths by generated ones! #}
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/events/sessions/#Talks">Talks</a></li>
+            <li class="breadcrumb-item active">{{ talk_as_dict.title }}<li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="talk">
+                <h1>{{ talk.title }}</h1>
+                <h3>{{ talk.sub_title }}</h3>
+                <h5>{% for speaker in talk_as_dict.speakers %}
+                    <a href="{% url 'profiles:profile' profile_slug=speaker.slug %}">{{ speaker.name }}</a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </h5>
+                <p>
+                    {% for tag in talk_as_dict.tags %}
+                    <span class="badge badge-secondary">{{ tag }}</span>
+                    {% endfor %}
+                </p>
+                {% if talk_as_dict.schedule_url %}
+                    <a class="btn btn-primary" href="{{ talk_as_dict.schedule_url }}">See in schedule</a>
+                {% endif %}
+                {% if talk_as_dict.slides_file_url %}
+                    <a class="btn btn-primary" href="{% get_media_prefix %}{{ talk_as_dict.slides_file_url }}">Download Slides</a>
+                {% endif %}
+                {% if talk_as_dict.slides_remote_url %}
+                    <a class="btn btn-primary" href="{{ talk_as_dict.slides_remote_url }}">View Slides</a>
+                {% endif %}
+                <p>{{ talk_as_dict.abstract|urlize|linebreaks }}</p>
+                <p>
+                <code>Type: {{ talk.get_type_display }}; Python level: {{ talk.get_level_display }}; Domain level: {{ talk.get_domain_level_display }}</code>
+                </p>
+                {% if can_update_talk %}
+                <a href='{% url "talks:update_talk" talk.slug %}' class='btn btn-outline-success'>Update Talk</a>
+                {% endif %}
+                {% if can_submit_slides %}
+                <a href='{% url "talks:submit_slides" talk.slug %}' class='btn btn-outline-success'>Submit slides</a>
+                {% endif %}
+                <br />
+            </div>
+
+
+            <div class="speakers">
+            {% for speaker in talk_as_dict.speakers %}
+            <div class="speaker">
+            <h3>{{ speaker.name }}</h3>
+            <h4><a href="{{ speaker.company_homepage }}" target="_blank">{{ speaker.company }}</a></h4>
+            <p>
+            {{ speaker.bio|linebreaks }}
+            </p>
+            </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

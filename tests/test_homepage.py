@@ -14,11 +14,11 @@ def test_get_homepage(db, client):
     response = client.get(url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/homepage/home.html")
-    assert template_used(response, "ep19/bs/homepage/_venue.html")
-    assert template_used(response, "ep19/bs/homepage/_sponsors.html")
-    assert template_used(response, "ep19/bs/homepage/_schedule_overview.html")
-    assert template_used(response, "ep19/bs/header/_with_jumbotron.html")
+    assert template_used(response, "conference/homepage/home.html")
+    assert template_used(response, "conference/homepage/_venue.html")
+    assert template_used(response, "conference/homepage/_sponsors.html")
+    assert template_used(response, "conference/homepage/_schedule_overview.html")
+    assert template_used(response, "conference/header/_with_jumbotron.html")
     assert b"EuroPython 2020" in response.content
 
 
