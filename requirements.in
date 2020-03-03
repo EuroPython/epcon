@@ -1,4 +1,4 @@
-Django>=1.11.28,<2.0
+Django~=1.11
 
 requests
 requests-oauthlib
@@ -25,7 +25,6 @@ markdown2
 django-cms>=3.6,<3.7
 djangocms-admin-style
 djangocms-text-ckeditor
-djangocms-grid
 # Upgrading to a newer version breaks cmsplugin-filer (that's deprecated)
 django-filer<=1.5
 cmsplugin-filer

@@ -5,7 +5,7 @@ from collections import defaultdict, OrderedDict
 
 from conference.models import Conference, AttendeeProfile
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import User
 from assopy import utils as autils
 from p3 import models as p3models
