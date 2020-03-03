@@ -119,7 +119,7 @@ class Conference(models.Model):
         if self.conference_start and self.conference_end:
             d = self.conference_start
             step = datetime.timedelta(days=1)
-            while d<= self.conference_end:
+            while d <= self.conference_end:
                 output.append(d)
                 d += step
         return output
@@ -791,7 +791,7 @@ class TalkSpeaker(models.Model):
 
 class FareQuerySet(models.QuerySet):
     def available(self, conference=None):
-        today = datetime.date.today()
+        today = timezone.now().date()
         q1 = models.Q(start_validity=None, end_validity=None)
         q2 = models.Q(start_validity__lte=today, end_validity__gte=today)
         qs = self.filter(q1 | q2)
@@ -846,7 +846,7 @@ class Fare(models.Model):
 
     def valid(self):
         #numb = len(list(Ticket.objects.all()))
-        today = datetime.date.today()
+        today = timezone.now().date()
         try:
             validity = self.start_validity <= today <= self.end_validity
         except TypeError:

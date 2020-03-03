@@ -1,12 +1,12 @@
+import logging
+from optparse import make_option
 
 from django.db import transaction
 from django.db.models import Q
 from django.core.management.base import BaseCommand, CommandError
-from assopy import models
+from django.utils import timezone
 
-import datetime
-import logging
-from optparse import make_option
+from assopy import models
 
 log = logging.getLogger('assopy')
 
@@ -67,7 +67,7 @@ class Command(BaseCommand):
                 raise CommandError('invalid int value: %s' % days)
 
         default = older_than.get(None)
-        today = datetime.datetime.now()
+        today = timezone.now()
         if options['conference']:
             qs = models.Order.objects.filter(orderitem__ticket__fare__conference=options['conference'])
         else:
