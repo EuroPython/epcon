@@ -1,4 +1,4 @@
-[!![CI Pipeline](https://github.com/EuroPython/epcon/workflows/CI%20Pipeline/badge.svg)](https://github.com/EuroPython/epcon/actions?query=workflow%3A%22CI+Pipeline%22)
+[![CI Pipeline](https://github.com/EuroPython/epcon/workflows/CI%20Pipeline/badge.svg)](https://github.com/EuroPython/epcon/actions?query=workflow%3A%22CI+Pipeline%22)
 [![Documentation Status](https://readthedocs.org/projects/epcon/badge/?version=latest)](https://epcon.readthedocs.io/en/latest/)
 
 # README
