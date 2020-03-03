@@ -1,10 +1,9 @@
 from unittest import mock
 from pytest import mark
 
-from django.core.urlresolvers import reverse
-from django_factory_boy import auth as auth_factories
+from django.urls import reverse
 
-from tests import factories
+from . import factories
 
 
 @mark.django_db
@@ -95,8 +94,8 @@ def test_user_new_order_admin(admin_client):
 
 @mark.django_db
 def test_user_send_verification_email(admin_client):
-    user = auth_factories.UserFactory()
-    
+    user = factories.UserFactory()
+
     user.is_active = False
     user.save()
 
@@ -112,8 +111,8 @@ def test_user_send_verification_email(admin_client):
 
 @mark.django_db
 def test_user_send_verification_email_to_active_user(admin_client):
-    user = auth_factories.UserFactory()
-    
+    user = factories.UserFactory()
+
     user.is_active = True
     user.save()
 

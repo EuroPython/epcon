@@ -5,7 +5,7 @@ import uuid
 
 from pytest import mark, raises, approx
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.contrib.messages import constants as messages_constants
 from django.test import override_settings
@@ -157,10 +157,9 @@ def test_cart_only_shows_correct_ticket_types(db, user_client, ticket_category, 
     for name in expected_names:
         assert name in response.content.decode()
 
-
     unexpected_tickets = Fare.objects.exclude(code__in=expected_ticket_types).values('name')
     unexpected_names = [ticket['name'] for ticket in unexpected_tickets]
-    for name in unexpected_names :
+    for name in unexpected_names:
         assert name not in response.content.decode()
 
 
@@ -373,9 +372,9 @@ def test_cart_computes_discounts_correctly(db, user_client):
     calculation = response.context['calculation']
     assert calculation.full_price == order_ticket_count * coupon_fare.price
     assert (calculation.total_discount
-            == (order_ticket_count * coupon_fare.price) * Decimal(percent_discount/100))
+            == (order_ticket_count * coupon_fare.price) * Decimal(percent_discount / 100))
     assert (calculation.final_price
-            == (order_ticket_count * coupon_fare.price) * Decimal((100 - percent_discount)/100))
+            == (order_ticket_count * coupon_fare.price) * Decimal((100 - percent_discount) / 100))
 
 
 @mark.xfail
@@ -429,8 +428,9 @@ def test_can_apply_personal_ticket_coupon(db, user_client):
     assert order.orderitem_set.filter(code=coupon.code).exists()
     # Check the discount is applied correctly
     assert order.total() == (
-            order_ticket_count * coupon_fare.price * Decimal((100 - percent_discount) / 100)
+        order_ticket_count * coupon_fare.price * Decimal((100 - percent_discount) / 100)
     )
+
 
 def test_cannot_apply_coupon_if_fare_mismatch(db, user_client):
     setup_conference_with_typical_fares()
@@ -634,7 +634,6 @@ def test_cart_fourth_step_requires_auth(db, client):
     assert redirects_to(response, reverse('accounts:login'))
 
 
-@mark.xfail(reason='Need to investigate why this failes in CI')
 @override_settings(STRIPE_PUBLISHABLE_KEY='pk_fake')
 def test_cart_fourth_step_renders_correctly(db, user_client):
     _, fares = setup_conference_with_typical_fares()
@@ -660,13 +659,11 @@ def test_cart_payment_with_zero_total(db, user_client):
 
     order.refresh_from_db()
     assert order.payment_date
-    # TODO: Something seems to override the date saved on the order, can't find what it is though
-    # assert order.payment_date.date() == timezone.now().date()
+    assert order.payment_date.date() == timezone.now().date()
     assert order.invoices.count() == 1
     assert email_sent_with_subject(ORDER_CONFIRMATION_EMAIL_SUBJECT)
 
 
-@mark.xfail(reason='Need to investigate why this failes in CI')
 @mock.patch('conference.cart.prepare_for_payment')
 @mock.patch('conference.cart.verify_payment')
 def test_cart_payment_with_non_zero_total(mock_prepare_for_payment, mock_verify_payment, db, user_client):
@@ -692,8 +689,7 @@ def test_cart_payment_with_non_zero_total(mock_prepare_for_payment, mock_verify_
 
     order.refresh_from_db()
     assert order.payment_date
-    # TODO: Something seems to override the date saved on the order, can't find what it is though
-    # assert order.payment_date.date() == timezone.now().date()
+    assert order.payment_date.date() == timezone.now().date()
     assert order.invoices.count() == 1
     assert StripePayment.objects.count() == 1
     assert mock_prepare_for_payment.call_count == 1
