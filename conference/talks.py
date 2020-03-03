@@ -32,7 +32,7 @@ def talk(request, talk_slug):
             "talk": talk,
             "talk_as_dict": talk_as_dict,
             "social_image_url": request.build_absolute_uri(
-                reverse("conference-talk-social-card-png", kwargs={"slug": talk.slug})
+                reverse("conference:conference-talk-social-card-png", kwargs={"slug": talk.slug})
             ),
             "can_update_talk": can_update_talk,
             "can_submit_slides": can_submit_slides,

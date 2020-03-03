@@ -296,7 +296,7 @@ def test_export_invoice_csv(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse("debug_panel_invoice_export_for_tax_report_csv")
+        reverse("debug_panel:invoice_export_for_tax_report_csv")
         + "?"
         + query_string
     )
@@ -351,7 +351,7 @@ def test_export_invoice_csv_before_period(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse("debug_panel_invoice_export_for_tax_report_csv")
+        reverse("debug_panel:invoice_export_for_tax_report_csv")
         + "?"
         + query_string
     )
@@ -387,7 +387,7 @@ def test_export_invoice(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse("debug_panel_invoice_export_for_tax_report")
+        reverse("debug_panel:invoice_export_for_tax_report")
         + "?"
         + query_string
     )
@@ -422,7 +422,7 @@ def test_export_invoice_accounting_json(client):
     query_string = query_dict.urlencode()
 
     response = client.get(
-        reverse("debug_panel_invoice_export_for_payment_reconciliation_json")
+        reverse("debug_panel:invoice_export_for_payment_reconciliation_json")
         + "?"
         + query_string
     )
@@ -451,7 +451,7 @@ def test_reissue_invoice(admin_client):
     assert Invoice.objects.all().count() == 1
     assert NEW_CUSTOMER not in Invoice.objects.latest("id").html
 
-    url = reverse("debug_panel_reissue_invoice", args=[invoice.id])
+    url = reverse("debug_panel:reissue_invoice", args=[invoice.id])
     response = admin_client.get(url)
     assert response.status_code == 200
 

@@ -345,7 +345,7 @@ class BusinessBillingForm(forms.ModelForm):
         labels = {"card_name": "Name of the buyer"}
 
 
-urlpatterns_ep19 = [
+urlpatterns = [
     url(r"^$", cart_step1_choose_type_of_order, name="step1_choose_type"),
     url(
         r"^(?P<type_of_tickets>\w+)/$",
