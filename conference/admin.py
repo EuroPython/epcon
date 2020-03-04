@@ -1009,32 +1009,6 @@ class TicketAdmin(admin.ModelAdmin):
     _assigned.allow_tags = True
     _assigned.admin_order_field = 'p3_conference__assigned_to'
 
-    # XXX: These are redefined further below (I commented the older ones for now)
-    # def changelist_view(self, request, extra_context=None):
-    #     if not request.GET:
-    #         q = request.GET.copy()
-    #         q['fare__conference'] = settings.CONFERENCE_CONFERENCE
-    #         q['fare__ticket_type__exact'] = 'conference'
-    #         request.GET = q
-    #         request.META['QUERY_STRING'] = request.GET.urlencode()
-    #     return super(TicketAdmin, self).changelist_view(request, extra_context=extra_context)
-
-    # def get_queryset(self, request):
-    #     qs = super(TicketAdmin, self).get_queryset(request)
-    #     qs = qs.select_related('user', 'fare',)
-    #     return qs
-
-    # def get_urls(self):
-    #     urls = super(TicketAdmin, self).get_urls()
-    #     my_urls = [
-    #         re_path(
-    #             r'^stats/data/$',
-    #             self.admin_site.admin_view(self.stats_data_view),
-    #             name='conference-ticket-stats-data'
-    #         ),
-    #     ]
-    #     return my_urls + urls
-
     def stats_data_view(self, request):
         output = self.stats_data()
         return http.HttpResponse(json_dumps(output), 'text/javascript')
