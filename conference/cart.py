@@ -22,7 +22,6 @@ from .fares import (
     FareIsNotAvailable,
     get_available_fares,
     is_fare_code_valid,
-    disable_early_bird_fares,
 )
 from .invoicing import create_invoices_for_order
 from .orders import (
@@ -218,8 +217,6 @@ def cart_step4b_verify_payment(request, payment_uuid, session_id):
                 current_site = get_current_site(request)
                 send_order_confirmation_email(order, current_site)
 
-        handle_early_bird_ticket_limit()
-
     return redirect("cart:step5_congrats_order_complete", order.uuid)
 
 
@@ -269,7 +266,7 @@ def send_order_confirmation_email(order: Order, current_site) -> None:
     )
 
 
-def handle_early_bird_ticket_limit():
+def is_early_bird_sold_out():
     eb_ticket_orders = Ticket.objects.filter(
         fare__conference=settings.CONFERENCE_CONFERENCE,
         frozen=False,
@@ -277,8 +274,7 @@ def handle_early_bird_ticket_limit():
         fare__code__regex=FARE_CODE_REGEXES["types"][FARE_CODE_TYPES.EARLY_BIRD]
     )
 
-    if eb_ticket_orders.count() > settings.EARLY_BIRD_ORDER_LIMIT:
-        disable_early_bird_fares()
+    return eb_ticket_orders.count() > settings.EARLY_BIRD_ORDER_LIMIT
 
 
 class TicketType:
@@ -319,6 +315,12 @@ def get_available_fares_for_type(type_of_tickets):
         fares = fares.filter(
             code__regex=FARE_CODE_REGEXES["groups"][regex_group]
         )
+
+        # Check if early bird tickets should be available
+        if is_early_bird_sold_out():
+            fares = fares.exclude(
+                code__regex=FARE_CODE_REGEXES["types"][FARE_CODE_TYPES.EARLY_BIRD]
+            )
 
     elif type_of_tickets == TicketType.other:
         fares = fares.exclude(

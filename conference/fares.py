@@ -194,19 +194,6 @@ def set_early_bird_fare_dates(conference, start_date, end_date):
     early_birds.update(start_validity=start_date, end_validity=end_date)
 
 
-def disable_early_bird_fares(conference):
-    early_birds = Fare.objects.filter(
-        conference=conference,
-        code__regex=FARE_CODE_REGEXES["types"][FARE_CODE_TYPES.EARLY_BIRD],
-    )
-    assert (
-        early_birds.count()
-        == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS)
-        == 3 * 5
-    )
-    early_birds.update(end_validity=timezone.now().date() - timedelta(days=1))
-
-
 def set_regular_fare_dates(conference, start_date, end_date):
     assert start_date <= end_date
 
