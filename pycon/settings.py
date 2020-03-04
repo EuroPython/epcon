@@ -196,10 +196,9 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
-                # Epcon context processors
+                # epcon context processors
                 "p3.context_processors.settings",
-                "conference.context_processors.current_url",
-                "conference.context_processors.stuff",
+                "conference.context_processors.epcon_ctx",
             ],
             "loaders": [
                 "django.template.loaders.filesystem.Loader",
