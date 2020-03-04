@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Django settings for pycon project.
+import os
 import os.path
 
 import dj_database_url
@@ -256,18 +257,15 @@ INSTALLED_APPS = (
     'email_template',
 
     'djangocms_text_ckeditor',
-    'cmsplugin_filer_file',
-    'cmsplugin_filer_folder',
-    'cmsplugin_filer_link',
-    'cmsplugin_filer_image',
-    'cmsplugin_filer_teaser',
-    'cmsplugin_filer_video',
+    'djangocms_file',
+    'djangocms_picture',
+    'djangocms_link',
+    'djangocms_video',
 
     'treebeard',
     'cms',
     'menus',
     'sekizai',
-    'tagging',
     'taggit',
     'taggit_labels',
     'mptt',
@@ -412,7 +410,7 @@ CKEDITOR_SETTINGS = {
     'contentsCss': ['/static/css/base.css'],
     'language': '{{ language }}',
     'toolbar': 'CMS',
-    'extraPlugins': 'cmsplugins',
+    # 'extraPlugins': 'cmsplugins',
     'basicEntities': False,
     'entities': False,
 }
@@ -539,15 +537,17 @@ CONFERENCE_TICKET_CONFERENCE_EXPERIENCES = (
 def CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
     from conference.models import Ticket
 
-    tickets = Ticket.objects \
-        .filter(fare__conference=conf, orderitem__order___complete=True)
+    tickets = Ticket.objects.filter(fare__conference=conf, orderitem__order___complete=True)
+
     if ticket_type:
         tickets = tickets.filter(fare__ticket_type=ticket_type)
+
     if fare_code:
         if fare_code.endswith('%'):
             tickets = tickets.filter(fare__code__startswith=fare_code[:-1])
         else:
             tickets = tickets.filter(fare__code=fare_code)
+
     return tickets
 
 
@@ -570,12 +570,11 @@ def CONFERENCE_VOTING_OPENED(conf, user):
 
 
 def CONFERENCE_VOTING_ALLOWED(user):
-
     """ Determine whether user is allowed to participate in talk voting.
-
     """
     if not user.is_authenticated:
         return False
+
     if user.is_superuser:
         return True
 
@@ -719,3 +718,8 @@ DISABLE_CACHING = False
 # Complete project setup.
 if not os.path.exists(LOGS_DIR):
     os.makedirs(LOGS_DIR)
+
+# XXX: Hack to make data migrations work from cmsplugin-filer to the new djangocms-* plugins.
+# XXX: Should be ok to be removed after the migration is succesful.
+if os.environ.get('CMSPLUGIN_MIGRATION'):
+    INSTALLED_APPS = INSTALLED_APPS + ('cmsplugin_filer_image', 'cmsplugin_filer_link')

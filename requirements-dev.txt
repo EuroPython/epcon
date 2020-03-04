@@ -25,29 +25,32 @@ defusedxml==0.6.0         # via cairosvg, python3-openid, social-auth-core
 dj-database-url==0.5.0    # via -r requirements.in
 django-appconf==1.0.3     # via cmsplugin-filer
 django-classy-tags==1.0.0  # via -r requirements.in, django-cms, django-sekizai
-django-cms==3.6.0         # via -r requirements.in, cmsplugin-filer, djangocms-attributes-field, djangocms-text-ckeditor
+django-cms==3.7.1         # via -r requirements.in, cmsplugin-filer, djangocms-attributes-field, djangocms-file, djangocms-link, djangocms-picture, djangocms-text-ckeditor, djangocms-video
 django-crispy-forms==1.9.0  # via -r requirements.in
 django-extensions==2.2.8  # via -r requirements.in
 django-filebrowser-no-grappelli==3.8.0  # via -r requirements.in
-django-filer==1.5.0       # via -r requirements.in, cmsplugin-filer
+django-filer==1.5.0       # via -r requirements.in, cmsplugin-filer, djangocms-file, djangocms-link, djangocms-picture, djangocms-video
 django-formtools==2.2     # via django-cms
 django-js-asset==1.2.2    # via django-mptt
 django-markitup==3.5.0    # via -r requirements.in
-django-model-utils==3.1.1  # via -r requirements.in
+django-model-utils==3.2.0  # via -r requirements.in
 django-mptt==0.11.0       # via django-filer
 django-pdb==0.6.2         # via -r requirements-dev.in
 django-phonenumber-field==4.0.0  # via -r requirements.in
 django-polymorphic==2.0.3  # via django-filer
 django-sekizai==1.1.0     # via cmsplugin-filer, django-cms
-django-tagging==0.4.6     # via -r requirements.in
-django-taggit-labels==0.6.0  # via -r requirements.in
-django-taggit==0.22.1     # via -r requirements.in, django-taggit-labels
+git+git://github.com/bennylope/django-taggit-labels.git@c4006980d133f4c392b9f37e386bd7da43a8d4ce#egg=django-taggit-labels  # via -r requirements.in
+django-taggit==1.2.0      # via -r requirements.in, django-taggit-labels
 django-treebeard==4.3.1   # via django-cms
-django==1.11.28           # via -r requirements.in, cmsplugin-filer, django-appconf, django-classy-tags, django-cms, django-filer, django-formtools, django-model-utils, django-mptt, django-phonenumber-field, django-polymorphic, django-sekizai, django-treebeard, easy-thumbnails
+django==1.11.29           # via -r requirements.in, cmsplugin-filer, django-appconf, django-classy-tags, django-cms, django-filer, django-formtools, django-model-utils, django-mptt, django-phonenumber-field, django-polymorphic, django-sekizai, django-taggit, django-treebeard, easy-thumbnails
 djangocms-admin-style==1.5.0  # via -r requirements.in, django-cms
-djangocms-attributes-field==1.2.0  # via cmsplugin-filer
+djangocms-attributes-field==1.2.0  # via cmsplugin-filer, djangocms-file, djangocms-link, djangocms-picture, djangocms-video
+djangocms-file==2.4.0     # via -r requirements.in
+djangocms-link==2.5.0     # via -r requirements.in
+djangocms-picture==2.4.0  # via -r requirements.in
 djangocms-text-ckeditor==3.9.0  # via -r requirements.in
-easy-thumbnails==2.7      # via cmsplugin-filer, django-filer
+djangocms-video==2.3.0    # via -r requirements.in
+easy-thumbnails==2.7      # via cmsplugin-filer, django-filer, djangocms-picture
 ecdsa==0.15               # via python-jose
 entrypoints==0.3          # via flake8
 et-xmlfile==1.0.1         # via openpyxl
@@ -87,7 +90,7 @@ ptyprocess==0.6.0         # via pexpect
 py==1.8.1                 # via pytest
 pyasn1==0.4.8             # via python-jose, rsa
 pycodestyle==2.5.0        # via flake8
-pycparser==2.19           # via cffi
+pycparser==2.20           # via cffi
 pyflakes==2.1.1           # via flake8
 pygments==2.5.2           # via ipython, pdbpp
 pyjwt==1.7.1              # via social-auth-core
