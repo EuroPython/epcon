@@ -1,5 +1,3 @@
-import pytest
-
 from django.conf import settings
 
 from tests.common_tools import template_used
@@ -15,7 +13,7 @@ def test_get_homepage(db, client):
     assert response.status_code == 200
     assert template_used(response, "conference/homepage/home_template.html")
     assert template_used(response, "conference/homepage/_venue.html")
-    assert template_used(response, "conference/homepage/_sponsors_cms.html")
+    assert template_used(response, "conference/homepage/_sponsors.html")
     assert template_used(response, "conference/homepage/_schedule_overview.html")
     assert template_used(response, "conference/header/_with_jumbotron.html")
     assert b"EuroPython 2020" in response.content
@@ -51,9 +49,6 @@ def test_homepage_doesnt_contain_sponsor_if_income_for_different_conference(
     assert sponsor.title_text not in response.content.decode()
 
 
-@pytest.mark.skip(
-    reason="Sponsor data is fetched asynchronously via JS; need a different way to tests this"
-)
 def test_homepage_contains_sponsors_if_income_for_current_conference(
     db, client
 ):

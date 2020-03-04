@@ -1,8 +1,6 @@
 from django.conf import settings
-from django.http import JsonResponse
 from django.template.response import TemplateResponse
 from django.utils.lorem_ipsum import words, paragraphs
-
 
 from .models import Sponsor
 
@@ -28,15 +26,6 @@ def homepage(request):
             "CCD_OSM_URL": CCD_OSM_URL,
         },
     )
-
-
-def homepage_sponsors(request):
-    # Sponsor data to be rendered on the homepage
-    sponsors = Sponsor.objects.filter(
-        sponsorincome__conference=settings.CONFERENCE_CONFERENCE
-    ).values('sponsor', 'url', 'logo', 'alt_text', 'title_text')
-
-    return JsonResponse({'sponsors': list(sponsors)})
 
 
 def generic_content_page(request):
