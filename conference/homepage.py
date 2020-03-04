@@ -1,8 +1,10 @@
+from django.conf import settings
+from django.http import JsonResponse
 from django.template.response import TemplateResponse
 from django.utils.lorem_ipsum import words, paragraphs
-from django.conf import settings
 
-from .models import News, Sponsor
+
+from .models import Sponsor
 
 
 CCD_GOOGLEMAPS_URL = "https://goo.gl/maps/X57SxAPbiJV3Fcig9"
@@ -12,10 +14,7 @@ CCD_OSM_URL = (
 
 
 def homepage(request):
-    latest_3_news = News.objects.filter(
-        status=News.STATUS.PUBLISHED,
-        conference__code=settings.CONFERENCE_CONFERENCE,
-    )[:3]
+    # Static homepage, used in ep2019. In ep2020, homepage is served by the CMS
     sponsors = Sponsor.objects.filter(
         sponsorincome__conference=settings.CONFERENCE_CONFERENCE
     )
@@ -24,12 +23,20 @@ def homepage(request):
         request,
         "conference/homepage/home.html",
         {
-            "latest_3_news": latest_3_news,
             "sponsors": sponsors,
             "CCD_GOOGLEMAPS_URL": CCD_GOOGLEMAPS_URL,
             "CCD_OSM_URL": CCD_OSM_URL,
         },
     )
+
+
+def homepage_sponsors(request):
+    # Sponsor data to be rendered on the homepage
+    sponsors = Sponsor.objects.filter(
+        sponsorincome__conference=settings.CONFERENCE_CONFERENCE
+    ).values('sponsor', 'url', 'logo', 'alt_text', 'title_text')
+
+    return JsonResponse({'sponsors': list(sponsors)})
 
 
 def generic_content_page(request):
