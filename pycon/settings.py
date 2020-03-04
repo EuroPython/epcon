@@ -606,7 +606,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
             assigned_to=user.email
         )
     )
-    if tickets.count() > 0:
+    if tickets.exists():
         return True
 
     # Starting with EP2017, we know that all assigned tickets have
@@ -633,8 +633,9 @@ def CONFERENCE_VOTING_ALLOWED(user):
             )
         )
 
-        if tickets.count() > 0:
+        if tickets.exists():
             return True
+
     return False
 
 

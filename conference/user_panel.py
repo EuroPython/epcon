@@ -6,7 +6,7 @@ from phonenumber_field.formfields import PhoneNumberField
 from model_utils import Choices
 
 from django import forms
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
@@ -67,9 +67,7 @@ def user_dashboard(request):
 def manage_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
 
-    if (not ticket.fare.is_conference or
-            ticket not in get_tickets_for_current_conference(user=request.user)
-    ):
+    if not ticket.fare.is_conference or ticket not in get_tickets_for_current_conference(user=request.user):
         return HttpResponse("Can't do", status=403)
 
     ticket_configuration, _ = TicketConference.objects.get_or_create(
@@ -105,9 +103,7 @@ def manage_ticket(request, ticket_id):
 def assign_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
 
-    if (ticket.buyer != request.user or
-            ticket not in get_tickets_for_current_conference(user=request.user)
-    ):
+    if ticket.buyer != request.user or ticket not in get_tickets_for_current_conference(user=request.user):
         return HttpResponse("Can't do", status=403)
 
     assignment_form = AssignTicketForm(initial={'email': ticket.assigned_email})
@@ -568,15 +564,12 @@ def get_orders_for_current_conference(user):
 
 
 urlpatterns = [
-    url(r"^$", user_dashboard, name="dashboard"),
-    url(r"^manage-ticket/(?P<ticket_id>\d+)/$", manage_ticket, name="manage_ticket"),
-    url(r"^assign-ticket/(?P<ticket_id>\d+)/$", assign_ticket, name="assign_ticket"),
-    url(r"^privacy-settings/$", privacy_settings, name="privacy_settings"),
-    url(r"^profile-settings/$", profile_settings, name="profile_settings"),
-    # Password change, using default django views.
-    # TODO(artcz): Those are Removed in Django21 and we should replcethem with
-    # class based PasswordChange{,Done}View
-    url(
+    re_path(r"^$", user_dashboard, name="dashboard"),
+    re_path(r"^manage-ticket/(?P<ticket_id>\d+)/$", manage_ticket, name="manage_ticket"),
+    re_path(r"^assign-ticket/(?P<ticket_id>\d+)/$", assign_ticket, name="assign_ticket"),
+    re_path(r"^privacy-settings/$", privacy_settings, name="privacy_settings"),
+    re_path(r"^profile-settings/$", profile_settings, name="profile_settings"),
+    re_path(
         r"^password/change/$",
         auth_views.PasswordChangeView.as_view(
             template_name="conference/user_panel/password_change.html",
@@ -584,7 +577,7 @@ urlpatterns = [
         ),
         name="password_change",
     ),
-    url(
+    re_path(
         r"^password/change/done/$",
         auth_views.PasswordChangeDoneView.as_view(
             template_name="conference/user_panel/password_change_done.html"

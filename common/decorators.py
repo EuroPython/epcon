@@ -8,7 +8,7 @@ from django.forms.utils import ErrorDict
 from common.jsonify import json_dumps
 
 
-def render_to_json(f): # pragma: no cover
+def render_to_json(f):
     """
     Decorator to be applied to a view to serialize json in the result.
     """

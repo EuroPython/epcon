@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
@@ -173,7 +173,19 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
 
 
 urlpatterns = [
-    url(r"^(?P<talk_slug>[\w-]+)/update/$", update_talk, name="update_talk"),
-    url(r"^(?P<talk_slug>[\w-]+)/submit_slides/$", submit_slides, name="submit_slides"),
-    url(r"^(?P<talk_slug>[\w-]+)/$", talk, name="talk"),
+    re_path(
+        r"^(?P<talk_slug>[\w-]+)/update/$",
+        update_talk,
+        name="update_talk"
+    ),
+    re_path(
+        r"^(?P<talk_slug>[\w-]+)/submit_slides/$",
+        submit_slides,
+        name="submit_slides"
+    ),
+    re_path(
+        r"^(?P<talk_slug>[\w-]+)/$",
+        talk,
+        name="talk"
+    ),
 ]

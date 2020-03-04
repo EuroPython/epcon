@@ -38,8 +38,8 @@ urlpatterns = [
     re_path(r'^schedule/', include((schedule_urls, 'conference'), namespace="schedule")),
     re_path(r'^news/', news_list, name="news"),
     re_path(r'^accounts/', include('assopy.urls')),
-    re_path(r'^admin/filebrowser/', include(fsite.urls)),
-    re_path(r'^admin/', include(admin.site.urls)),
+    re_path(r'^admin/filebrowser/', fsite.urls),
+    re_path(r'^admin/', admin.site.urls),
     re_path(r'^cart/', include((cart_urls, 'conference'), namespace="cart")),
     re_path(r'^p3/', include('p3.urls')),
     re_path(r'^conference/', include((social_urls, 'conference'))),
@@ -49,7 +49,7 @@ urlpatterns = [
     re_path('', include('social.apps.django_app.urls', namespace='social')),
     # TODO umgelurgel: See if the django.auth.urls are used anywhere and if they can be removed
     re_path(r'^login/', RedirectView.as_view(pattern_name='auth:login', permanent=False)),
-    re_path('', include('django.contrib.auth.urls', namespace='auth')),
+    re_path('', include(('django.contrib.auth.urls', 'auth'), namespace='auth')),
 
     # production debug panel, doesn't even have a name=
     re_path(r'^nothing-to-see-here/', include((debugpanel_urls, 'conference'), namespace='debug_panel')),

@@ -1,4 +1,3 @@
-
 """
     Build Ticket Search App
     -----------------------
@@ -28,7 +27,6 @@
 import sys
 
 from django.core.management.base import BaseCommand, CommandError
-from django.core import urlresolvers
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from conference import models as cmodels
 
@@ -100,11 +98,6 @@ var ticketList = new List('ticket-list', {
 """
 
 ### Helpers
-
-def profile_url(user):
-
-    return urlresolvers.reverse('profiles:profile',
-                                args=[user.attendeeprofile.slug])
 
 def attendee_name(ticket, profile=None):
 
