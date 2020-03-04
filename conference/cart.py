@@ -1,8 +1,6 @@
-import uuid
-
 from django import forms
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
@@ -346,28 +344,28 @@ class BusinessBillingForm(forms.ModelForm):
 
 
 urlpatterns = [
-    url(r"^$", cart_step1_choose_type_of_order, name="step1_choose_type"),
-    url(
+    re_path(r"^$", cart_step1_choose_type_of_order, name="step1_choose_type"),
+    re_path(
         r"^(?P<type_of_tickets>\w+)/$",
         cart_step2_pick_tickets,
         name="step2_pick_tickets",
     ),
-    url(
+    re_path(
         r"^add-billing/(?P<order_uuid>[\w-]+)/$",
         cart_step3_add_billing_info,
         name="step3_add_billing_info",
     ),
-    url(
+    re_path(
         r"^payment/(?P<order_uuid>[\w-]+)/$",
         cart_step4_payment,
         name="step4_payment",
     ),
-    url(
+    re_path(
         r"^verify/(?P<payment_uuid>[\w-]+)/(?P<session_id>[-_\w{}]+)/$",
         cart_step4b_verify_payment,
         name="step4b_verify_payment",
     ),
-    url(
+    re_path(
         r"^thanks/(?P<order_uuid>[\w-]+)/$",
         cart_step5_congrats_order_complete,
         name="step5_congrats_order_complete",

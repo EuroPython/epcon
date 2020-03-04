@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 from django import http
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.shortcuts import render
 
 from conference.models import Schedule
@@ -227,6 +227,6 @@ class ScheduleGrid:
 
 
 urlpatterns = [
-    url(r'^(?P<day>\d+)-(?P<month>\w+)$', schedule, name='schedule'),
-    url(r'^$', schedule, name='schedule'),
+    re_path(r'^(?P<day>\d+)-(?P<month>\w+)$', schedule, name='schedule'),
+    re_path(r'^$', schedule, name='schedule'),
 ]

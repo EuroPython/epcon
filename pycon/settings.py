@@ -196,10 +196,9 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
-                # Epcon context processors
+                # epcon context processors
                 "p3.context_processors.settings",
-                "conference.context_processors.current_url",
-                "conference.context_processors.stuff",
+                "conference.context_processors.epcon_ctx",
             ],
             "loaders": [
                 "django.template.loaders.filesystem.Loader",
@@ -606,7 +605,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
             assigned_to=user.email
         )
     )
-    if tickets.count() > 0:
+    if tickets.exists():
         return True
 
     # Starting with EP2017, we know that all assigned tickets have
@@ -633,8 +632,9 @@ def CONFERENCE_VOTING_ALLOWED(user):
             )
         )
 
-        if tickets.count() > 0:
+        if tickets.exists():
             return True
+
     return False
 
 

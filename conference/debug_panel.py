@@ -1,5 +1,3 @@
-
-
 """
 Things in this file are related to a special debug panel that helps us debug
 things in production.
@@ -9,7 +7,7 @@ import platform
 import subprocess
 
 import django
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django import forms
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
@@ -342,31 +340,45 @@ class FareSetup:
 
 
 urlpatterns = [
-    url(r'^$', debug_panel_index, name='index'),
-    url(r'^invoices/$',
+    re_path(r'^$', debug_panel_index, name='index'),
+    re_path(
+        r'^invoices/$',
         debug_panel_invoice_placeholders,
-        name='invoice_placeholders'),
-    url(r'^invoices/(?P<invoice_id>\d+)/$',
+        name='invoice_placeholders'
+    ),
+    re_path(
+        r'^invoices/(?P<invoice_id>\d+)/$',
         debug_panel_invoice_force_preview,
-        name="invoice_forcepreview"),
-    url(r'^invoices_export/$',
+        name="invoice_forcepreview"
+    ),
+    re_path(
+        r'^invoices_export/$',
         debug_panel_invoice_export_for_tax_report,
-        name='invoice_export_for_tax_report'),
-    url(r'^invoices_export.csv$',
+        name='invoice_export_for_tax_report'
+    ),
+    re_path(
+        r'^invoices_export.csv$',
         debug_panel_invoice_export_for_tax_report_csv,
-        name='invoice_export_for_tax_report_csv'),
-    url(r'^invoices_export_for_accounting.json$',
+        name='invoice_export_for_tax_report_csv'
+    ),
+    re_path(
+        r'^invoices_export_for_accounting.json$',
         debug_panel_invoice_export_for_payment_reconciliation_json,
-        name='invoice_export_for_payment_reconciliation_json'),
-    url(r'^invoices/reissue/(?P<invoice_id>\d+)/$',
+        name='invoice_export_for_payment_reconciliation_json'
+    ),
+    re_path(
+        r'^invoices/reissue/(?P<invoice_id>\d+)/$',
         reissue_invoice,
-        name='reissue_invoice'),
-
-    url(r'^fares/setup/$',
+        name='reissue_invoice'
+    ),
+    re_path(
+        r'^fares/setup/$',
         debugpanel_fares_setup,
-        name='fares_setup'),
-
-    url(r'^invoice-example/$',
+        name='fares_setup'
+    ),
+    re_path(
+        r'^invoice-example/$',
         debug_panel_invoice_example,
-        name='invoice_example'),
+        name='invoice_example'
+    ),
 ]

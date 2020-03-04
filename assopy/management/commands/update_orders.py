@@ -10,22 +10,29 @@ from assopy import models
 
 log = logging.getLogger('assopy')
 
+
 class Command(BaseCommand):
-    help = "Gestore ordini; aggiorna gli ordini locali con il backend remoto e cancella gli ordini incompleti troppo vecchi"
+    help = (
+        "Orders manager; updates local orders with remote backend and erases "
+        "incomplete orders too old"
+    )
     args = "action"
     option_list = BaseCommand.option_list + (
-        make_option('--conference',
+        make_option(
+            '--conference',
             action='store',
             dest='conference',
             default=None,
         ),
-        make_option('--older-than',
+        make_option(
+            '--older-than',
             action='store',
             dest='older_than',
             default='30:bank;3',
             help='Delete incomplete orders older than...',
         ),
     )
+
     def handle(self, *args, **options):
         try:
             action = getattr(self, '_' + args[0])
@@ -45,10 +52,9 @@ class Command(BaseCommand):
                 q |= Q(code__contains=x)
             qs = qs.filter(q)
 
-        # Tutti gli altri ordini devono essere controllati.
-        # Controllo per eventuali variazioni di fattura sia gli ordini completi
-        # che quelli incompleti: questi ultimi potrebbero avere una fattura
-        # associata anche se non sono marcati come completi
+        # All the other orders must be checked. Control for any invoice
+        # changes both complete orders and incomplete orders: The latter may
+        # have an Associated invoice even if they are not marked as complete
         for o in qs.exclude(assopy_id=''):
             o.complete(ignore_cache=True)
 
@@ -76,12 +82,11 @@ class Command(BaseCommand):
             limit = older_than.get(o.method, default)
             if limit is None:
                 continue
-            # Non voglio cancellare degli ordini che hanno una fattura
-            # collegata, in teoria basterebbe interrogare il backend, ma la
-            # .count(); utilizzo la chiamata remota solo per essere sicuro che
-            # non sia stata registrata una fattura tra due sincornizzazioni (v.
-            # _sync)
-            if o.invoices.count() > 0:
+            # I don't want to cancel orders that have a private invoice,
+            # in theory, would be referencing the backend, but the .exists();
+            # does the db call just to make sure there was no invoice
+            # between two syncs (see _sync)
+            if o.invoices.exists():
                 continue
             if (today - o.created).days >= limit:
                 log.info('remove "%s" method=%s created=%s', o, o.method, o.created)

@@ -1,5 +1,5 @@
 from django import http
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 
@@ -33,7 +33,7 @@ def talk_social_card_png(request, slug):
 
 
 urlpatterns = [
-    url(
+    re_path(
         r"^talks/(?P<slug>[\w-]+)/social-card.png$",
         talk_social_card_png,
         name="conference-talk-social-card-png",

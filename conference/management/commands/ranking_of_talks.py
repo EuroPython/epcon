@@ -1,27 +1,29 @@
-
 from django.core.management.base import BaseCommand, CommandError
 from conference import models
 from conference import utils
 
-from collections import defaultdict
 from optparse import make_option
+
 
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
-        make_option('--missing-vote',
+        make_option(
+            '--missing-vote',
             action='store',
             dest='missing_vote',
             default=0,
             type='float',
             help='Used whed a user didn\'t vote a talk',
         ),
-        make_option('--show-input',
+        make_option(
+            '--show-input',
             action='store_true',
             dest='show_input',
             default=False,
             help='Show the input data piped to votengine',
         ),
     )
+
     def handle(self, *args, **options):
         try:
             conference = args[0]
@@ -40,4 +42,4 @@ class Command(BaseCommand):
             users = qs.distinct().count()
             print('%d talks / %d users / %d votes' % (talks.count(), users, votes))
             for ix, t in enumerate(utils.ranking_of_talks(talks, missing_vote=options['missing_vote'])):
-                print(ix+1, '-', t.id, '-', t.type, '-', t.language, '-', t.title.encode('utf-8'))
+                print(ix + 1, '-', t.id, '-', t.type, '-', t.language, '-', t.title.encode('utf-8'))
