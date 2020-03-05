@@ -26,24 +26,6 @@ from conference.currencies import (
 )
 
 
-ACPYSS_16 = """
-Asociación de Ciencias de la Programación Python San Sebastian (ACPySS)
-P° Manuel Lardizabal 1, Oficina 307-20018 Donostia (Spain)
-VAT-ID ESG75119511
-Tel/Phone (+34) 943.01.80.47 | (+34) 688.64.52.32
-Email: info@pyss.org
-""".strip()
-
-PYTHON_ITALIA_17 = """
-Python Italia APS
-Via Mugellese, 1/A
-50013 Campi Bisenzio (FI)
-Italy
-VAT-ID: IT05753460483
-Codice Fiscale: 94144670489
-Contact Email: info@python.it
-""".strip()
-
 EPS_18 = """
 EuroPython Society
 c/o Open End AB
@@ -65,8 +47,6 @@ Sweden
 """.strip()
 
 ISSUER_BY_YEAR = {
-    2016: ACPYSS_16,
-    2017: PYTHON_ITALIA_17,
     2018: EPS_18,
     2019: EPS_19,
     2020: EPS_20,
@@ -74,8 +54,6 @@ ISSUER_BY_YEAR = {
 
 LOCAL_CURRENCY_BY_YEAR = {
     # Used for local VAT calculations if required by local law.
-    2016: "EUR",
-    2017: "EUR",
     2018: "GBP",
     # Using EUR here because we don't need to do conversion to CHF on our own,
     # nor put it on the invoices.
@@ -84,16 +62,12 @@ LOCAL_CURRENCY_BY_YEAR = {
 }
 
 EP_CITY_FOR_YEAR = {
-    2016: "Bilbao",
-    2017: "Rimini",
     2018: "Edinburgh",
     2019: "Basel",
     2020: "Dublin",
 }
 
 ADDITIONAL_TEXT_FOR_YEAR = {
-    2016: "",
-    2017: "",
     2018: "assopy/invoices/_additional_text_for_2018.html",
     2019: "assopy/invoices/_additional_text_for_2019.html",
     2020: "assopy/invoices/_additional_text_for_2020.html",
@@ -130,7 +104,6 @@ def latest_invoice_code_for_year(prefix, year):
     returns latest used invoice.code in a given year.
     rtype – string or None
     """
-    assert 2016 <= year <= 2020, year
     assert prefix in [REAL_INVOICE_PREFIX, FAKE_INVOICE_PREFIX]
 
     invoices = Invoice.objects.filter(
@@ -142,7 +115,6 @@ def latest_invoice_code_for_year(prefix, year):
 
 
 def next_invoice_code_for_year(prefix, year):
-    assert 2016 <= year <= 2020, year
     assert prefix in [REAL_INVOICE_PREFIX, FAKE_INVOICE_PREFIX]
 
     current_code = latest_invoice_code_for_year(prefix, year)

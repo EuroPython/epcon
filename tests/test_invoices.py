@@ -19,8 +19,6 @@ from assopy.models import Invoice, Order, Vat
 from tests.factories import FareFactory, OrderFactory
 from conference.models import Fare, Conference
 from conference.invoicing import (
-    ACPYSS_16,
-    PYTHON_ITALIA_17,
     EPS_18,
     CSV_2018_REPORT_COLUMNS,
 )
@@ -133,30 +131,6 @@ def test_if_invoice_stores_information_about_the_seller(client):
             kwargs={"code": invoice.code, "order_code": invoice.order.code},
         )
 
-    with freeze_time("2016-01-01"):
-        # We need to log in again after every time travel, just in case.
-        client.login(email="joedoe@example.com", password="password123")
-        invoice = create_order_and_invoice(user.assopy_user, fare)
-        assert invoice.code == "I/16.0001"
-        assert invoice.emit_date == date(2016, 1, 1)
-        assert invoice.issuer == ACPYSS_16
-        assert invoice.html.startswith("<!DOCTYPE")
-
-        response = client.get(invoice_url(invoice))
-        assert ACPYSS_16 in response.content.decode("utf-8")
-
-    with freeze_time("2017-01-01"):
-        # We need to log in again after every time travel, just in case.
-        client.login(email="joedoe@example.com", password="password123")
-        invoice = create_order_and_invoice(user.assopy_user, fare)
-        assert invoice.code == "I/17.0001"
-        assert invoice.emit_date == date(2017, 1, 1)
-        assert invoice.issuer == PYTHON_ITALIA_17
-        assert invoice.html.startswith("<!DOCTYPE")
-
-        response = client.get(invoice_url(invoice))
-        assert PYTHON_ITALIA_17 in response.content.decode("utf-8")
-
     with freeze_time("2018-01-01"):
         # We need to log in again after every time travel, just in case.
         client.login(email="joedoe@example.com", password="password123")
@@ -210,26 +184,6 @@ def test_vat_in_GBP_for_2018(client):
             "ECB rate used for VAT is 0.89165 GBP/EUR from 2018-03-06"
             in content
         )
-
-        response = client.get(invoice.get_absolute_url())
-        assert response["Content-Type"] == "application/pdf"
-
-    with freeze_time("2017-05-05"):
-        client.login(email="joedoe@example.com", password="password123")
-        invoice = create_order_and_invoice(user.assopy_user, fare)
-        assert invoice.html.startswith("<!DOCTYPE")
-        assert invoice.vat_value() == Decimal("1.67")
-        assert invoice.vat_in_local_currency == Decimal("1.67")
-        assert invoice.local_currency == "EUR"
-        assert invoice.exchange_rate == Decimal("1.0")
-        assert invoice.exchange_rate_date == date(2017, 5, 5)
-
-        response = client.get(invoice.get_html_url())
-        content = response.content.decode("utf-8")
-        # not showing any VAT conversion because in 2017 we had just EUR
-        assert "EUR" in content
-        assert "Total VAT is" not in content
-        assert "ECB rate" not in content
 
         response = client.get(invoice.get_absolute_url())
         assert response["Content-Type"] == "application/pdf"
