@@ -6,13 +6,11 @@ shortuuid
 
 django-classy-tags
 django_extensions
-django-model-utils==3.1.1
+django-model-utils<4.0
 django-crispy-forms
 
-# we can probably remove tagging - taggit is used with custom models for cfp
-django-tagging==0.4.6
-django-taggit==0.22.1
-django-taggit-labels==0.6.0
+django-taggit~=1.2
+git+https://github.com/bennylope/django-taggit-labels@c4006980d133f4c392b9f37e386bd7da43a8d4ce#egg=django-taggit-labels
 
 python3-openid
 python-social-auth==0.3.6
@@ -22,15 +20,15 @@ social-auth-core[openidconnect]
 
 markdown2
 
-django-cms>=3.6,<3.7
+# 3.7 DjangoCMS LTS release
+django-cms>=3.7,<3.8
 djangocms-admin-style
 djangocms-text-ckeditor
-# Upgrading to a newer version breaks cmsplugin-filer (that's deprecated)
-django-filer<=1.5
-cmsplugin-filer
-django-filebrowser-no-grappelli~=3.6
+django-filer<1.6
+git+https://github.com/pawelmarkowski/cmsplugin-filer@2.0.2#egg=cmsplugin-filer
 
-django-markitup~=3.0
+django-filebrowser-no-grappelli~=3.8
+django-markitup~=3.5
 
 # django settings enhancements
 python-decouple
@@ -53,4 +51,4 @@ decorator
 lxml  # for currencies
 dataclasses
 
-gunicorn>=19.9,<20.0
+gunicorn<20.0

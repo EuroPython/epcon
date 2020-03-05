@@ -267,7 +267,6 @@ INSTALLED_APPS = (
     'cms',
     'menus',
     'sekizai',
-    'tagging',
     'taggit',
     'taggit_labels',
     'mptt',
@@ -540,15 +539,17 @@ CONFERENCE_TICKET_CONFERENCE_EXPERIENCES = (
 def CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
     from conference.models import Ticket
 
-    tickets = Ticket.objects \
-        .filter(fare__conference=conf, orderitem__order___complete=True)
+    tickets = Ticket.objects.filter(fare__conference=conf, orderitem__order___complete=True)
+
     if ticket_type:
         tickets = tickets.filter(fare__ticket_type=ticket_type)
+
     if fare_code:
         if fare_code.endswith('%'):
             tickets = tickets.filter(fare__code__startswith=fare_code[:-1])
         else:
             tickets = tickets.filter(fare__code=fare_code)
+
     return tickets
 
 
@@ -571,12 +572,11 @@ def CONFERENCE_VOTING_OPENED(conf, user):
 
 
 def CONFERENCE_VOTING_ALLOWED(user):
-
     """ Determine whether user is allowed to participate in talk voting.
-
     """
     if not user.is_authenticated:
         return False
+
     if user.is_superuser:
         return True
 

@@ -22,10 +22,8 @@ from django.contrib.contenttypes.fields import (
 )
 
 import shortuuid
-import tagging
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
-from tagging.fields import TagField
 from taggit.managers import TaggableManager
 from taggit.models import GenericTaggedItemBase, ItemBase, TagBase
 
@@ -982,7 +980,10 @@ class SponsorIncome(models.Model):
     sponsor = models.ForeignKey(Sponsor, on_delete=models.CASCADE)
     conference = models.CharField(max_length=20)
     income = models.PositiveIntegerField()
-    tags = TagField()
+    tags = models.CharField(
+        max_length=200, blank=True,
+        help_text='comma separated list of tags. Something like: special, break, keynote'
+    )
 
     class Meta:
         ordering = ['conference']
@@ -1185,19 +1186,7 @@ class Event(models.Model):
             return self.custom
 
     def get_all_tracks_names(self):
-        from tagging.utils import parse_tag_input
-        return parse_tag_input(self.track)
-
-    def get_track(self):
-        """
-        returns to the first track instance with the specified values or None if the event
-        It is of special type
-        """
-        # XXX: Use the tag template get track event that hunts the query
-        dbtracks = dict((t.track, t) for t in self.schedule.track_set.all())
-        for t in tagging.models.Tag.objects.get_for_object(self):
-            if t.name in dbtracks:
-                return dbtracks[t.name]
+        return set(self.tags.split(','))
 
     def split(self, time):
         """
