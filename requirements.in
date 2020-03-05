@@ -6,14 +6,14 @@ shortuuid
 
 django-classy-tags
 django_extensions
-django-model-utils~=3.2
+django-model-utils<4.0
 django-crispy-forms
 
 django-taggit~=1.2
 git+git://github.com/bennylope/django-taggit-labels.git@c4006980d133f4c392b9f37e386bd7da43a8d4ce#egg=django-taggit-labels
 
 python3-openid
-python-social-auth~=0.3
+python-social-auth==0.3.6
 social-auth-app-django
 # Fixes https://github.com/python-social-auth/social-app-django/issues/178
 social-auth-core[openidconnect]
@@ -21,7 +21,7 @@ social-auth-core[openidconnect]
 markdown2
 
 # 3.7 DjangoCMS LTS release
-django-cms~=3.7
+django-cms>=3.7,<3.8
 djangocms-admin-style
 djangocms-text-ckeditor
 django-filer<1.6

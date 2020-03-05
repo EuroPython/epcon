@@ -36,14 +36,14 @@ def forwards_filer_image(apps, schema_editor):
             use_upscale=old_obj.upscale,
             # use_responsive_image=
             thumbnail_options=old_obj.thumbnail_option,
-            # Fields from the cms_cmsplugin table
+            # Fields from the cms_cmsplugin table (CMSPlugin model)
+            placeholder=old_cmsplugin_ptr.placeholder,
+            parent=old_cmsplugin_ptr.parent,
             position=old_cmsplugin_ptr.position,
             language=old_cmsplugin_ptr.language,
             plugin_type='PicturePlugin',
             creation_date=old_cmsplugin_ptr.creation_date,
             changed_date=old_cmsplugin_ptr.changed_date,
-            parent=old_cmsplugin_ptr.parent,
-            placeholder=old_cmsplugin_ptr.placeholder,
             depth=old_cmsplugin_ptr.depth,
             numchild=old_cmsplugin_ptr.numchild,
             path=old_cmsplugin_ptr.path,
@@ -76,14 +76,14 @@ def forwards_filer_link(apps, schema_editor):
             # phone=
             target='_blank' if old_obj.new_window else '',
             attributes=old_obj.link_attributes,
-            # Fields from the cms_cmsplugin table
+            # Fields from the cms_cmsplugin table (CMSPlugin model)
+            placeholder=old_cmsplugin_ptr.placeholder,
+            parent=old_cmsplugin_ptr.parent,
             position=old_cmsplugin_ptr.position,
             language=old_cmsplugin_ptr.language,
             plugin_type='LinkPlugin',
             creation_date=old_cmsplugin_ptr.creation_date,
             changed_date=old_cmsplugin_ptr.changed_date,
-            parent=old_cmsplugin_ptr.parent,
-            placeholder=old_cmsplugin_ptr.placeholder,
             depth=old_cmsplugin_ptr.depth,
             numchild=old_cmsplugin_ptr.numchild,
             path=old_cmsplugin_ptr.path,
