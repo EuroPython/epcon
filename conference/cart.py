@@ -162,7 +162,8 @@ def cart_step4_payment(request, order_uuid):
             order.save()
 
             with transaction.atomic():
-                create_invoices_for_order(order)
+                # TODO: Disabling invoices temporarily until a EP2020 vat id is available
+                # create_invoices_for_order(order)
                 current_site = get_current_site(request)
                 send_order_confirmation_email(order, current_site)
 
@@ -214,7 +215,8 @@ def cart_step4b_verify_payment(request, payment_uuid, session_id):
             order.save()
 
             with transaction.atomic():
-                create_invoices_for_order(order)
+                # TODO: Disabling invoices temporarily until a EP2020 vat id is available
+                # create_invoices_for_order(order)
                 current_site = get_current_site(request)
                 send_order_confirmation_email(order, current_site)
 
