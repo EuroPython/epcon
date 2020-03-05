@@ -26,13 +26,23 @@
     font-style: italic;
 }
 
+#announcement {
+    background: #E88100;
+    /* full width minus scrollbar*/
+    padding: 42px;
+    box-shadow: 0px 0px 20px 0px rgba(255,255,255,1);
+    margin: auto;
+    max-width: 800px;
+}
+
 #background_image {
     background: url("/static/img/ep2020-background-ccd.jpg");
     background-size: cover;
     color: white;
     min-height: 90px;
+    padding-bottom: 4em;
 }
-.jumbotron { background: transparent; color: white; }
+.jumbotron { background: transparent; color: white; padding: 4em 0 13em 0;}
 .text-underline { text-decoration: underline; }
 
 .page { min-height: 500px; padding-bottom: 10em; padding-top: 4em}

@@ -13,7 +13,7 @@ WORKDIR /code
 
 # Install dev dependencies (simulates `make install`)
 COPY ./requirements-dev.txt requirements-dev.txt
-RUN pip install -U pip
+RUN pip install -U pip==19.3.1
 RUN pip install -U pip-tools
 RUN pip-sync requirements-dev.txt
 

@@ -12,7 +12,6 @@ from conference.debug_panel import urlpatterns as debugpanel_urls
 from conference.homepage import (
     generic_content_page,
     generic_content_page_with_sidebar,
-    homepage,
 )
 from conference.news import news_list
 from conference.talk_voting import urlpatterns as talk_voting_urls
@@ -26,7 +25,6 @@ admin.autodiscover()
 admin.site.index_template = 'p3/admin/index.html'
 
 urlpatterns = [
-    re_path(r'^$', homepage, name='homepage'),
     re_path(r'^generic-content-page/$', generic_content_page),
     re_path(r'^generic-content-page/with-sidebar/$', generic_content_page_with_sidebar),
     re_path(r'^user-panel/', include((user_panel_urls, 'conference'), namespace="user_panel")),
@@ -51,7 +49,7 @@ urlpatterns = [
     re_path(r'^login/', RedirectView.as_view(pattern_name='auth:login', permanent=False)),
     re_path('', include(('django.contrib.auth.urls', 'auth'), namespace='auth')),
 
-    # production debug panel, doesn't even have a name=
+    # production debug panel
     re_path(r'^nothing-to-see-here/', include((debugpanel_urls, 'conference'), namespace='debug_panel')),
 ]
 

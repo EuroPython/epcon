@@ -390,9 +390,9 @@ CMS_LANGUAGES = {
 }
 CMS_TEMPLATES = (
     # ('conference/content/generic_content_page.html', 'Generic Content Page'),
-    # ('conference/homepage/home.html', 'Homepage'),
     ('conference/content/generic_content_page_with_sidebar.html',
      'Generic Content Page (with sidebar)'),
+    ('conference/homepage/home_template.html', 'Homepage'),
 )
 PAGE_TEMPLATES = (
     ('conference/content/generic_content_page_with_sidebar.html',
@@ -465,6 +465,7 @@ CONFERENCE_TALK_VOTING_ELIGIBLE = (
     "ep2019",
     "ep2020",
 )
+EARLY_BIRD_ORDER_LIMIT = config("EARLY_BIRD_ORDER_LIMIT", default=220, cast=int)
 
 CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT + '/rankings.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = (
