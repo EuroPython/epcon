@@ -29,8 +29,10 @@
 #announcement {
     background: #E88100;
     /* full width minus scrollbar*/
-    width: calc(100vw - (100vw - 100%));
-    padding: 32px 0 32px 0;
+    padding: 42px;
+    box-shadow: 0px 0px 20px 0px rgba(255,255,255,1);
+    margin: auto;
+    max-width: 800px;
 }
 
 #background_image {
@@ -38,8 +40,9 @@
     background-size: cover;
     color: white;
     min-height: 90px;
+    padding-bottom: 4em;
 }
-.jumbotron { background: transparent; color: white; padding: 4em 0 22em 0;}
+.jumbotron { background: transparent; color: white; padding: 4em 0 13em 0;}
 .text-underline { text-decoration: underline; }
 
 .page { min-height: 500px; padding-bottom: 10em; padding-top: 4em}
