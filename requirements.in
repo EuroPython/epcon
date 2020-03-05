@@ -10,7 +10,7 @@ django-model-utils<4.0
 django-crispy-forms
 
 django-taggit~=1.2
-git+git://github.com/bennylope/django-taggit-labels.git@c4006980d133f4c392b9f37e386bd7da43a8d4ce#egg=django-taggit-labels
+git+https://github.com/bennylope/django-taggit-labels@c4006980d133f4c392b9f37e386bd7da43a8d4ce#egg=django-taggit-labels
 
 python3-openid
 python-social-auth==0.3.6
@@ -25,10 +25,7 @@ django-cms>=3.7,<3.8
 djangocms-admin-style
 djangocms-text-ckeditor
 django-filer<1.6
-djangocms-file
-djangocms-picture
-djangocms-link
-djangocms-video
+git+https://github.com/pawelmarkowski/cmsplugin-filer@2.0.2#egg=cmsplugin-filer
 
 django-filebrowser-no-grappelli~=3.8
 django-markitup~=3.5
@@ -55,6 +52,3 @@ lxml  # for currencies
 dataclasses
 
 gunicorn<20.0
-
-# XXX: Remove this after the migration to djangocms-* plugins is over
-cmsplugin-filer

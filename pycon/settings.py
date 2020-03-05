@@ -256,10 +256,12 @@ INSTALLED_APPS = (
     'email_template',
 
     'djangocms_text_ckeditor',
-    'djangocms_file',
-    'djangocms_picture',
-    'djangocms_link',
-    'djangocms_video',
+    'cmsplugin_filer_file',
+    'cmsplugin_filer_folder',
+    'cmsplugin_filer_link',
+    'cmsplugin_filer_image',
+    'cmsplugin_filer_teaser',
+    'cmsplugin_filer_video',
 
     'treebeard',
     'cms',
@@ -718,9 +720,3 @@ DISABLE_CACHING = False
 # Complete project setup.
 if not os.path.exists(LOGS_DIR):
     os.makedirs(LOGS_DIR)
-
-# XXX: Hack to make data migrations work from cmsplugin-filer to the new djangocms-* plugins.
-# XXX: Should be ok to be removed after the migration is succesful.
-import os  # noqa
-if os.environ.get('CMSPLUGIN_MIGRATION'):
-    INSTALLED_APPS = INSTALLED_APPS + ('cmsplugin_filer_image', 'cmsplugin_filer_link')
