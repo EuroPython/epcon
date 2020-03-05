@@ -26,7 +26,7 @@ from conference.cfp import add_speaker_to_talk
 from conference.accounts import get_or_create_attendee_profile_for_new_user
 from conference.fares import set_early_bird_fare_dates, set_other_fares_dates
 
-from tests.common_tools import get_default_conference
+from tests.common_tools import get_default_conference, create_homepage_in_cms
 from tests.factories import SponsorIncomeFactory, TalkFactory, DEFAULT_VAT_RATE, OrderFactory
 
 
@@ -39,6 +39,7 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **options):
         conference = get_default_conference()
+        create_homepage_in_cms()
 
         today = timezone.now().date()
         ExchangeRate.objects.create(

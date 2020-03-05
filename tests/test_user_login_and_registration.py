@@ -9,7 +9,7 @@ from conference.accounts import PRIVACY_POLICY_CHECKBOX, PRIVACY_POLICY_ERROR
 from conference.models import CaptchaQuestion
 from conference.users import RANDOM_USERNAME_LENGTH
 
-from tests.common_tools import make_user, redirects_to, template_used
+from tests.common_tools import make_user, redirects_to, template_used, create_homepage_in_cms
 
 
 SIGNUP_SUCCESFUL_302 = 302
@@ -47,6 +47,7 @@ def test_user_registration(client):
     (to buy tickets, etc).
     """
     # required for redirects to /
+    create_homepage_in_cms()
 
     # 1. test if user can create new account
     sign_up_url = reverse("accounts:signup_step_1_create_account")
@@ -109,7 +110,7 @@ def test_user_registration(client):
     assert is_logged_in is False  # user is inactive
 
     response = client.get("/")
-    assert template_used(response, "conference/homepage/home.html")
+    assert template_used(response, "conference/homepage/home_template.html")
     assert "Joe Doe" not in response.content.decode("utf-8")
     assert "Log out" not in response.content.decode("utf-8")
 
@@ -123,7 +124,7 @@ def test_user_registration(client):
     assert is_logged_in
 
     response = client.get("/")
-    assert template_used(response, "conference/homepage/home.html")
+    assert template_used(response, "conference/homepage/home_template.html")
     # checking if user is logged in.
     assert "Joe Doe" in response.content.decode("utf-8")
     assert "My Account" in response.content.decode("utf-8")
