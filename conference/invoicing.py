@@ -318,6 +318,7 @@ CSV_REPORT_COLUMNS = [
 # For b/w compatibility
 CSV_2018_REPORT_COLUMNS = CSV_REPORT_COLUMNS
 
+
 def export_invoices_to_tax_report(start_date, end_date=None):
     if end_date is None:
         end_date = timezone.now().date()

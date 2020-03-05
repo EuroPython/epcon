@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
@@ -83,4 +83,6 @@ def profile_page_visible(profile, for_user):
     return False
 
 
-urlpatterns = [url(r"^(?P<profile_slug>[\w-]+)/$", profile, name="profile")]
+urlpatterns = [
+    re_path(r"^(?P<profile_slug>[\w-]+)/$", profile, name="profile")
+]
