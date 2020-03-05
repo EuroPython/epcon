@@ -18,9 +18,11 @@ from .fares import (
     FARE_CODE_GROUPS,
     FARE_CODE_REGEXES,
     FARE_TICKET_TYPES,
+    FARE_CODE_TYPES,
     FareIsNotAvailable,
     get_available_fares,
     is_fare_code_valid,
+    is_early_bird_sold_out,
 )
 from .invoicing import create_invoices_for_order
 from .orders import (
@@ -71,10 +73,10 @@ def cart_step2_pick_tickets(request, type_of_tickets):
         "currency": "EUR",
         "fares_info": {},  # empty fares info
     }
-    if request.method == "POST":
 
+    if request.method == "POST":
         discount_code, fares_info = extract_order_parameters_from_request(
-            request.POST
+            post_data=request.POST,
         )
         context["fares_info"] = fares_info
 
@@ -234,13 +236,13 @@ def extract_order_parameters_from_request(post_data):
     discount_code = None
     fares_info = {}
 
-    for k, v in post_data.items():
-        if k == "discount_code":
-            discount_code = v
+    for fare_code, fare_count in post_data.items():
+        if fare_code == "discount_code":
+            discount_code = fare_count
 
-        elif is_fare_code_valid(k):
+        elif is_fare_code_valid(fare_code):
             try:
-                fares_info[k] = int(v)
+                fares_info[fare_code] = int(fare_count)
             except ValueError:
                 pass
 
@@ -303,6 +305,12 @@ def get_available_fares_for_type(type_of_tickets):
         fares = fares.filter(
             code__regex=FARE_CODE_REGEXES["groups"][regex_group]
         )
+
+        # Check if early bird tickets should be available
+        if is_early_bird_sold_out():
+            fares = fares.exclude(
+                code__regex=FARE_CODE_REGEXES["types"][FARE_CODE_TYPES.EARLY_BIRD]
+            )
 
     elif type_of_tickets == TicketType.other:
         fares = fares.exclude(
