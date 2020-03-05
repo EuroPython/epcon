@@ -198,6 +198,7 @@ class Command(BaseCommand):
             ("workgroups", "2020 Team"),
             ("photos", "Photos"),
             ("videos", "Videos"),
+            ("terms", "Terms & Conditions"),
             ("eps", "EuroPython Society"),
             ("previous-editions", "Previous Editions"),
             ("help-organize", "Help Organize next EuroPython"),

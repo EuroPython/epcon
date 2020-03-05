@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 from django.utils import timezone
 
-from conference.models import StripePayment, Ticket
+from conference.models import StripePayment
 
 from .fares import (
     FARE_CODE_GROUPS,
@@ -22,6 +22,7 @@ from .fares import (
     FareIsNotAvailable,
     get_available_fares,
     is_fare_code_valid,
+    is_early_bird_sold_out,
 )
 from .invoicing import create_invoices_for_order
 from .orders import (
@@ -72,10 +73,10 @@ def cart_step2_pick_tickets(request, type_of_tickets):
         "currency": "EUR",
         "fares_info": {},  # empty fares info
     }
-    if request.method == "POST":
 
+    if request.method == "POST":
         discount_code, fares_info = extract_order_parameters_from_request(
-            request.POST
+            post_data=request.POST,
         )
         context["fares_info"] = fares_info
 
@@ -235,13 +236,13 @@ def extract_order_parameters_from_request(post_data):
     discount_code = None
     fares_info = {}
 
-    for k, v in post_data.items():
-        if k == "discount_code":
-            discount_code = v
+    for fare_code, fare_count in post_data.items():
+        if fare_code == "discount_code":
+            discount_code = fare_count
 
-        elif is_fare_code_valid(k):
+        elif is_fare_code_valid(fare_code):
             try:
-                fares_info[k] = int(v)
+                fares_info[fare_code] = int(fare_count)
             except ValueError:
                 pass
 
@@ -264,17 +265,6 @@ def send_order_confirmation_email(order: Order, current_site) -> None:
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[order.user.user.email],
     )
-
-
-def is_early_bird_sold_out():
-    eb_ticket_orders = Ticket.objects.filter(
-        fare__conference=settings.CONFERENCE_CONFERENCE,
-        frozen=False,
-        # orderitem__order___complete=True,
-        fare__code__regex=FARE_CODE_REGEXES["types"][FARE_CODE_TYPES.EARLY_BIRD]
-    )
-
-    return eb_ticket_orders.count() > settings.EARLY_BIRD_ORDER_LIMIT
 
 
 class TicketType:
