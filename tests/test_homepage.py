@@ -72,6 +72,6 @@ def test_homepage_contains_googleanalytics(db, client):
     response = client.get(url)
     assert response.status_code == 200
 
-    EPCON_2019_GA_ID = "UA-60323107-5"
+    EPCON_GA_ID = "UA-60323107"
     # NOTE(artcz) this should probably go into a variable, but good enough for
-    assert EPCON_2019_GA_ID in response.content.decode()
+    assert EPCON_GA_ID in response.content.decode()

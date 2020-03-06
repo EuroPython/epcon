@@ -29,10 +29,15 @@
 #announcement {
     background: #E88100;
     /* full width minus scrollbar*/
-    padding: 42px;
-    box-shadow: 0px 0px 20px 0px rgba(255,255,255,1);
+    padding: 32px;
+    box-shadow: 0px 0px 10px 0px rgba(217,122,10,0.75);
     margin: auto;
-    max-width: 800px;
+    max-width: 600px;
+}
+
+#announcement a {
+    color: white;
+    text-decoration: underline;
 }
 
 #background_image {
