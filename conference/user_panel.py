@@ -437,8 +437,9 @@ class ProfileSettingsForm(forms.ModelForm):
             Div(Div("bio", css_class="col-md-12"), css_class="row"),
             HTML("<h1>Profile page visibility</h1>"),
             HTML(
-                "<h5><strong>Speaker profile pages are public by default.</strong> If you are giving a talk or"
-                " training at this year's conference, you can still set your preferences for the following years.</h5>"
+                "<h5><strong>Speaker profile pages are public by default.</strong> "
+                "You still have the option to change your preferences in the coming "
+                "years.</h5>"
             ),
             Div(Div("visibility", css_class="col-md-4"), css_class="row"),
             ButtonHolder(
