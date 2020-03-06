@@ -74,4 +74,4 @@ def test_homepage_contains_googleanalytics(db, client):
 
     EPCON_GA_ID = "UA-60323107"
     # NOTE(artcz) this should probably go into a variable, but good enough for
-    assert EPCON_2019_GA_ID in response.content.decode()
+    assert EPCON_GA_ID in response.content.decode()
