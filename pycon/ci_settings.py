@@ -1,6 +1,5 @@
 from .test_settings import *  # noqa
 
-# DEFAULT_URL_PREFIX='http://localhost:8000'
 # DEBUG=True
 
 # Disable all the caching

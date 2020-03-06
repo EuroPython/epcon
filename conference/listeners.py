@@ -33,7 +33,6 @@ def on_talk_saved(sender, **kw):
         profiles = AttendeeProfile.objects.filter(
             user__in=TalkSpeaker.objects.filter(talk=o).values('speaker__user')
         ).exclude(visibility='p')
-
         for p in profiles:
             log.info(
                 'Set "%s"\'s profile to be visible because their talk "%s" has been accepted',

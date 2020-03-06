@@ -3,7 +3,7 @@ from django.conf import settings
 from model_utils import Choices
 
 from assopy.models import Vat, VatFare
-from conference.models import FARE_TICKET_TYPES, Conference, Fare
+from conference.models import FARE_TICKET_TYPES, Conference, Fare, Ticket
 
 
 # due to historical reasons this one is basically hardcoded in various places.
@@ -79,15 +79,33 @@ def is_fare_code_valid(fare_code):
     return fare_code in ALL_POSSIBLE_FARE_CODES
 
 
+def is_early_bird_sold_out():
+    eb_ticket_orders = Ticket.objects.filter(
+        fare__conference=settings.CONFERENCE_CONFERENCE,
+        frozen=False,
+        # orderitem__order___complete=True,
+        fare__code__regex=FARE_CODE_REGEXES["types"][FARE_CODE_TYPES.EARLY_BIRD]
+    )
+
+    return eb_ticket_orders.count() >= settings.EARLY_BIRD_ORDER_LIMIT
+
+
 def get_available_fares(date):
     """
     Returns all fares that where available during a given point in time,
     regardless of whether they were sold out or not.
     """
-    return Fare.objects.filter(
+    fares = Fare.objects.filter(
         start_validity__lte=date,
         end_validity__gte=date,
     )
+
+    if is_early_bird_sold_out():
+        fares = fares.exclude(
+            code__regex=FARE_CODE_REGEXES["types"][FARE_CODE_TYPES.EARLY_BIRD]
+        )
+
+    return fares
 
 
 def get_available_fares_as_dict(date):

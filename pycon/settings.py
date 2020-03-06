@@ -196,10 +196,9 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
-                # Epcon context processors
+                # epcon context processors
                 "p3.context_processors.settings",
-                "conference.context_processors.current_url",
-                "conference.context_processors.stuff",
+                "conference.context_processors.epcon_ctx",
             ],
             "loaders": [
                 "django.template.loaders.filesystem.Loader",
@@ -261,7 +260,6 @@ INSTALLED_APPS = (
     'cms',
     'menus',
     'sekizai',
-    'tagging',
     'taggit',
     'taggit_labels',
     'mptt',
@@ -387,9 +385,9 @@ CMS_LANGUAGES = {
 }
 CMS_TEMPLATES = (
     # ('conference/content/generic_content_page.html', 'Generic Content Page'),
-    # ('conference/homepage/home.html', 'Homepage'),
     ('conference/content/generic_content_page_with_sidebar.html',
      'Generic Content Page (with sidebar)'),
+    ('conference/homepage/home_template.html', 'Homepage'),
 )
 PAGE_TEMPLATES = (
     ('conference/content/generic_content_page_with_sidebar.html',
@@ -462,6 +460,7 @@ CONFERENCE_TALK_VOTING_ELIGIBLE = (
     "ep2019",
     "ep2020",
 )
+EARLY_BIRD_ORDER_LIMIT = config("EARLY_BIRD_ORDER_LIMIT", default=220, cast=int)
 
 CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT + '/rankings.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = (
@@ -533,15 +532,17 @@ CONFERENCE_TICKET_CONFERENCE_EXPERIENCES = (
 def CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
     from conference.models import Ticket
 
-    tickets = Ticket.objects \
-        .filter(fare__conference=conf, orderitem__order___complete=True)
+    tickets = Ticket.objects.filter(fare__conference=conf, orderitem__order___complete=True)
+
     if ticket_type:
         tickets = tickets.filter(fare__ticket_type=ticket_type)
+
     if fare_code:
         if fare_code.endswith('%'):
             tickets = tickets.filter(fare__code__startswith=fare_code[:-1])
         else:
             tickets = tickets.filter(fare__code=fare_code)
+
     return tickets
 
 
@@ -564,12 +565,11 @@ def CONFERENCE_VOTING_OPENED(conf, user):
 
 
 def CONFERENCE_VOTING_ALLOWED(user):
-
     """ Determine whether user is allowed to participate in talk voting.
-
     """
     if not user.is_authenticated:
         return False
+
     if user.is_superuser:
         return True
 
@@ -599,7 +599,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
             assigned_to=user.email
         )
     )
-    if tickets.count() > 0:
+    if tickets.exists():
         return True
 
     # Starting with EP2017, we know that all assigned tickets have
@@ -626,8 +626,9 @@ def CONFERENCE_VOTING_ALLOWED(user):
             )
         )
 
-        if tickets.count() > 0:
+        if tickets.exists():
             return True
+
     return False
 
 

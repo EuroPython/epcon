@@ -22,14 +22,10 @@ from django.contrib.contenttypes.fields import (
 )
 
 import shortuuid
-import tagging
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
-from tagging.fields import TagField
 from taggit.managers import TaggableManager
 from taggit.models import GenericTaggedItemBase, ItemBase, TagBase
-
-from common.django_urls import UrlMixin
 
 
 CURRENT_CONFERENCE_CACHE_KEY = 'CONFERENCE_CURRENT'
@@ -373,7 +369,7 @@ class AttendeeProfile(models.Model):
     def clean(self):
         from django.core.exceptions import ValidationError
         if self.visibility != 'p':
-            if TalkSpeaker.objects.filter(speaker__user=self.user_id, talk__status='accepted').count() > 0:
+            if TalkSpeaker.objects.filter(speaker__user=self.user_id, talk__status='accepted').exists():
                 raise ValidationError('This profile must be public')
 
     def setBio(self, body, language=None):
@@ -401,7 +397,7 @@ class SpeakerManager(models.Manager):
         return Speaker.objects.filter(user__in=qs)
 
 
-class Speaker(models.Model, UrlMixin):
+class Speaker(models.Model):
     user = models.OneToOneField(get_user_model(), primary_key=True, on_delete=models.CASCADE)
 
     objects = SpeakerManager()
@@ -571,7 +567,7 @@ def random_shortuuid():
     return shortuuid.ShortUUID().random(length=7)
 
 
-class Talk(models.Model, UrlMixin):
+class Talk(models.Model):
     # CharField because sqlite
     uuid = models.CharField(
         # FIXME(artcz)
@@ -793,6 +789,7 @@ class FareQuerySet(models.QuerySet):
             qs = qs.filter(conference=conference)
         return qs
 
+
 # TODO(artcz) Convert those to Choices for easier enum-like interface
 
 
@@ -984,7 +981,10 @@ class SponsorIncome(models.Model):
     sponsor = models.ForeignKey(Sponsor, on_delete=models.CASCADE)
     conference = models.CharField(max_length=20)
     income = models.PositiveIntegerField()
-    tags = TagField()
+    tags = models.CharField(
+        max_length=200, blank=True,
+        help_text='comma separated list of tags. Something like: special, break, keynote'
+    )
 
     class Meta:
         ordering = ['conference']
@@ -1005,7 +1005,8 @@ class ScheduleManager(models.Manager):
         Return for each event prediction of participation based on EventInterest
         """
         seats_available = defaultdict(lambda: 0)
-        for row in EventTrack.objects.filter(event__schedule__conference=conference).values('event', 'track__seats'):
+        qs = EventTrack.objects.filter(event__schedule__conference=conference).values('event', 'track__seats')
+        for row in qs:
             seats_available[row['event']] += row['track__seats']
 
         scores = self.events_score_by_attendance(conference)
@@ -1028,12 +1029,12 @@ class ScheduleManager(models.Manager):
         for event in events:
             score = scores[event.id]
             group = list(Event.objects.group_events_by_times(event_by_day[event.schedule_id], event=event))[0]
-
             group_score = sum([scores[e.id] for e in group])
+
+            k = 0
             if group_score:
                 k = score / group_score
-            else:
-                k = 0
+
             expected = k * forecasts[event.schedule_id] * factor
             seats = seats_available.get(event.id, 0)
             output[event.id] = {
@@ -1074,9 +1075,7 @@ class Schedule(models.Model):
         })
 
     def speakers(self):
-        qs = Event.objects\
-            .filter(schedule=self, talk__id__isnull=False)\
-            .values('talk__talkspeaker__speaker')
+        qs = Event.objects.filter(schedule=self, talk__id__isnull=False).values('talk__talkspeaker__speaker')
         return Speaker.objects.filter(user__in=qs)
 
 
@@ -1188,19 +1187,7 @@ class Event(models.Model):
             return self.custom
 
     def get_all_tracks_names(self):
-        from tagging.utils import parse_tag_input
-        return parse_tag_input(self.track)
-
-    def get_track(self):
-        """
-        returns to the first track instance with the specified values or None if the event
-        It is of special type
-        """
-        # XXX: Use the tag template get track event that hunts the query
-        dbtracks = dict((t.track, t) for t in self.schedule.track_set.all())
-        for t in tagging.models.Tag.objects.get_for_object(self):
-            if t.name in dbtracks:
-                return dbtracks[t.name]
+        return set(self.tags.split(','))
 
     def split(self, time):
         """

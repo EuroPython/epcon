@@ -11,6 +11,7 @@ from conference import models
 
 cache_me = cachef.CacheFunction(prefix='conf:')
 
+
 def _dump_fields(o):
     from django.db.models.fields.files import FieldFile
     output = {}
@@ -20,7 +21,6 @@ def _dump_fields(o):
         if isinstance(v, FieldFile):
             # Convert uploaded files to their URLs
             try:
-                #v = settings.DEFAULT_URL_PREFIX + v.url
                 v = v.url
             except ValueError:
                 # file not uploaded

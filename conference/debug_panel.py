@@ -341,30 +341,44 @@ class FareSetup:
 
 urlpatterns = [
     re_path(r'^$', debug_panel_index, name='index'),
-    re_path(r'^invoices/$',
+    re_path(
+        r'^invoices/$',
         debug_panel_invoice_placeholders,
-        name='invoice_placeholders'),
-    re_path(r'^invoices/(?P<invoice_id>\d+)/$',
+        name='invoice_placeholders'
+    ),
+    re_path(
+        r'^invoices/(?P<invoice_id>\d+)/$',
         debug_panel_invoice_force_preview,
-        name="invoice_forcepreview"),
-    re_path(r'^invoices_export/$',
+        name="invoice_forcepreview"
+    ),
+    re_path(
+        r'^invoices_export/$',
         debug_panel_invoice_export_for_tax_report,
-        name='invoice_export_for_tax_report'),
-    re_path(r'^invoices_export.csv$',
+        name='invoice_export_for_tax_report'
+    ),
+    re_path(
+        r'^invoices_export.csv$',
         debug_panel_invoice_export_for_tax_report_csv,
-        name='invoice_export_for_tax_report_csv'),
-    re_path(r'^invoices_export_for_accounting.json$',
+        name='invoice_export_for_tax_report_csv'
+    ),
+    re_path(
+        r'^invoices_export_for_accounting.json$',
         debug_panel_invoice_export_for_payment_reconciliation_json,
-        name='invoice_export_for_payment_reconciliation_json'),
-    re_path(r'^invoices/reissue/(?P<invoice_id>\d+)/$',
+        name='invoice_export_for_payment_reconciliation_json'
+    ),
+    re_path(
+        r'^invoices/reissue/(?P<invoice_id>\d+)/$',
         reissue_invoice,
-        name='reissue_invoice'),
-
-    re_path(r'^fares/setup/$',
+        name='reissue_invoice'
+    ),
+    re_path(
+        r'^fares/setup/$',
         debugpanel_fares_setup,
-        name='fares_setup'),
-
-    re_path(r'^invoice-example/$',
+        name='fares_setup'
+    ),
+    re_path(
+        r'^invoice-example/$',
         debug_panel_invoice_example,
-        name='invoice_example'),
+        name='invoice_example'
+    ),
 ]

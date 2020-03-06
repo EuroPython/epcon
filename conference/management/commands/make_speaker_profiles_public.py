@@ -21,7 +21,8 @@ def make_speaker_profiles_public_for_conference(conference):
 class Command(BaseCommand):
     """
     When accepting talks via database updates, the speaker profiles are
-    not automatically set to public. This command fixes this.
+    not automatically set to public.  This command fixes this.
+
     Argument: <conference year>
     """
     def add_arguments(self, parser):

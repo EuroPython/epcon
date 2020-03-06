@@ -83,4 +83,6 @@ def profile_page_visible(profile, for_user):
     return False
 
 
-urlpatterns = [re_path(r"^(?P<profile_slug>[\w-]+)/$", profile, name="profile")]
+urlpatterns = [
+    re_path(r"^(?P<profile_slug>[\w-]+)/$", profile, name="profile")
+]

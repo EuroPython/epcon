@@ -2,21 +2,22 @@ import http.client
 from datetime import date
 from urllib.parse import urlparse
 
+from cms.api import create_page
 from wsgiref.simple_server import make_server
 
 from django.conf import settings
 from django.core import mail
 from django.core.cache import cache
+from django.utils import timezone
 
 from assopy.models import Vat, VatFare
-from conference.accounts import get_or_create_attendee_profile_for_new_user
-from conference.models import AttendeeProfile, TALK_STATUS, Fare
+from conference.models import TALK_STATUS, Fare
 from conference.fares import pre_create_typical_fares_for_conference
 
 from . import factories
 
 HTTP_OK = 200
-DEFAULT_VAT_RATE = "7.7"  # 7.7%
+DEFAULT_VAT_RATE = "23"  # 23%
 
 
 def template_used(response, template_name, http_status=HTTP_OK):
@@ -163,12 +164,6 @@ def clear_all_the_caches():
     cache.clear()
 
 
-def is_using_jinja2_template(response):
-    res = response.resolve_template(response.template_name)
-    assert res.backend.name == "jinja2", res.backed.name
-    return True
-
-
 def setup_conference_with_typical_fares(start=date(2020, 7, 20), end=date(2020, 7, 26)):
     conference = get_default_conference(
         conference_start=start,
@@ -220,3 +215,12 @@ def create_talk_for_user(user, **kwargs):
 def create_user():
     user = factories.UserFactory(is_active=True)
     return user
+
+
+def create_homepage_in_cms():
+    homepage = create_page(
+        title='Homepage', template='conference/homepage/home_template.html', language='en',
+        reverse_id='homepage', published=True, publication_date=timezone.now())
+    homepage.set_as_homepage()
+
+    return homepage

@@ -3,7 +3,7 @@ import json
 import functools
 
 
-class MyEncode(json.JSONEncoder):  # pragma: no cover
+class MyEncode(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime.datetime):
             return obj.strftime('%d/%m/%Y %H:%M:%S')
@@ -15,5 +15,6 @@ class MyEncode(json.JSONEncoder):  # pragma: no cover
             return list(obj)
 
         return json.JSONEncoder.default(self, obj)
+
 
 json_dumps = functools.partial(json.dumps, cls=MyEncode)

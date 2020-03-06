@@ -1,0 +1,18 @@
+{% extends "conference/base.html" %}
+
+{% load conference %}
+
+{% block body %}
+
+{% include "conference/header/_with_jumbotron.html" %}
+
+{% include "conference/homepage/_schedule_overview.html" %}
+
+{% include "conference/homepage/_venue.html" with CCD_GOOGLEMAPS_URL="https://goo.gl/maps/X57SxAPbiJV3Fcig9" CCD_OSM_URL="https://www.openstreetmap.org/way/60270053" %}
+
+{% sponsor_data as sponsors %}
+{% include "conference/homepage/_sponsors.html" with sponsors=sponsors%}
+
+{% include "conference/footer/footer.html" %}
+
+{% endblock body %}

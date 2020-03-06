@@ -30,6 +30,7 @@ from tests.common_tools import (
     setup_conference_with_typical_fares,
     contains_message,
     email_sent_with_subject,
+    create_valid_ticket_for_user_and_fare,
 )
 from tests.factories import CouponFactory, CountryFactory, OrderFactory, VatFactory, FareFactory
 
@@ -321,6 +322,31 @@ def test_step2_no_fares_selected(db, user_client):
     assert response.status_code == 200
     assert template_used(response, "conference/cart/step_2_pick_tickets.html")
     assert contains_message(response, 'Please select some tickets')
+
+
+@override_settings(EARLY_BIRD_ORDER_LIMIT=10)
+def test_step2_early_bird_sold_out_with_no_fare_end_date(db, user_client):
+    setup_conference_with_typical_fares()
+    set_early_bird_fare_dates(
+        settings.CONFERENCE_CONFERENCE,
+        timezone.now().date(),
+        timezone.now().date() + timedelta(days=1),
+    )
+
+    eb_fare = Fare.objects.get(code="TESP")
+    for _ in range(10):
+        create_valid_ticket_for_user_and_fare(user=user_client.user, fare=eb_fare)
+    assert Ticket.objects.count() == 10
+
+    second_step_company = reverse("cart:step2_pick_tickets", args=["company"])
+    response = user_client.post(
+        second_step_company, {eb_fare.code: 1, CartActions.buy_tickets: True}, follow=True,
+    )
+
+    assert response.status_code == 200
+    assert Ticket.objects.all().count() == 10
+    assert template_used(response, "conference/cart/step_2_pick_tickets.html")
+    assert contains_message(response, 'A selected fare is not available')
 
 
 def test_step2_invalid_fare_code_for_fares_outside_of_validity_window(db, user_client):
@@ -667,6 +693,7 @@ def test_cart_fourth_step_renders_correctly(db, user_client):
     assert template_used(response, "conference/cart/step_4_payment.html")
 
 
+@mark.skip(reason='Disabled invoice generation; remove the skip when it is re-eanbled')
 def test_cart_payment_with_zero_total(db, user_client):
     _, fares = setup_conference_with_typical_fares()
     coupon = CouponFactory(user=user_client.user.assopy_user, value='100%')
@@ -685,6 +712,7 @@ def test_cart_payment_with_zero_total(db, user_client):
     assert email_sent_with_subject(ORDER_CONFIRMATION_EMAIL_SUBJECT)
 
 
+@mark.skip(reason='Disabled invoice generation; remove the skip when it is re-eanbled')
 @mock.patch('conference.cart.prepare_for_payment')
 @mock.patch('conference.cart.verify_payment')
 def test_cart_payment_with_non_zero_total(mock_prepare_for_payment, mock_verify_payment, db, user_client):

@@ -6,7 +6,8 @@ def generate_invoices_for_zero_amount_orders_for_year(year):
     orders = amodels.Order.objects.filter(
         created__year=year,
         method='bank',
-        )
+    )
+
     for o in orders:
         if not o.complete():
             continue

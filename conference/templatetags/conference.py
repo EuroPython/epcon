@@ -2,6 +2,7 @@ import mimetypes
 import re
 
 from django import template
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 
@@ -100,6 +101,13 @@ def admin_urlname_fromct(ct, action, id=None):
 @register.simple_tag()
 def profile_data(uid):
     return dataaccess.profile_data(uid)
+
+
+@register.simple_tag()
+def sponsor_data():
+    return models.Sponsor.objects.filter(
+        sponsorincome__conference=settings.CONFERENCE_CONFERENCE
+    )
 
 
 @register.filter

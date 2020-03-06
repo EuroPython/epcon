@@ -2,8 +2,7 @@ import os
 
 from pycon.settings import *  # noqa
 
-DEFAULT_URL_PREFIX = 'http://localhost:37266'
-
+DEFAULT_URL_PREFIX = 'http://localhost:8888'
 DEBUG = True
 
 LOGGING['loggers']['django.request']['handlers'].append('console')  # noqa

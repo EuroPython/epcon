@@ -1,4 +1,3 @@
-
 """
     Build Ticket Search App
     -----------------------

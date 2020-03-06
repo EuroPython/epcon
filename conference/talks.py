@@ -173,7 +173,19 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
 
 
 urlpatterns = [
-    re_path(r"^(?P<talk_slug>[\w-]+)/update/$", update_talk, name="update_talk"),
-    re_path(r"^(?P<talk_slug>[\w-]+)/submit_slides/$", submit_slides, name="submit_slides"),
-    re_path(r"^(?P<talk_slug>[\w-]+)/$", talk, name="talk"),
+    re_path(
+        r"^(?P<talk_slug>[\w-]+)/update/$",
+        update_talk,
+        name="update_talk"
+    ),
+    re_path(
+        r"^(?P<talk_slug>[\w-]+)/submit_slides/$",
+        submit_slides,
+        name="submit_slides"
+    ),
+    re_path(
+        r"^(?P<talk_slug>[\w-]+)/$",
+        talk,
+        name="talk"
+    ),
 ]
