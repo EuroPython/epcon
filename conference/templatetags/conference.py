@@ -26,6 +26,10 @@ def _request_cache(request, key):
         request._conf_cache = {key: {}}
     return request._conf_cache[key]
 
+# Current conference object
+@register.assignment_tag()
+def current_conference():
+    return models.Conference.objects.current()
 
 @register.filter
 def full_name(u):
