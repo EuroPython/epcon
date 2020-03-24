@@ -4,13 +4,12 @@ from io import StringIO
 from django import forms
 from django import http
 from django.conf import settings
-from django.conf.urls import url as re_path
 from django.contrib import admin, auth, messages
 from django.contrib.admin.utils import quote
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
+from django.urls import reverse, re_path
 from django.shortcuts import get_object_or_404, redirect
 from django.template import Template, Context
 from django.template.response import TemplateResponse

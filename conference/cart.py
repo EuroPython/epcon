@@ -1,11 +1,10 @@
 from django import forms
 from django.conf import settings
-from django.conf.urls import url as re_path
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
-from django.urls import reverse
+from django.urls import reverse, re_path
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string

@@ -6,12 +6,11 @@ from phonenumber_field.formfields import PhoneNumberField
 from model_utils import Choices
 
 from django import forms
-from django.conf.urls import url as re_path
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, re_path
 from django.db import transaction
 from django.db.models import Q, Case, When, Value, BooleanField
 from django.http import HttpResponse

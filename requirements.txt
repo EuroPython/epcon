@@ -36,7 +36,7 @@ django-sekizai==1.1.0     # via cmsplugin-filer, django-cms
 git+https://github.com/bennylope/django-taggit-labels@c4006980d133f4c392b9f37e386bd7da43a8d4ce#egg=django-taggit-labels  # via -r requirements.in
 django-taggit==1.2.0      # via -r requirements.in, django-taggit-labels
 django-treebeard==4.3.1   # via django-cms
-django==1.11.29           # via -r requirements.in, cmsplugin-filer, django-appconf, django-classy-tags, django-cms, django-filer, django-formtools, django-model-utils, django-mptt, django-phonenumber-field, django-polymorphic, django-sekizai, django-taggit, django-treebeard, easy-thumbnails
+django==2.2.11            # via -r requirements.in, cmsplugin-filer, django-appconf, django-classy-tags, django-cms, django-filer, django-formtools, django-model-utils, django-mptt, django-phonenumber-field, django-polymorphic, django-sekizai, django-taggit, django-treebeard, easy-thumbnails
 djangocms-admin-style==1.5.0  # via -r requirements.in, django-cms
 djangocms-attributes-field==1.2.0  # via cmsplugin-filer
 djangocms-text-ckeditor==3.9.0  # via -r requirements.in
@@ -78,6 +78,7 @@ shortuuid==1.0.1          # via -r requirements.in
 six==1.14.0               # via cryptography, django-appconf, django-classy-tags, django-extensions, django-filebrowser-no-grappelli, django-sekizai, ecdsa, html5lib, python-jose, social-auth-app-django, social-auth-core, traitlets
 social-auth-app-django==3.1.0  # via -r requirements.in
 social-auth-core[openidconnect]==3.3.0  # via -r requirements.in, python-social-auth, social-auth-app-django
+sqlparse==0.3.1           # via django
 stripe==2.44.0            # via -r requirements.in
 tinycss2==1.0.2           # via cairosvg, cssselect2, weasyprint
 traitlets==4.3.3          # via ipython

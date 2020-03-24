@@ -7,7 +7,7 @@ import platform
 import subprocess
 
 import django
-from django.conf.urls import url as re_path
+from django.urls import re_path
 from django import forms
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required

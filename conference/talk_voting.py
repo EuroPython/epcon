@@ -1,6 +1,6 @@
 import random
 
-from django.conf.urls import url as re_path
+from django.urls import re_path
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.db.models import Q, Prefetch, Case, When, Value, BooleanField
