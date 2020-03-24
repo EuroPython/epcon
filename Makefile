@@ -69,7 +69,7 @@ drop-db:
 redo-db: drop-db init-db
 
 update-requirements: build
-	docker-compose run --rm epcon "pip install pip-tools -U && pip-compile --upgrade requirements.in -o requirements.txt && chmod a+r requirements.txt && pip-compile --upgrade requirements.in requirements-dev.in -o requirements-dev.txt && chmod a+r requirements-dev.txt"
+	docker-compose run --rm epcon "pip install pip-tools -U && pip-compile -U requirements.in -o requirements.txt && chmod a+r requirements.txt && pip-compile -U requirements-dev.in -o requirements-dev.txt && chmod a+r requirements-dev.txt"
 
 migrations: build
 	docker-compose run --rm epcon "./manage.py makemigrations"
