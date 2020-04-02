@@ -92,7 +92,7 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
-TIME_ZONE = 'Europe/Dublin'
+TIME_ZONE = 'Europe/Amsterdam'
 LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
