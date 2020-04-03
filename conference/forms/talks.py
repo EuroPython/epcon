@@ -5,7 +5,8 @@ from taggit.forms import TagField
 from taggit_labels.widgets import LabelWidget
 
 from conference.forms import TalkBaseForm
-from conference.models import Conference, ConferenceTag, Talk, TALK_TYPE
+from conference.models import (Conference, ConferenceTag, Talk, TALK_TYPE, 
+    CFP_TALK_TYPE)
 
 
 class TalkUpdateForm(forms.ModelForm):
@@ -66,7 +67,7 @@ class TalkSlidesForm(forms.ModelForm):
 
 
 class ProposalForm(TalkUpdateForm):
-    type = forms.ChoiceField(label="Type", required=True, choices=TALK_TYPE)
+    type = forms.ChoiceField(label="Type", required=True, choices=CFP_TALK_TYPE)
 
     abstract_extra = TalkBaseForm.base_fields["abstract_extra"]
 

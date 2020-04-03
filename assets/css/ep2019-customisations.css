@@ -41,7 +41,7 @@
 }
 
 #background_image {
-    background: url("/static/img/ep2020-background-ccd.jpg");
+    background: url("/static/img/ep2020-background-online.jpg");
     background-size: cover;
     color: white;
     min-height: 90px;

@@ -530,6 +530,22 @@ TALK_TYPE = [
 
 TALK_TYPE_CHOICES = Choices(*TALK_TYPE)
 
+# Copy of TALK_TYPE, which defines the types that can be chosen in the
+# CFP. The other types remain available via the Django admin.
+CFP_TALK_TYPE = [
+    ('t_30', 'Talk (30 mins)'),
+    ('t_45', 'Talk (45 mins)'),
+    #('t_60', 'Talk (60 mins)'),
+    ('i_60', 'Interactive (60 mins)'),
+    #('r_180', 'Training (180 mins)'),
+    ('p_180', 'Poster session (180 mins)'),
+    ('n_60', 'Panel (60 mins)'),
+    #('n_90', 'Panel (90 mins)'),
+    ('h_180', 'Help desk (180 mins)'),
+]
+
+
+
 # Mapping of TALK_TYPE to duration in minutes
 TALK_DURATION = {
     't_30': 30,
