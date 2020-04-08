@@ -71,13 +71,14 @@ def test_first_step_has_links_to_second_step(db, client):
     second_step_personal = reverse(
         "cart:step2_pick_tickets", args=["personal"]
     )
-    second_step_student = reverse("cart:step2_pick_tickets", args=["student"])
+    # XXX Disabled for EP2020
+    #second_step_student = reverse("cart:step2_pick_tickets", args=["student"])
 
     response = client.get(url)
 
     assert second_step_company in response.content.decode()
     assert second_step_personal in response.content.decode()
-    assert second_step_student in response.content.decode()
+    #assert second_step_student in response.content.decode()
 
 
 def test_other_fares_button_not_shown_when_other_fares_invalid(db, client):
