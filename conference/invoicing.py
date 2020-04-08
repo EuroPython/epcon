@@ -68,7 +68,7 @@ LOCAL_CURRENCY_BY_YEAR = {
 EP_CITY_FOR_YEAR = {
     2018: "Edinburgh",
     2019: "Basel",
-    2020: "Dublin",
+    2020: "Online",
     2021: "Dublin",
 }
 
