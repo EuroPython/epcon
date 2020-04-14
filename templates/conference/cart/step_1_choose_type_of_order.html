@@ -13,12 +13,17 @@
             <div class="col-md-12">
                 <h1>Step 1: Choose which type of ticket do you want to buy</h1>
             </div>
-
+{% comment %}
             <div class="col-md-12" style='margin-top: 3em'>
                 <h3>Conference and Training tickets:</h3>
             </div>
+{% endcomment %}
 
-            <div class='col-md-4'>
+            <div class="col-md-12" style='margin-top: 3em'>
+                <h3>Conference and Sprint only tickets:</h3>
+            </div>
+
+            <div class='col-md-6'>
                 <p class='cart-step1-description'>
                 For people using Python to make a living.
                 If your employer is paying for the ticket or you are
@@ -30,17 +35,18 @@
                 </p>
             </div>
 
-            <div class='col-md-4'>
+            <div class='col-md-6'>
                 <p class='cart-step1-description'>
                 For people enjoying Python from home.
-                If you are programming Python in your free time or as a freelancer
-                and don't need a VAT invoice, this option is for you.
+                If you are programming Python in your free time, as a freelancer
+                or student and don't need a VAT invoice, this option is for you.
                 </p>
                 <p>
                 <a class='btn btn-outline-primary btn-lg btn-block' href='{% url "cart:step2_pick_tickets" "personal" %}'>Personal Tickets</a>
                 </p>
             </div>
 
+{% comment %}
             <div class='col-md-4'>
                 <p class='cart-step1-description'>
                 For people coding in Python while still in education.
@@ -53,6 +59,7 @@
                 <a class='btn btn-outline-primary btn-lg btn-block' href='{% url "cart:step2_pick_tickets" "student" %}'><span>Student &amp; Academia Tickets</span></a>
                 </p>
             </div>
+{% endcomment%}
 
         </div>
         {% if show_special %}

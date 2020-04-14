@@ -46,10 +46,13 @@ Ramnebacken 45
 Sweden
 """.strip()
 
+EPS_21 = EPS_20
+
 ISSUER_BY_YEAR = {
     2018: EPS_18,
     2019: EPS_19,
     2020: EPS_20,
+    2021: EPS_21,
 }
 
 LOCAL_CURRENCY_BY_YEAR = {
@@ -59,18 +62,21 @@ LOCAL_CURRENCY_BY_YEAR = {
     # nor put it on the invoices.
     2019: "EUR",
     2020: "EUR",
+    2021: "EUR",
 }
 
 EP_CITY_FOR_YEAR = {
     2018: "Edinburgh",
     2019: "Basel",
-    2020: "Dublin",
+    2020: "Online",
+    2021: "Dublin",
 }
 
 ADDITIONAL_TEXT_FOR_YEAR = {
     2018: "assopy/invoices/_additional_text_for_2018.html",
     2019: "assopy/invoices/_additional_text_for_2019.html",
     2020: "assopy/invoices/_additional_text_for_2020.html",
+    2021: "assopy/invoices/_additional_text_for_2021.html",
 }
 
 REAL_INVOICE_PREFIX = "I/"
