@@ -10,6 +10,11 @@ from conference.models import FARE_TICKET_TYPES, Conference, Fare, Ticket
 SOCIAL_EVENT_FARE_CODE = "VOUPE03"
 SIM_CARD_FARE_CODE = "SIM1"
 
+# The ticket code follows this layout:
+#   "T<type><variant><group>"
+#   e.g. "TRSP" - standard conference ticket at the regular price for
+#   personal use
+
 FARE_CODE_TYPES = Choices(
     ("E", "EARLY_BIRD", "Early Bird"),
     ("R", "REGULAR",    "Regular"),
@@ -19,8 +24,9 @@ FARE_CODE_TYPES = Choices(
 FARE_CODE_VARIANTS = Choices(
     ("S", "STANDARD", "Standard"),
     ("L", "LIGHT",    "Standard Light (no trainings)"),
-    ("T", "TRAINING", "Trainings (ep2018+)"),
-    ("C", "COMBINED", "Combined (ep2019+)"),
+    ("T", "TRAINING", "Trainings (ep2018+)"), # Starting with EP2018
+    ("C", "COMBINED", "Combined (ep2019+)"), # Starting with EP2019
+    ("P", "SPRINT", "Sprints only"), # Starting with EP2020
     ("D", "DAYPASS",  "Day Pass"),
 )
 
@@ -43,6 +49,7 @@ FARE_CODE_REGEXES = {
         FARE_CODE_VARIANTS.LIGHT:    "^T.L.$",
         FARE_CODE_VARIANTS.TRAINING: "^T.T.$",
         FARE_CODE_VARIANTS.COMBINED: "^T.C.$",
+        FARE_CODE_VARIANTS.SPRINT:   "^T.P.$",
         FARE_CODE_VARIANTS.DAYPASS:  "^T.D.$",
     },
     "groups": {
@@ -68,7 +75,7 @@ def all_possible_fare_codes():
     }
 
     fare_codes[SOCIAL_EVENT_FARE_CODE] = "Social Event"
-    fare_codes[SIM_CARD_FARE_CODE] = "Sim Card"
+    fare_codes[SIM_CARD_FARE_CODE] = "SIM Card"
     return fare_codes
 
 
@@ -204,7 +211,6 @@ def set_early_bird_fare_dates(conference, start_date, end_date):
     assert (
         early_birds.count()
         == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS)
-        == 3 * 5
     )
     early_birds.update(start_validity=start_date, end_validity=end_date)
 
@@ -219,6 +225,5 @@ def set_regular_fare_dates(conference, start_date, end_date):
     assert (
         fares.count()
         == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS)
-        == 3 * 5
     )
     fares.update(start_validity=start_date, end_validity=end_date)
