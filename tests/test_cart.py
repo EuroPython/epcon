@@ -153,9 +153,9 @@ def test_cant_buy_any_tickets_if_fares_are_not_available(db, user_client):
 @mark.parametrize(
     "ticket_category, expected_ticket_types",
     [
-        ('personal', ['TRSP', 'TRLP', 'TRTP', 'TRCP', 'TRDP']),
-        ('company', ['TRSC', 'TRLC', 'TRTC', 'TRCC', 'TRDC']),
-        ('student', ['TRSS', 'TRLS', 'TRTS', 'TRCS', 'TRDS']),
+        ('personal', ['TRSP', 'TRLP', 'TRTP', 'TRCP', 'TRDP', 'TRPP']),
+        ('company', ['TRSC', 'TRLC', 'TRTC', 'TRCC', 'TRDC', 'TRPC']),
+        ('student', ['TRSS', 'TRLS', 'TRTS', 'TRCS', 'TRDS', 'TRPS']),
         ('other', ['SIM1', 'VOUPE03']),
     ],
 )
