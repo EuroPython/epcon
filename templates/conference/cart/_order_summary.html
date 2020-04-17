@@ -2,7 +2,7 @@
 
 <table class='table table-hover'>
     <tr>
-        {% if order.is_complete %}<th class='text-right'>Nº</th>{% endif %}
+        {% if order.is_complete %}<th class='text-right'>ID</th>{% endif %}
         <th>code</th>
         <th>ticket</th>
         {% if order.is_complete %}
@@ -16,7 +16,7 @@
     {% for item in order.orderitem_set.all %}
     <tr>
         {% if order.is_complete %}
-            <td class="text-right font-weight-bold">{{ item.id }}</td>
+            <td class="text-right font-weight-bold">{% if item.ticket %}{{ item.ticket.id }}{% else %}{{ item.id }}{% endif %}</td>
         {% endif %}
         <td>{{ item.code }}</td>
         <td>{% if item.ticket %}{{ item.ticket }}{% else %}{{ item.description }}{% endif %}</td>
