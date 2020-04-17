@@ -14,7 +14,7 @@ pytestmark = [pytest.mark.django_db]
 
 
 def test_talk_voting_unavailable_before_talk_voting_start(user_client):
-    get_default_conference(voting_start=timezone.now() + timedelta(days=1))
+    get_default_conference(voting_start=timezone.now() + timedelta(days=2))
     url = reverse('talk_voting:talks')
 
     response = user_client.get(url)
@@ -24,7 +24,7 @@ def test_talk_voting_unavailable_before_talk_voting_start(user_client):
 
 
 def test_talk_voting_unavailable_after_talk_voting_end(user_client):
-    get_default_conference(voting_end=timezone.now() - timedelta(days=1))
+    get_default_conference(voting_end=timezone.now() - timedelta(days=2))
     url = reverse('talk_voting:talks')
 
     response = user_client.get(url)

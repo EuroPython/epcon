@@ -213,7 +213,12 @@ class TicketConferenceConfigForm(forms.ModelForm):
 
     class Meta:
         model = TicketConference
-        fields = ["name", "diet", "shirt_size", "tagline", "days"]
+        fields = ["name", 
+                  # XXX Disabled for EP2020; see #1269
+                  #"diet", 
+                  #"shirt_size", 
+                  "tagline", 
+                  "days"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
