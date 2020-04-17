@@ -27,4 +27,8 @@ jobs:
         pip install -r requirements-dev.txt
     - name: Run pytest
       run: |
-        SECRET_KEY=secret pytest -c pytest_ci.ini
+        pytest -c pytest_ci.ini
+      env:
+        SECRET_KEY: mysecret
+        STRIPE_PUBLISHABLE_KEY: ${{ secret.STRIPE_PUBLISHABLE_KEY }}
+        STRIPE_SECRET_KEY: ${{ secret.STRIPE_SECRET_KEY }}
