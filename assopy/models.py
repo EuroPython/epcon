@@ -285,6 +285,8 @@ class Coupon(models.Model):
     def clean(self):
         if re.search(r'[^\d\%\.]+', self.value):
             raise ValidationError('The value of the coupon contains illegal characters')
+        if not self.value.endswith('%'):
+            raise ValidationError("The discount field may only use percent values, e.g. 25.0%")
 
     def type(self):
         if self.value.endswith('%'):
@@ -296,7 +298,8 @@ class Coupon(models.Model):
         """
         Converts 20% to 0.8
         """
-        assert self.value.endswith('%')
+        if not self.value.endswith('%'):
+            raise ValueError("The discount field may only use percent values, e.g. 25.0%")
         discount = Decimal(self.value[:-1]) / Decimal(100)
         return discount
 

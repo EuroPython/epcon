@@ -38,7 +38,7 @@ from .decorators import full_profile_required
 
 
 GLOBAL_MAX_PER_FARE_TYPE = 6
-ORDER_CONFIRMATION_EMAIL_SUBJECT = "EuroPython2020: Order confirmation"
+ORDER_CONFIRMATION_EMAIL_SUBJECT = "%s: Order confirmation" % settings.CONFERENCE_NAME
 
 
 @full_profile_required

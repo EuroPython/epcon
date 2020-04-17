@@ -62,5 +62,7 @@ GRAPH_MODELS = {
     'group_models': True,
 }
 
-STRIPE_SECRET_KEY = "sk_test_4eC39HqLyjWDarjtT1zdp7dc"
-STRIPE_PUBLISHABLE_KEY = "pk_test_TYooMQauvdEDq54NiTphI7jx"
+# Test keys (for CI tests)
+# Please set these via env vars!
+#STRIPE_SECRET_KEY = ""
+#STRIPE_PUBLISHABLE_KEY = ""

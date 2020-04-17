@@ -25,10 +25,10 @@
 
             <div class='col-md-6'>
                 <p class='cart-step1-description'>
-                For people using Python to make a living.
-                If your employer is paying for the ticket or you are
-                buying tickets for other people in your company and need
-                a VAT invoice, please choose this option.
+                For people using Python to make a living.  If your employer
+                is paying for the ticket, you are buying tickets for other
+                people in your company and need a VAT invoice, or you simply
+                want to support the conference, please choose this option.
                 </p>
                 <p>
                 <a class='btn btn-outline-primary btn-lg btn-block' href='{% url "cart:step2_pick_tickets" "company" %}'>Business tickets</a>
@@ -37,9 +37,10 @@
 
             <div class='col-md-6'>
                 <p class='cart-step1-description'>
-                For people enjoying Python from home.
-                If you are programming Python in your free time, as a freelancer
-                or student and don't need a VAT invoice, this option is for you.
+                For people enjoying Python as a hobbyist or freelancer. If
+                you are programming Python in your free time, pupil or
+                student, and don't need a VAT invoice, this option is for
+                you.
                 </p>
                 <p>
                 <a class='btn btn-outline-primary btn-lg btn-block' href='{% url "cart:step2_pick_tickets" "personal" %}'>Personal Tickets</a>

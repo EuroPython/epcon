@@ -86,14 +86,19 @@ $ make test
 
 # CONTRIBUTING
 
+Note: We are using the ep2020 branch for the production version of the
+website, once we have switched on production, and dev/ep2020 during
+development leading up to the production version.  The instructions
+reference the ep2020 branch - please adjust to dev/ep2020 for the
+development version.
+
 1. Make a fork of github.com/europython/epcon
 2. Make changes in your fork (ideally on a feature/bugfix branch)
-3. Make sure your branch is based on latest `upstream/dev/ep2020`
+3. Make sure your branch is based on latest `upstream/ep2020`
 4. Push your changes
-5. Create a pull request to `europython/epcon`, targeting `dev/ep2020` branch.
+5. Create a pull request to `europython/epcon`, targeting `ep2020` branch.
 
-IMPORTANT: all the active development happens on the `dev/ep2020` branch, `master` is not up to date.
-
+IMPORTANT: all the active development happens on the `ep2020` branch, `master` is not up to date.
 
 ## Development Guidelines
 
