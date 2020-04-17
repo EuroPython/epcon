@@ -3,6 +3,7 @@ from decimal import Decimal
 from unittest import mock
 import uuid
 
+import pytest
 from pytest import mark, raises, approx
 
 from django.urls import reverse
@@ -697,8 +698,10 @@ def test_cart_fourth_step_renders_correctly(db, user_client):
     assert template_used(response, "conference/cart/step_4_payment.html")
 
 
-#@mark.skip(reason='Disabled invoice generation; remove the skip when it is re-eanbled')
 def test_cart_payment_with_zero_total(db, user_client):
+    if not settings.STRIPE_SECRET_KEY:
+        # Skip test if no Stripe key is available
+        pytest.skip('Skipping cart test because Stripe keys are not set')
     _, fares = setup_conference_with_typical_fares()
     coupon = CouponFactory(user=user_client.user.assopy_user, value='100%')
     order = OrderFactory(user=user_client.user.assopy_user, items=[(fares[0], {"qty": 1})], coupons=[coupon])
@@ -716,10 +719,12 @@ def test_cart_payment_with_zero_total(db, user_client):
     assert email_sent_with_subject(ORDER_CONFIRMATION_EMAIL_SUBJECT)
 
 
-#@mark.skip(reason='Disabled invoice generation; remove the skip when it is re-eanbled')
 @mock.patch('conference.cart.prepare_for_payment')
 @mock.patch('conference.cart.verify_payment')
 def test_cart_payment_with_non_zero_total(mock_prepare_for_payment, mock_verify_payment, db, user_client):
+    if not settings.STRIPE_SECRET_KEY:
+        # Skip test if no Stripe key is available
+        pytest.skip('Skipping cart test because Stripe keys are not set')
     _, fares = setup_conference_with_typical_fares()
     order = OrderFactory(items=[(fares[0], {"qty": 1})])
     payment = StripePayment.objects.create(
