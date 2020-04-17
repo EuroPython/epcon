@@ -20,7 +20,7 @@
         {% endif %}
         <td>{{ item.code }}</td>
         <td>{% if item.ticket %}{{ item.ticket }}{% else %}{{ item.description }}{% endif %}</td>
-        {% if order.is_complete %}
+        {% if order.is_complete and item.ticket %}
             <td>{{ item.price }}</td>
             <td class='text-right'>
                 <a class='btn btn-outline-primary' href='{% url "user_panel:manage_ticket" item.ticket.id %}'>Configure ticket</a>
