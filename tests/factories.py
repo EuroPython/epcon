@@ -118,7 +118,7 @@ class FareFactory(factory.django.DjangoModelFactory):
 
     @factory.lazy_attribute
     def name(self):
-        return "EuroPython 2020 – %s" % ALL_POSSIBLE_FARE_CODES[self.code]
+        return "%s – %s" % (settings.CONFERENCE_NAME, ALL_POSSIBLE_FARE_CODES[self.code])
 
     @factory.lazy_attribute
     def start_validity(self):
