@@ -35,7 +35,7 @@ PRIVACY_POLICY_ERROR = (
     "You need to consent to use of your data before we can continue"
 )
 
-EMAIL_VERIFICATION_SUBJECT = "EuroPython2020: Please verify your email"
+EMAIL_VERIFICATION_SUBJECT = "EuroPython 2020: Please verify your email"
 
 
 class LoginForm(auth_forms.AuthenticationForm):
