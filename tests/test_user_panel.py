@@ -144,8 +144,9 @@ def test_user_panel_update_ticket(client):
     response = client.post(
         reverse("user_panel:manage_ticket", kwargs={"ticket_id": ticket1.id}),
         {
-            "diet": "other",
-            "shirt_size": "xxxl",
+            # XXX Disabled for EP2020, see #1269
+            #"diet": "other",
+            #"shirt_size": "xxxl",
             "tagline": "xyz",
             "days": "2019-07-10",
         },
@@ -155,8 +156,9 @@ def test_user_panel_update_ticket(client):
     ticket1.refresh_from_db()
     ticketconference.refresh_from_db()
     assert ticket1.name == ticketconference.name
-    assert ticketconference.diet == "other"
-    assert ticketconference.shirt_size == "xxxl"
+    # XXX Disabled for EP2020, see #1269
+    #assert ticketconference.diet == "other"
+    #assert ticketconference.shirt_size == "xxxl"
     assert ticketconference.tagline == "xyz"
     assert ticketconference.days == "2019-07-10"
 
@@ -184,7 +186,7 @@ def test_user_panel_update_ticket_cannot_update_name(client):
             "name": new_name
         },
     )
-    assert response.status_code == 200
+    assert response.status_code in (200, 302)
 
     ticket1.refresh_from_db()
     ticketconference.refresh_from_db()
