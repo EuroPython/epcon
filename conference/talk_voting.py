@@ -132,8 +132,7 @@ def is_user_allowed_to_vote(user):
         #user.ticket_set.all().exists()
         user.ticket_set.filter(
             Q(frozen=False) &
-            ~Q(fare__code__regex=fares.FARE_CODE_REGEXES["variants"][
-               fares.FARE_CODE_VARIANTS.SPRINT]))
+            Q(fare__code__regex=fares.TALK_VOTING_CODE_REGEXP))
         or Talk.objects.proposed()
         .filter(created_by=user, conference=Conference.objects.current().code)
         .exists()

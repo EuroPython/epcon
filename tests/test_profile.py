@@ -5,7 +5,7 @@ from django.urls import reverse
 from conference.models import ATTENDEEPROFILE_VISIBILITY, TALK_STATUS
 
 from tests.common_tools import make_user, create_talk_for_user, template_used, get_default_conference
-from tests.factories import TicketFactory
+from tests.factories import TalkVotingTicketFactory
 
 pytestmark = [pytest.mark.django_db]
 
@@ -27,7 +27,7 @@ def test_profile_page_available_during_voting_with_proposal(client):
     assert template_used(response, "conference/profiles/profile_unavailable.html")
 
     # Requesting user needs to be eligible to vote, i.e. have bought a ticket for any of the conferences
-    TicketFactory(user=request_user)
+    TalkVotingTicketFactory(user=request_user)
     response = client.get(url)
     assert template_used(response, "conference/profiles/profile.html")
 

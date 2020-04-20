@@ -141,7 +141,6 @@ class FareFactory(factory.django.DjangoModelFactory):
             VatFare.objects.get_or_create(fare=self, vat=default_vat_rate)
 
 class TalkVotingFareFactory(FareFactory):
-
     @factory.lazy_attribute
     def code(self):
         return random.choice(list(TALK_VOTING_FARE_CODES.keys()))

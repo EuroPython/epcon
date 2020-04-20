@@ -9,7 +9,7 @@ from tests.common_tools import (
     redirects_to,
     template_used,
 )
-from tests.factories import TicketFactory
+from tests.factories import TalkVotingTicketFactory
 
 
 def test_new_talk_voting_is_inaccessible_to_unauthenticated_users(db, client):
@@ -48,7 +48,7 @@ def test_new_talk_voting_can_be_access_with_user_who_has_tickets(
         voting_end=date.today() + timedelta(days=1),
     )
     url = reverse("talk_voting:talks")
-    TicketFactory(user=user_client.user)
+    TalkVotingTicketFactory(user=user_client.user)
 
     response = user_client.get(url)
     assert response.status_code == 200

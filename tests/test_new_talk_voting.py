@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from conference.models import Conference, VotoTalk, TALK_STATUS, TALK_TYPE_CHOICES, TALK_ADMIN_TYPE
 from conference.talk_voting import VotingOptions, find_talks
-from tests.factories import SpeakerFactory, TalkFactory, TalkSpeakerFactory, TicketFactory, TalkVotingTicketFactory
+from tests.factories import SpeakerFactory, TalkFactory, TalkSpeakerFactory, TalkVotingTicketFactory
 from tests.common_tools import make_user, create_talk_for_user, get_default_conference, template_used
 
 pytestmark = [pytest.mark.django_db]
