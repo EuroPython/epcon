@@ -44,6 +44,10 @@ Europython Society
 Ramnebacken 45
 424 38 Agnesberg
 Sweden
+Org ID: 802417-7704
+EU VAT-ID: SE802417770401
+Contact Email: billing@europython.eu
+https://www.europython-society.org/
 """.strip()
 
 EPS_21 = EPS_20
