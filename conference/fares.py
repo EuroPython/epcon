@@ -30,6 +30,11 @@ FARE_CODE_VARIANTS = Choices(
     ("D", "DAYPASS",  "Day Pass"),
 )
 
+# Variants eligible for talk voting
+FARE_CODE_TALK_VOTING_VARIANTS = (
+    "S", "L", "T", "C"
+    )
+
 FARE_CODE_GROUPS = Choices(
     ("S", "STUDENT",  "Student"),
     ("P", "PERSONAL", "Personal"),
@@ -81,6 +86,19 @@ def all_possible_fare_codes():
 
 ALL_POSSIBLE_FARE_CODES = all_possible_fare_codes()
 
+def talk_voting_fare_codes():
+    fare_codes = {
+        "T" + type_code + variant_code + group_code:
+        "%s %s %s" % (type_name, variant_name, group_name)
+
+        for type_code, type_name       in FARE_CODE_TYPES._doubles
+        for variant_code, variant_name in FARE_CODE_VARIANTS._doubles
+        for group_code, group_name     in FARE_CODE_GROUPS._doubles
+        if variant_code in FARE_CODE_TALK_VOTING_VARIANTS
+    }
+    return fare_codes
+
+TALK_VOTING_FARE_CODES = talk_voting_fare_codes()
 
 def is_fare_code_valid(fare_code):
     return fare_code in ALL_POSSIBLE_FARE_CODES

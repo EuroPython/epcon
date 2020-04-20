@@ -26,7 +26,7 @@ from conference.models import (
     TALK_STATUS,
     random_shortuuid,
 )
-from conference.fares import ALL_POSSIBLE_FARE_CODES
+from conference.fares import ALL_POSSIBLE_FARE_CODES, TALK_VOTING_FARE_CODES
 from p3.models import TICKET_CONFERENCE_SHIRT_SIZES, TICKET_CONFERENCE_DIETS
 
 
@@ -140,6 +140,11 @@ class FareFactory(factory.django.DjangoModelFactory):
             default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
             VatFare.objects.get_or_create(fare=self, vat=default_vat_rate)
 
+class TalkVotingFareFactory(FareFactory):
+
+    @factory.lazy_attribute
+    def code(self):
+        return random.choice(list(TALK_VOTING_FARE_CODES.keys()))
 
 class VatFareFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -158,6 +163,8 @@ class TicketFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     fare = factory.SubFactory(FareFactory)
 
+class TalkVotingTicketFactory(TicketFactory):
+    fare = factory.SubFactory(TalkVotingFareFactory)
 
 class OrderItemFactory(factory.django.DjangoModelFactory):
     class Meta:
