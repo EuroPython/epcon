@@ -39,14 +39,28 @@ https://www.europython-society.org
 
 EPS_19 = EPS_18
 
+# EP2020: Not listing the VAT ID, since we're a non-profit and VAT exempt. 
+# The VAT ID would confuse people.
 EPS_20 = """
 Europython Society
 Ramnebacken 45
 424 38 Agnesberg
 Sweden
+Org ID: 802417-7704
+Contact Email: billing@europython.eu
+https://www.europython-society.org/
 """.strip()
 
-EPS_21 = EPS_20
+EPS_21 = """
+Europython Society
+Ramnebacken 45
+424 38 Agnesberg
+Sweden
+Org ID: 802417-7704
+EU VAT-ID: SE802417770401
+Contact Email: billing@europython.eu
+https://www.europython-society.org/
+""".strip()
 
 ISSUER_BY_YEAR = {
     2018: EPS_18,
