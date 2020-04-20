@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
 from conference.models import Conference, Talk, VotoTalk, TALK_STATUS, TALK_TYPE_CHOICES
-
+from conference import fares
 
 @login_required
 def talk_voting(request):
@@ -129,7 +129,10 @@ def is_user_allowed_to_vote(user):
     with their account (either for this or any of the past years
     """
     is_allowed = (
-        user.ticket_set.all().exists()
+        #user.ticket_set.all().exists()
+        user.ticket_set.filter(
+            Q(frozen=False) &
+            Q(fare__code__regex=fares.TALK_VOTING_CODE_REGEXP))
         or Talk.objects.proposed()
         .filter(created_by=user, conference=Conference.objects.current().code)
         .exists()

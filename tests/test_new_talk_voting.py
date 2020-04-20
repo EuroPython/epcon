@@ -7,7 +7,7 @@ from django.utils import timezone
 
 from conference.models import Conference, VotoTalk, TALK_STATUS, TALK_TYPE_CHOICES, TALK_ADMIN_TYPE
 from conference.talk_voting import VotingOptions, find_talks
-from tests.factories import SpeakerFactory, TalkFactory, TalkSpeakerFactory, TicketFactory
+from tests.factories import SpeakerFactory, TalkFactory, TalkSpeakerFactory, TalkVotingTicketFactory
 from tests.common_tools import make_user, create_talk_for_user, get_default_conference, template_used
 
 pytestmark = [pytest.mark.django_db]
@@ -46,7 +46,7 @@ def test_talk_voting_unavailable_without_a_ticket(user_client):
 
 def test_talk_voting_available_with_ticket(user_client):
     get_default_conference()
-    TicketFactory(user=user_client.user)
+    TalkVotingTicketFactory(user=user_client.user)
     url = reverse('talk_voting:talks')
 
     response = user_client.get(url)
@@ -268,7 +268,7 @@ def test_vote_submission_allowed_for_users_with_talk_proposal(user_client):
 
 def test_vote_submission_allowed_for_users_with_ticket(user_client):
     get_default_conference()
-    TicketFactory(user=user_client.user)
+    TalkVotingTicketFactory(user=user_client.user)
     talk = TalkFactory()
     TalkSpeakerFactory(talk=talk)
     url = reverse("talk_voting:vote", kwargs={'talk_uuid': talk.uuid})
