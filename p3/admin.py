@@ -102,6 +102,7 @@ class TalkAdmin(admin.ModelAdmin):
         "conference",
         "_speakers",
         "_company",
+        "type",
         "duration",
         "status",
         "created",
