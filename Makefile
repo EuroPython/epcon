@@ -56,6 +56,9 @@ init-env: build init-db
 build:
 	docker-compose build --pull epcon
 
+run:
+	docker-compose up
+
 init-db:
 	docker-compose down -t 60
 	mkdir -p data/site
