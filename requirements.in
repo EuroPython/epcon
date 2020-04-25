@@ -52,3 +52,5 @@ lxml  # for currencies
 dataclasses
 
 gunicorn<20.0
+
+anglicize
