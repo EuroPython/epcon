@@ -4,7 +4,6 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
-anglicize==0.0.3          # via -r requirements.in
 babel==2.8.0              # via django-phonenumber-field
 backcall==0.1.0           # via ipython
 cairocffi==1.1.0          # via cairosvg, weasyprint
@@ -44,6 +43,7 @@ djangocms-text-ckeditor==3.9.0  # via -r requirements.in
 easy-thumbnails==2.7      # via cmsplugin-filer, django-filer
 ecdsa==0.15               # via python-jose
 et-xmlfile==1.0.1         # via openpyxl
+fold-to-ascii==1.0.1      # via -r requirements.in
 gunicorn==19.10.0         # via -r requirements.in
 html5lib==1.0.1           # via djangocms-text-ckeditor, weasyprint
 idna==2.9                 # via requests

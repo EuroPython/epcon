@@ -53,4 +53,4 @@ dataclasses
 
 gunicorn<20.0
 
-anglicize
+fold_to_ascii

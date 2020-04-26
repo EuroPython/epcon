@@ -4,7 +4,7 @@
     to be escaped in MarkItUp CMS plugins.
 
 """
-from anglicize import anglicize
+from fold_to_ascii import fold
 from django import template
 from conference import models
 
@@ -67,7 +67,7 @@ def speaker_list_key(entry):
         speaker.user.last_name)
 
     # Remove whitespace and use title case
-    return anglicize(name.strip().title())
+    return fold(name.strip().title())
 
 ###
 
