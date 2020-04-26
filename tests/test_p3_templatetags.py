@@ -14,7 +14,7 @@ from tests.common_tools import get_default_conference, redirects_to, template_us
 pytestmark = [pytest.mark.django_db]
 
 
-def test_spealers_templatetag():
+def test_speakers_templatetag():
     names = [
         # these 2 should not be listed
         ("To Be", "Announced"),
