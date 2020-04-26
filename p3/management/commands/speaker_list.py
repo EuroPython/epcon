@@ -2,7 +2,7 @@
 """ Print out a listing of speakers.
 
 """
-from fold_to_ascii import fold
+from anglicize import anglicize
 from django.core.management.base import BaseCommand
 
 from conference import models as cmodels
@@ -33,10 +33,9 @@ def speaker_list_key(entry):
     name = '%s %s' % (
         speaker.user.first_name,
         speaker.user.last_name)
-    name = name.strip().title()
 
     # Remove whitespace and use title case
-    return fold(name, name[0])
+    return anglicize(name.strip().title())
 
 ###
 
