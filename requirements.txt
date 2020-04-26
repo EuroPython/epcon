@@ -4,6 +4,7 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
+anglicize==0.0.3          # via -r requirements.in
 babel==2.8.0              # via django-phonenumber-field
 backcall==0.1.0           # via ipython
 cairocffi==1.1.0          # via cairosvg, weasyprint
