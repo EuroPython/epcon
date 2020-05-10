@@ -24,6 +24,7 @@ import string
 import random
 from optparse import make_option
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.db.models import Q
@@ -41,14 +42,29 @@ from assopy.models import Coupon
 #
 # The coupon_prefix must have 3 chars.
 #
-TALK_TYPE_DISCOUNTS = {
-    't': ('TLK', '25%', False),  # Talk
-    'i': ('INT', '25%', False),  # Interactive
-    'r': ('TRN', '100%', True), # Training
-    'p': ('PST', '25%', False),  # Poster
-    'n': ('PAN', '25%', False),  # Panel
-    'h': ('HPD', '25%', False),  # Helpdesk
-}
+# 
+#
+if settings.CONFERENCE_CONFERENCE == 'ep2020':
+    # For the virtul event we give out 100% coupons
+    TALK_TYPE_DISCOUNTS = {
+        't': ('TLK', '100%', False),  # Talk
+        'i': ('INT', '100%', False),  # Interactive
+        'r': ('TRN', '100%', True),  # Training
+        'p': ('PST', '100%', False),  # Poster
+        'n': ('PAN', '100%', False),  # Panel
+        'h': ('HPD', '100%', False),  # Helpdesk
+        }
+else:
+    # For in-person events we give out 25% discount coupons only, except for
+    # trainings
+    TALK_TYPE_DISCOUNTS = {
+        't': ('TLK', '25%', False),  # Talk
+        'i': ('INT', '25%', False),  # Interactive
+        'r': ('TRN', '100%', True),  # Training
+        'p': ('PST', '25%', False),  # Poster
+        'n': ('PAN', '25%', False),  # Panel
+        'h': ('HPD', '25%', False),  # Helpdesk
+        }
 
 # Coupon prefixes used in the above dictionary
 COUPON_PREFIXES = tuple(prefix
