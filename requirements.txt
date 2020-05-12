@@ -52,7 +52,7 @@ ipython==7.13.0           # via -r requirements.in
 jdcal==1.4.1              # via openpyxl
 jedi==0.16.0              # via ipython
 lxml==4.5.0               # via -r requirements.in
-markdown2==2.3.8          # via -r requirements.in
+markdown2==2.3.9          # via -r requirements.in
 oauthlib==3.1.0           # via requests-oauthlib, social-auth-core
 openpyxl==2.4.8           # via -r requirements.in
 parso==0.6.2              # via jedi
