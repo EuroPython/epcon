@@ -550,7 +550,24 @@ class EventInlineAdmin(admin.TabularInline):
 
 
 class ScheduleAdmin(admin.ModelAdmin):
-    list_display = ('conference', 'slug', 'date')
+    list_display = (
+        "conference",
+        "slug",
+        "date",
+    )
+    list_filter = (
+        "conference",
+    )
+    search_fields = [
+        "conference",
+        "slug",
+        "date",
+    ]
+    ordering = (
+        "conference",
+        "date",
+    )
+
     inlines = [
         TrackInlineAdmin,
         EventInlineAdmin
@@ -560,11 +577,6 @@ class ScheduleAdmin(admin.ModelAdmin):
         urls = super(ScheduleAdmin, self).get_urls()
         v = self.admin_site.admin_view
         my_urls = [
-            re_path(
-                r'^stats/$',
-                v(self.expected_attendance),
-                name='conference-schedule-expected_attendance'
-            ),
             re_path(
                 r'^(?P<sid>\d+)/events/$',
                 v(self.events),
@@ -790,28 +802,6 @@ class ScheduleAdmin(admin.ModelAdmin):
                 'tid': tid,
             }
             return TemplateResponse(request, 'conference/admin/schedule_tracks.html', ctx)
-
-    def expected_attendance(self, request):
-        allevents = defaultdict(dict)
-        for e, info in models.Schedule.objects.expected_attendance(settings.CONFERENCE_CONFERENCE).items():
-            allevents[e.schedule][e] = info
-        data = {}
-        for s, events in allevents.items():
-            data[s] = entry = {
-                'morning': [],
-                'afternoon': [],
-            }
-            for e, info in events.items():
-                item = dict(info)
-                item['event'] = e
-                if e.start_time.hour < 13 and e.start_time.minute < 30:
-                    entry['morning'].append(item)
-                else:
-                    entry['afternoon'].append(item)
-        ctx = {
-            'schedules': sorted(list(data.items()), key=lambda x: x[0].date),
-        }
-        return TemplateResponse(request, 'conference/admin/schedule_expected_attendance.html', ctx)
 
 
 class FilterFareByTicketCode(admin.SimpleListFilter):

@@ -1006,60 +1006,12 @@ class SponsorIncome(models.Model):
 
 
 class ScheduleManager(models.Manager):
+
     def attendees(self, conference, forecast=False):
         """
         Returns the number of participants for each of the conference schedule.
         """
         return settings.CONFERENCE_SCHEDULE_ATTENDEES(conference, forecast)
-
-    def events_score_by_attendance(self, conference):
-        return defaultdict(lambda: 0.0)
-
-    def expected_attendance(self, conference, factor=0.85):
-        """
-        Return for each event prediction of participation based on EventInterest
-        """
-        seats_available = defaultdict(lambda: 0)
-        qs = EventTrack.objects.filter(event__schedule__conference=conference).values('event', 'track__seats')
-        for row in qs:
-            seats_available[row['event']] += row['track__seats']
-
-        scores = self.events_score_by_attendance(conference)
-        events = Event.objects.filter(schedule__conference=conference).select_related('schedule')
-
-        output = {}
-        # Now I have to make the forecast of the participants for each event,
-        # to make it divide the score of an event by the number of voters who
-        # have expressed a vote for an event in the same time band * *; the number
-        # I get is a k factor when multiplied by the forecast of people a day gives
-        # me an indication of how many people are expected for the event.
-        forecasts = self.attendees(conference, forecast=True)
-
-        # to calculate the score for a time band I have to do a double for the
-        # events, to limit the number of internal iterations I group events per day
-        event_by_day = defaultdict(set)
-        for e in events:
-            event_by_day[e.schedule_id].add(e)
-
-        for event in events:
-            score = scores[event.id]
-            group = list(Event.objects.group_events_by_times(event_by_day[event.schedule_id], event=event))[0]
-            group_score = sum([scores[e.id] for e in group])
-
-            k = 0
-            if group_score:
-                k = score / group_score
-
-            expected = k * forecasts[event.schedule_id] * factor
-            seats = seats_available.get(event.id, 0)
-            output[event.id] = {
-                'score': score,
-                'seats': seats,
-                'expected': expected,
-                'overbook': seats and expected > seats,
-            }
-
-        return output
 
 
 class Schedule(models.Model):
