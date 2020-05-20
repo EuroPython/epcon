@@ -134,7 +134,11 @@ class TimeTable2(object):
         self._analyzed = False
         self.events = events
         # Track list in the right order
+        #
+        # XXX This logic should really use the track objects or IDs rather than the strings
+        #
         self._tracks = list(Track.objects.filter(schedule=sid).order_by('order').values_list('track', flat=True))
+        self._titles = list(Track.objects.filter(schedule=sid).order_by('order').values_list('title', flat=True))
 
     def __str__(self):
         return 'TimeTable2: %s - %s' % (self.sid, ', '.join(self._tracks))

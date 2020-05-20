@@ -1070,7 +1070,7 @@ class Schedule(models.Model):
     The latter can be the talk of the events or "custom" as the pyBirra,
     and are connected to the track in the "weak" mode, through a tagfield.
     """
-    conference = models.CharField(help_text = 'nome della conferenza', max_length = 20)
+    conference = models.CharField(help_text = 'Name of the conference', max_length = 20)
     slug = models.SlugField()
     date = models.DateField()
     description = models.TextField(blank=True)
@@ -1096,15 +1096,19 @@ class Schedule(models.Model):
 
 class Track(models.Model):
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
-    track = models.CharField('nome track', max_length=20)
-    title = models.TextField('titolo della track', help_text='HTML supportato')
+    # XXX This should really be called "name", not "track"
+    track = models.CharField('Track name', max_length=20) # Internal track name
+    title = models.TextField('Track title', help_text='HTML supported') # Display name
     seats = models.PositiveIntegerField(default=0)
-    order = models.PositiveIntegerField('ordine', default=0)
+    order = models.PositiveIntegerField(default=0)
     translate = models.BooleanField(default=False)
     outdoor = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.track
+        return self.title
+
+    def __repr__(self):
+        return 'Track(track=%r, title=%r)' % (self.track, self.title)
 
 
 class EventManager(models.Manager):

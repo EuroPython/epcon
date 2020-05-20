@@ -250,8 +250,8 @@ div.cms .cms-toolbar {
 
         <div>
             <div class="schedule__grid schedule__grid--header schedule__talks_header" style="--cols: {{ schedule.grid.cols }}; --rows: 1;">
-                {% for track in schedule.tracks %}
-                    <div>{{ track }}</div>
+                {% for title in schedule.titles %}
+                    <div>{{ title|safe }}</div>
                 {% endfor %}
             </div>
 

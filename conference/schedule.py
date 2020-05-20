@@ -112,7 +112,10 @@ def schedule(request, day=None, month=None):
     #     )
 
     times = []
+    # Internal track names
     tracks = timetable._tracks
+    # Display names of tracks
+    titles = timetable._titles
     talks = []
 
     all_times = set()
@@ -198,11 +201,16 @@ def schedule(request, day=None, month=None):
     schedule = ScheduleGrid(
         day=schedule_data["date"],
         tracks=tracks,
+        titles=titles,
         talks=talks,
         grid=Grid(times=grid_times, rows=len(all_times), cols=len(tracks)),
     )
 
-    ctx = {"conference": settings.CONFERENCE_CONFERENCE, "schedule": schedule, "days": days}
+    ctx = {
+        "conference": settings.CONFERENCE_CONFERENCE, 
+        "schedule": schedule, 
+        "days": days,
+        }
 
     return render(request, "conference/schedule/schedule.html", ctx)
 
@@ -245,6 +253,7 @@ class Grid:
 class ScheduleGrid:
     day: str
     tracks: typing.List[str]
+    titles: typing.List[str]
     talks: typing.List[Talk]
     grid: Grid
 
