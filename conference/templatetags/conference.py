@@ -49,15 +49,6 @@ def fare_blob(fare, field):
     return ''
 
 
-# XXX - remove
-@register.simple_tag(takes_context=True)
-def get_talk_speakers(context, talk):
-    c = _request_cache(context['request'], 'talk_speakers_%s' % talk.conference)
-    if not c:
-        c['items'] = models.TalkSpeaker.objects.speakers_by_talks(talk.conference)
-    return c['items'].get(talk.id, [])
-
-
 @register.simple_tag
 def tagged_items(tag):
     return dataaccess.tags().get(tag, {})

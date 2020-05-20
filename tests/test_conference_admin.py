@@ -111,11 +111,3 @@ def test_conference_schedule_tracks_admin(admin_client):
     assert response.status_code == 200
 
 
-# /admin/conference/schedule/stats/ conference.admin.expected_attendance
-@mark.django_db
-def test_conference_schedule_expected_attendance_admin(admin_client):
-    url = reverse('admin:conference-schedule-expected_attendance')
-
-    response = admin_client.get(url)
-
-    assert response.status_code == 200
