@@ -74,7 +74,7 @@
 .schedule__grid {
     --cols: 1;
     --rows: 1;
-    --height: 15px;
+    --height: 25px;
     --min-width: calc(100vw - 60px);
     display: grid;
     grid-template-columns: repeat(var(--cols), minmax(var(--min-width), 1fr));
@@ -300,11 +300,11 @@ div.cms .cms-toolbar {
                             {% endif %}
                             {% endcomment %}
 
+                            {% if talk.level %}
                             <div class="schedule__day__level_indicator">
-                                {% if talk.level %}
-                                    {{ talk.level }}
-                                {% endif %}
+                                {{ talk.level }}
                             </div>
+                            {% endif %}
 
                         </div>
                     </div>
