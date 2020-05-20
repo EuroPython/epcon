@@ -18,7 +18,7 @@ social-auth-app-django
 # Fixes https://github.com/python-social-auth/social-app-django/issues/178
 social-auth-core[openidconnect]
 
-markdown2
+markdown2>=2.3.9
 
 # 3.7 DjangoCMS LTS release
 django-cms>=3.7,<3.8

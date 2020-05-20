@@ -11,6 +11,11 @@ from django.shortcuts import render
 from conference.models import Schedule
 from conference.utils import TimeTable2
 
+### Globals
+
+_debug = settings.DEBUG
+
+###
 
 def _get_time_indexes(start_time, end_time, times):
     for index, time in enumerate(times):
@@ -66,7 +71,8 @@ def schedule(request, day=None, month=None):
         except:
             raise http.Http404()
 
-    print(day, month, month_index)
+    if _debug:
+        print ('schedule:', day, month, month_index)
 
     selected_date = date(days[0].year, month_index, int(day))
     current_schedule = next(
@@ -81,8 +87,17 @@ def schedule(request, day=None, month=None):
     if current_schedule is None:
         raise http.Http404()
 
+    if _debug:
+        print ('selected_date = %r, current_schedule = %r' % (
+            selected_date, current_schedule))
+
     schedule_data = schedules_data([current_schedule["id"]])[0]
+    if _debug:
+        print ('schedule_data = %s' % schedule_data)
+
     timetable = TimeTable2.fromSchedule(schedule_data["id"])
+    if _debug:
+        print ('timetable = %s' % timetable)
 
     # Not implemented
     starred_talks_ids = []
@@ -103,6 +118,10 @@ def schedule(request, day=None, month=None):
     all_times = set()
 
     for time, talks_for_time in timetable.iterOnTimes():
+        if _debug:
+            print ('time = %r: talks_for_time = %r' % (
+                time, talks_for_time))
+
         times.append(time)
         all_times.add(time)
 
@@ -110,16 +129,19 @@ def schedule(request, day=None, month=None):
             all_times.add(talk["end_time"])
 
     all_times = sorted(list(all_times))
+    if _debug:
+        print ('all_times = %r' % all_times)
 
-    new_times = []
-    start = all_times[0]
-    end = all_times[-1]
+    if all_times:
+        new_times = []
+        start = all_times[0]
+        end = all_times[-1]
 
-    while start <= end:
-        new_times.append(start)
-        start += timedelta(minutes=5)
+        while start <= end:
+            new_times.append(start)
+            start += timedelta(minutes=5)
 
-    all_times = new_times
+        all_times = new_times
 
     seen = set()
 
@@ -168,9 +190,10 @@ def schedule(request, day=None, month=None):
             GridTime(time=time, start_row=start_row, end_row=end_row)
         )
 
-    grid_times.append(
-        GridTime(time=times[-1], start_row=end_row, end_row=len(all_times))
-    )
+    if times:
+        grid_times.append(
+            GridTime(time=times[-1], start_row=end_row, end_row=len(all_times))
+        )
 
     schedule = ScheduleGrid(
         day=schedule_data["date"],
