@@ -1,5 +1,7 @@
 from django.urls import reverse
 from django.contrib import admin
+from django.db import models
+from django.forms import TextInput, Textarea
 
 from taggit.forms import TagField
 from taggit_labels.widgets import LabelWidget
@@ -186,22 +188,36 @@ class EventTrackInlineAdmin(admin.TabularInline):
 
 
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('schedule',
+    list_display = ('_conference',
+                    'schedule',
                     'start_time',
                     'duration',
+                    'custom',
                     '_title',
                     '_tracks')
     ordering = ('schedule',
                 'start_time',
                 'tracks',
                 )
-    list_filter = ('schedule',
+    list_filter = ('schedule__conference',
+                   'schedule',
                    'tracks')
+    list_editable = ('custom',
+                    )
     search_fields = ['talk__title',
                      'custom',
                      ]
     inlines = (EventTrackInlineAdmin,
                )
+
+    # Display the custom textarea as TextInput for better layout
+    formfield_overrides = {
+        models.TextField: {'widget': TextInput(attrs={'size':'20', 'style':'min-width: 20em'})},
+    }
+
+
+    def _conference(self, obj):
+        return obj.schedule.conference
 
     def _tracks(self, obj):
         return ", ".join([track.track
@@ -215,7 +231,8 @@ class EventAdmin(admin.ModelAdmin):
 
 
 class TrackAdmin(admin.ModelAdmin):
-    list_display = ('schedule',
+    list_display = ('_conference',
+                    'schedule',
                     '_slug',
                     '_date',
                     'track',
@@ -226,11 +243,13 @@ class TrackAdmin(admin.ModelAdmin):
                 'order',
                 'track',
                 )
-    list_filter = ('schedule',
+    list_filter = ('schedule__conference',
+                   'schedule',
                    'schedule__slug',
                    'track',
                    'title')
     list_editable = ('track',
+                     'title',
                      'order',
                     )
     search_fields = ['schedule__conference',
@@ -241,6 +260,14 @@ class TrackAdmin(admin.ModelAdmin):
     inlines = (EventTrackInlineAdmin,
                )
     list_select_related = True
+
+    # Display the title textarea as TextInput for better layout
+    formfield_overrides = {
+        models.TextField: {'widget': TextInput(attrs={'size':'20'})},
+    }
+
+    def _conference(self, obj):
+        return obj.schedule.conference
 
     def _slug(self, obj):
         return obj.schedule.slug
