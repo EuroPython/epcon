@@ -178,7 +178,10 @@ def schedule(request, day=None, month=None):
                 level=talk_meta.get("level", None),
                 speakers=talk_meta.get("speakers", []),
                 can_be_starred=talk_meta.get("id", 0) > 0,
+                admin_type=talk_meta.get('admin_type', ''),
             )
+            if _debug:
+                print ('talk_meta = %r' % talk_meta)
 
             talks.append(t)
 
@@ -227,6 +230,7 @@ class Talk:
     slug: typing.Optional[str]
     language: typing.Optional[str]
     level: typing.Optional[str]
+    admin_type: typing.Optional[str]
     speakers: typing.List[str]
     can_be_starred: bool
     start_column: int
