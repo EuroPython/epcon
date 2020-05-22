@@ -109,6 +109,7 @@ def talk_data(tid, preload=None):
         speakers.append({
             'id': r['speaker'],
             'name': profile['name'],
+            'company': profile['company'],
             'slug': profile['slug'],
             'helper': r['helper'],
         })
