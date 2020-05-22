@@ -104,6 +104,7 @@ class TalkAdmin(admin.ModelAdmin):
         "conference",
         "_speakers",
         "_company",
+        "_location",
         "type",
         "duration",
         "status",
@@ -168,6 +169,18 @@ class TalkAdmin(admin.ModelAdmin):
         )
         return ", ".join(companies)
     _company.admin_order_field = "speakers__user__attendeeprofile__company"
+
+    def _location(self, obj):
+        locations = sorted(
+            set(
+                speaker.user.attendeeprofile.location or
+                speaker.user.attendeeprofile.phone
+                for speaker in obj.speakers.all()
+                if speaker.user.attendeeprofile
+            )
+        )
+        return ", ".join(locations)
+    _location.admin_order_field = "speakers__user__attendeeprofile__location"
 
     def _slides(self, obj):
         return bool(obj.slides)
