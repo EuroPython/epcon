@@ -103,7 +103,7 @@
 }
 .schedule__day__talk_title {
     font-weight: bold;
-    font-size: 0.8em;
+    font-size: 14px;
     line-height: 1.4;
     margin-top: 2px;
 }
@@ -112,7 +112,7 @@
     height: auto;
 }
 .schedule__day__talk_speakers {
-    font-size: 0.8em;
+    font-size: 12px;
     margin-bottom: 10px;
 }
 .schedule__day__talk {
@@ -129,7 +129,7 @@
     background: var(--level-color);
     padding-left: 6px;
     color: #ffffff;
-    font-size: 0.5em;
+    font-size: 12px;
     min-height: 1.8em;
 }
 .talk-level--beginner {
@@ -147,13 +147,14 @@
     background: #00307b;
     padding-left: 6px;
     color: #ffffff;
-    font-size: 0.7em;
+    font-weight: bold;
+    font-size: 12px;
     min-height: 1.6em;
 }
 .schedule__day__startend {
     margin-top: auto;
     padding-bottom: 0;
-    font-size: 0.5em;
+    font-size: 12px;
     min-height: 1.8em;
     text-align: right;
 }
@@ -176,7 +177,7 @@
 }
 @media (min-width: 600px) {
     .schedule__grid {
-        --min-width: 150px;
+        --min-width: 250px;
     }
 }
 
@@ -349,34 +350,45 @@ div.cms .cms-toolbar {
 {% block morejs %}
 
 <script type="text/javascript">
+function format_time(date) {
+    var h = date.getHours();
+    var m = date.getMinutes();
+    var text = "";
+    if (h < 10)
+       text += "0" + h;
+    else
+       text += h;
+    text += ":";
+    if (m < 10)
+       text += "0" + m;
+    else
+       text += m;
+    return text;
+}
+
 /* Change all schedule times from UTC to browser local time */
 function format_local_times() {
     var tz_offset_ms = new Date().getTimezoneOffset() * 60000;
+    var cest_offset_ms = -120 * 60000;
     $('.schedule-time-display').each(function(i, obj) {
         var value = obj.dataset.fulltime;
         var utc_time = new Date(value);
+	var cest_time = new Date(utc_time - cest_offset_ms);
 	var local_time = new Date(utc_time - tz_offset_ms);
-	var h = local_time.getHours();
-	var m = local_time.getMinutes();
-	var text = "";
-	if (h < 10)
-	    text += "0" + h;
-        else
-	    text += h;
-	text += ":";
-	if (m < 10)
-	    text += "0" + m;
-        else
-	    text += m;
-        obj.innerHTML = text;
-	obj.title = local_time.toString();
+        obj.innerHTML = format_time(local_time);
+	obj.title = ("UTC: " + format_time(utc_time)
+	             + "\nCEST: " + format_time(cest_time)
+	             + "\nYour time: " + format_time(local_time));
+	$(this).show();
         });
+    return true;
 };
 
 $(document).ready(function() {
     format_local_times();
     $('#timezone').text("Your Time");
 });
+
 </script>
 
 {% endblock morejs %}
