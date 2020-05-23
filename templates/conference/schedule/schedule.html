@@ -372,7 +372,11 @@ function format_local_times() {
     var cest_offset_ms = -120 * 60000;
     $('.schedule-time-display').each(function(i, obj) {
         var value = obj.dataset.fulltime;
-        var utc_time = new Date(value);
+        // This approach is necessary to work around issues with Safari
+        // browsers: see https://stackoverflow.com/questions/6427204/date-parsing-in-javascript-is-different-between-safari-and-chrome
+        // It should also be a tad faster.
+        var t = value.split(/[^0-9]/);
+        var utc_time = new Date(t[0], t[1], t[2], t[3], t[4]);
 	var cest_time = new Date(utc_time - cest_offset_ms);
 	var local_time = new Date(utc_time - tz_offset_ms);
         obj.innerHTML = format_time(local_time);
