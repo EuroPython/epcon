@@ -213,6 +213,7 @@ def program_wg_download_all_talks_for_current_conference(request):
     """
     current_conf = Conference.objects.current()
     talks = dump_all_talks_for_conference_to_dict(current_conf)
+    #print ('talks = %r' % talks)
     return JsonResponse({'talks': talks})
 
 
@@ -229,6 +230,7 @@ def extract_initial_speaker_data_from_user(user):
         'company': attendee.company,
         'company_homepage': attendee.company_homepage,
         'phone': attendee.phone,
+        'location': attendee.location,
     }
 
 

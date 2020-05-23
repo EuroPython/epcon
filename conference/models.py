@@ -741,6 +741,20 @@ class Talk(models.Model):
 
         return event.schedule.get_absolute_url() + '?' + urlencode({'selected': self.slug})
 
+    def get_slides_url(self):
+
+        """ Return the slides URL (relative to the website)
+            or None in case no slides are available.
+        
+            For externally hosted slides, the URL refers to an absolute URL
+            (anything the speaker entered).
+        
+        """
+        if self.slides and self.slides.url:
+            return self.slides.url or None
+        else:
+            return self.slides_url or None
+
     def get_admin_url(self):
         return reverse("admin:conference_talk_change", args=[self.id])
 
