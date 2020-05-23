@@ -244,7 +244,7 @@ def test_submit_slides_url_on_talk_detail_page(client):
     assert submit_slides_url in response.content.decode()
 
 
-def test_view_slides_file_url_on_talk_detail_page(client):
+def test_view_slides_url_on_talk_detail_page(client):
     """
     The download slides button only appears if the slides have been uploaded.
     """
@@ -256,7 +256,7 @@ def test_view_slides_file_url_on_talk_detail_page(client):
     response = client.get(url)
 
     assert not talk.slides
-    assert 'download slides' not in response.content.decode().lower()
+    assert 'download/view slides' not in response.content.decode().lower()
 
     # Slides URL does appear when the slides have been uploaded
     talk.slides = SimpleUploadedFile('slides.pdf', 'pdf content'.encode())
@@ -264,27 +264,4 @@ def test_view_slides_file_url_on_talk_detail_page(client):
 
     response = client.get(url)
 
-    assert 'download slides' in response.content.decode().lower()
-
-
-def test_view_slides_remote_url_on_talk_detail_page(client):
-    """
-    The view slides button only appears if the slides url has been uploaded.
-    """
-    get_default_conference()
-    talk = TalkFactory(status=TALK_STATUS.accepted)
-    url = talk.get_absolute_url()
-
-    # Slides URL does not appear when the slides haven't been uploaded
-    response = client.get(url)
-
-    assert not talk.slides_url
-    assert 'view slides' not in response.content.decode().lower()
-
-    # Slides URL does appear when the slides have been uploaded
-    talk.slides_url = "epstage.europython.eu"
-    talk.save()
-
-    response = client.get(url)
-
-    assert 'view slides' in response.content.decode().lower()
+    assert 'download/view slides' in response.content.decode().lower()
