@@ -429,6 +429,7 @@ TALK_STATUS = Choices(
     ('accepted', _('Accepted')),
     ('canceled', _('Canceled')),
     ('waitlist', _('Waitlist')),
+    ('declined', _('Declined')),
 )
 
 VIDEO_TYPE = (
