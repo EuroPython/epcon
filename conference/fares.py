@@ -35,6 +35,11 @@ FARE_CODE_TALK_VOTING_VARIANTS = (
     "S", "L", "T", "C"
     )
 
+# Variants for speaker tickets (ones for which we issues coupons)
+FARE_CORE_SPEAKER_TICKET_VARIANTS = (
+    "S", "L", "T", "C",
+    )
+
 FARE_CODE_GROUPS = Choices(
     ("S", "STUDENT",  "Student"),
     ("P", "PERSONAL", "Personal"),
@@ -66,6 +71,9 @@ FARE_CODE_REGEXES = {
 
 TALK_VOTING_CODE_REGEXP = (
     "^T.[" + ''.join(FARE_CODE_TALK_VOTING_VARIANTS) + "].$")
+
+SPEAKER_TICKET_CODE_REGEXP = (
+    "^T.[" + ''.join(FARE_CORE_SPEAKER_TICKET_VARIANTS) + "].$")
 
 class FareIsNotAvailable(Exception):
     pass
