@@ -21,10 +21,11 @@ from .models import (
     Speaker,
     Talk,
     TalkSpeaker,
+    Ticket,
 )
 from .talks import dump_relevant_talk_information_to_dict
 from .decorators import full_profile_required
-
+from conference.fares import SPEAKER_TICKET_CODE_REGEXP
 
 @login_required
 @full_profile_required
@@ -237,8 +238,14 @@ def extract_initial_speaker_data_from_user(user):
 def dump_all_talks_for_conference_to_dict(conference: Conference):
 
     talks = Talk.objects.filter(conference=conference.code)
+    ticket_data = Ticket.objects.conference(conference.code)\
+        .filter(fare__code__regex=SPEAKER_TICKET_CODE_REGEXP)
+    speaker_tickets = dict(
+        (ticket.p3_conference.assigned_to, ticket)
+        for ticket in ticket_data)
     output = [
-        dump_relevant_talk_information_to_dict(talk)
+        dump_relevant_talk_information_to_dict(talk,
+                                               speaker_tickets=speaker_tickets)
         for talk in talks
     ]
     return output

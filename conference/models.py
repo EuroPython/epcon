@@ -1172,8 +1172,24 @@ class Event(models.Model):
         else:
             return self.custom
 
-    def get_all_tracks_names(self):
-        return set(self.tags.split(','))
+    def get_all_track_names(self):
+
+        """ Return a set of internal track names to which this event applies.
+        
+        """
+        return set(track.track for track in self.tracks.all())
+
+    def json_dump(self):
+    
+        (start, end) = self.get_time_range()
+        return {
+            'custom_description': self.custom,
+            'custom_abstract': self.abstract,
+            'start_time': self.start_time.isoformat(),
+            'duration': self.get_duration(),
+            'time_range': (start.isoformat(), end.isoformat()),
+            'track_names': list(self.get_all_track_names()),
+            }
 
     def split(self, time):
         """

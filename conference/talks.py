@@ -129,8 +129,18 @@ def can_user_submit_talk_slides(user, talk):
     )
 
 
-def dump_relevant_talk_information_to_dict(talk: Talk):
+def dump_relevant_talk_information_to_dict(talk: Talk, speaker_tickets=None):
 
+    """ Dumps information about talk to a dictionary suitable for sending
+        back as JSON.
+        
+        speaker_tickets may be given as dictionary mapping assigned to email
+        to Ticket object and is used for defining has_ticket.
+        
+    """
+    event = talk.get_event()
+    if event is not None:
+        event = event.json_dump()
     output = {
         "title": talk.title,
         "uuid": talk.uuid,
@@ -149,12 +159,17 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
         "status": talk.status,
         "tags": [t.name for t in talk.tags.all()],
         "speakers": [],
+        "event": event,
         "schedule_url": talk.get_schedule_url(),
         "slides_url": talk.get_slides_url(),
     }
 
     for speaker in talk.get_all_speakers():
         ap = speaker.user.attendeeprofile
+        if speaker_tickets is not None:
+            has_ticket = speaker.user.email in speaker_tickets
+        else:
+            has_ticket = None
         output["speakers"].append(
             {
                 "id": speaker.user.id,
@@ -166,6 +181,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
                 "phone": ap.phone,
                 "slug": ap.slug,
                 "location": ap.location,
+                "has_ticket": has_ticket,
             }
         )
 

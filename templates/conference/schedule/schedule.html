@@ -225,6 +225,12 @@ div.cms .cms-toolbar {
     still possible.
 </div>
 
+<div class="alert alert-primary text-center">
+    The scheduled times are displayed in your local timezone as configured
+    in your browser (<span class="schedule-timezone-display">UTC</span>).
+    Hover over each time to see other timezones.
+</div>
+
 <nav class="navbar navbar-expand-lg" id="days-navbar">
      <ul class="navbar-nav mr-auto">
         {% for day in days %}
@@ -373,8 +379,19 @@ function format_time(date) {
 
 /* Change all schedule times from UTC to browser local time */
 function format_local_times() {
-    var tz_offset_ms = new Date().getTimezoneOffset() * 60000;
+    var tz_offset_min = new Date().getTimezoneOffset();
+    var tz_offset_ms = tz_offset_min * 60000;
     var cest_offset_ms = -120 * 60000;
+    var tz_offset;
+    var prefix;
+    if (tz_offset_min < 0) {
+        tz_offset_min = -tz_offset_min;
+        prefix = 'GMT+';
+    }
+    else
+        prefix = 'GMT-';
+    tz_offset = new Date(2020, 7, 23, tz_offset_min / 60, tz_offset_min % 60);
+    // Fix all schedule time displays
     $('.schedule-time-display').each(function(i, obj) {
         var value = obj.dataset.fulltime;
         // This approach is necessary to work around issues with Safari
@@ -388,6 +405,11 @@ function format_local_times() {
 	obj.title = ("UTC: " + format_time(utc_time)
 	             + "\nCEST: " + format_time(cest_time)
 	             + "\nYour time: " + format_time(local_time));
+	$(this).show();
+        });
+    // Fix all schedule timezone displays
+    $('.schedule-timezone-display').each(function(i, obj) {
+        obj.innerHTML = prefix + format_time(tz_offset);
 	$(this).show();
         });
     return true;
