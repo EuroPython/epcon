@@ -523,6 +523,7 @@ TALK_TYPE = [
     ('t_60', 'Talk (60 mins)'),
     ('i_60', 'Interactive (60 mins)'),
     ('r_180', 'Training (180 mins)'),
+    ('p_45', 'Poster session (45 mins)'),
     ('p_180', 'Poster session (180 mins)'),
     ('n_60', 'Panel (60 mins)'),
     ('n_90', 'Panel (90 mins)'),
@@ -539,7 +540,8 @@ CFP_TALK_TYPE = [
     #('t_60', 'Talk (60 mins)'),
     ('i_60', 'Interactive (60 mins)'),
     #('r_180', 'Training (180 mins)'),
-    ('p_180', 'Poster session (180 mins)'),
+    ('p_45', 'Poster session (45 mins)'),
+    #('p_180', 'Poster session (180 mins)'),
     ('n_60', 'Panel (60 mins)'),
     #('n_90', 'Panel (90 mins)'),
     ('h_180', 'Help desk (180 mins)'),
@@ -554,6 +556,7 @@ TALK_DURATION = {
     't_60': 60,
     'i_60': 60,
     'r_180': 180,
+    'p_45': 45,
     'p_180': 180,
     'n_60': 60,
     'n_90': 90,
@@ -712,16 +715,16 @@ class Talk(models.Model):
         ordering = ["title"]
 
     def save(self, *args, **kwargs):
-        # The duration is taken directly from talk's type, unless it was
-        # customized
-        if self.duration == 0 or self.duration in list(TALK_DURATION.values()):
-            # duration was previously set to a standard value, so update
-            # the value to the talk length
+        # Handle duration customizations (if any)
+        if self.pk is not None:
+            # Use 0 duration if the type changed
+            old_object = Talk.objects.get(pk=self.pk)
+            if old_object.type != self.type:
+                self.duration = 0
+        if self.duration == 0:
+            # Use the talk type's default value in case the duration was
+            # set to 0
             self.duration = TALK_DURATION[self.type]
-        else:
-            # Custom curation: leave as it is; this is useful for e.g.
-            # workshops
-            pass
         super(Talk, self).save(*args, **kwargs)
 
     def __str__(self):
