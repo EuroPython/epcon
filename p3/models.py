@@ -52,11 +52,6 @@ class TicketConference(models.Model):
         Ticket,
         related_name="p3_conference",
         on_delete=models.CASCADE)
-    name = models.CharField(
-        max_length=255,
-        help_text="What name should appear on the badge?",
-        blank=True,
-    )
     shirt_size = models.CharField(
         max_length=5,
         choices=TICKET_CONFERENCE_SHIRT_SIZES,

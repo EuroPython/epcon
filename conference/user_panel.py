@@ -71,11 +71,13 @@ def manage_ticket(request, ticket_id):
         return HttpResponse("Can't do", status=403)
 
     ticket_configuration, _ = TicketConference.objects.get_or_create(
-        ticket=ticket, defaults={"name": ticket.name}
+        ticket=ticket,
     )
 
     ticket_configuration_form = TicketConferenceConfigForm(
-        instance=ticket_configuration, initial={"name": ticket.name}
+        instance=ticket_configuration,
+        # Note:  The name cannot be edited by the user.
+        initial={"name": ticket.name},
     )
 
     if request.method == "POST":
@@ -86,9 +88,6 @@ def manage_ticket(request, ticket_id):
         if ticket_configuration_form.is_valid():
             with transaction.atomic():
                 ticket_configuration_form.save()
-                # copy name
-                ticket.name = ticket_configuration.name
-                ticket.save()
                 messages.success(request, "Ticket configured!")
                 return redirect("user_panel:dashboard")
 
@@ -206,9 +205,12 @@ class TicketConferenceConfigForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(),
         required=False,
     )
+    # Note: The name is just displayed for reference.  Only support can
+    # change it via the Django admin
     name = forms.CharField(
         help_text="Please contact support to update how your name is displayed on your ticket.",
         disabled=True,
+        required=False,
     )
 
     class Meta:
