@@ -50,8 +50,10 @@ def ticketConferenceForm():
 
     class TicketConferenceForm(forms.ModelForm):
         shirt_size = fields['shirt_size']
+        shirt_size.required = False
         python_experience = fields['python_experience']
         diet = fields['diet']
+        diet.required = False
         tagline = fields['tagline']
         days = fields['days']
         badge_image = fields['badge_image']
