@@ -124,7 +124,7 @@ def test_user_panel_manage_ticket(client):
     assert response.status_code == 200
 
     ticketconference = TicketConference.objects.get(ticket=ticket1)
-    assert ticket1.name == ticketconference.name == user.assopy_user.name()
+    assert ticket1.name == user.assopy_user.name()
 
 
 @responses.activate
@@ -155,7 +155,6 @@ def test_user_panel_update_ticket(client):
 
     ticket1.refresh_from_db()
     ticketconference.refresh_from_db()
-    assert ticket1.name == ticketconference.name
     # XXX Disabled for EP2020, see #1269
     #assert ticketconference.diet == "other"
     #assert ticketconference.shirt_size == "xxxl"
@@ -176,7 +175,6 @@ def test_user_panel_update_ticket_cannot_update_name(client):
     ticket1 = invoice1.order.orderitem_set.get().ticket
     ticketconference = TicketConference.objects.get(ticket=ticket1)
 
-    assert ticket1.name == ticketconference.name
     old_name = ticket1.name
     new_name = ticket1.name + " changed"
 
@@ -191,7 +189,6 @@ def test_user_panel_update_ticket_cannot_update_name(client):
     ticket1.refresh_from_db()
     ticketconference.refresh_from_db()
     assert ticket1.name == old_name
-    assert ticketconference.name == old_name
 
 
 def test_ticket_buyer_is_shown_assign_ticket_link(user_client):
