@@ -101,15 +101,11 @@ var ticketList = new List('ticket-list', {
 
 def attendee_name(ticket, profile=None):
 
-    # XXX For EP2019, we have to use the ticket.name, since the profile
-    #     will be referring to the buyer's profile in many cases due
-    #     to a bug in the system.
-    #     See https://github.com/EuroPython/epcon/issues/1055
-
     # Use ticket name if not set in profile
     name = ticket.name.strip()
         
-    # Determine user name from profile, if available
+    # Determine user name from profile, if available and ticket.name is not
+    # set
     if not name and profile is not None:
         name = '%s %s' % (
             profile.user.first_name,
@@ -142,6 +138,16 @@ def create_app_file(conference, output_file):
         orderitem__order___complete=True,
         frozen=False,
         )
+
+    # Figure out the speakers
+    speakers = {}
+    accepted_talks = cmodels.Talk.objects.filter(
+        conference=conference,
+        status='accepted',
+    )
+    for talk in accepted_talks:
+        for speaker in talk.get_all_speakers():
+            speakers[speaker.user.email] = speaker
 
     # Find all attendees
     attendee_dict = {}
@@ -176,11 +182,13 @@ def create_app_file(conference, output_file):
             sys.stderr.write('duplicate ticket.id %r for %r\n' %
                              (ticket.id, ticket.p3_conference.assigned_to))
         name = attendee_name(ticket, profile)
+        is_speaker = (email in speakers)
         attendee_dict[ticket.id] = (
             ticket,
             profile,
             name,
-            email)
+            email,
+            is_speaker)
 
     # Prepare list
     attendee_list = list(attendee_dict.items())
@@ -192,13 +200,14 @@ def create_app_file(conference, output_file):
          '<tr>'
          '<th data-field="name">Name</th>',
          '<th data-field="email" class="hide-on-small-only">Email</th>',
+         '<th data-field="speaker" class="hide-on-small-only">Speaker</th>',
          '<th data-field="tid">TID</th>',
          '<th data-field="tcode" class="hide-on-small-only">Code</th>',
          '</tr>'
          '</thead>',
          '<tbody class="list">',
          ]
-    for id, (ticket, profile, name, email) in attendee_list:
+    for id, (ticket, profile, name, email, is_speaker) in attendee_list:
         code = ticket.fare.code
         if ticket.fare.code.startswith('TRT'):
             ticket_class = 'training'
@@ -209,11 +218,13 @@ def create_app_file(conference, output_file):
         l.append(('<tr>'
                   '<td class="name">%s</td>'
                   '<td class="email hide-on-small-only">%s</td>'
+                  '<td class="speaker hide-on-small-only">%s</td>'
                   '<td class="tid %s">%s</td>'
                   '<td class="tcode hide-on-small-only">%s</td>'
                   '</tr>' %
                   (name,
                    email,
+                   'yes' if is_speaker else 'no',
                    ticket_class,
                    id,
                    ticket.fare.code)))
