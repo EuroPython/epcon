@@ -238,8 +238,13 @@ def extract_initial_speaker_data_from_user(user):
 def dump_all_talks_for_conference_to_dict(conference: Conference):
 
     talks = Talk.objects.filter(conference=conference.code)
-    ticket_data = Ticket.objects.conference(conference.code)\
-        .filter(fare__code__regex=SPEAKER_TICKET_CODE_REGEXP)
+    ticket_data = Ticket.objects.filter(
+        fare__conference=conference,
+        fare__ticket_type='conference',
+        orderitem__order___complete=True,
+        fare__code__regex=SPEAKER_TICKET_CODE_REGEXP,
+        frozen=False,
+        )
     speaker_tickets = dict(
         (ticket.p3_conference.assigned_to, ticket)
         for ticket in ticket_data)
