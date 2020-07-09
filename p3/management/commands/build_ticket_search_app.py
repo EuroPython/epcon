@@ -21,10 +21,11 @@
     on port 8000. Pointing a browser at http://localhost:8000/ will
     then load the app into the browser.
 
-    Author: Marc-Andre Lemburg, 2016.
+    Author: Marc-Andre Lemburg, 2016-2020.
 
 """
 import sys
+import csv
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -127,9 +128,9 @@ def attendee_list_key(entry):
     # Sort by name
     return entry[1][2]
 
-def create_app_file(conference, output_file):
-
-    output = open(output_file, 'wb')
+def create_app_file(conference,
+                    output_file='ep-ticket-search-app/index.html',
+                    output_csv='ep-ticket-search-app/data.csv'):
 
     # Get all valid conference tickets (frozen ones are not valid)
     tickets = cmodels.Ticket.objects.filter(
@@ -236,10 +237,41 @@ def create_app_file(conference, output_file):
               '<span class="conference">TID</span> = Conference Ticket.</p>' % 
               len(attendee_list),
               ])
-    output.write((TEMPLATE % {
+    with open(output_file, 'wb') as fp:
+        fp.write((TEMPLATE % {
                       'listing': '\n'.join(l),
                       'year': conference[2:],
                   }).encode('utf-8'))
+
+    # Write CSV output
+    with open(output_csv, 'w') as fp:
+        writer = csv.writer(fp)
+        headers = [
+            'name',
+            'email',
+            'is_speaker',
+            'ticket_class',
+            'ticket_id',
+            'fare_code',
+            ]
+        writer.writerow(headers)
+        for id, (ticket, profile, name, email, is_speaker) in attendee_list:
+            code = ticket.fare.code
+            if ticket.fare.code.startswith('TRT'):
+                ticket_class = 'training'
+            elif ticket.fare.code.startswith('TRC'):
+                ticket_class = 'combined'
+            else:
+                ticket_class = 'conference'
+            row = [
+                name,
+                email,
+                'yes' if is_speaker else 'no',
+                ticket_class,
+                id,
+                code,
+                ]
+            writer.writerow(row)
 
 ###
 
@@ -253,9 +285,12 @@ class Command(BaseCommand):
         parser.add_argument('conference')
         parser.add_argument('output_file', nargs='?',
                             default='ep-ticket-search-app/index.html')
+        parser.add_argument('output_csv', nargs='?',
+                            default='ep-ticket-search-app/data.csv')
 
     def handle(self, *args, **options):
         conference = options['conference']
         output_file = options['output_file']
+        output_csv = options['output_csv']
 
-        create_app_file(conference, output_file)
+        create_app_file(conference, output_file, output_csv)
