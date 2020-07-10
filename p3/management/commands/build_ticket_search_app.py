@@ -43,6 +43,9 @@ TEMPLATE = """\
 <meta charset=utf-8 />
 <title>EuroPython %(year)s Ticket Search App</title>
 <style>
+.sprint {
+    color: purple;
+}
 .training {
     color: blue;
 }
@@ -128,6 +131,30 @@ def attendee_list_key(entry):
     # Sort by name
     return entry[1][2]
 
+def get_ticket_class(ticket):
+
+    """ Return a ticket class for ticket
+
+        Possible values are:
+        - training = training ticket
+        - combined = training + conference ticket
+        - conference = conference ticket
+        - sprint = sprint-only ticket
+        - other = other ticket class
+    
+    """
+    if ticket.fare.code.startswith('TRT'):
+        ticket_class = 'training'
+    elif ticket.fare.code.startswith('TRC'):
+        ticket_class = 'combined'
+    elif ticket.fare.code.startswith('TRP'):
+        ticket_class = 'sprint'
+    elif ticket.fare.code.startswith('TRS'):
+        ticket_class = 'conference'
+    else:
+        ticket_class = 'other'
+    return ticket_class
+
 def create_app_file(conference,
                     output_file='ep-ticket-search-app/index.html',
                     output_csv='ep-ticket-search-app/data.csv'):
@@ -210,12 +237,7 @@ def create_app_file(conference,
          ]
     for id, (ticket, profile, name, email, is_speaker) in attendee_list:
         code = ticket.fare.code
-        if ticket.fare.code.startswith('TRT'):
-            ticket_class = 'training'
-        elif ticket.fare.code.startswith('TRC'):
-            ticket_class = 'combined'
-        else:
-            ticket_class = 'conference'
+        ticket_class = get_ticket_class(ticket)
         l.append(('<tr>'
                   '<td class="name">%s</td>'
                   '<td class="email hide-on-small-only">%s</td>'
@@ -232,7 +254,9 @@ def create_app_file(conference,
     l.extend(['</tbody>',
               '</table>',
               '<p>%i tickets in total. '
-              'Color coding: <span class="training">TID</span> = Training Ticket. '
+              'Color coding: '
+              '<span class="sprint">TID</span> = Sprint Ticket. '
+              '<span class="training">TID</span> = Training Ticket. '
               '<span class="combined">TID</span> = Combined Ticket. '
               '<span class="conference">TID</span> = Conference Ticket.</p>' % 
               len(attendee_list),
@@ -257,12 +281,7 @@ def create_app_file(conference,
         writer.writerow(headers)
         for id, (ticket, profile, name, email, is_speaker) in attendee_list:
             code = ticket.fare.code
-            if ticket.fare.code.startswith('TRT'):
-                ticket_class = 'training'
-            elif ticket.fare.code.startswith('TRC'):
-                ticket_class = 'combined'
-            else:
-                ticket_class = 'conference'
+            ticket_class = get_ticket_class(ticket)
             row = [
                 name,
                 email,
