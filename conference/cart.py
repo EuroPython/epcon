@@ -78,6 +78,7 @@ def cart_step2_pick_tickets(request, type_of_tickets):
         discount_code, fares_info = extract_order_parameters_from_request(
             post_data=request.POST,
         )
+        discount_code = discount_code.strip()
         context["fares_info"] = fares_info
 
         if sum(fares_info.values()) == 0:
