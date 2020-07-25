@@ -743,7 +743,10 @@ class Talk(models.Model):
         if not event:
             return None
 
-        return event.schedule.get_absolute_url() + '?' + urlencode({'selected': self.slug})
+        url = event.schedule.get_absolute_url()
+        slug = urlencode({'selected': self.slug})
+        time = event.start_time.strftime('%H:%M-UTC')
+        return f"{url}?{slug}#{time}"
 
     def get_slides_url(self):
 
