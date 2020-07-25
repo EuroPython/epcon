@@ -265,3 +265,17 @@ def test_view_slides_url_on_talk_detail_page(client):
     response = client.get(url)
 
     assert 'download/view slides' in response.content.decode().lower()
+
+
+def test_talk_for_other_than_current_conference(client):
+    """
+    Only display talks for the current conference.
+    """
+    get_default_conference()
+    other_conference = get_default_conference(code='ep_other')
+    talk_in_other_conference = TalkFactory(conference=other_conference.code)
+
+    url = reverse("talks:talk", args=[talk_in_other_conference.slug])
+    resp = client.get(url)
+
+    assert resp.status_code == 404
