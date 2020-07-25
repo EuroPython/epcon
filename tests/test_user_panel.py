@@ -411,6 +411,27 @@ def test_profile_settings_updates_user_data(user_client):
     assert payload['bio'] in response.content.decode()
 
 
+def test_profile_settings_updates_user_twitter(user_client):
+    url = reverse('user_panel:profile_settings')
+
+    payload = dict(
+        first_name='One',
+        last_name='Two',
+        gender='x',
+        email='one@two.three',
+        tagline='I am the one',
+        twitter='https://twitter.com/one',
+        bio='One to the Two',
+    )
+
+    response = user_client.post(url, data=payload)
+    assert response.status_code == 200
+    assert template_used(response, "conference/user_panel/profile_settings.html")
+
+    form = response.context_data['profile_form']
+    assert form.instance.p3_profile.twitter == 'one'
+
+
 def test_profile_settings_forbids_using_registered_email(user_client):
     url = reverse('user_panel:profile_settings')
     user = user_client.user
