@@ -2,25 +2,25 @@ from datetime import timedelta
 
 import pytest
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
-
-from assopy.stripe.tests.factories import UserFactory
 from conference.models import TALK_STATUS, TALK_LEVEL
-from conference.tests.factories.talk import TalkFactory
-from conference.tests.factories.conference import ConferenceTagFactory
-from tests.common_tools import setup_conference_with_typical_fares, redirects_to, template_used
+from tests.factories import UserFactory, TalkFactory, ConferenceTagFactory, TalkSpeakerFactory
+from tests.common_tools import get_default_conference, redirects_to, template_used, make_user
 
 pytestmark = [pytest.mark.django_db]
 
 
 def test_talk_view_as_anonymous(client):
-    # TODO: we only need the conference set up, we don't care about the fares;
-    # another PR contains a helper that only sets up the conference
-    setup_conference_with_typical_fares()
+    original_abstract = "Hello!\nGoto http://example.com"
+    # newlines should become BR, urls should be linked
+    expected_abstract = ('Hello!<br />Goto <a href="http://example.com" rel="nofollow">'
+                         'http://example.com</a>')
+    get_default_conference()
     talk = TalkFactory()
+    talk.setAbstract(original_abstract)
     url = reverse("talks:talk", args=[talk.slug])
 
     resp = client.get(url)
@@ -28,13 +28,13 @@ def test_talk_view_as_anonymous(client):
     assert resp.status_code == 200
     assert talk.title in resp.content.decode()
     assert talk.sub_title in resp.content.decode()
-    assert talk.get_abstract() in resp.content.decode()
+    assert expected_abstract in resp.content.decode()
     assert "update talk" not in resp.content.decode().lower()
 
 
 def test_talk_view_as_owner(user_client):
     tomorrow = timezone.now().date() + timedelta(days=1)
-    setup_conference_with_typical_fares(end=tomorrow)
+    get_default_conference(conference_end=tomorrow)
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
     url = reverse("talks:talk", args=[talk.slug])
 
@@ -48,7 +48,7 @@ def test_talk_view_as_owner(user_client):
 
 
 def test_cannot_update_talk_if_anonymous(client):
-    setup_conference_with_typical_fares()
+    get_default_conference()
     talk = TalkFactory(status=TALK_STATUS.accepted)
     url = reverse("talks:update_talk", args=[talk.slug])
 
@@ -58,7 +58,7 @@ def test_cannot_update_talk_if_anonymous(client):
 
 
 def test_cannot_update_talk_if_not_owner(user_client):
-    setup_conference_with_typical_fares()
+    get_default_conference()
     talk = TalkFactory(status=TALK_STATUS.accepted)
     url = reverse("talks:update_talk", args=[talk.slug])
 
@@ -68,7 +68,7 @@ def test_cannot_update_talk_if_not_owner(user_client):
 
 
 def test_cannot_update_talk_if_talk_status_not_accepted(user_client):
-    setup_conference_with_typical_fares()
+    get_default_conference()
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.proposed)
     url = reverse("talks:update_talk", args=[talk.slug])
 
@@ -77,14 +77,21 @@ def test_cannot_update_talk_if_talk_status_not_accepted(user_client):
     assert resp.status_code == 403
 
 
-@pytest.mark.xfail
 def test_can_update_if_is_speaker_but_not_owner(user_client):
-    ...
+    get_default_conference()
+    talk = TalkFactory(created_by=make_user(), status=TALK_STATUS.accepted)
+    # Make the user a Speaker at the Talk
+    TalkSpeakerFactory(talk=talk, speaker__user=user_client.user)
+    url = reverse("talks:update_talk", args=[talk.slug])
+
+    resp = user_client.get(url)
+
+    assert resp.status_code == 200
 
 
 def test_cannot_update_talk_if_conference_has_finished(user_client):
     yesterday = timezone.now().date() - timedelta(days=1)
-    setup_conference_with_typical_fares(end=yesterday)
+    get_default_conference(conference_end=yesterday)
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
     url = reverse("talks:update_talk", args=[talk.slug])
 
@@ -95,7 +102,7 @@ def test_cannot_update_talk_if_conference_has_finished(user_client):
 
 def test_update_talk_get(user_client):
     tomorrow = timezone.now().date() + timedelta(days=1)
-    setup_conference_with_typical_fares(end=tomorrow)
+    get_default_conference(conference_end=tomorrow)
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
     url = reverse("talks:update_talk", args=[talk.slug])
 
@@ -106,7 +113,7 @@ def test_update_talk_get(user_client):
 
 def test_update_talk_post(user_client):
     tomorrow = timezone.now().date() + timedelta(days=1)
-    setup_conference_with_typical_fares(end=tomorrow)
+    get_default_conference(conference_end=tomorrow)
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
     url = reverse("talks:update_talk", args=[talk.slug])
 
@@ -138,7 +145,7 @@ def test_update_talk_post(user_client):
 
 
 def test_anonymous_cannot_get_submit_slides(client):
-    setup_conference_with_typical_fares()
+    get_default_conference()
     talk = TalkFactory(status=TALK_STATUS.accepted)
 
     url = reverse("talks:submit_slides", args=[talk.slug])
@@ -148,7 +155,7 @@ def test_anonymous_cannot_get_submit_slides(client):
 
 
 def test_not_author_cannot_get_submit_slides(user_client):
-    setup_conference_with_typical_fares()
+    get_default_conference()
     talk = TalkFactory(status=TALK_STATUS.accepted)
 
     url = reverse("talks:submit_slides", args=[talk.slug])
@@ -158,18 +165,18 @@ def test_not_author_cannot_get_submit_slides(user_client):
 
 
 def test_author_can_get_submit_slides(user_client):
-    setup_conference_with_typical_fares()
+    get_default_conference()
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
 
     url = reverse("talks:submit_slides", args=[talk.slug])
     response = user_client.get(url)
 
     assert response.status_code == 200
-    assert template_used(response, "ep19/bs/talks/update_talk.html")
+    assert template_used(response, "conference/talks/update_talk.html")
 
 
 def test_author_can_post_submit_slides(user_client):
-    setup_conference_with_typical_fares()
+    get_default_conference()
     talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
     assert not talk.slides
 
@@ -181,12 +188,37 @@ def test_author_can_post_submit_slides(user_client):
     talk.refresh_from_db()
     assert talk.slides
 
+def test_author_can_post_submit_slides_url(user_client):
+    get_default_conference()
+    talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
+
+    url = reverse("talks:submit_slides", args=[talk.slug])
+    payload = {"slides_url": "https://epstage.europython.eu"}
+    response = user_client.post(url, data=payload)
+
+    assert redirects_to(response, talk.get_absolute_url())
+    talk.refresh_from_db()
+    assert talk.slides_url
+
+
+def test_author_can_post_submit_repository_url(user_client):
+    get_default_conference()
+    talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
+
+    url = reverse("talks:submit_slides", args=[talk.slug])
+    payload = {"repository_url": "https://epstage.europython.eu"}
+    response = user_client.post(url, data=payload)
+
+    assert redirects_to(response, talk.get_absolute_url())
+    talk.refresh_from_db()
+    assert talk.repository_url
+
 
 def test_submit_slides_url_on_talk_detail_page(client):
     """
     The submit slides button only appears if the user is the author of the talk.
     """
-    setup_conference_with_typical_fares()
+    get_default_conference()
     talk = TalkFactory(created_by=UserFactory(), status=TALK_STATUS.accepted)
     url = talk.get_absolute_url()
     submit_slides_url = reverse("talks:submit_slides", args=[talk.slug])
@@ -214,9 +246,9 @@ def test_submit_slides_url_on_talk_detail_page(client):
 
 def test_view_slides_url_on_talk_detail_page(client):
     """
-    The view slides button only appears if the slides have been uploaded.
+    The download slides button only appears if the slides have been uploaded.
     """
-    setup_conference_with_typical_fares()
+    get_default_conference()
     talk = TalkFactory(status=TALK_STATUS.accepted)
     url = talk.get_absolute_url()
 
@@ -224,7 +256,7 @@ def test_view_slides_url_on_talk_detail_page(client):
     response = client.get(url)
 
     assert not talk.slides
-    assert 'slides' not in response.content.decode()
+    assert 'download/view slides' not in response.content.decode().lower()
 
     # Slides URL does appear when the slides have been uploaded
     talk.slides = SimpleUploadedFile('slides.pdf', 'pdf content'.encode())
@@ -232,5 +264,4 @@ def test_view_slides_url_on_talk_detail_page(client):
 
     response = client.get(url)
 
-    assert talk.slides
-    assert 'slides' in response.content.decode()
+    assert 'download/view slides' in response.content.decode().lower()

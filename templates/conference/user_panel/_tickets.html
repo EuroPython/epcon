@@ -1,0 +1,28 @@
+<table class='table'>
+    <tr>
+        <th>ID</th>
+        <th>Code</th>
+        <th>Type</th>
+        <th>Name</th>
+        <th class='text-right'>Manage</th>
+
+    </tr>
+
+    {% for ticket in tickets %}
+    <tr>
+        <td>#{{ ticket.id }}</td>
+        <td>{{ ticket.fare.code }}</td>
+        <td>{{ ticket.fare.name }}</td>
+        <td>{{ ticket.name|default:ticket.user.assopy_user.name }}</td>
+        <td class='text-right'>
+            {% if ticket.is_conference and ticket.user == user %}
+            <a class='btn btn-outline-primary' href='{% url "user_panel:manage_ticket" ticket.id %}'>Configure ticket</a>
+            {% endif %}
+
+            {% if ticket.is_buyer %}
+            <a class='btn btn-outline-primary' href='{% url "user_panel:assign_ticket" ticket.id %}'>Assign ticket</a>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}{# ticket in tickets #}
+</table>

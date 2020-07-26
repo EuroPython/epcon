@@ -2,22 +2,22 @@ import http.client
 from datetime import date
 from urllib.parse import urlparse
 
+from cms.api import create_page
 from wsgiref.simple_server import make_server
 
 from django.conf import settings
+from django.core import mail
 from django.core.cache import cache
-
-from django_factory_boy import auth as auth_factories
+from django.utils import timezone
 
 from assopy.models import Vat, VatFare
-from assopy.stripe.tests.factories import OrderFactory
-from assopy.tests.factories.user import AssopyUserFactory
-from conference.models import AttendeeProfile, Conference
+from conference.models import TALK_STATUS, Fare
 from conference.fares import pre_create_typical_fares_for_conference
-from conference.tests.factories.fare import FareFactory
+
+from . import factories
 
 HTTP_OK = 200
-DEFAULT_VAT_RATE = "7.7"  # 7.7%
+DEFAULT_VAT_RATE = "23"  # 23%
 
 
 def template_used(response, template_name, http_status=HTTP_OK):
@@ -131,13 +131,32 @@ def redirects_to(response, url):
     return is_redirect and is_url
 
 
+def contains_message(response, message):
+    """
+    Inspired by django's self.assertRaisesMessage
+
+    Useful for confirming the response contains the provided message,
+    """
+    if len(response.context['messages']) != 1:
+        return False
+
+    full_message = str(list(response.context['messages'])[0])
+
+    return message in full_message
+
+
+def email_sent_with_subject(subject):
+    """
+    Verify an email was sent with the provided subject.
+    """
+    return [email.subject == subject for email in mail.outbox]
+
+
 def make_user(email='joedoe@example.com', **kwargs):
-    user = auth_factories.UserFactory(
+    user = factories.UserFactory(
         email=email, is_active=True,
         **kwargs
     )
-    AssopyUserFactory(user=user)
-    AttendeeProfile.objects.getOrCreateForUser(user=user)
     return user
 
 
@@ -145,27 +164,18 @@ def clear_all_the_caches():
     cache.clear()
 
 
-def is_using_jinja2_template(response):
-    res = response.resolve_template(response.template_name)
-    assert res.backend.name == "jinja2", res.backed.name
-    return True
-
-
-def setup_conference_with_typical_fares(start=date(2019, 7, 8), end=date(2019, 7, 14)):
-    Conference.objects.get_or_create(
-        code=settings.CONFERENCE_CONFERENCE,
-        name=settings.CONFERENCE_NAME,
-        # using 2019 dates
-        # those dates are required for Tickets to work.
-        # (for setting up/rendering attendance days)
+def setup_conference_with_typical_fares(start=date(2020, 7, 20), end=date(2020, 7, 26)):
+    conference = get_default_conference(
         conference_start=start,
         conference_end=end,
     )
     default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
-    pre_create_typical_fares_for_conference(
+    fares = pre_create_typical_fares_for_conference(
         settings.CONFERENCE_CONFERENCE,
         default_vat_rate
     )
+
+    return conference, fares
 
 
 def create_valid_ticket_for_user_and_fare(user, fare=None):
@@ -173,17 +183,44 @@ def create_valid_ticket_for_user_and_fare(user, fare=None):
     default_vat_rate, _ = Vat.objects.get_or_create(value=DEFAULT_VAT_RATE)
 
     if not fare:
-        conference = Conference.objects.current()
-        fare = FareFactory(code=conference.code)
+        fare = Fare.objects.first()
     VatFare.objects.get_or_create(vat=default_vat_rate, fare=fare)
 
-    order = OrderFactory(
+    order = factories.OrderFactory(
         user=user.assopy_user,
         items=[(fare, {"qty": 1}),],
     )
-    order._complete=True
+    order._complete = True
     order.save()
 
     ticket = order.orderitem_set.first().ticket
     assert ticket.user == user
     return ticket
+
+
+def get_default_conference(**kwargs):
+    return factories.ConferenceFactory(**kwargs)
+
+
+def create_talk_for_user(user, **kwargs):
+    if user is None:
+        user = create_user()
+
+    talk = factories.TalkFactory(**{'status': TALK_STATUS.proposed, 'created_by': user, **kwargs})
+    speaker = factories.SpeakerFactory(user=user)
+    factories.TalkSpeakerFactory(talk=talk, speaker=speaker)
+    return talk
+
+
+def create_user():
+    user = factories.UserFactory(is_active=True)
+    return user
+
+
+def create_homepage_in_cms():
+    homepage = create_page(
+        title='Homepage', template='conference/homepage/home_template.html', language='en',
+        reverse_id='homepage', published=True, publication_date=timezone.now())
+    homepage.set_as_homepage()
+
+    return homepage

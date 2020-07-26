@@ -73,10 +73,10 @@ class Command(BaseCommand):
 
                 schedule = talk_schedule(talk)
                 if not schedule and verbose:
-                    print('ERROR: Talk {} is not scheduled.'.format(talk))
+                    self.stderr.write('ERROR: Talk {} is not scheduled.'.format(talk))
 
                 if len(schedule) > 1 and verbose:
-                    print('ERROR: Talk {} is scheduled more than once: {}'.format(talk, schedule))
+                    self.stderr.write('ERROR: Talk {} is scheduled more than once: {}'.format(talk, schedule))
 
                 sessions[type_name][talk.id] = {
                 'id':             talk.id,
@@ -107,4 +107,4 @@ class Command(BaseCommand):
                 if options['votes']:
                     sessions[type_name][talk.id]['user_votes'] = talk_votes(talk)
 
-        print(json.dumps(sessions, indent=2))
+        self.stdout.write(json.dumps(sessions, indent=2))

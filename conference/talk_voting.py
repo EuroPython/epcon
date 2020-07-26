@@ -1,25 +1,26 @@
 import random
 
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 from django.db.models import Q, Prefetch, Case, When, Value, BooleanField
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
 from conference.models import Conference, Talk, VotoTalk, TALK_STATUS, TALK_TYPE_CHOICES
-
+from conference import fares
 
 @login_required
 def talk_voting(request):
     current_conference = Conference.objects.current()
 
     if not current_conference.voting():
-        return TemplateResponse(request, "ep19/bs/talk_voting/voting_is_closed.html")
+        return TemplateResponse(request, "conference/talk_voting/voting_is_closed.html")
 
     if not is_user_allowed_to_vote(request.user):
         return TemplateResponse(
             request,
-            "ep19/bs/talk_voting/voting_is_unavailable.html",
+            "conference/talk_voting/voting_is_unavailable.html",
             {"conference": current_conference},
         )
 
@@ -74,7 +75,7 @@ def talk_voting(request):
 
     return TemplateResponse(
         request,
-        "ep19/bs/talk_voting/voting.html",
+        "conference/talk_voting/voting.html",
         {
             "talks": talks,
             "VotingOptions": VotingOptions,
@@ -87,13 +88,14 @@ def talk_voting(request):
 def find_talks(user, conference, extra_filters):
     """
     This prepares a queryset of Talks with custom data, with an option to pass
-    addtinal filters related to which talks we want to show.
+    additional filters related to which talks we want to show.
     """
     talks = (
         Talk.objects.filter(
             Q(conference=conference.code)
             & Q(admin_type="")
             & Q(status=TALK_STATUS.proposed)
+            & ~Q(speakers=None)
         )
         .filter(*extra_filters)
         .prefetch_related(
@@ -106,7 +108,7 @@ def find_talks(user, conference, extra_filters):
         .annotate(
             can_vote=Case(
                 When(created_by=user, then=Value(False)),
-                When(speakers__user__in=[user], then=Value(False)),
+                When(speakers__user__username__exact=[user.username], then=Value(False)),
                 default=Value(True),
                 output_field=BooleanField(),
             )
@@ -127,7 +129,10 @@ def is_user_allowed_to_vote(user):
     with their account (either for this or any of the past years
     """
     is_allowed = (
-        user.ticket_set.all().exists()
+        #user.ticket_set.all().exists()
+        user.ticket_set.filter(
+            Q(frozen=False) &
+            Q(fare__code__regex=fares.TALK_VOTING_CODE_REGEXP))
         or Talk.objects.proposed()
         .filter(created_by=user, conference=Conference.objects.current().code)
         .exists()
@@ -139,14 +144,22 @@ def is_user_allowed_to_vote(user):
 def vote_on_a_talk(request, talk_uuid):
     talk = get_object_or_404(Talk, uuid=talk_uuid)
 
+    current_conference = Conference.objects.current()
+    if not current_conference.voting():
+        return HttpResponseForbidden('Voting closed.')
+
+    if not is_user_allowed_to_vote(request.user):
+        return HttpResponseForbidden('Only users with tickets or talk proposals can vote this year.')
+
     # Users can't vote on their own talks.
     if (
         talk.created_by == request.user
         or talk.speakers.filter(pk=request.user.pk).exists()
+        or talk.speakers.count() == 0
     ):
         return TemplateResponse(
             request,
-            "ep19/bs/talk_voting/_voting_form.html",
+            "conference/talk_voting/_voting_form.html",
             {"talk": talk, "db_vote": None, "VotingOptions": VotingOptions},
         )
 
@@ -167,7 +180,7 @@ def vote_on_a_talk(request, talk_uuid):
             if vote == VotingOptions.no_vote:
                 return TemplateResponse(
                     request,
-                    "ep19/bs/talk_voting/_voting_form.html",
+                    "conference/talk_voting/_voting_form.html",
                     {"talk": talk, "db_vote": None, "VotingOptions": VotingOptions},
                 )
 
@@ -177,7 +190,7 @@ def vote_on_a_talk(request, talk_uuid):
             db_vote.delete()
             return TemplateResponse(
                 request,
-                "ep19/bs/talk_voting/_voting_form.html",
+                "conference/talk_voting/_voting_form.html",
                 {"talk": talk, "db_vote": None, "VotingOptions": VotingOptions},
             )
 
@@ -186,7 +199,7 @@ def vote_on_a_talk(request, talk_uuid):
 
     return TemplateResponse(
         request,
-        "ep19/bs/talk_voting/_voting_form.html",
+        "conference/talk_voting/_voting_form.html",
         {"talk": talk, "db_vote": db_vote, "VotingOptions": VotingOptions},
     )
 
@@ -202,6 +215,6 @@ class VotingOptions:
 
 
 urlpatterns = [
-    url(r"^$", talk_voting, name="talks"),
-    url(r"^vote-on/(?P<talk_uuid>[\w]+)/$", vote_on_a_talk, name="vote"),
+    re_path(r"^$", talk_voting, name="talks"),
+    re_path(r"^vote-on/(?P<talk_uuid>[\w]+)/$", vote_on_a_talk, name="vote"),
 ]

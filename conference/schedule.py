@@ -5,12 +5,17 @@ from dataclasses import dataclass
 
 from django import http
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.shortcuts import render
 
 from conference.models import Schedule
 from conference.utils import TimeTable2
 
+### Globals
+
+_debug = settings.DEBUG
+
+###
 
 def _get_time_indexes(start_time, end_time, times):
     for index, time in enumerate(times):
@@ -66,7 +71,8 @@ def schedule(request, day=None, month=None):
         except:
             raise http.Http404()
 
-    print(day, month, month_index)
+    if _debug:
+        print ('schedule:', day, month, month_index)
 
     selected_date = date(days[0].year, month_index, int(day))
     current_schedule = next(
@@ -81,8 +87,17 @@ def schedule(request, day=None, month=None):
     if current_schedule is None:
         raise http.Http404()
 
+    if _debug:
+        print ('selected_date = %r, current_schedule = %r' % (
+            selected_date, current_schedule))
+
     schedule_data = schedules_data([current_schedule["id"]])[0]
+    if _debug:
+        print ('schedule_data = %s' % schedule_data)
+
     timetable = TimeTable2.fromSchedule(schedule_data["id"])
+    if _debug:
+        print ('timetable = %s' % timetable)
 
     # Not implemented
     starred_talks_ids = []
@@ -97,12 +112,19 @@ def schedule(request, day=None, month=None):
     #     )
 
     times = []
+    # Internal track names
     tracks = timetable._tracks
+    # Display names of tracks
+    titles = timetable._titles
     talks = []
 
     all_times = set()
 
     for time, talks_for_time in timetable.iterOnTimes():
+        if _debug:
+            print ('time = %r: talks_for_time = %r' % (
+                time, talks_for_time))
+
         times.append(time)
         all_times.add(time)
 
@@ -110,16 +132,19 @@ def schedule(request, day=None, month=None):
             all_times.add(talk["end_time"])
 
     all_times = sorted(list(all_times))
+    if _debug:
+        print ('all_times = %r' % all_times)
 
-    new_times = []
-    start = all_times[0]
-    end = all_times[-1]
+    if all_times:
+        new_times = []
+        start = all_times[0]
+        end = all_times[-1]
 
-    while start <= end:
-        new_times.append(start)
-        start += timedelta(minutes=5)
+        while start <= end:
+            new_times.append(start)
+            start += timedelta(minutes=5)
 
-    all_times = new_times
+        all_times = new_times
 
     seen = set()
 
@@ -153,7 +178,10 @@ def schedule(request, day=None, month=None):
                 level=talk_meta.get("level", None),
                 speakers=talk_meta.get("speakers", []),
                 can_be_starred=talk_meta.get("id", 0) > 0,
+                admin_type=talk_meta.get('admin_type', ''),
             )
+            if _debug:
+                print ('talk_meta = %r' % talk_meta)
 
             talks.append(t)
 
@@ -168,20 +196,26 @@ def schedule(request, day=None, month=None):
             GridTime(time=time, start_row=start_row, end_row=end_row)
         )
 
-    grid_times.append(
-        GridTime(time=times[-1], start_row=end_row, end_row=len(all_times))
-    )
+    if times:
+        grid_times.append(
+            GridTime(time=times[-1], start_row=end_row, end_row=len(all_times))
+        )
 
     schedule = ScheduleGrid(
         day=schedule_data["date"],
         tracks=tracks,
+        titles=titles,
         talks=talks,
         grid=Grid(times=grid_times, rows=len(all_times), cols=len(tracks)),
     )
 
-    ctx = {"conference": settings.CONFERENCE_CONFERENCE, "schedule": schedule, "days": days}
+    ctx = {
+        "conference": settings.CONFERENCE_CONFERENCE, 
+        "schedule": schedule, 
+        "days": days,
+        }
 
-    return render(request, "ep19/bs/schedule/schedule.html", ctx)
+    return render(request, "conference/schedule/schedule.html", ctx)
 
 
 @dataclass
@@ -196,6 +230,7 @@ class Talk:
     slug: typing.Optional[str]
     language: typing.Optional[str]
     level: typing.Optional[str]
+    admin_type: typing.Optional[str]
     speakers: typing.List[str]
     can_be_starred: bool
     start_column: int
@@ -222,11 +257,12 @@ class Grid:
 class ScheduleGrid:
     day: str
     tracks: typing.List[str]
+    titles: typing.List[str]
     talks: typing.List[Talk]
     grid: Grid
 
 
 urlpatterns = [
-    url(r'^(?P<day>\d+)-(?P<month>\w+)$', schedule, name='schedule'),
-    url(r'^$', schedule, name='schedule'),
+    re_path(r'^(?P<day>\d+)-(?P<month>\w+)$', schedule, name='schedule'),
+    re_path(r'^$', schedule, name='schedule'),
 ]

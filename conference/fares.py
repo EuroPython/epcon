@@ -3,12 +3,17 @@ from django.conf import settings
 from model_utils import Choices
 
 from assopy.models import Vat, VatFare
-from conference.models import FARE_TICKET_TYPES, Conference, Fare
+from conference.models import FARE_TICKET_TYPES, Conference, Fare, Ticket
 
 
 # due to historical reasons this one is basically hardcoded in various places.
 SOCIAL_EVENT_FARE_CODE = "VOUPE03"
 SIM_CARD_FARE_CODE = "SIM1"
+
+# The ticket code follows this layout:
+#   "T<type><variant><group>"
+#   e.g. "TRSP" - standard conference ticket at the regular price for
+#   personal use
 
 FARE_CODE_TYPES = Choices(
     ("E", "EARLY_BIRD", "Early Bird"),
@@ -19,15 +24,28 @@ FARE_CODE_TYPES = Choices(
 FARE_CODE_VARIANTS = Choices(
     ("S", "STANDARD", "Standard"),
     ("L", "LIGHT",    "Standard Light (no trainings)"),
-    ("T", "TRAINING", "Trainings (ep2018+)"),
-    ("C", "COMBINED", "Combined (ep2019+)"),
+    ("T", "TRAINING", "Trainings (ep2018+)"), # Starting with EP2018
+    ("C", "COMBINED", "Combined (ep2019+)"), # Starting with EP2019
+    ("P", "SPRINT", "Sprints only"), # Starting with EP2020
     ("D", "DAYPASS",  "Day Pass"),
 )
+
+# Variants eligible for talk voting
+FARE_CODE_TALK_VOTING_VARIANTS = (
+    "S", "L", "T", "C"
+    )
+
+# Variants for speaker tickets (ones for which we issues coupons)
+FARE_CORE_SPEAKER_TICKET_VARIANTS = (
+    "S", "L", "T", "C",
+    )
 
 FARE_CODE_GROUPS = Choices(
     ("S", "STUDENT",  "Student"),
     ("P", "PERSONAL", "Personal"),
-    ("C", "COMPANY",  "Company"),
+    ("C", "COMPANY",  "Business"),
+    # Note: We are using the term "Business ticket" on the website, but
+    # Company ticket in the code (for historical reasons)
 )
 
 FARE_CODE_REGEXES = {
@@ -41,6 +59,7 @@ FARE_CODE_REGEXES = {
         FARE_CODE_VARIANTS.LIGHT:    "^T.L.$",
         FARE_CODE_VARIANTS.TRAINING: "^T.T.$",
         FARE_CODE_VARIANTS.COMBINED: "^T.C.$",
+        FARE_CODE_VARIANTS.SPRINT:   "^T.P.$",
         FARE_CODE_VARIANTS.DAYPASS:  "^T.D.$",
     },
     "groups": {
@@ -50,6 +69,11 @@ FARE_CODE_REGEXES = {
     }
 }
 
+TALK_VOTING_CODE_REGEXP = (
+    "^T.[" + ''.join(FARE_CODE_TALK_VOTING_VARIANTS) + "].$")
+
+SPEAKER_TICKET_CODE_REGEXP = (
+    "^T.[" + ''.join(FARE_CORE_SPEAKER_TICKET_VARIANTS) + "].$")
 
 class FareIsNotAvailable(Exception):
     pass
@@ -66,15 +90,39 @@ def all_possible_fare_codes():
     }
 
     fare_codes[SOCIAL_EVENT_FARE_CODE] = "Social Event"
-    fare_codes[SIM_CARD_FARE_CODE] = "Sim Card"
+    fare_codes[SIM_CARD_FARE_CODE] = "SIM Card"
     return fare_codes
 
 
 ALL_POSSIBLE_FARE_CODES = all_possible_fare_codes()
 
+def talk_voting_fare_codes():
+    fare_codes = {
+        "T" + type_code + variant_code + group_code:
+        "%s %s %s" % (type_name, variant_name, group_name)
+
+        for type_code, type_name       in FARE_CODE_TYPES._doubles
+        for variant_code, variant_name in FARE_CODE_VARIANTS._doubles
+        for group_code, group_name     in FARE_CODE_GROUPS._doubles
+        if variant_code in FARE_CODE_TALK_VOTING_VARIANTS
+    }
+    return fare_codes
+
+TALK_VOTING_FARE_CODES = talk_voting_fare_codes()
 
 def is_fare_code_valid(fare_code):
     return fare_code in ALL_POSSIBLE_FARE_CODES
+
+
+def is_early_bird_sold_out():
+    eb_ticket_orders = Ticket.objects.filter(
+        fare__conference=settings.CONFERENCE_CONFERENCE,
+        frozen=False,
+        # orderitem__order___complete=True,
+        fare__code__regex=FARE_CODE_REGEXES["types"][FARE_CODE_TYPES.EARLY_BIRD]
+    )
+
+    return eb_ticket_orders.count() >= settings.EARLY_BIRD_ORDER_LIMIT
 
 
 def get_available_fares(date):
@@ -82,10 +130,17 @@ def get_available_fares(date):
     Returns all fares that where available during a given point in time,
     regardless of whether they were sold out or not.
     """
-    return Fare.objects.filter(
+    fares = Fare.objects.filter(
         start_validity__lte=date,
         end_validity__gte=date,
     )
+
+    if is_early_bird_sold_out():
+        fares = fares.exclude(
+            code__regex=FARE_CODE_REGEXES["types"][FARE_CODE_TYPES.EARLY_BIRD]
+        )
+
+    return fares
 
 
 def get_available_fares_as_dict(date):
@@ -130,9 +185,9 @@ def create_fare_for_conference(code, conference, price,
     fare, _ = Fare.objects.get_or_create(
         conference=conference.code,
         code=code,
-        name=name,
         defaults=dict(
             description=name,
+            name=name,
             price=price,
             recipient_type=recipient_type,
             ticket_type=ticket_type,
@@ -184,7 +239,6 @@ def set_early_bird_fare_dates(conference, start_date, end_date):
     assert (
         early_birds.count()
         == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS)
-        == 3 * 5
     )
     early_birds.update(start_validity=start_date, end_validity=end_date)
 
@@ -199,6 +253,5 @@ def set_regular_fare_dates(conference, start_date, end_date):
     assert (
         fares.count()
         == len(FARE_CODE_VARIANTS) * len(FARE_CODE_GROUPS)
-        == 3 * 5
     )
     fares.update(start_validity=start_date, end_validity=end_date)

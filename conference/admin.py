@@ -6,21 +6,24 @@ from io import StringIO
 from django import forms
 from django import http
 from django.contrib import admin
-from django.conf import settings as dsettings
-from django.conf.urls import url
+from django.contrib.auth.models import User
+from django.conf import settings
+from django.conf.urls import url as re_path
 from django.contrib.contenttypes.fields import (
     ReverseGenericManyToOneDescriptor,
 )
-from django.core import urlresolvers
+from django.urls import reverse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
+from django.utils.safestring import mark_safe
 
 import common.decorators
 from common.jsonify import json_dumps
-from conference import dataaccess
-from conference import models
-from conference import settings
-from conference import utils
+from conference import dataaccess, models, utils
+from conference.forms import TrackForm, EventForm
+from assopy.models import Vat, VatFare
+from assopy.utils import get_user_account_from_email
+from p3.models import TicketConference
 
 from conference.fares import (
     FARE_CODE_TYPES,
@@ -29,55 +32,108 @@ from conference.fares import (
     FARE_CODE_REGEXES,
 )
 
-
 log = logging.getLogger('conference')
+
+# Forms
+# TODO: This monstrosity created a joint modelform for Ticket and TicketConference instances.
+# TODO: Use inline form for the one to one relationship or merge the models.
+_TICKET_CONFERENCE_COPY_FIELDS = ('shirt_size', 'python_experience', 'diet', 'tagline', 'days', 'badge_image')
+
+
+def ticketConferenceForm():
+    class _(forms.ModelForm):
+        class Meta:
+            model = TicketConference
+            fields = '__all__'
+
+    fields = _().fields
+
+    class TicketConferenceForm(forms.ModelForm):
+        shirt_size = fields['shirt_size']
+        shirt_size.required = False
+        python_experience = fields['python_experience']
+        diet = fields['diet']
+        diet.required = False
+        tagline = fields['tagline']
+        days = fields['days']
+        badge_image = fields['badge_image']
+
+        class Meta:
+            model = models.Ticket
+            fields = '__all__'
+
+        def __init__(self, *args, **kw):
+            if 'instance' in kw:
+                o = kw['instance']
+                try:
+                    p3c = o.p3_conference
+                except TicketConference.DoesNotExist:
+                    pass
+                else:
+                    if p3c:
+                        initial = kw.pop('initial', {})
+                        for k in _TICKET_CONFERENCE_COPY_FIELDS:
+                            initial[k] = getattr(p3c, k)
+                        kw['initial'] = initial
+            return super().__init__(*args, **kw)
+
+    return TicketConferenceForm
 
 
 class ConferenceAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', '_schedule_view', '_attendee_stats')
 
     def _schedule_view(self, o):
-        u = urlresolvers.reverse('admin:conference-conference-schedule', args=(o.code,))
+        u = reverse('admin:conference-conference-schedule', args=(o.code,))
         return '<a href="%s">schedule</a>' % u
     _schedule_view.allow_tags = True
 
     def _attendee_stats(self, o):
-        u = urlresolvers.reverse('admin:conference-ticket-stats', args=(o.code,))
+        u = reverse('admin:conference-ticket-stats', args=(o.code,))
         return '<a href="%s">Attendee Stats</a>' % u
     _attendee_stats.allow_tags = True
 
     def get_urls(self):
         admin_view = self.admin_site.admin_view
         urls = [
-            url(r'^(?P<cid>[\w-]+)/schedule/$',
+            re_path(
+                r'^(?P<cid>[\w-]+)/schedule/$',
                 admin_view(self.schedule_view),
-                name='conference-conference-schedule'),
-            url(r'^(?P<cid>[\w-]+)/schedule/(?P<sid>\d+)/(?P<tid>\d+)/$',
+                name='conference-conference-schedule'
+            ),
+            re_path(
+                r'^(?P<cid>[\w-]+)/schedule/(?P<sid>\d+)/(?P<tid>\d+)/$',
                 admin_view(self.schedule_view_track),
-                name='conference-conference-schedule-track'),
-
-            url(r'^(?P<cid>[\w-]+)/stats/$',
+                name='conference-conference-schedule-track'
+            ),
+            re_path(
+                r'^(?P<cid>[\w-]+)/stats/$',
                 admin_view(self.stats_list),
-                name='conference-ticket-stats'),
-            url(r'^(?P<cid>[\w-]+)/stats/details$',
+                name='conference-ticket-stats'
+            ),
+            re_path(
+                r'^(?P<cid>[\w-]+)/stats/details$',
                 admin_view(self.stats_details),
-                name='conference-ticket-stats-details'),
-            url(r'^(?P<cid>[\w-]+)/stats/details.csv$',
+                name='conference-ticket-stats-details'
+            ),
+            re_path(
+                r'^(?P<cid>[\w-]+)/stats/details.csv$',
                 admin_view(self.stats_details_csv),
-                name='conference-ticket-stats-details-csv'),
+                name='conference-ticket-stats-details-csv'
+            ),
         ]
         return urls + super(ConferenceAdmin, self).get_urls()
 
     def schedule_view_talks(self, conf):
         tids = []
-        if conf.code == settings.CONFERENCE:
+        if conf.code == settings.CONFERENCE_CONFERENCE:
             results = utils.voting_results()
             if results is not None:
                 tids = [x[0] for x in results]
-        complete = models.Talk.objects\
-            .filter(conference=conf.code, status='accepted')\
-            .order_by('title')\
-            .values_list('id', flat=True)
+
+        complete = models.Talk.objects.filter(
+            conference=conf.code, status='accepted'
+        ).order_by('title').values_list('id', flat=True)
 
         haystack = set(tids)
         missing = []
@@ -88,16 +144,14 @@ class ConferenceAdmin(admin.ModelAdmin):
 
     def schedule_view(self, request, cid):
         conf = models.Conference.objects.get(code=cid)
-        schedules = dataaccess.schedules_data(models.Schedule.objects\
-            .filter(conference=conf)\
-            .values_list('id', flat=True)
+        schedules = dataaccess.schedules_data(
+            models.Schedule.objects.filter(conference=conf).values_list('id', flat=True)
         )
         tracks = []
         for sch in schedules:
             tks = sorted(list(sch['tracks'].values()), key=lambda x: x.order)
-            tracks.append([ sch['id'], [ t for t in tks ] ])
+            tracks.append([sch['id'], [t for t in tks]])
 
-        from conference.forms import EventForm
         return TemplateResponse(
             request,
             'admin/conference/conference/schedule_view.html',
@@ -112,13 +166,11 @@ class ConferenceAdmin(admin.ModelAdmin):
     def schedule_view_track(self, request, cid, sid, tid):
         get_object_or_404(models.Track, schedule__conference=cid, schedule=sid, id=tid)
         from datetime import time
-        tt = utils.TimeTable2\
-            .fromTracks([tid])\
-            .adjustTimes(time(8, 00), time(18, 30))
+        tt = utils.TimeTable2.fromTracks([tid]).adjustTimes(time(8, 00), time(18, 30))
         return TemplateResponse(
             request,
             'admin/conference/conference/schedule_view_schedule.html',
-            { 'timetable': tt, },
+            {'timetable': tt},
         )
 
     def _stat_wrapper(self, func, conf):
@@ -138,7 +190,17 @@ class ConferenceAdmin(admin.ModelAdmin):
 
     def available_stats(self, conf):
         stats = []
-        for path in settings.ADMIN_ATTENDEE_STATS:
+        stats_modules = (
+            'p3.stats.tickets_status',
+            'p3.stats.conference_speakers',
+            'p3.stats.conference_speakers_day',
+            'p3.stats.speaker_status',
+            'p3.stats.presence_days',
+            'p3.stats.shirt_sizes',
+            'p3.stats.diet_types',
+            'p3.stats.pp_tickets',
+        )
+        for path in stats_modules:
             func = utils.dotted_import(path)
             w = {
                 'get_data': self._stat_wrapper(func, conf),
@@ -176,10 +238,10 @@ class ConferenceAdmin(admin.ModelAdmin):
         if request.method == 'POST':
             form = AdminSendMailForm(data=request.POST, real_usage='preview' not in request.POST)
             if form.is_valid():
-                uids = [ x['uid'] for x in stat['get_data']()['data']]
+                uids = [x['uid'] for x in stat['get_data']()['data']]
                 try:
                     pid = int(request.POST['preview_id'])
-                except:
+                except Exception:
                     pid = None
                 if pid is None or pid not in uids:
                     pid = None
@@ -203,7 +265,7 @@ class ConferenceAdmin(admin.ModelAdmin):
                 'stat_code': '%s.%s' % (sid, rowid),
                 'form': form,
                 'preview': preview,
-                'email_log': settings.ADMIN_TICKETS_STATS_EMAIL_LOG,
+                'email_log': settings.CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG,
             },
         )
 
@@ -223,121 +285,17 @@ class ConferenceAdmin(admin.ModelAdmin):
         writer = csv.writer(buff)
         writer.writerow(colnames)
         for row in result['data']:
-            writer.writerow([ row.get(c, '').encode('utf-8') for c in colid ])
+            writer.writerow([row.get(c, '').encode('utf-8') for c in colid])
 
-        fname = '[%s] %s.csv' % (settings.CONFERENCE, stat['short_description'])
+        fname = '[%s] %s.csv' % (settings.CONFERENCE_CONFERENCE, stat['short_description'])
         r = http.HttpResponse(buff.getvalue(), content_type="text/csv")
         r['content-disposition'] = 'attachment; filename="%s"' % fname
         return r
 
 
-class DeadlineAdmin(admin.ModelAdmin):
-    list_display = ('date', '_headline', '_text', '_expired')
-    date_hierarchy = 'date'
-
-    def _headline(self, obj):
-        contents = dict((c.language, c) for c in obj.deadlinecontent_set.all())
-        for l, lname in dsettings.LANGUAGES:
-            try:
-                content = contents[l]
-            except KeyError:
-                continue
-            if content.headline:
-                return content.headline
-        else:
-            return '[No Headline]'
-    _headline.short_description = 'headline'
-    _headline.allow_tags = True
-
-    def _text(self, obj):
-        contents = dict((c.language, c) for c in obj.deadlinecontent_set.all())
-        for l, lname in dsettings.LANGUAGES:
-            try:
-                content = contents[l]
-            except KeyError:
-                continue
-            if content.body:
-                return content.body
-        else:
-            return '[No Body]'
-    _text.short_description = 'testo'
-    _text.allow_tags = True
-
-    def _expired(self, obj):
-        return not obj.isExpired()
-    _expired.boolean = True
-
-    # Nella pagina per la creazione/modifica di una deadline voglio mostrare
-    # una textarea per ogni lingua abilitata nei settings. Per fare questo
-    # ridefinisco due metodi di ModelAdmin:
-    #     * get_form
-    #     * save_model
-    # Con il primo aggiungo all'oggetto ModelForm ritornato dalla classe base
-    # un CharField per ogni lingua configurata; la form ritornata da questo
-    # metodo viene renderizzata nella pagina HTML.
-    # Con il secondo oltre a salvare l'istanza di Deadline creo/modifico le
-    # istanze di DeadlineContent in funzione delle lingue.
-
-    def get_fieldsets(self, request, obj=None):
-        fieldsets = super(DeadlineAdmin, self).get_fieldsets(request, obj=obj)
-
-        fields = fieldsets[0][1]['fields']
-
-        for lang_code, _ in dsettings.LANGUAGES:
-            fields.append('headline_' + lang_code)
-            fields.append('body_' + lang_code)
-        return fieldsets
-
-    def get_form(self, request, obj=None, **kwargs):
-        initials = {}
-        if obj:
-            initials = dict((c.language, (c.headline, c.body)) for c in obj.deadlinecontent_set.all())
-
-        class DeadlineForm(forms.ModelForm):
-            class Meta:
-                model = models.Deadline
-                fields = ('date',)
-            def __init__(self, *args, **kw):
-                super(DeadlineForm, self).__init__(*args, **kw)
-                for lang_code, _ in dsettings.LANGUAGES:
-                    headline = forms.CharField(max_length=200, required=False)
-                    try:
-                        headline.initial = initials[lang_code][0]
-                    except:
-                        pass
-                    self.fields['headline_' + lang_code] = headline
-
-                    body = forms.CharField(widget=forms.Textarea, required=False)
-                    try:
-                        body.initial = initials[lang_code][1]
-                    except:
-                        pass
-                    self.fields['body_' + lang_code] = body
-        return DeadlineForm
-
-    def save_model(self, request, obj, form, change):
-        obj.save()
-        data = form.cleaned_data
-        for l, _ in dsettings.LANGUAGES:
-            if change:
-                try:
-                    instance = models.DeadlineContent.objects.get(deadline=obj, language=l)
-                except models.DeadlineContent.DoesNotExist:
-                    instance = models.DeadlineContent()
-            else:
-                instance = models.DeadlineContent()
-            if not instance.id:
-                instance.deadline = obj
-                instance.language = l
-            instance.headline = data.get('headline_' + l, '')
-            instance.body = data.get('body_' + l, '')
-            instance.save()
-
-
-
 class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
     def __new__(mcs, name, bases, attrs):
-        new_class = super(MultiLingualFormMetaClass, mcs).__new__(mcs, name, bases, attrs)
+        new_class = super().__new__(mcs, name, bases, attrs)
 
         multilingual_fields = new_class.multilingual_fields = []
         model = new_class._meta.model
@@ -349,10 +307,10 @@ class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
                 if f.field.remote_field.model is models.MultilingualContent:
                     multilingual_fields.append(name)
 
-        widget = attrs.get('multilingual_widget', forms.Textarea)
+        widget = forms.Textarea
         form_fields = {}
         for field_name in multilingual_fields:
-            for lang, _ in dsettings.LANGUAGES:
+            for lang, _ in settings.LANGUAGES:
                 text = forms.CharField(widget=widget, required=False)
                 full_name = '{name}_{lang}'.format(name=field_name, lang=lang)
                 form_fields[full_name] = text
@@ -361,9 +319,10 @@ class MultiLingualFormMetaClass(forms.models.ModelFormMetaclass):
         new_class.base_fields.update(form_fields)
         return new_class
 
+
 class MultiLingualForm(forms.ModelForm, metaclass=MultiLingualFormMetaClass):
     def __init__(self, *args, **kw):
-        super(MultiLingualForm, self).__init__(*args, **kw)
+        super().__init__(*args, **kw)
 
         if self.instance:
             self._init_multilingual_fields()
@@ -383,7 +342,7 @@ class MultiLingualForm(forms.ModelForm, metaclass=MultiLingualFormMetaClass):
 
     def _save_translations(self, o):
         for field_name in self.multilingual_fields:
-            for l, _ in dsettings.LANGUAGES:
+            for l, _ in settings.LANGUAGES:
                 form_field = '{name}_{lang}'.format(name=field_name, lang=l)
                 text = self.cleaned_data[form_field]
                 try:
@@ -397,12 +356,14 @@ class MultiLingualForm(forms.ModelForm, metaclass=MultiLingualFormMetaClass):
                 translation.save()
 
     def save(self, commit=True):
-        o = super(MultiLingualForm, self).save(commit=commit)
+        o = super().save(commit=commit)
         if not commit:
             base_m2m = self.save_m2m
+
             def save_m2m():
                 base_m2m()
                 self._save_translations(o)
+
             self.save_m2m = save_m2m
         else:
             self._save_translations(o)
@@ -415,6 +376,7 @@ class MultiLingualForm(forms.ModelForm, metaclass=MultiLingualFormMetaClass):
                 model = model_class
                 fields = '__all__'
         return Form
+
 
 class TalkSpeakerInlineAdminForm(forms.ModelForm):
     class Meta:
@@ -435,10 +397,12 @@ class TalkSpeakerInlineAdminForm(forms.ModelForm):
         data = self.cleaned_data
         return models.Speaker.objects.get(user=data['speaker'])
 
+
 class TalkSpeakerInlineAdmin(admin.TabularInline):
     model = models.TalkSpeaker
     form = TalkSpeakerInlineAdminForm
     extra = 1
+
 
 class SpeakerAdminForm(forms.ModelForm):
     class Meta:
@@ -448,6 +412,7 @@ class SpeakerAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SpeakerAdminForm, self).__init__(*args, **kwargs)
         self.fields['user'].queryset = self.fields['user'].queryset.order_by('username')
+
 
 class SpeakerAdmin(admin.ModelAdmin):
     list_display = ('_avatar', '_user', '_email', '_company')
@@ -460,7 +425,7 @@ class SpeakerAdmin(admin.ModelAdmin):
     inlines = (TalkSpeakerInlineAdmin,)
 
     def get_queryset(self, request):
-        qs = super(SpeakerAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         qs = qs.select_related('user__attendeeprofile')
         if request.GET:
             # Make sure we do an AND query, not an or one as implicit by
@@ -470,18 +435,30 @@ class SpeakerAdmin(admin.ModelAdmin):
             if conf is not None and status is not None:
                 qs = qs.filter(talk__conference=conf,
                                talk__status__exact=status)
+
+        qs = qs.filter(user__in=(models.TalkSpeaker.objects.values('speaker')))
         return qs
+
+    def get_paginator(self, request, queryset, per_page, orphans=0, allow_empty_first_page=True):
+        sids = queryset.values_list('user', flat=True)
+        profiles = dataaccess.profiles_data(sids)
+        self._profiles = dict(list(zip(sids, profiles)))
+        return super(SpeakerAdmin, self).get_paginator(request, queryset, per_page, orphans, allow_empty_first_page)
 
     def get_urls(self):
         urls = super(SpeakerAdmin, self).get_urls()
         my_urls = [
-            url(r'^stats/list/$', self.admin_site.admin_view(self.stats_list), name='conference-speaker-stat-list'),
+            re_path(
+                r'^stats/list/$',
+                self.admin_site.admin_view(self.stats_list),
+                name='conference-speaker-stat-list'
+            ),
         ]
         return my_urls + urls
 
     def stats_list(self, request):
         qs = models.TalkSpeaker.objects\
-            .filter(talk__conference=settings.CONFERENCE)\
+            .filter(talk__conference=settings.CONFERENCE_CONFERENCE)\
             .order_by('speaker__user__first_name', 'speaker__user__last_name')\
             .distinct()\
             .values_list('speaker', flat=True)
@@ -491,7 +468,7 @@ class SpeakerAdmin(admin.ModelAdmin):
         groups = {}
         for t, _ in models.TALK_TYPE:
             sids = set(qs.filter(talk__type=t))
-            data = [ x for x in speakers if x['user'] in sids ]
+            data = [x for x in speakers if x['user'] in sids]
             if data:
                 groups[t] = data
         return TemplateResponse(
@@ -505,7 +482,7 @@ class SpeakerAdmin(admin.ModelAdmin):
 
     def _user(self, o):
         if o.user.attendeeprofile:
-            p = urlresolvers.reverse('conference-profile', kwargs={'slug': o.user.attendeeprofile.slug})
+            p = reverse('profiles:profile', kwargs={'profile_slug': o.user.attendeeprofile.slug})
         else:
             p = 'javascript:alert("profile not set")'
         return '<a href="%s">%s %s</a>' % (p, o.user.first_name, o.user.last_name)
@@ -564,35 +541,35 @@ class SponsorAdmin(admin.ModelAdmin):
         return ", ".join(s.conference for s in obj.sponsorincome_set.all())
 
 
-class MediaPartnerConferenceInlineAdmin(admin.TabularInline):
-    model = models.MediaPartnerConference
-    extra = 1
-
-
-class MediaPartnerAdmin(admin.ModelAdmin):
-    prepopulated_fields = {"slug": ("partner",)}
-    list_display = ("partner", "url", "conferences")
-    inlines = [MediaPartnerConferenceInlineAdmin]
-
-    def conferences(self, obj):
-        """Will give the conferences which the partner has participated"""
-        return ", ".join(
-            s.conference for s in obj.mediapartnerconference_set.all()
-        )
-
-
 class TrackInlineAdmin(admin.TabularInline):
     model = models.Track
     extra = 1
+
 
 class EventInlineAdmin(admin.TabularInline):
     model = models.Event
     extra = 3
 
-from django.template import Template
 
 class ScheduleAdmin(admin.ModelAdmin):
-    list_display = ('conference', 'slug', 'date')
+    list_display = (
+        "conference",
+        "slug",
+        "date",
+    )
+    list_filter = (
+        "conference",
+    )
+    search_fields = [
+        "conference",
+        "slug",
+        "date",
+    ]
+    ordering = (
+        "conference",
+        "date",
+    )
+
     inlines = [
         TrackInlineAdmin,
         EventInlineAdmin
@@ -602,28 +579,30 @@ class ScheduleAdmin(admin.ModelAdmin):
         urls = super(ScheduleAdmin, self).get_urls()
         v = self.admin_site.admin_view
         my_urls = [
-            url(r'^stats/$',
-                v(self.expected_attendance),
-                name='conference-schedule-expected_attendance'),
-            url(r'^(?P<sid>\d+)/events/$',
+            re_path(
+                r'^(?P<sid>\d+)/events/$',
                 v(self.events),
-                name='conference-schedule-events'),
-            url(r'^(?P<sid>\d+)/events/(?P<eid>\d+)$',
+                name='conference-schedule-events'
+            ),
+            re_path(
+                r'^(?P<sid>\d+)/events/(?P<eid>\d+)$',
                 v(self.event),
-                name='conference-schedule-event'),
-            url(r'^(?P<sid>\d+)/tracks/(?P<tid>[\d]+)$',
+                name='conference-schedule-event'
+            ),
+            re_path(
+                r'^(?P<sid>\d+)/tracks/(?P<tid>[\d]+)$',
                 v(self.tracks),
-                name='conference-schedule-tracks'),
+                name='conference-schedule-tracks'
+            ),
         ]
         return my_urls + urls
 
     @common.decorators.render_to_json
-    #@transaction.atomic
+    # @transaction.atomic
     def events(self, request, sid):
         sch = get_object_or_404(models.Schedule, id=sid)
         if request.method != 'POST':
             return http.HttpResponseNotAllowed(('POST',))
-        from conference.forms import EventForm
         form = EventForm(data=request.POST)
         output = {}
         if form.is_valid():
@@ -637,7 +616,7 @@ class ScheduleAdmin(admin.ModelAdmin):
             }
         return output
 
-    #@transaction.atomic
+    # @transaction.atomic
     def event(self, request, sid, eid):
         ev = get_object_or_404(models.Event, schedule=sid, id=eid)
 
@@ -656,14 +635,15 @@ class ScheduleAdmin(admin.ModelAdmin):
                 help_text='Seats available. Override the track default if set'
             )
             sponsor = forms.ModelChoiceField(
-                queryset=models.Sponsor.objects\
-                    .filter(sponsorincome__conference=settings.CONFERENCE)\
-                    .order_by('sponsor'),
+                queryset=(
+                    models.Sponsor.objects.filter(
+                        sponsorincome__conference=settings.CONFERENCE_CONFERENCE
+                    ).order_by('sponsor')
+                ),
                 required=False
             )
             tracks = forms.ModelMultipleChoiceField(
-                queryset=models.Track.objects\
-                    .filter(schedule=ev.schedule)
+                queryset=models.Track.objects.filter(schedule=ev.schedule)
             )
 
         class SimplifiedCustomForm(forms.Form):
@@ -684,14 +664,15 @@ class ScheduleAdmin(admin.ModelAdmin):
                 help_text='Seats available. Override the track default if set'
             )
             sponsor = forms.ModelChoiceField(
-                queryset=models.Sponsor.objects\
-                    .filter(sponsorincome__conference=settings.CONFERENCE)\
-                    .order_by('sponsor'),
+                queryset=(
+                    models.Sponsor.objects.filter(
+                        sponsorincome__conference=settings.CONFERENCE_CONFERENCE
+                    ).order_by('sponsor')
+                ),
                 required=False
             )
             tracks = forms.ModelMultipleChoiceField(
-                queryset=models.Track.objects\
-                    .filter(schedule=ev.schedule)
+                queryset=models.Track.objects.filter(schedule=ev.schedule)
             )
 
         class MoveEventForm(forms.Form):
@@ -733,9 +714,9 @@ class ScheduleAdmin(admin.ModelAdmin):
                         tmap = defaultdict(dict)
                         for t in tracks:
                             tmap[t['schedule']][t['track']] = t['id']
-                        etracks = set(models.EventTrack.objects\
-                            .filter(event=ev)\
-                            .values_list('track__track', flat=True))
+                        etracks = set(
+                            models.EventTrack.objects.filter(event=ev).values_list('track__track', flat=True)
+                        )
                         for sid, tracks in tmap.items():
                             if models.Event.objects.filter(schedule=sid, start_time=ev.start_time).exists():
                                 continue
@@ -746,12 +727,10 @@ class ScheduleAdmin(admin.ModelAdmin):
                                 if x in tracks:
                                     models.EventTrack(event=ev, track_id=tracks[x]).save()
                     elif 'update' in request.POST and not ev.talk_id:
-                        eids = models.EventTrack.objects\
-                            .filter(track__in=data['tracks'], event__custom=ev.custom)\
-                            .exclude(event=ev)\
-                            .values('event')
-                        events = models.Event.objects\
-                            .filter(id__in=eids)
+                        eids = models.EventTrack.objects.filter(
+                            track__in=data['tracks'], event__custom=ev.custom
+                        ).exclude(event=ev).values('event')
+                        events = models.Event.objects.filter(id__in=eids)
                         for e in events:
                             e.sponsor = ev.sponsor
                             e.tags = ev.tags
@@ -778,7 +757,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                 raise ValueError()
             return http.HttpResponse(content=json_dumps({}), content_type="text/javascript")
         else:
-            if ev.talk_id != None:
+            if ev.talk_id is not None:
                 form = SimplifiedTalkForm(data={
                     'sponsor': ev.sponsor.id if ev.sponsor else None,
                     'tags': ev.tags,
@@ -804,10 +783,9 @@ class ScheduleAdmin(admin.ModelAdmin):
             }
             return TemplateResponse(request, 'conference/admin/schedule_event.html', ctx)
 
-    #@transaction.atomic
+    # @transaction.atomic
     def tracks(self, request, sid, tid):
         track = get_object_or_404(models.Track, schedule=sid, id=tid)
-        from conference.forms import TrackForm
         if request.method == 'POST':
             tracks = models.Track.objects\
                 .filter(schedule__conference=track.schedule.conference, track=track.track)
@@ -815,7 +793,7 @@ class ScheduleAdmin(admin.ModelAdmin):
                 form = TrackForm(instance=t, data=request.POST)
                 form.save()
             output = {
-                'tracks': [ t.id for t in tracks ],
+                'tracks': [t.id for t in tracks],
             }
             return http.HttpResponse(content=json_dumps(output), content_type="text/javascript")
         else:
@@ -826,70 +804,6 @@ class ScheduleAdmin(admin.ModelAdmin):
                 'tid': tid,
             }
             return TemplateResponse(request, 'conference/admin/schedule_tracks.html', ctx)
-
-    def expected_attendance(self, request):
-        allevents = defaultdict(dict)
-        for e, info in models.Schedule.objects.expected_attendance(settings.CONFERENCE).items():
-            allevents[e.schedule][e] = info
-        data = {}
-        for s, events in allevents.items():
-            data[s] = entry = {
-                'morning': [],
-                'afternoon': [],
-            }
-            for e, info in events.items():
-                item = dict(info)
-                item['event'] = e
-                if e.start_time.hour < 13 and e.start_time.minute < 30:
-                    entry['morning'].append(item)
-                else:
-                    entry['afternoon'].append(item)
-        ctx = {
-            'schedules': sorted(list(data.items()), key=lambda x: x[0].date),
-        }
-        return TemplateResponse(request, 'conference/admin/schedule_expected_attendance.html', ctx)
-
-
-class HotelAdmin(admin.ModelAdmin):
-    list_display = ('name', '_contacts', 'address', 'affiliated', 'visible')
-    list_filter = ('visible', 'affiliated' )
-    search_fields = [ 'name', 'address' ]
-
-    def _contacts(self, obj):
-        h = ""
-        if obj.email:
-            h += '<a href="mailto:%s">%s</a> ' % (obj.email, obj.email)
-        if obj.telephone:
-            h+= obj.telephone
-        return h
-    _contacts.allow_tags = True
-    _contacts.short_description = 'Contatti'
-
-
-class DidYouKnowAdmin(admin.ModelAdmin):
-    list_display = ('_message', 'visible')
-
-    form = MultiLingualForm.for_model(models.DidYouKnow)
-
-    def _message(self, o):
-        messages = dict( (c.language, c) for c in o.messages.all() if c.body)
-
-        try:
-            return messages[dsettings.LANGUAGES[0][0]].body
-        except KeyError:
-            if messages:
-                return list(messages.values())[0].body
-            else:
-                return 'no messages'
-
-
-
-class QuoteAdmin(admin.ModelAdmin):
-    list_display = ('who', 'conference', '_text')
-
-    def _text(self, o):
-        return o.text[:80]
-
 
 
 class FilterFareByTicketCode(admin.SimpleListFilter):
@@ -924,9 +838,29 @@ class FilterFareByGroup(FilterFareByTicketCode):
     filter_by = FARE_CODE_GROUPS._doubles
 
 
+class AdminFareForm(forms.ModelForm):
+    vat = forms.ModelChoiceField(queryset=Vat.objects.all())
+
+    class Meta:
+        model = models.Fare
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance', None)
+        if instance:
+            try:
+                vat = instance.vat_set.all()[0]
+                initial = kwargs.get('initial', {})
+                initial.update({'vat': vat})
+                kwargs['initial'] = initial
+            except IndexError:
+                pass
+        super().__init__(*args, **kwargs)
+
+
 class FareAdmin(admin.ModelAdmin):
     list_display = ('conference', 'code', 'name', 'price', 'recipient_type',
-                    'start_validity', 'end_validity')
+                    'start_validity', 'end_validity', '_vat',)
     list_filter = ('conference',
                    'ticket_type',
                    FilterFareByType,
@@ -935,23 +869,57 @@ class FareAdmin(admin.ModelAdmin):
     list_editable = ('price', 'start_validity', 'end_validity')
     list_display_links = ('code', 'name')
     ordering = ('conference', 'start_validity', 'code')
+    form = AdminFareForm
 
     def changelist_view(self, request, extra_context=None):
         if 'conference' not in request.GET and 'conference__exact' not in request.GET:
             q = request.GET.copy()
-            q['conference'] = settings.CONFERENCE
+            q['conference'] = settings.CONFERENCE_CONFERENCE
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
-        return super(FareAdmin,self).changelist_view(request, extra_context=extra_context)
+        return super(FareAdmin, self).changelist_view(request, extra_context=extra_context)
+
+    def _vat(self, obj):
+        try:
+            return obj.vat_set.all()[0]
+        except IndexError:
+            return None
+    _vat.short_description = 'VAT'
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if 'vat' in form.cleaned_data:
+            # se la tariffa viene modificata dalla list_view 'vat' potrebbe
+            # non esserci
+            vat_fare, created = VatFare.objects.get_or_create(
+                fare=obj, defaults={'vat': form.cleaned_data['vat']})
+            if not created and vat_fare.vat != form.cleaned_data['vat']:
+                vat_fare.vat = form.cleaned_data['vat']
+                vat_fare.save()
 
 
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ('_name', '_buyer', '_conference', '_ticket', 'ticket_type',)
-    search_fields = ('name', 'user__first_name', 'user__last_name', 'user__email')
-    list_filter = ('fare__conference', 'fare__ticket_type', 'ticket_type',)
+    list_display = (
+        '_name', '_buyer', '_conference', '_ticket', 'ticket_type', 'frozen',
+        '_order', '_order_date', '_assigned', '_shirt_size',
+        '_diet', '_python_experience',
+    )
+    search_fields = (
+        'name', 'user__first_name', 'user__last_name', 'user__email',
+        'orderitem__order__code', 'fare__code',
+    )
+    list_filter = (
+        'fare__conference', 'fare__ticket_type', 'ticket_type', 'fare__code',
+        'orderitem__order___complete', 'frozen', 'p3_conference__shirt_size',
+        'p3_conference__diet', 'p3_conference__python_experience',
+        'orderitem__order__created',
+    )
+    actions = (
+        'do_assign_to_buyer',
+        'do_update_ticket_name',
+    )
 
-    if settings.TICKET_BADGE_ENABLED:
-        actions = ('',)
+    form = ticketConferenceForm()
 
     class Media:
         js = (
@@ -967,7 +935,17 @@ class TicketAdmin(admin.ModelAdmin):
     _name.admin_order_field = 'name'
 
     def _buyer(self, o):
-        return '%s %s' % (o.user.first_name, o.user.last_name)
+        """
+        Display clickable link to the buyer of the ticket (buyer can be
+        different than "assigned" person).
+        """
+        buyer_user = o.orderitem.order.user.user
+        if not (buyer_user.first_name or buyer_user.last_name):
+            buyer = buyer_user.email
+        else:
+            buyer = '%s %s' % (buyer_user.first_name, buyer_user.last_name)
+        url = reverse('admin:auth_user_change', args=(buyer_user.id,))
+        return mark_safe('<a href="%s">%s</a>' % (url, buyer))
     _buyer.admin_order_field = 'user__first_name'
 
     def _conference(self, o):
@@ -978,41 +956,184 @@ class TicketAdmin(admin.ModelAdmin):
         return o.fare.code
     _ticket.admin_order_field = 'fare__code'
 
+    def _order(self, obj):
+        url = reverse('admin:assopy_order_change',
+                      args=(obj.orderitem.order.id,))
+        return '<a href="%s">%s</a>' % (url, obj.orderitem.order.code)
+    _order.allow_tags = True
+
+    def _order_date(self, o):
+        return o.orderitem.order.created
+    _order_date.admin_order_field = 'orderitem__order__created'
+
+    def _assigned(self, ticket):
+        if ticket.p3_conference:
+            assigned_to = ticket.p3_conference.assigned_to
+            if assigned_to:
+                comment = ''
+                user = None
+                try:
+                    user = get_user_account_from_email(assigned_to)
+                except User.MultipleObjectsReturned:
+                    comment = ' (email not unique)'
+                except User.DoesNotExist:
+                    try:
+                        user = get_user_account_from_email(assigned_to, active_only=False)
+                    except User.DoesNotExist:
+                        comment = ' (does not exist)'
+                    else:
+                        comment = ' (user inactive)'
+                if user is not None:
+                    url = reverse('admin:auth_user_change', args=(user.id,))
+                    user_name = ('%s %s' %
+                                 (user.first_name, user.last_name)).strip()
+                    if not user_name:
+                        user_name = assigned_to
+                        comment += ' (no name set)'
+                    return '<a href="%s">%s</a>%s' % (url, user_name, comment)
+                elif not comment:
+                    comment = ' (missing user account)'
+                return '%s%s' % (assigned_to, comment)
+            else:
+                return '(not assigned)'
+        else:
+            return '(old style ticket)'
+    _assigned.allow_tags = True
+    _assigned.admin_order_field = 'p3_conference__assigned_to'
+
+    def stats_data_view(self, request):
+        output = self.stats_data()
+        return http.HttpResponse(json_dumps(output), 'text/javascript')
+
+    def do_assign_to_buyer(self, request, queryset):
+        if not queryset:
+            self.message_user(request, 'no tickets selected', level='error')
+            return
+        for ticket in queryset:
+            # Assign to buyer
+            utils.assign_ticket_to_user(ticket, ticket.user)
+    do_assign_to_buyer.short_description = 'Assign to buyer'
+
+    def do_update_ticket_name(self, request, queryset):
+        if not queryset:
+            self.message_user(request, 'no tickets selected')
+            return
+        for ticket in queryset:
+            # Find selected user
+            if not ticket.p3_conference:
+                continue
+            assigned_to = ticket.p3_conference.assigned_to
+            try:
+                user = get_user_account_from_email(assigned_to)
+            except User.MultipleObjectsReturned:
+                self.message_user(request,
+                                  'found multiple users with '
+                                  'email address %s' % assigned_to,
+                                  level='error')
+                return
+            except User.DoesNotExist:
+                self.message_user(request,
+                                  'no user record found or user inactive for '
+                                  ' email address %s' % assigned_to,
+                                  level='error')
+                return
+            if user is None:
+                self.message_user(request,
+                                  'no user record found for '
+                                  ' email address %s' % assigned_to,
+                                  level='error')
+            # Reassign to selected user
+            utils.assign_ticket_to_user(ticket, user)
+    do_update_ticket_name.short_description = 'Update ticket name'
+
+    def _shirt_size(self, o):
+        try:
+            p3c = o.p3_conference
+        except TicketConference.DoesNotExist:
+            return ''
+        return p3c.shirt_size
+
+    def _diet(self, o):
+        try:
+            p3c = o.p3_conference
+        except TicketConference.DoesNotExist:
+            return ''
+        return p3c.diet
+
+    def _python_experience(self, o):
+        try:
+            p3c = o.p3_conference
+        except TicketConference.DoesNotExist:
+            return ''
+        return p3c.python_experience
+    _python_experience.admin_order_field = 'p3_conference__python_experience'
+
+    def _tagline(self, o):
+        try:
+            p3c = o.p3_conference
+        except TicketConference.DoesNotExist:
+            return ''
+        html = p3c.tagline
+        if p3c.badge_image:
+            i = ['<img src="%s" width="24" />' % p3c.badge_image.url] * p3c.python_experience
+            html += '<br />' + ' '.join(i)
+        return html
+    _tagline.allow_tags = True
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        try:
+            p3c = obj.p3_conference
+        except TicketConference.DoesNotExist:
+            p3c = None
+        if p3c is None:
+            p3c = TicketConference(ticket=obj)
+
+        data = form.cleaned_data
+        for k in _TICKET_CONFERENCE_COPY_FIELDS:
+            setattr(p3c, k, data.get(k))
+        p3c.save()
+
     def changelist_view(self, request, extra_context=None):
         if not request.GET:
             q = request.GET.copy()
-            q['fare__conference'] = settings.CONFERENCE
+            q['fare__conference'] = settings.CONFERENCE_CONFERENCE
             q['fare__ticket_type__exact'] = 'conference'
+            q['orderitem__order___complete__exact'] = 1
+            q['frozen__exact'] = 0
             request.GET = q
             request.META['QUERY_STRING'] = request.GET.urlencode()
-        return super(TicketAdmin,self).changelist_view(request, extra_context=extra_context)
+        return super().changelist_view(request, extra_context=extra_context)
 
     def get_queryset(self, request):
-        qs = super(TicketAdmin, self).get_queryset(request)
-        qs = qs.select_related('user', 'fare',)
+        qs = super().get_queryset(request)
+        qs = qs.select_related('orderitem__order', 'p3_conference', 'user', 'fare', )
         return qs
 
     def get_urls(self):
-        urls = super(TicketAdmin, self).get_urls()
+        urls = super().get_urls()
         my_urls = [
-            url(r'^stats/data/$', self.admin_site.admin_view(self.stats_data_view), name='conference-ticket-stats-data'),
+            re_path(r'^stats/data/$', self.admin_site.admin_view(self.stats_data), name='p3-ticket-stats-data'),
         ]
         return my_urls + urls
 
-    def stats_data(self):
+    def stats_data(self, request):
+        from common.jsonify import json_dumps
         from django.db.models import Q
         from collections import defaultdict
-        import datetime
 
-        conferences = models.Conference.objects\
-            .order_by('conference_start')
+        conferences = list(models.Conference.objects.order_by('conference_start'))
 
         output = {}
-        for c in conferences:
-            tickets = models.Ticket.objects\
-                .filter(fare__conference=c, frozen=False)\
-                .filter(Q(orderitem__order___complete=True) | Q(orderitem__order__method__in=('bank', 'admin')))\
-                .select_related('fare', 'orderitem__order')
+        for c in conferences[-3:]:
+            tickets = (
+                models.Ticket.objects
+                    .filter(fare__conference=c)
+                    .filter(
+                        Q(orderitem__order___complete=True) | Q(orderitem__order__method__in=('bank', 'admin'))
+                    )
+                    .select_related('fare', 'orderitem__order')
+            )
             data = {
                 'conference': defaultdict(lambda: 0),
                 'partner': defaultdict(lambda: 0),
@@ -1028,25 +1149,10 @@ class TicketAdmin(admin.ModelAdmin):
             for k, v in data.items():
                 data[k] = sorted(v.items())
 
-            dlimit = datetime.date(c.conference_start.year, 1, 1)
-            deadlines = models.DeadlineContent.objects\
-                .filter(language=dsettings.LANGUAGES[0][0])\
-                .filter(deadline__date__lte=c.conference_start, deadline__date__gte=dlimit)\
-                .select_related('deadline')\
-                .order_by('deadline__date')
-            markers = [
-                ((d.deadline.date - c.conference_start).days, 'CAL: ' + (d.headline or d.body))
-                for d in deadlines
-            ]
-
             output[c.code] = {
                 'data': data,
-                'markers': markers,
             }
-        return output
 
-    def stats_data_view(self, request):
-        output = self.stats_data()
         return http.HttpResponse(json_dumps(output), 'text/javascript')
 
 
@@ -1062,7 +1168,7 @@ class ConferenceTagAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(ConferenceTagAdmin, self).get_urls()
         my_urls = [
-            url(r'^merge/$', self.admin_site.admin_view(self.merge_tags), name='conference-conferencetag-merge'),
+            re_path(r'^merge/$', self.admin_site.admin_view(self.merge_tags), name='conference-conferencetag-merge'),
         ]
         return my_urls + urls
 
@@ -1083,7 +1189,7 @@ class ConferenceTagAdmin(admin.ModelAdmin):
             return
         q = http.QueryDict('', mutable=True)
         q.setlist('tags', ids)
-        url = urlresolvers.reverse('admin:conference-conferencetag-merge') + '?' + q.urlencode()
+        url = reverse('admin:conference-conferencetag-merge') + '?' + q.urlencode()
         return http.HttpResponseRedirect(url)
     do_merge_tags.short_description = "Merge the selected tags"
 
@@ -1100,20 +1206,20 @@ class ConferenceTagAdmin(admin.ModelAdmin):
                 return http.HttpResponseBadRequest('invalid target tag')
             tags = models.ConferenceTag.objects\
                 .filter(id__in=tags_id)
-            discard = [ t for t in tags if t.id != target ]
+            discard = [t for t in tags if t.id != target]
 
             # We don't want to use the bulk operation for the update of
             # ConferenceTaggedItem and the cancellation of ConferenceTag
             # (objects.update, objects.delete) because the management of the
             # cache of dataaccess is based on the signals for the coherence.
             for item in models.ConferenceTaggedItem.objects.filter(tag__in=discard):
-                item.tag_id=target
+                item.tag_id = target
                 item.save()
 
             for t in discard:
                 t.delete()
             self.message_user(request, "tag merged")
-            return http.HttpResponseRedirect(urlresolvers.reverse('admin:conference_conferencetag_changelist'))
+            return http.HttpResponseRedirect(reverse('admin:conference_conferencetag_changelist'))
         else:
             request.session['conference_tag_merge_ids'] = tags_id
         tags = models.ConferenceTag.objects\
@@ -1154,13 +1260,8 @@ class NewsAdmin(admin.ModelAdmin):
 admin.site.register(models.CaptchaQuestion, CaptchaQuestionAdmin)
 admin.site.register(models.Conference, ConferenceAdmin)
 admin.site.register(models.ConferenceTag, ConferenceTagAdmin)
-admin.site.register(models.Deadline, DeadlineAdmin)
-admin.site.register(models.DidYouKnow, DidYouKnowAdmin)
 admin.site.register(models.ExchangeRate, ExchangeRateAdmin)
 admin.site.register(models.Fare, FareAdmin)
-admin.site.register(models.Hotel, HotelAdmin)
-admin.site.register(models.MediaPartner, MediaPartnerAdmin)
-admin.site.register(models.Quote, QuoteAdmin)
 admin.site.register(models.Schedule, ScheduleAdmin)
 admin.site.register(models.Speaker, SpeakerAdmin)
 admin.site.register(models.Sponsor, SponsorAdmin)

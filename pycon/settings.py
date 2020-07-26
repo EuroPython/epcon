@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 # Django settings for pycon project.
-import os
 import os.path
-import sys
 
 import dj_database_url
 from decouple import config
 
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 
 from model_utils import Choices
 
@@ -81,7 +79,6 @@ SERVER_EMAIL = config('SERVER_EMAIL', default='noreply@europython.eu')
 # Email sender address used per default for emails to e.g. attendees
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='info@europython.eu')
 
-
 # Timezone and languages
 # -----------------------
 # If you set this to False, Django will make some optimizations so as not
@@ -95,7 +92,7 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
-TIME_ZONE = 'Europe/Zurich'
+TIME_ZONE = 'Europe/Amsterdam'
 LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
@@ -151,7 +148,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = config('SECRET_KEY', default='your-secret-key')
+SECRET_KEY = config('SECRET_KEY')
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config(
     "SOCIAL_AUTH_GOOGLE_OAUTH2_KEY", default=""
@@ -194,14 +191,14 @@ TEMPLATES = [
                 "django.template.context_processors.csrf",
                 "django.template.context_processors.request",
                 "django.template.context_processors.tz",
-                "p3.context_processors.settings",
-                "conference.context_processors.current_url",
-                "conference.context_processors.stuff",
                 "sekizai.context_processors.sekizai",
                 "cms.context_processors.cms_settings",
                 "django.template.context_processors.static",
                 "social_django.context_processors.backends",
                 "social_django.context_processors.login_redirect",
+                # epcon context processors
+                "p3.context_processors.settings",
+                "conference.context_processors.epcon_ctx",
             ],
             "loaders": [
                 "django.template.loaders.filesystem.Loader",
@@ -221,9 +218,6 @@ MIDDLEWARE = (
     'django.middleware.http.ConditionalGetMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    'assopy.middleware.DebugInfo',
-
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
@@ -244,7 +238,6 @@ INSTALLED_APPS = (
     'filebrowser',
 
     'djangocms_admin_style',
-    'django_comments',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -256,9 +249,8 @@ INSTALLED_APPS = (
 
     'p3',
     'assopy',
-    'assopy.stripe',
     'conference',
-    'hcomments',
+    'email_template',
 
     'djangocms_text_ckeditor',
     'cmsplugin_filer_file',
@@ -267,30 +259,18 @@ INSTALLED_APPS = (
     'cmsplugin_filer_image',
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
-    'djangocms_grid',
 
     'treebeard',
     'cms',
     'menus',
     'sekizai',
-    'tagging',
     'taggit',
     'taggit_labels',
-    'authority',
-    # 'pages',
     'mptt',
     'crispy_forms',
 
-    'django_xmlrpc',
-    'rosetta',
-
-    'email_template',
-    # 'paypal.standard.ipn',
     'filer',
     'easy_thumbnails',
-
-    'django_crontab',
-    'formstyle',
 
     'markitup',
     'cms_utils',
@@ -392,13 +372,6 @@ PAGE_REAL_TIME_SEARCH = False
 
 PAGE_USE_STRICT_URL = True
 
-ROSETTA_EXCLUDED_APPLICATIONS = (
-    'debug_toolbar',
-    'filebrowser',
-    'pages',
-    'rosetta',
-)
-
 CMS_LANGUAGES = {
     1: [
         {
@@ -415,17 +388,13 @@ CMS_LANGUAGES = {
     }
 }
 CMS_TEMPLATES = (
-    # ('django_cms/p5_homepage.html', 'Homepage'),
-    # ('django_cms/content.html', 'Content page'),
-    # ('django_cms/content-1col.html', 'Content page, single column'),
-    # ('django_cms/p5_home_splash.html', 'Homepage, splash'),
-    # ('ep19/bs/content/generic_content_page.html', 'Generic Content Page'),
-    # ('ep19/bs/homepage/home.html', 'Homepage'),
-    ('ep19/bs/content/generic_content_page_with_sidebar.html',
+    # ('conference/content/generic_content_page.html', 'Generic Content Page'),
+    ('conference/content/generic_content_page_with_sidebar.html',
      'Generic Content Page (with sidebar)'),
+    ('conference/homepage/home_template.html', 'Homepage'),
 )
 PAGE_TEMPLATES = (
-    ('ep19/bs/content/generic_content_page_with_sidebar.html',
+    ('conference/content/generic_content_page_with_sidebar.html',
      'Generic Content Page (with sidebar)'),
 )
 CMS_PLUGIN_PROCESSORS = (
@@ -466,23 +435,14 @@ THUMBNAIL_PROCESSORS = (
 )
 THUMBNAIL_HIGH_RESOLUTION = True
 
-DJANGOCMS_GRID_CONFIG = {
-    'COLUMNS': 100,
-    'TOTAL_WIDTH': 960,
-    'GUTTER': 20,
-}
-
-
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 # Override the message class to get it to work with bootstrap styles.
-from django.contrib.messages import constants as messages
+from django.contrib.messages import constants as messages  # noqa
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
-# TODO umgelurgel: this is only required for ep2019;
-#  remove this after ep2019 and before ep2020
-MESSAGE_STORAGE = 'conference.messages.CustomFallbackStorage'
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 
 #
@@ -491,31 +451,26 @@ MESSAGE_STORAGE = 'conference.messages.CustomFallbackStorage'
 SESSION_COOKIE_NAME = 'sid'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
-CONFERENCE_CONFERENCE = 'ep2019'
-CONFERENCE_NAME = "EuroPython 2019"
+CONFERENCE_CONFERENCE = 'ep2020'
+CONFERENCE_NAME = "EuroPython 2020"
 CONFERENCE_SEND_EMAIL_TO = ["helpdesk@europython.eu"]
 CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL = []
-CONFERENCE_VOTING_DISALLOWED = 'https://ep2019.europython.eu/en/talk-voting/'
+CONFERENCE_VOTING_DISALLOWED = 'https://ep2020.europython.eu/talk-voting/'
 CONFERENCE_TALK_VOTING_ELIGIBLE = (
     "ep2015",
     "ep2016",
     "ep2017",
     "ep2018",
     "ep2019",
+    "ep2020",
 )
-
-CONFERENCE_FORMS = {
-    'PaperSubmission': 'p3.forms.P3SubmissionForm',
-    'AdditionalPaperSubmission': 'p3.forms.P3SubmissionAdditionalForm',
-    'Profile': 'p3.forms.P3ProfileForm',
-    'EventBooking': 'p3.forms.P3EventBookingForm',
-}
+EARLY_BIRD_ORDER_LIMIT = config("EARLY_BIRD_ORDER_LIMIT", default=220, cast=int)
 
 CONFERENCE_TALKS_RANKING_FILE = SITE_DATA_ROOT + '/rankings.txt'
 CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG = (
     SITE_DATA_ROOT + "/admin_ticket_emails.txt"
 )
-CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['p3', 'conference']
+CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY = ['conference']
 
 # Conference sub-communities
 CONFERENCE_TALK_SUBCOMMUNITY = (
@@ -540,23 +495,25 @@ CONFERENCE_TALK_DOMAIN = Choices(
 # T-shirt sizes
 # TODO: Make that into Choices
 CONFERENCE_TICKET_CONFERENCE_SHIRT_SIZES = (
-    ('fs', 'S (female)'),
-    ('fm', 'M (female)'),
-    ('fl', 'L (female)'),
-    ('fxl', 'XL (female)'),
-    ('fxxl', 'XXL (female)'),
-    ('fxxxl', '3XL (female)'),
-    ('s', 'S (male)'),
-    ('m', 'M (male)'),
-    ('l', 'L (male)'),
-    ('xl', 'XL (male)'),
-    ('xxl', 'XXL (male)'),
-    ('xxxl', '3XL (male)'),
-    ('xxxxl', '4XL (male)'),
+    (None, 'Please select your shirt size!'),
+    ('fs', 'S (fitted cut)'),
+    ('fm', 'M (fitted cut)'),
+    ('fl', 'L (fitted cut)'),
+    ('fxl', 'XL (fitted cut)'),
+    ('fxxl', 'XXL (fitted cut)'),
+    ('fxxxl', '3XL (fitted cut)'),
+    ('s', 'S (straight cut)'),
+    ('m', 'M (straight cut)'),
+    ('l', 'L (straight cut)'),
+    ('xl', 'XL (straight cut)'),
+    ('xxl', 'XXL (straight cut)'),
+    ('xxxl', '3XL (straight cut)'),
+    ('xxxxl', '4XL (straight cut)'),
 )
 
 # Available diets
 CONFERENCE_TICKET_CONFERENCE_DIETS = (
+    (None, "Please select your dietary preferences!"),
     ("omnivorous", _("Omnivorous")),
     ("vegetarian", _("Vegetarian")),
     # ('vegan', _('Vegan')),
@@ -577,17 +534,19 @@ CONFERENCE_TICKET_CONFERENCE_EXPERIENCES = (
 
 
 def CONFERENCE_TICKETS(conf, ticket_type=None, fare_code=None):
-    from p3 import models
+    from conference.models import Ticket
 
-    tickets = models.Ticket.objects \
-        .filter(fare__conference=conf, orderitem__order___complete=True)
+    tickets = Ticket.objects.filter(fare__conference=conf, orderitem__order___complete=True)
+
     if ticket_type:
         tickets = tickets.filter(fare__ticket_type=ticket_type)
+
     if fare_code:
         if fare_code.endswith('%'):
             tickets = tickets.filter(fare__code__startswith=fare_code[:-1])
         else:
             tickets = tickets.filter(fare__code=fare_code)
+
     return tickets
 
 
@@ -606,34 +565,15 @@ def CONFERENCE_VOTING_OPENED(conf, user):
     else:
         return False
 
-    # XXX Disabled these special cases, since it's not clear
-    #     what they are used for
-    if 0:
-        from p3.models import TalkSpeaker, Speaker
-        try:
-            count = TalkSpeaker.objects.filter(
-                talk__conference=CONFERENCE_CONFERENCE,
-                speaker=user.speaker).count()
-        except (AttributeError, Speaker.DoesNotExist):
-            pass
-        else:
-            if count > 0:
-                return True
-
-        # Special case for "pre_voting" group members;
-        if user.groups.filter(name='pre_voting').exists():
-            return True
-
     return False
 
 
 def CONFERENCE_VOTING_ALLOWED(user):
-
     """ Determine whether user is allowed to participate in talk voting.
-
     """
     if not user.is_authenticated:
         return False
+
     if user.is_superuser:
         return True
 
@@ -663,7 +603,7 @@ def CONFERENCE_VOTING_ALLOWED(user):
             assigned_to=user.email
         )
     )
-    if tickets.count() > 0:
+    if tickets.exists():
         return True
 
     # Starting with EP2017, we know that all assigned tickets have
@@ -690,8 +630,9 @@ def CONFERENCE_VOTING_ALLOWED(user):
             )
         )
 
-        if tickets.count() > 0:
+        if tickets.exists():
             return True
+
     return False
 
 
@@ -715,75 +656,11 @@ def CONFERENCE_SCHEDULE_ATTENDEES(schedule, forecast):
     return 0
 
 
-CONFERENCE_ADMIN_ATTENDEE_STATS = (
-    'p3.stats.tickets_status',
-    'p3.stats.conference_speakers',
-    'p3.stats.conference_speakers_day',
-    'p3.stats.speaker_status',
-    'p3.stats.presence_days',
-    'p3.stats.shirt_sizes',
-    'p3.stats.diet_types',
-    'p3.stats.pp_tickets',
-)
-
-
-CONFERENCE_TICKET_BADGE_ENABLED = True
-CONFERENCE_TICKET_BADGE_PROG_ARGS = ['-e', '0', '-p', 'A4', '-n', '1']
-
-
-def CONFERENCE_TICKET_BADGE_PREPARE_FUNCTION(tickets):
-    from p3.utils import conference_ticket_badge
-
-    return conference_ticket_badge(tickets)
-
-
-def CONFERENCE_TALK_VIDEO_ACCESS(request, talk):
-    return True
-    if talk.conference != CONFERENCE_CONFERENCE:
-        return True
-    u = request.user
-    if u.is_anonymous:
-        return False
-    from p3.models import Ticket
-
-    qs = Ticket.objects \
-        .filter(id__in=[x.id for x in u.assopy_user.tickets()]) \
-        .filter(orderitem__order___complete=True,
-                fare__ticket_type='conference')
-    return qs.exists()
-
-
-def ASSOPY_ORDERITEM_CAN_BE_REFUNDED(user, item):
-    if user.is_superuser:
-        return True
-    return False
-    if not item.ticket:
-        return False
-    ticket = item.ticket
-    if ticket.user != user:
-        return False
-    if ticket.fare.conference != CONFERENCE_CONFERENCE:
-        return False
-    if item.order.total() == 0:
-        return False
-    return item.order._complete
-
-
 #
 # XXX What is this AssoPy stuff ?
 #
 ASSOPY_BACKEND = 'https://assopy.europython.eu/conference/externalcall'
-ASSOPY_SEARCH_MISSING_USERS_ON_BACKEND = False
-ASSOPY_TICKET_PAGE = 'p3-tickets'
 ASSOPY_SEND_EMAIL_TO = ['billing-log@europython.io']
-ASSOPY_REFUND_EMAIL_ADDRESS = {
-    'approve': ['billing@europython.eu'],
-    'execute': {
-        None: ['billing@europython.eu'],
-        'bank': ['billing@europython.eu'],
-    },
-    'credit-note': ['billing@europython.eu'],
-}
 
 #
 # This URL needs to be set to the main URL of the site.
@@ -791,14 +668,8 @@ ASSOPY_REFUND_EMAIL_ADDRESS = {
 # It is used for generating URLs pointing back to the site
 # in quite a few places.
 #
-DEFAULT_URL_PREFIX = 'https://ep2019.europython.eu'
+DEFAULT_URL_PREFIX = 'https://ep2020.europython.eu'
 LOGIN_REDIRECT_URL = reverse_lazy("user_panel:dashboard")
-
-COMMENTS_APP = 'hcomments'
-
-# Disabled until we find out how to use europython-announce for this:
-#P3_NEWSLETTER_SUBSCRIBE_URL = "https://mail.python.org/mailman/subscribe/europython-announce"
-P3_NEWSLETTER_SUBSCRIBE_URL = ""
 
 P3_TWITTER_USER = 'europython'
 P3_USER_MESSAGE_FOOTER = '''
@@ -806,191 +677,11 @@ P3_USER_MESSAGE_FOOTER = '''
 This message was sent from a participant at the EuroPython conference.
 Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
-https://ep2019.europython.eu/accounts/profile/
+https://ep2020.europython.eu/accounts/profile/
 '''
 
 
 P3_ANONYMOUS_AVATAR = 'p5/images/headshot-default.jpg'
-
-#
-# These are probably meant for live streaming on-site servers. We don't
-# use these at the moment...
-#
-P3_LIVE_INTERNAL_IPS = ('2.228.78.', '10.3.3.', '127.0.0.1')
-P3_INTERNAL_SERVER = 'live.ep:1935'
-
-P3_LIVE_TRACKS = {
-    'track1': {
-        'stream': {
-            'external': 'WQnU7Qvy-xg',
-            'internal': 'live/spaghetti',
-        }
-    },
-    'track2': {
-        'stream': {
-            'external': 'urwOdSH3Tyg',
-            'internal': 'live/lasagne',
-        }
-    },
-    'track3': {
-        'stream': {
-            'external': 'tdGKPPlhqAI',
-            'internal': 'live/ravioli',
-        }
-    },
-    'track4': {
-        'stream': {
-            'external': 'IeKx5Qy_8lY',
-            'internal': 'live/tagliatelle',
-        }
-    },
-    'track-ita': {
-        'stream': {
-            'external': 'JSjXKGom9VI',
-            'internal': 'live/bigmac',
-        }
-    },
-    'training1': {
-        'stream': {
-            'external': '6CG-25uxPdI',
-            'internal': 'live/pizzamargherita',
-        }
-    },
-    'training2': {
-        'stream': {
-            'external': 'iy1phHF-mec',
-            'internal': 'live/pizzanapoli',
-        }
-    },
-}
-
-
-def P3_LIVE_REDIRECT_URL(request, track):
-    internal = False
-    for check in P3_LIVE_INTERNAL_IPS:
-        if request.META['REMOTE_ADDR'].startswith(check):
-            internal = True
-            break
-    url = None
-    if internal:
-        import re
-
-        ua = request.META['HTTP_USER_AGENT']
-
-        base = '{0}/{1}'.format(P3_INTERNAL_SERVER,
-                                P3_LIVE_TRACKS[track]['stream']['internal'])
-        if re.search('Android', ua, re.I):
-            url = 'rtsp://' + base
-        elif re.search('iPhone|iPad|iPod', ua, re.I):
-            url = 'http://%s/playlist.m3u8' % base
-        else:
-            url = 'rtmp://' + base
-    else:
-        try:
-            url = 'https://www.youtube.com/watch?v={0}'.format(
-                P3_LIVE_TRACKS[track]['stream']['external'])
-        except KeyError:
-            pass
-    return url
-
-
-def P3_LIVE_EMBED(request, track=None, event=None):
-    from django.core.cache import cache
-
-    if not any((track, event)) or all((track, event)):
-        raise ValueError('track or event, not both')
-
-    if event:
-        # ep2012, all keynotes are recorded in track "lasagne"
-        if 'keynote' in event['tags'] or len(event['tracks']) > 1:
-            track = 'track2'
-        else:
-            track = event['tracks'][0]
-
-    internal = False
-    for check in P3_LIVE_INTERNAL_IPS:
-        if request.META['REMOTE_ADDR'].startswith(check):
-            internal = True
-            break
-
-    if internal:
-        try:
-            url = '{0}/{1}'.format(P3_INTERNAL_SERVER,
-                                   P3_LIVE_TRACKS[track]['stream']['internal'])
-        except KeyError:
-            return None
-        data = {
-            'track': track,
-            'stream': url.rsplit('/', 1)[1],
-            'url': url,
-        }
-        html = ("""
-        <div>
-            <div class="button" style="float: left; margin-right: 20px;">
-                <h5><a href="rtsp://%(url)s">RTSP</a></h5>
-                For almost all<br/>Linux, Windows, Android
-            </div>
-            <div class="button" style="float: left; margin-right: 20px;">
-                <h5><a href="http://%(url)s/playlist.m3u8">HLS&#xF8FF;</a></h5>
-                Apple world (mainly)
-            </div>
-            <div class="button" style="float: left; margin-right: 20px;">
-                <h5><a href="#" onclick="start_%(stream)s(); return false;">Flash</a></h5>
-                Old good school
-            </div>
-            <div id="stream-%(track)s" style="clear: both();width:530px;height:298px;margin:0 auto;text-align:center"> </div>
-            <script>
-                function start_%(stream)s() {
-                    $f("stream-%(track)s", "/static/p5/flowplayer/flowplayer-3.2.12.swf", {
-
-                        clip: {
-                            autoPlay: false,
-                            url: 'mp4:%(stream)s',
-                            scaling: 'fit',
-                            // configure clip to use hddn as our provider, refering to our rtmp plugin
-                            provider: 'hddn'
-                        },
-
-                        // streaming plugins are configured under the plugins node
-                        plugins: {
-
-                            // here is our rtmp plugin configuration
-                            hddn: {
-                                url: "/static/p5/flowplayer/flowplayer.rtmp-3.2.10.swf",
-
-                                // netConnectionUrl defines where the streams are found
-                                netConnectionUrl: 'rtmp://%(url)s'
-                            }
-                        }
-                    });
-                }
-            </script>
-        </div>
-        """ % data) #" (makes emacs highlighting happy)
-        return html
-    else:
-        data = cache.get('p3_live_embed_%s' % track)
-        if data is not None:
-            return data
-
-        try:
-            yurl = 'https://www.youtube.com/watch?v={0}'.format(
-                P3_LIVE_TRACKS[track]['stream']['external'])
-        except KeyError:
-            return None
-
-        import httplib2, json
-
-        http = httplib2.Http()
-        service = 'https://www.youtube.com/oembed'
-        url = service + '?url=' + yurl + '&format=json&scheme=https'
-        try:
-            response, content = http.request(url)
-            data = json.loads(content)
-        except:
-            return None
-        cache.set('p3_live_embed_%s' % track, data['html'], 3600)
-        return data['html']
 
 
 # Stripe payment integration
@@ -1002,13 +693,6 @@ STRIPE_COMPANY_NAME = config("STRIPE_COMPANY_NAME", default='')
 STRIPE_COMPANY_LOGO = config("STRIPE_COMPANY_LOGO", default='')
 STRIPE_CURRENCY = "EUR"
 STRIPE_ALLOW_REMEMBER_ME = False
-
-# Paypl integration
-# Paypal merchant email
-PAYPAL_RECEIVER_EMAIL = config("PAYPAL_RECEIVER_EMAIL", default='')
-
-# If the merchant account is a debug one set this flag to True
-PAYPAL_TEST = config('PAYPAL_TEST', default=False, cast=bool)
 
 # files under SECURE_MEDIA_BOOT must be served by django, this if
 # is needed to avoid they end up in a subdir of MEDIA_ROOT that is
@@ -1033,14 +717,3 @@ DISABLE_CACHING = False
 # Complete project setup.
 if not os.path.exists(LOGS_DIR):
     os.makedirs(LOGS_DIR)
-
-# TODO: Remove the need for modifying python path in django settings.
-sys.path.insert(0, os.path.join(PROJECT_DIR, 'deps'))
-
-
-try:
-    from pycon.settings_locale import *
-except ImportError as reason:
-    #import sys
-    #sys.stderr.write('Could not import local settings: %s\n' % reason)
-    pass

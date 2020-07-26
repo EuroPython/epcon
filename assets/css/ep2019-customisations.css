@@ -1,32 +1,66 @@
-/* primary: 007d8a; */
-/* primary-light: 76bdc4 */
-/* secondary: d87a00 */
-/* secondary-light: f8c48f */
+/* primary: #15653B; */
+/* primary-light/info: #47A71C */
+/* secondary: #E88100 */
+/* secondary-light/warning: #FFCB96 */
 
-.text-primary-light { color: #76bdc4; }
-.text-secondary-light { color: #f8c48f; }
+.text-primary-light { color: #47A71C; }
+.text-secondary-light { color: #FFCB96; }
+
+/* Fonts for ep2020*/
+@font-face {
+    font-family: "Galyon";
+    src: url("Galyon-Regular.otf");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Galyon";
+    src: url("Galyon-Bold.otf");
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: "Galyon";
+    src: url("Galyon-Italic.otf");
+    font-weight: normal;
+    font-style: italic;
+}
+
+#announcement {
+    background: #E88100;
+    /* full width minus scrollbar*/
+    padding: 32px;
+    box-shadow: 0px 0px 10px 0px rgba(217,122,10,0.75);
+    margin: auto;
+    max-width: 600px;
+}
+
+#announcement a {
+    color: white;
+    text-decoration: underline;
+}
 
 #background_image {
-    background: url('/static/img/ep2019-background-1920px-60pc.jpg');
+    background: url("/static/img/ep2020-background-online.jpg");
     background-size: cover;
-    background-position: auto -20%;
     color: white;
-    min-height: 90px
+    min-height: 90px;
+    padding-bottom: 4em;
 }
-.jumbotron { background: transparent; color: white; }
+.jumbotron { background: transparent; color: white; padding: 4em 0 13em 0;}
 .text-underline { text-decoration: underline; }
 
 .page { min-height: 500px; padding-bottom: 10em; padding-top: 4em}
-#footer { background: #007d8a; padding: 1em 0; color: #f8c48f}
+#footer { background: #136F43; padding: 1em 0; color: #f8c48f}
 #footer a { color: white; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
 #footer ul { list-style-type: none; padding-left: 0}
 #footer ul li { margin: .5em 0; }
-#homepage_news { background: #007d8a; padding: 2em 0; margin 0:}
+#homepage_news { background: #136F43; padding: 2em 0; margin 0:}
 #homepage_news a { color: #fff; text-decoration: underline;}
 #homepage_news a:hover { color: #f8c48f; text-decoration: underline;}
 .news-card { height: 300px; }
 
-#homepage_venue { background: #d87a00; padding: 1em 0; margin: 0}
+#homepage_venue { background: #EF8903; padding: 1em 0; margin: 0}
 #homepage_schedule_overview { margin: 2em 0; }
 
 #tickets-link-header { color: #fff; border-bottom: 2px solid #fff; margin-right: 2px }
@@ -127,13 +161,17 @@ a.navbar-brand:hover{
 /* Highlight selected dropdown item */
 .dropdown-item:hover, .dropdown-item:focus {
     text-decoration: none;
-    background-color: #8bb9e6;
+    background-color: #3AAE2A;
 }
 
 .dropdown-item.active, .dropdown-item:active {
     color: #fff;
     text-decoration: none;
-    background-color: #007d8a;
+    background-color: #136F43;
+}
+
+a.nav-link, a.navbar-brand {
+    color: #E88100;
 }
 
 /* Don't show carets in the dropdown menus */
@@ -148,3 +186,7 @@ img.speaker_avatar {
     border-radius: 50%;
 }
 
+/* Handle hover-over dropdown menusin nav */
+div.dropdown-menu {
+    margin-top: 0;
+}

@@ -1,41 +1,26 @@
-import pytest
-
 from django.conf import settings
+
 from tests.common_tools import template_used
-from conference.tests.factories.fare import SponsorFactory
+from tests.factories import SponsorFactory
+from tests.common_tools import create_homepage_in_cms
 
 
 def test_get_homepage(db, client):
-    url = '/'
+    create_homepage_in_cms()
+    url = "/"
     response = client.get(url)
 
     assert response.status_code == 200
-    assert template_used(response, 'ep19/bs/homepage/home.html')
-    assert template_used(response, 'ep19/bs/homepage/_venue.html')
-    assert template_used(response, 'ep19/bs/homepage/_sponsors.html')
-    assert template_used(response, 'ep19/bs/homepage/_schedule_overview.html')
-    assert template_used(response, 'ep19/bs/header/_with_jumbotron.html')
-    assert b'EuroPython 2019' in response.content
+    assert template_used(response, "conference/homepage/home_template.html")
+    assert template_used(response, "conference/homepage/_venue.html")
+    assert template_used(response, "conference/homepage/_sponsors.html")
+    assert template_used(response, "conference/homepage/_schedule_overview.html")
+    assert template_used(response, "conference/header/_with_jumbotron.html")
+    assert b"EuroPython 2020" in response.content
 
 
-@pytest.mark.xfail
-def test_homepage_contains_last_3_news_for_current_conference(db, client):
-    assert False
-
-
-@pytest.mark.xfail
-def test_homepage_doesnt_display_news_from_non_current_conference(db, client):
-    assert False
-
-
-@pytest.mark.xfail
-def test_homepage_news_supports_html_tags(db, client):
-    assert False
-
-
-def test_homepage_doesnt_contain_sponsor_if_no_income(
-    db, client
-):
+def test_homepage_doesnt_contain_sponsor_if_no_income(db, client):
+    create_homepage_in_cms()
     sponsor = SponsorFactory(
         alt_text="Sponsor Alt Text", title_text="Sponsor Title Text"
     )
@@ -50,6 +35,7 @@ def test_homepage_doesnt_contain_sponsor_if_no_income(
 def test_homepage_doesnt_contain_sponsor_if_income_for_different_conference(
     db, client
 ):
+    create_homepage_in_cms()
 
     sponsor = SponsorFactory(
         alt_text="Sponsor Alt Text", title_text="Sponsor Title Text"
@@ -66,12 +52,12 @@ def test_homepage_doesnt_contain_sponsor_if_income_for_different_conference(
 def test_homepage_contains_sponsors_if_income_for_current_conference(
     db, client
 ):
+    create_homepage_in_cms()
     sponsor = SponsorFactory(
         alt_text="Sponsor Alt Text", title_text="Sponsor Title Text"
     )
     sponsor.sponsorincome_set.create(
-        income=123,
-        conference=settings.CONFERENCE_CONFERENCE
+        income=123, conference=settings.CONFERENCE_CONFERENCE
     )
     url = "/"
     response = client.get(url)
@@ -81,10 +67,11 @@ def test_homepage_contains_sponsors_if_income_for_current_conference(
 
 
 def test_homepage_contains_googleanalytics(db, client):
-    url = '/'
+    create_homepage_in_cms()
+    url = "/"
     response = client.get(url)
     assert response.status_code == 200
 
-    EPCON_2019_GA_ID = 'UA-60323107-5'
+    EPCON_GA_ID = "UA-60323107"
     # NOTE(artcz) this should probably go into a variable, but good enough for
-    assert EPCON_2019_GA_ID in response.content.decode()
+    assert EPCON_GA_ID in response.content.decode()

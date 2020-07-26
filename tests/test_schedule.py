@@ -1,14 +1,13 @@
-# coding: utf-8
-
 from http.client import OK as HTTP_OK_200
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils import timezone
+from django.test import TestCase
 
 from pytest import mark
 
-from tests.common_tools import template_used  # , serve_response
+from tests.common_tools import template_used
 from conference.models import (
     Conference,
     Schedule,
@@ -18,12 +17,7 @@ from conference.models import (
     AttendeeProfile,
 )
 
-from django_factory_boy import auth as auth_factories
-
-from assopy.tests.factories.user import AssopyUserFactory
-from conference.tests.factories.talk import TalkFactory, TalkSpeakerFactory
-from conference.tests.factories.speaker import SpeakerFactory
-from p3.tests.factories.talk import P3TalkFactory
+from . import factories
 
 
 @mark.django_db
@@ -37,15 +31,12 @@ def test_names_are_not_abbreviated(client):
         name=settings.CONFERENCE_CONFERENCE
     )
 
-    user = auth_factories.UserFactory(email='joedoe@example.com',
+    user = factories.UserFactory(email='joedoe@example.com',
                                       first_name='Joejoe',
                                       last_name='Doedoe',
                                       is_active=True)
-    AssopyUserFactory(user=user)
-    talk = TalkFactory()
-    AttendeeProfile.objects.getOrCreateForUser(user=user)
-    TalkSpeakerFactory(talk=talk, speaker=SpeakerFactory(user=user))
-    P3TalkFactory(talk=talk)
+    talk = factories.TalkFactory()
+    factories.TalkSpeakerFactory(talk=talk, speaker=factories.SpeakerFactory(user=user))
 
     schedule = Schedule.objects.create(
         conference=conference.name,
@@ -70,33 +61,21 @@ def test_names_are_not_abbreviated(client):
 
     response = client.get(schedule_url)
     assert response.status_code == HTTP_OK_200
-    assert template_used(response, 'ep19/bs/schedule/schedule.html')
+    assert template_used(response, 'conference/schedule/schedule.html')
     assert 'J. Doedoe' not in response.content.decode()
     assert 'Joejoe Doedoe' in response.content.decode()
 
-    # TODO umgelurgel: these views do not exist for ep2019 - we should either
-    #   remove these tests or add back the views
-    # list_url = reverse(
-    #     'p3-schedule-list',
-    #     kwargs={'conference': conference.code}
-    # )
-    #
-    # response = client.get(list_url)
-    # assert response.status_code == HTTP_OK_200
-    # assert 'J. Doedoe' not in response.content.decode('utf-8')
-    # assert 'Joejoe Doedoe' in response.content.decode('utf-8')
-    # assert template_used(response, 'p3/schedule_list.html')
-    #
-    # # test name abbreviations in ical output
-    # ical_url = reverse(
-    #     'p3-schedule-ics',
-    #     kwargs={'conference': conference.code}
-    # )
-    #
-    # # Currently we have neither in the ical version...
-    # # FIXME(?) https://github.com/EuroPython/epcon/issues/800
-    # response = client.get(ical_url)
-    # assert response.status_code == HTTP_OK_200
-    # assert response['Content-Type'] == 'text/calendar'
-    # assert 'J. Doedoe' not in response.content.decode('utf-8')
-    # assert 'Joejoe Doedoe' not in response.content.decode('utf-8')
+
+class TestView(TestCase):
+    def setUp(self):
+        self.user = factories.UserFactory(password='password1234', is_superuser=True)
+        is_logged = self.client.login(username=self.user.username,
+                                      password='password1234')
+        self.assertTrue(is_logged)
+
+    def test_p3_schedule_empty(self):
+        # When trying to view the schedule and no schedule exists, expect 404
+        _ = factories.ConferenceFactory()
+        url = reverse('schedule:schedule')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)

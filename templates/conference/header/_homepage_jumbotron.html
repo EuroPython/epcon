@@ -1,0 +1,27 @@
+{% load cms_tags static %}
+
+<div class="jumbotron">
+    <div class="container text-center">
+        <img class="img-fluid" src="{% static 'img/ep2020-online-logo.png' %}"
+             alt="EuroPython 2020; July 23-26th 2020; Online"
+             title="EuroPython 2020; July 23-26th 2020; Online">
+
+        {% comment %}
+        <img src="{% static 'img/ep2020-icon-logo-small.png' %}" width=200 height=200>
+        <h1 class="display-3"><span class='text-secondary'>euro</span> <strong class='text-primary-light'>python</strong></h1>
+        <h2>July 23-26th 2020, Online</h2>
+        {% endcomment %}
+
+
+        {% comment %}
+        <div style='margin-top: 30em'>
+            NOTE(artcz): Disabled because we will open ticket sales a bit later after launch
+            <p><a href='{% page_url 'tickets' %}' class='btn btn-outline-light btn-lg'>Get the tickets</a></p>
+            <p><a style='font-size: 1.5em; padding: .5em 2em;' href='{% page_url 'tickets' %}' class='btn btn-light btn-lg'>Buy tickets</a></p>
+        </div>
+        {% endcomment %}
+    </div>
+</div>
+<div id="announcement">
+    {% placeholder "text" %}
+</div>

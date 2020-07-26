@@ -1,5 +1,5 @@
 from django import template
-from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 register = template.Library()
@@ -12,16 +12,16 @@ def render_meta(context, title=""):
     cms_page_title = page.get_title() if page else ""
 
     title = title or context.get("title", "") or cms_page_title
-    title = f"{title} &amp; " if title else ""
+    title = f"{title} &mdash; " if title else ""
 
     description = ""
     page_title = (
-        f"{title}EuroPython 2019 &middot; Basel, Switzerland, 8-14 July 2019"
+        f"{title}EuroPython 2020 Online &middot; 23-26 July 2020"
     )
     page_url = context["CURRENT_URL"]
 
     image_url = context.get("social_image_url") or request.build_absolute_uri(
-        static("img/social.png")
+        static("img/ep2020-social-online-card.jpg")
     )
 
     TEMPLATE = f"""

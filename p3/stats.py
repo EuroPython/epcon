@@ -1,14 +1,14 @@
 from collections import defaultdict
 
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.db.models import Q, Count
 
 from p3 import models
 from conference import models as cmodels
-from conference.models import Ticket, Speaker, Talk
-from conference.tickets import count_number_of_sold_training_tickets_including_combined_tickets
+from conference.models import Ticket, Speaker, Talk, TALK_STATUS
+from conference.tickets import sold_training_tickets_including_combined_tickets
 
 
 def _create_option(id, title, total_qs, **kwargs):
@@ -198,6 +198,30 @@ def tickets_status(conf, code=None):
         elif code == 'spam_recruiting':
             output = ticket_status_for_spam_recruiting(spam_recruiting)
 
+        elif code == 'training_tickets_sold':
+            output = ticket_status_for_training_tickets_including_combined(conference_code=conf)
+
+    return output
+
+
+def ticket_status_for_training_tickets_including_combined(conference_code):
+    output = {
+        'columns': (
+            ('ticket', 'Ticket'),
+            ('name', 'Attendee name'),
+            ('email', 'Email'),
+        ),
+        'data': [],
+    }
+    tickets = sold_training_tickets_including_combined_tickets(conference_code=conference_code)
+
+    for ticket in tickets:
+        output['data'].append({
+            'name': ticket.user.assopy_user.name(),
+            'email': ticket.user.email,
+            'ticket': ticket,
+        })
+
     return output
 
 
@@ -374,7 +398,7 @@ def ticket_status_no_code(conf, multiple_assignments, orphan_tickets, spam_recru
         {
             'id': 'training_tickets_sold',
             'title': 'Sold training tickets (including combined)',
-            'total': count_number_of_sold_training_tickets_including_combined_tickets(conference_code=conf),
+            'total': sold_training_tickets_including_combined_tickets(conference_code=conf).count(),
         },
         _create_option(
             'tickets_with_unique_email',
@@ -454,13 +478,20 @@ def conference_speakers(conf, code=None):
     accepted_spks = Speaker.objects.byConference(conf)
     not_scheduled = Speaker.objects\
         .filter(talkspeaker__talk__in=Talk.objects\
-            .filter(conference=conf, status='accepted', event=None))\
+            .filter(conference=conf, status=TALK_STATUS.accepted, event=None))\
         .distinct()
+    no_slides = Speaker.objects.filter(
+        Q(talkspeaker__talk__conference=conf) &
+        Q(talkspeaker__talk__status=TALK_STATUS.accepted) &
+        Q(talkspeaker__talk__slides='') &
+        Q(talkspeaker__talk__slides_url='')
+    ).distinct()
     if code is None:
         return [
             _create_option('all_speakers', 'All speakers', all_spks),
             _create_option('accepted_speakers', 'Speakers with accepted talks', accepted_spks),
             _create_option('speakers_not_scheduled', 'Speakers with unscheduled accepted talks', not_scheduled),
+            _create_option('speakers_no_slides', 'Speakers who have not uploaded slides', no_slides),
         ]
     else:
         if code == 'all_speakers':
@@ -469,10 +500,13 @@ def conference_speakers(conf, code=None):
             qs = accepted_spks
         elif code == 'speakers_not_scheduled':
             qs = not_scheduled
+        elif code == 'speakers_no_slides':
+            qs = no_slides
         output = {
             'columns': (
                 ('name', 'Name'),
                 ('email', 'Email'),
+                ('talks', 'Talks'),
             ),
             'data': [],
         }
@@ -481,12 +515,20 @@ def conference_speakers(conf, code=None):
             .select_related('user')\
             .order_by('user__first_name', 'user__last_name')
         for x in qs:
+            talks = x.talks().filter(conference=conf, status=TALK_STATUS.accepted)
+            if code == 'speakers_no_slides':
+                talks = talks.filter(Q(talkspeaker__talk__slides='') & Q(talkspeaker__talk__slides_url=''))
+
             data.append({
                 'name': '<a href="%s">%s %s</a>' % (
                     reverse('admin:auth_user_change', args=(x.user_id,)),
                     x.user.first_name,
                     x.user.last_name),
                 'email': x.user.email,
+                'talks': '<br/>'.join([
+                    f"<a href={reverse('admin:conference_talk_change', args=(talk.id,))}>{talk.title}</a>"
+                    for talk in talks
+                ]),
                 'uid': x.user_id,
             })
     return output

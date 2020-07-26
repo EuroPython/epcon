@@ -1,0 +1,25 @@
+{% extends "conference/cart/base.html" %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+&raquo; Step 4: Confirmation and Payment
+{% endblock %}
+
+{% block content %}
+
+<div class='container page'>
+    <div class='row'>
+        <div class='col-md-12'>
+            <h1>Congrats! Order #{{ order.code }} complete.</h1>
+            {% comment %}
+            <h4 class="mt-3 mb-3">Please take note of your ticket numbers below.<br/>
+            You will need to provide them during at the registration desk to
+            collect your badge.</h4>
+            {% endcomment %}
+            {% include "conference/cart/_order_summary.html" %}
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

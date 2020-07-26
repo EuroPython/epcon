@@ -6,12 +6,12 @@ from phonenumber_field.formfields import PhoneNumberField
 from model_utils import Choices
 
 from django import forms
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.db import transaction
 from django.db.models import Q, Case, When, Value, BooleanField
 from django.http import HttpResponse
@@ -20,9 +20,12 @@ from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 
 from assopy.models import Invoice, Order
-from conference.accounts import get_or_create_attendee_profile_for_new_user
-from conference.cfp import AddSpeakerToTalkForm
-from conference.models import (
+from p3.models import P3Profile, TicketConference
+from p3.utils import assign_ticket_to_user
+
+from .accounts import get_or_create_attendee_profile_for_new_user
+from .cfp import AddSpeakerToTalkForm
+from .models import (
     AttendeeProfile,
     TALK_STATUS,
     Conference,
@@ -30,12 +33,14 @@ from conference.models import (
     TalkSpeaker,
     Ticket,
     ATTENDEEPROFILE_VISIBILITY,
+    ATTENDEEPROFILE_GENDER,
 )
-from conference.tickets import assign_ticket_to_user, reset_ticket_settings
-from p3.models import P3Profile, TicketConference
+from .tickets import reset_ticket_settings
+from .decorators import full_profile_required
 
 
 @login_required
+@full_profile_required
 def user_dashboard(request):
     proposals = get_proposals_for_current_conference(request.user)
     orders = get_orders_for_current_conference(request.user)
@@ -44,7 +49,7 @@ def user_dashboard(request):
 
     return TemplateResponse(
         request,
-        "ep19/bs/user_panel/dashboard.html",
+        "conference/user_panel/dashboard.html",
         {
             # Because in the template TALK_STATUS.accepted will be expanded to
             # the verbose name, and therefore comparison in the template will
@@ -62,15 +67,17 @@ def user_dashboard(request):
 def manage_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
 
-    if ticket.user != request.user or ticket.frozen or not ticket.fare.is_conference:
+    if not ticket.fare.is_conference or ticket not in get_tickets_for_current_conference(user=request.user):
         return HttpResponse("Can't do", status=403)
 
     ticket_configuration, _ = TicketConference.objects.get_or_create(
-        ticket=ticket, defaults={"name": ticket.name}
+        ticket=ticket,
     )
 
     ticket_configuration_form = TicketConferenceConfigForm(
-        instance=ticket_configuration, initial={"name": ticket.name}
+        instance=ticket_configuration,
+        # Note:  The name cannot be edited by the user.
+        initial={"name": ticket.name},
     )
 
     if request.method == "POST":
@@ -81,15 +88,12 @@ def manage_ticket(request, ticket_id):
         if ticket_configuration_form.is_valid():
             with transaction.atomic():
                 ticket_configuration_form.save()
-                # copy name
-                ticket.name = ticket_configuration.name
-                ticket.save()
                 messages.success(request, "Ticket configured!")
                 return redirect("user_panel:dashboard")
 
     return TemplateResponse(
         request,
-        "ep19/bs/user_panel/configure_ticket.html",
+        "conference/user_panel/configure_ticket.html",
         {"ticket_configuration_form": ticket_configuration_form, "ticket": ticket},
     )
 
@@ -98,7 +102,7 @@ def manage_ticket(request, ticket_id):
 def assign_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
 
-    if ticket.buyer != request.user or ticket.frozen:
+    if ticket.buyer != request.user or ticket not in get_tickets_for_current_conference(user=request.user):
         return HttpResponse("Can't do", status=403)
 
     assignment_form = AssignTicketForm(initial={'email': ticket.assigned_email})
@@ -119,7 +123,7 @@ def assign_ticket(request, ticket_id):
 
     return TemplateResponse(
         request,
-        "ep19/bs/user_panel/assign_ticket.html",
+        "conference/user_panel/assign_ticket.html",
         {"ticket": ticket, "assignment_form": assignment_form},
     )
 
@@ -138,7 +142,7 @@ def privacy_settings(request):
 
     return TemplateResponse(
         request,
-        "ep19/bs/user_panel/privacy_settings.html",
+        "conference/user_panel/privacy_settings.html",
         {"privacy_form": privacy_form},
     )
 
@@ -153,7 +157,6 @@ def profile_settings(request):
         profile_form = ProfileSettingsForm(
             instance=attendee_profile, data=request.POST, files=request.FILES
         )
-
         if profile_form.is_valid():
             profile_form.save()
             # Read the saved data back to make sure things get saved correctly
@@ -161,7 +164,7 @@ def profile_settings(request):
 
     return TemplateResponse(
         request,
-        "ep19/bs/user_panel/profile_settings.html",
+        "conference/user_panel/profile_settings.html",
         {"profile_form": profile_form},
     )
 
@@ -202,10 +205,22 @@ class TicketConferenceConfigForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(),
         required=False,
     )
+    # Note: The name is just displayed for reference.  Only support can
+    # change it via the Django admin
+    name = forms.CharField(
+        help_text="Please contact support to update how your name is displayed on your ticket.",
+        disabled=True,
+        required=False,
+    )
 
     class Meta:
         model = TicketConference
-        fields = ["name", "diet", "shirt_size", "tagline", "days"]
+        fields = ["name", 
+                  # XXX Disabled for EP2020; see #1269
+                  #"diet", 
+                  #"shirt_size", 
+                  "tagline", 
+                  "days"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -245,15 +260,15 @@ class ProfileSpamControlForm(forms.ModelForm):
         self.helper.layout = Layout(
             Div(
                 "spam_recruiting",
-                template="ep19/bs/user_panel/forms/privacy_settings_recruiting.html",
+                template="conference/user_panel/forms/privacy_settings_recruiting.html",
             ),
             Div(
                 "spam_user_message",
-                template="ep19/bs/user_panel/forms/privacy_settings_user_messages.html",
+                template="conference/user_panel/forms/privacy_settings_user_messages.html",
             ),
             Div(
                 "spam_sms",
-                template="ep19/bs/user_panel/forms/privacy_settings_sms_messages.html",
+                template="conference/user_panel/forms/privacy_settings_sms_messages.html",
             ),
             ButtonHolder(Submit("update", "Update", css_class="btn btn-primary")),
         )
@@ -277,16 +292,25 @@ class ProfileSettingsForm(forms.ModelForm):
         help_text=(
             "We require a mobile phone number for all speakers "
             "for last minute contacts and in case we need "
-            "timely clarification (if no reponse to previous emails).<br>"
-            "Use the international format, eg: +39-055-123456.<br />"
-            "This number will <strong>never</strong> be published."
+            "timely clarification (if no reponse to previous emails). "
+            "Use the international format (e.g.: +44 123456789). "
+            "This field will <strong>never</strong> be published."
         ),
         max_length=30,
         required=False,
     )
+    gender = forms.ChoiceField(
+        help_text=(
+            "We use this information for statistics related to conference "
+            "attendance diversity. "
+            "This field will <strong>never</strong> be published."
+        ),
+        choices=(("", "", ""),) + ATTENDEEPROFILE_GENDER,
+        widget=forms.Select,
+        required=True,
+    )
 
     is_minor = AddSpeakerToTalkForm.base_fields["is_minor"]
-
     job_title = AddSpeakerToTalkForm.base_fields["job_title"]
     company = AddSpeakerToTalkForm.base_fields["company"]
     company_homepage = AddSpeakerToTalkForm.base_fields["company_homepage"]
@@ -324,6 +348,7 @@ class ProfileSettingsForm(forms.ModelForm):
             "last_name",
             "is_minor",
             "phone",
+            "gender",
             "email",
             # second section
             "picture_options",
@@ -377,15 +402,19 @@ class ProfileSettingsForm(forms.ModelForm):
             ),
             Div(
                 Div("email", css_class="col-md-6"),
-                Div("phone", css_class="col-md-6"),
+                Div("is_minor", css_class="col-md-6 mt-4"),
                 css_class="row",
             ),
-            Div(Div("is_minor", css_class="col-md-6"), css_class="row"),
+            Div(
+                Div("phone", css_class="col-md-6"),
+                Div("gender", css_class="col-md-6"),
+                css_class="row",
+            ),
             HTML("<h1>Profile picture</h1>"),
             Div(
                 HTML(
                     render_to_string(
-                        "ep19/bs/user_panel/forms/profile_settings_picture.html",
+                        "conference/user_panel/forms/profile_settings_picture.html",
                         context={
                             "selected_picture_option": selected_image_option,
                             "profile_image_url": image_url,
@@ -415,8 +444,9 @@ class ProfileSettingsForm(forms.ModelForm):
             Div(Div("bio", css_class="col-md-12"), css_class="row"),
             HTML("<h1>Profile page visibility</h1>"),
             HTML(
-                "<h5><strong>Speaker profile pages are public by default.</strong> If you are giving a talk or"
-                " training at this year's conference, you can still set your preferences for the following years.</h5>"
+                "<h5><strong>Speaker profile pages are public by default.</strong> "
+                "You still have the option to change your preferences in the coming "
+                "years.</h5>"
             ),
             Div(Div("visibility", css_class="col-md-4"), css_class="row"),
             ButtonHolder(
@@ -440,11 +470,7 @@ class ProfileSettingsForm(forms.ModelForm):
         return data
 
     def resolve_image_settings(self, selected_option, image_url, image):
-        if selected_option == PICTURE_CHOICES.none:
-            image = None
-            image_url = ""
-            image_gravatar = False
-        elif selected_option == PICTURE_CHOICES.gravatar:
+        if selected_option == PICTURE_CHOICES.gravatar:
             image = None
             image_url = ""
             image_gravatar = True
@@ -452,6 +478,11 @@ class ProfileSettingsForm(forms.ModelForm):
             image = None
             image_gravatar = False
         elif selected_option == PICTURE_CHOICES.file:
+            image_url = ""
+            image_gravatar = False
+        else:
+            # The default, or when the user selects PICTURE_CHOICES.none
+            image = None
             image_url = ""
             image_gravatar = False
 
@@ -541,27 +572,24 @@ def get_orders_for_current_conference(user):
 
 
 urlpatterns = [
-    url(r"^$", user_dashboard, name="dashboard"),
-    url(r"^manage-ticket/(?P<ticket_id>\d+)/$", manage_ticket, name="manage_ticket"),
-    url(r"^assign-ticket/(?P<ticket_id>\d+)/$", assign_ticket, name="assign_ticket"),
-    url(r"^privacy-settings/$", privacy_settings, name="privacy_settings"),
-    url(r"^profile-settings/$", profile_settings, name="profile_settings"),
-    # Password change, using default django views.
-    # TODO(artcz): Those are Removed in Django21 and we should replcethem with
-    # class based PasswordChange{,Done}View
-    url(
+    re_path(r"^$", user_dashboard, name="dashboard"),
+    re_path(r"^manage-ticket/(?P<ticket_id>\d+)/$", manage_ticket, name="manage_ticket"),
+    re_path(r"^assign-ticket/(?P<ticket_id>\d+)/$", assign_ticket, name="assign_ticket"),
+    re_path(r"^privacy-settings/$", privacy_settings, name="privacy_settings"),
+    re_path(r"^profile-settings/$", profile_settings, name="profile_settings"),
+    re_path(
         r"^password/change/$",
-        auth_views.password_change,
-        kwargs={
-            "template_name": "ep19/bs/user_panel/password_change.html",
-            "post_change_redirect": reverse_lazy("user_panel:password_change_done"),
-        },
+        auth_views.PasswordChangeView.as_view(
+            template_name="conference/user_panel/password_change.html",
+            success_url=reverse_lazy("user_panel:password_change_done"),
+        ),
         name="password_change",
     ),
-    url(
+    re_path(
         r"^password/change/done/$",
-        auth_views.password_change_done,
-        kwargs={"template_name": "ep19/bs/user_panel/password_change_done.html"},
+        auth_views.PasswordChangeDoneView.as_view(
+            template_name="conference/user_panel/password_change_done.html"
+        ),
         name="password_change_done",
     ),
 ]

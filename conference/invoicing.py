@@ -7,16 +7,15 @@ This module handles all things related to creating a new invoice, including
 * stroing full copy in the Invoice model to be viewed later.
 * rendering PDFs of the invoice.
 """
-
 from collections import OrderedDict
 from decimal import Decimal
-import datetime
 
 import unicodecsv as csv
 
 from django.template.loader import render_to_string
 from django.db.models import Max
 from django.db import transaction
+from django.utils import timezone
 
 from assopy.models import Invoice, Order
 
@@ -26,24 +25,6 @@ from conference.currencies import (
     normalize_price
 )
 
-
-ACPYSS_16 = """
-Asociación de Ciencias de la Programación Python San Sebastian (ACPySS)
-P° Manuel Lardizabal 1, Oficina 307-20018 Donostia (Spain)
-VAT-ID ESG75119511
-Tel/Phone (+34) 943.01.80.47 | (+34) 688.64.52.32
-Email: info@pyss.org
-""".strip()
-
-PYTHON_ITALIA_17 = """
-Python Italia APS
-Via Mugellese, 1/A
-50013 Campi Bisenzio (FI)
-Italy
-VAT-ID: IT05753460483
-Codice Fiscale: 94144670489
-Contact Email: info@python.it
-""".strip()
 
 EPS_18 = """
 EuroPython Society
@@ -58,35 +39,58 @@ https://www.europython-society.org
 
 EPS_19 = EPS_18
 
+# EP2020: Not listing the VAT ID, since we're a non-profit and VAT exempt. 
+# The VAT ID would confuse people.
+EPS_20 = """
+Europython Society
+Ramnebacken 45
+424 38 Agnesberg
+Sweden
+Org ID: 802417-7704
+Contact Email: billing@europython.eu
+https://www.europython-society.org/
+""".strip()
+
+EPS_21 = """
+Europython Society
+Ramnebacken 45
+424 38 Agnesberg
+Sweden
+Org ID: 802417-7704
+EU VAT-ID: SE802417770401
+Contact Email: billing@europython.eu
+https://www.europython-society.org/
+""".strip()
+
 ISSUER_BY_YEAR = {
-    2016: ACPYSS_16,
-    2017: PYTHON_ITALIA_17,
     2018: EPS_18,
     2019: EPS_19,
+    2020: EPS_20,
+    2021: EPS_21,
 }
 
 LOCAL_CURRENCY_BY_YEAR = {
     # Used for local VAT calculations if required by local law.
-    2016: "EUR",
-    2017: "EUR",
     2018: "GBP",
     # Using EUR here because we don't need to do conversion to CHF on our own,
     # nor put it on the invoices.
     2019: "EUR",
+    2020: "EUR",
+    2021: "EUR",
 }
 
 EP_CITY_FOR_YEAR = {
-    2016: "Bilbao",
-    2017: "Rimini",
     2018: "Edinburgh",
     2019: "Basel",
+    2020: "Online",
+    2021: "Dublin",
 }
 
 ADDITIONAL_TEXT_FOR_YEAR = {
-    2016: "",
-    2017: "",
     2018: "assopy/invoices/_additional_text_for_2018.html",
     2019: "assopy/invoices/_additional_text_for_2019.html",
+    2020: "assopy/invoices/_additional_text_for_2020.html",
+    2021: "assopy/invoices/_additional_text_for_2021.html",
 }
 
 REAL_INVOICE_PREFIX = "I/"
@@ -120,7 +124,6 @@ def latest_invoice_code_for_year(prefix, year):
     returns latest used invoice.code in a given year.
     rtype – string or None
     """
-    assert 2016 <= year <= 2020, year
     assert prefix in [REAL_INVOICE_PREFIX, FAKE_INVOICE_PREFIX]
 
     invoices = Invoice.objects.filter(
@@ -132,7 +135,6 @@ def latest_invoice_code_for_year(prefix, year):
 
 
 def next_invoice_code_for_year(prefix, year):
-    assert 2016 <= year <= 2020, year
     assert prefix in [REAL_INVOICE_PREFIX, FAKE_INVOICE_PREFIX]
 
     current_code = latest_invoice_code_for_year(prefix, year)
@@ -291,7 +293,7 @@ def render_invoice_as_html(invoice):
     return render_to_string('assopy/invoice.html', ctx)
 
 
-CSV_2018_REPORT_COLUMNS = [
+CSV_REPORT_COLUMNS = [
     'ID',
     'Emit Date',
     'Buyer Name',
@@ -299,15 +301,19 @@ CSV_2018_REPORT_COLUMNS = [
     'Address',
     'Country',
     'VAT ID',
-    'Net Price in GBP',
-    'VAT in GBP',
-    'Gross Price in GBP',
+    'Currency',
+    'Net Price',
+    'VAT',
+    'Gross Price',
 ]
 
+# For b/w compatibility
+CSV_2018_REPORT_COLUMNS = CSV_REPORT_COLUMNS
 
-def export_invoices_to_2018_tax_report(start_date, end_date=None):
+
+def export_invoices_to_tax_report(start_date, end_date=None):
     if end_date is None:
-        end_date = datetime.date.today()
+        end_date = timezone.now().date()
 
     invoices = Invoice.objects.filter(
         emit_date__range=(start_date, end_date),
@@ -329,21 +335,22 @@ def export_invoices_to_2018_tax_report(start_date, end_date=None):
             output['Country']   = ""
 
         output['VAT ID']        = invoice.order.vat_number
-        output['Net Price in %s' % invoice.local_currency] =\
+        output['Currency']      = invoice.local_currency
+        output['Net Price'] =\
             invoice.net_price_in_local_currency
-        output['VAT in %s' % invoice.local_currency] =\
+        output['VAT'] =\
             invoice.vat_in_local_currency
-        output['Gross Price in %s' % invoice.local_currency] =\
+        output['Gross Price'] =\
             invoice.price_in_local_currency
 
         yield invoice, output
 
 
-def export_invoices_to_2018_tax_report_csv(fp, start_date, end_date=None):
-    writer = csv.DictWriter(fp, CSV_2018_REPORT_COLUMNS, quoting=csv.QUOTE_ALL)
+def export_invoices_to_tax_report_csv(fp, start_date, end_date=None):
+    writer = csv.DictWriter(fp, CSV_REPORT_COLUMNS, quoting=csv.QUOTE_ALL)
     writer.writeheader()
 
-    for invoice, to_export in export_invoices_to_2018_tax_report(
+    for invoice, to_export in export_invoices_to_tax_report(
         start_date, end_date
     ):
         writer.writerow(to_export)
@@ -351,7 +358,7 @@ def export_invoices_to_2018_tax_report_csv(fp, start_date, end_date=None):
 
 def export_invoices_for_payment_reconciliation(start_date, end_date=None):
     if end_date is None:
-        end_date = datetime.date.today()
+        end_date = timezone.now().date()
 
     invoices = Invoice.objects.filter(
         emit_date__range=(start_date, end_date),

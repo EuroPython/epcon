@@ -1,9 +1,7 @@
-
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
 
 from assopy.models import AssopyUser, user_created
-from assopy import settings
 
 import logging
 
@@ -86,5 +84,4 @@ class EmailBackend(AssopyBackend):
         except User.DoesNotExist:
             # nel db di django non c'è un utente con quella email, ma potrebbe
             # esserci un utente legacy nel backend di ASSOPY
-            if not settings.SEARCH_MISSING_USERS_ON_BACKEND:
-                return None
+            return None

@@ -191,9 +191,9 @@ def prezzo_biglietti_ricalcolato(**kw):
             tcp[code]['prices'][price]['count'] += 1
     # Replace prices dicts with sorted lists
     for code in tcp.keys():
-        prices_list = [entry
-                       for price, entry in sorted(list(tcp[code]['prices'].items()),
-                                                  reverse=True)]
+        prices_list = [
+            entry for price, entry in sorted(tcp[code]['prices'].items(), reverse=True)
+        ]
         tcp[code]['prices'] = prices_list
     # Create list sorted by fare code
     ticket_sales = [entry for code, entry in sorted(tcp.items())]

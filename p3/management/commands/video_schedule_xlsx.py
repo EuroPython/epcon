@@ -15,15 +15,13 @@
 
     Row A6: Start of data
 
-    Author: Marc-Andre Lemburg, 2017.
+    Author: Marc-Andre Lemburg, 2017-2020.
 
 """
-from django.core.management.base import BaseCommand, CommandError
-from django.core import urlresolvers
+from django.core.management.base import BaseCommand
 from django.utils.html import strip_tags
 from conference import models
 
-import datetime
 import markdown2
 import openpyxl
 
@@ -39,7 +37,7 @@ from .accepted_talks import TYPE_NAMES
 LICENSE = """
 
 License: This video is licensed under the CC BY-NC-SA 3.0 license: https://creativecommons.org/licenses/by-nc-sa/3.0/
-Please see our speaker release agreement for details: https://ep2019.europython.eu/events/speaker-release-agreement/
+Please see our speaker release agreement for details: https://ep2020.europython.eu/events/speaker-release-agreement/
 """
 
 # Special handling of poster sessions
@@ -55,19 +53,13 @@ else:
 
 # Plenary sessions will have 2-3 tracks assigned. We use the
 # plenary room in this case.
-PLENARY_ROOM = 'Smarkets'
+PLENARY_ROOM = 'Microsoft'
 
 # Breaks have more than 3 tracks assigned. Since this changes between
 # the days, we don't set the room name.
 BREAK_ROOM = ''
 
 ### Helpers
-
-def profile_url(user):
-
-    return urlresolvers.reverse('conference-profile',
-                                args=[user.attendeeprofile.slug])
-
 def speaker_listing(talk):
 
     return ', '.join(
@@ -135,8 +127,8 @@ def video_description(title, abstract,
     # XXX Make this configurables in settings
     return """\
 %(title)s
-[EuroPython 2018 - %(type)s - %(date)s - %(room)s]
-[Edinburgh, UK]
+[EuroPython 2020 - %(type)s - %(date)s - %(room)s]
+[Online]
 
 %(abstract)s
 %(license)s

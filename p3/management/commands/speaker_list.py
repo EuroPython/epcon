@@ -2,18 +2,13 @@
 """ Print out a listing of speakers.
 
 """
+from anglicize import anglicize
 from django.core.management.base import BaseCommand
-from django.core import urlresolvers
 
 from conference import models as cmodels
+from p3.utils import profile_url
 
 ### Helpers
-
-def profile_url(user):
-
-    return urlresolvers.reverse('conference-profile',
-                                args=[user.attendeeprofile.slug])
-
 def speaker_listing(talk):
 
     return ', '.join(
@@ -40,7 +35,7 @@ def speaker_list_key(entry):
         speaker.user.last_name)
 
     # Remove whitespace and use title case
-    return name.strip().title()
+    return anglicize(name.strip().title())
 
 ###
 
@@ -87,21 +82,21 @@ class Command(BaseCommand):
         speaker_list.sort(key=speaker_list_key)
 
         # Print list of speakers
-        print ('<h2>Speakers</h2>')
+        self.stdout.write('<h2>Speakers</h2>')
         group = ''
         for entry in speaker_list:
             name, speaker = entry
             sort_name = speaker_list_key(entry)
             if not group:
                 group = sort_name[0]
-                print('<h3>%s ...</h3>' % group)
-                print ('<ul>')
+                self.stdout.write('<h3>%s ...</h3>' % group)
+                self.stdout.write('<ul>')
             elif group != sort_name[0]:
-                print ('</ul>')
+                self.stdout.write('</ul>')
                 group = sort_name[0]
-                print('<h3>%s ...</h3>' % group)
-                print ('<ul>')
-            print('<li><a href="%s">%s</a></li>' % 
+                self.stdout.write('<h3>%s ...</h3>' % group)
+                self.stdout.write('<ul>')
+            self.stdout.write('<li><a href="%s">%s</a></li>' %
                   (profile_url(speaker.user), name))
-        print ('</ul>')
-        print('<p>%i speakers in total.</p>' % len(speaker_list))
+        self.stdout.write('</ul>')
+        self.stdout.write('<p>%i speakers in total.</p>' % len(speaker_list))

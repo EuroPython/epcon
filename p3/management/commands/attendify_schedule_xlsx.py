@@ -23,12 +23,10 @@
     Row A6: Start of data
 
 """
-from django.core.management.base import BaseCommand, CommandError
-from django.core import urlresolvers
+from django.core.management.base import BaseCommand
 from django.utils.html import strip_tags
 from conference import models
 
-import datetime
 import markdown2
 import openpyxl
 
@@ -70,10 +68,6 @@ BREAK_ROOM = ''
 
 ### Helpers
 
-def profile_url(user):
-
-    return urlresolvers.reverse('conference-profile',
-                                args=[user.attendeeprofile.slug])
 
 def speaker_listing(talk, filter_special_entries=True):
 

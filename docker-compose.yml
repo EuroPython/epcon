@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  epcon:
+    stdin_open: true
+    tty: true
+    build:
+      context: .
+    environment:
+      PYTHONDONTWRITEBYTECODE: 1
+      DJANGO_SETTINGS_MODULE: "pycon.dev_settings"
+      SECRET_KEY: "secret"
+    command: ["./manage.py migrate --no-input && ./manage.py runserver 0.0.0.0:8888"]
+    volumes:
+      - .:/code
+    ports:
+      - "8888:8888"

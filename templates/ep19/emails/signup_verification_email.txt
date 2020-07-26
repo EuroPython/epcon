@@ -1,9 +1,0 @@
-Hello!
-
-Thanks for creating account for EuroPython2019.
-Here's a link to activate your account:
-
-{{ verification_email_url }}
-
-Thanks,
-EuroPython2019 Team

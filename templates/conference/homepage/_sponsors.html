@@ -1,0 +1,48 @@
+<style type="text/css">
+.sponsor { margin: 1em; }
+</style>
+{% load cms_tags %}
+<div id="homepage_sponsors">
+    <div class="container text-center">
+        <!-- Example row of columns -->
+        <div class="row" style='margin: 2em 0;'>
+            <div class="col-md-12">
+                <h2>Sponsors</h2>
+                <p>EuroPython wouldn't be such an affordable event without help of the sponsors. We'd like to thank all of them for their support.</p>
+
+
+                {% for sponsor in sponsors %}
+                <a href='{{ sponsor.url }}' target="_blank">
+                    <img src='{{ sponsor.logo.url }}'
+                         class='sponsor'
+                         alt='{{ sponsor.alt_text }}'
+                         title='{{ sponsor.title_text }}'>
+                </a>
+
+                {% endfor %}{# sponsor in sponsors #}
+
+                {% if 0 %}
+                NOTE(artcz): Disabled until we add more sponsors
+                <h4>Diamond</h4>
+                <p>Some logos</p>
+
+                <h4>Gold</h4>
+                <p>Other logos</p>
+
+                <h4>Silver</h4>
+                <p>more logos</p>
+                {% endif %}
+
+                <p style='margin-top: 2em'><a class="btn btn-secondary btn-lg" href="{% page_url 'sponsor' %}" role="button">Become a sponsor</a></p>
+
+                {% comment %}
+                <p>Early bird sponsors will receive a 10% discount on their package price</p>
+                {% endcomment %}
+
+                <p>Are you an SME seeking greater exposure? We have special <a href="{% page_url 'sponsor-packages' %}#Small-Entity-Discounts">sponsorship discounts</a> for you!</p>
+            </div>
+        </div>
+
+    </div> <!-- /container -->
+</div><!-- #homepage_sponsors -->
+

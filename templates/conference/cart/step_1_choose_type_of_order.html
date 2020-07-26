@@ -1,0 +1,96 @@
+{% extends "conference/cart/base.html" %}
+
+{% block content %}
+<style type="text/css">
+.cart-step1-description {
+    padding-top: 2em;
+    height: 9em;
+}
+</style>
+<div id="cart_page" class='page'>
+    <div class="container">
+        <div class='row'>
+            <div class="col-md-12">
+                <h1>Step 1: Choose which type of ticket do you want to buy</h1>
+            </div>
+{% comment %}
+            <div class="col-md-12" style='margin-top: 3em'>
+                <h3>Conference and Training tickets:</h3>
+            </div>
+{% endcomment %}
+
+            <div class="col-md-12" style='margin-top: 3em'>
+                <h3>Conference and Sprint only tickets:</h3>
+            </div>
+
+            <div class='col-md-6'>
+                <p class='cart-step1-description'>
+                For people using Python to make a living.  If your employer
+                is paying for the ticket, you are buying tickets for other
+                people in your company and need a VAT invoice, or you simply
+                want to support the conference, please choose this option.
+                </p>
+                <p>
+                <a class='btn btn-outline-primary btn-lg btn-block' href='{% url "cart:step2_pick_tickets" "company" %}'>Business tickets</a>
+                </p>
+            </div>
+
+            <div class='col-md-6'>
+                <p class='cart-step1-description'>
+                For people enjoying Python as a hobbyist or freelancer. If
+                you are programming Python in your free time, pupil or
+                student, and don't need a VAT invoice, this option is for
+                you.
+                </p>
+                <p>
+                <a class='btn btn-outline-primary btn-lg btn-block' href='{% url "cart:step2_pick_tickets" "personal" %}'>Personal Tickets</a>
+                </p>
+            </div>
+
+{% comment %}
+            <div class='col-md-4'>
+                <p class='cart-step1-description'>
+                For people coding in Python while still in education.
+                This highly subsidized option is only available for pupils,
+                students and postdoctoral researchers.
+                Please bring your student card or declaration from University,
+                stating your affiliation, starting and end dates of your contract.
+                </p>
+                <p>
+                <a class='btn btn-outline-primary btn-lg btn-block' href='{% url "cart:step2_pick_tickets" "student" %}'><span>Student &amp; Academia Tickets</span></a>
+                </p>
+            </div>
+{% endcomment%}
+
+        </div>
+        {% if show_special %}
+        <div class="row" style='margin-top: 3em'>
+            <div class="col-md-12">
+                <h3>Other items</h3>
+            </div>
+        </div>
+        <div class='row'>
+            <div class='col-md-12'>
+                <p style='margin-top: 3em'>
+
+                <a class='btn btn-outline-primary btn-lg btn-block' href='{% url "cart:step2_pick_tickets" "other" %}'>Social Events & Simcards</a>
+            </div>
+
+        </div><!-- .row -->
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block morecss %}
+<style>
+    a.btn {
+        white-space: initial;
+    }
+
+    p.cart-step1-description {
+        height: 70%;
+    }
+
+</style>
+{% endblock %}

@@ -25,15 +25,16 @@
     Row A6: Start of data
 
 """
-from django.core.management.base import BaseCommand, CommandError
-from django.core import urlresolvers
+from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils.html import strip_tags
-from conference import models as cmodels
-from p3 import models
 
 import markdown2
 import openpyxl
+
+from conference import models as cmodels
+from p3 import models
+from p3.utils import profile_url
 
 ### Globals
 
@@ -41,14 +42,9 @@ import openpyxl
 _debug = 1
 
 # URL prefix to use in URLs
-URL_PREFIX = settings.DEFAULT_URL_PREFIX or 'https://ep2019.europython.eu'
+URL_PREFIX = settings.DEFAULT_URL_PREFIX or 'https://ep2020.europython.eu'
 
 ### Helpers
-
-def profile_url(user):
-
-    return urlresolvers.reverse('conference-profile',
-                                args=[user.attendeeprofile.slug])
 
 def format_text(text, remove_tags=False, output_html=True):
 

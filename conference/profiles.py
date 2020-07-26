@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 
@@ -19,11 +19,11 @@ def profile(request, profile_slug):
     speaker_profile = get_object_or_404(AttendeeProfile, slug=profile_slug)
 
     if not profile_page_visible(profile=speaker_profile, for_user=request.user):
-        return TemplateResponse(request, "ep19/bs/profiles/profile_unavailable.html")
+        return TemplateResponse(request, "conference/profiles/profile_unavailable.html")
 
     return TemplateResponse(
         request,
-        "ep19/bs/profiles/profile.html",
+        "conference/profiles/profile.html",
         {
             "speaker_name": speaker_profile.user.assopy_user.name(),
             "tagline": speaker_profile.p3_profile.tagline,
@@ -83,4 +83,6 @@ def profile_page_visible(profile, for_user):
     return False
 
 
-urlpatterns = [url(r"^(?P<profile_slug>[\w-]+)/$", profile, name="profile")]
+urlpatterns = [
+    re_path(r"^(?P<profile_slug>[\w-]+)/$", profile, name="profile")
+]

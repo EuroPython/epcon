@@ -1,0 +1,40 @@
+<h4>Summary</h4>
+
+<table class='table table-hover'>
+    <tr>
+        {% if order.is_complete %}<th class='text-right'>ID</th>{% endif %}
+        <th>code</th>
+        <th>ticket</th>
+        {% if order.is_complete %}
+            <th>&euro;</th>
+            <th class='text-right'>Manage</th>
+        {% else %}
+            <th class='text-right'>&euro;</th>
+        {% endif %}
+    </tr>
+
+    {% for item in order.orderitem_set.all %}
+    <tr>
+        {% if order.is_complete %}
+            <td class="text-right font-weight-bold">{% if item.ticket %}{{ item.ticket.id }}{% else %}{{ item.id }}{% endif %}</td>
+        {% endif %}
+        <td>{{ item.code }}</td>
+        <td>{% if item.ticket %}{{ item.ticket }}{% else %}{{ item.description }}{% endif %}</td>
+        {% if order.is_complete and item.ticket %}
+            <td>{{ item.price }}</td>
+            <td class='text-right'>
+                <a class='btn btn-outline-primary' href='{% url "user_panel:manage_ticket" item.ticket.id %}'>Configure ticket</a>
+                <a class='btn btn-outline-primary' href='{% url "user_panel:assign_ticket" item.ticket.id %}'>Assign ticket</a>
+            </td>
+        {% else %}
+            <td class='text-right'>{{ item.price }}</td>
+        {% endif %}
+
+    </tr>
+    {% endfor %}
+</table>
+
+<h4 style='margin-top: 2em'>Total: &euro; {{ order.total }}</h4>
+<h5>Including € {{ order.total_vat_amount }} VAT</h5>
+
+<p style='margin-top: 2em'>All prices are gross and include <strong>0%</strong> Swedish VAT</p>

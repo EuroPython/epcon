@@ -1,35 +1,31 @@
 import datetime
-import logging
 import os
 import os.path
 import uuid
 from collections import defaultdict
 from urllib.parse import urlencode
 
-import shortuuid
-import tagging
-from django.conf import settings as dsettings
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import exceptions
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models, transaction
-from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext as _
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import (
+    GenericForeignKey,
+    GenericRelation
+)
+
+import shortuuid
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
-from tagging.fields import TagField
 from taggit.managers import TaggableManager
 from taggit.models import GenericTaggedItemBase, ItemBase, TagBase
-
-from common.django_urls import UrlMixin
-
-from . import settings, signals
-
-log = logging.getLogger('conference.tags')
 
 
 CURRENT_CONFERENCE_CACHE_KEY = 'CONFERENCE_CURRENT'
@@ -85,7 +81,7 @@ class ConferenceManager(models.Manager):
         a_week = 60 * 60 * 24 * 7
 
         if data is None:
-            data = self.get(code=dsettings.CONFERENCE_CONFERENCE)
+            data = self.get(code=settings.CONFERENCE_CONFERENCE)
             cache.set(CURRENT_CONFERENCE_CACHE_KEY, data, a_week)
 
         return data
@@ -123,7 +119,7 @@ class Conference(models.Model):
         if self.conference_start and self.conference_end:
             d = self.conference_start
             step = datetime.timedelta(days=1)
-            while d<= self.conference_end:
+            while d <= self.conference_end:
                 output.append(d)
                 d += step
         return output
@@ -164,66 +160,11 @@ class Conference(models.Model):
         today = timezone.now().date()
         return today > self.conference_end
 
-post_save.connect(ConferenceManager.clear_cache, sender=Conference)
-
-class DeadlineManager(models.Manager):
-    def valid_news(self):
-        today = datetime.date.today()
-        return self.all().filter(date__gte = today)
-
-class Deadline(models.Model):
-    """
-    Deadline for the PyCon
-    """
-    date = models.DateField()
-
-    objects = DeadlineManager()
-
-    def __str__(self):
-        return "deadline: %s" % (self.date, )
-
-    class Meta:
-        ordering = ['date']
-
-    def isExpired(self):
-       today = datetime.date.today()
-       return today > self.date
-
-    def content(self, lang, fallback=True):
-        """
-        Return the dead line content in the specified language.
-        """
-        contents = dict((c.language, c) for c in self.deadlinecontent_set.exclude(body=''))
-        if not contents:
-            raise DeadlineContent.DoesNotExist()
-        try:
-            return contents[lang]
-        except KeyError:
-            if not fallback:
-                raise DeadlineContent.DoesNotExist()
-
-        return list(contents.values())[0]
-
-class DeadlineContent(models.Model):
-    """
-    Content of a deadline.
-    """
-    deadline = models.ForeignKey(Deadline, on_delete=models.CASCADE)
-    language = models.CharField(max_length=3)
-    headline = models.CharField(max_length=200)
-    body = models.TextField()
-
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import (
-    GenericForeignKey,
-    GenericRelation
-)
-
 
 class MultilingualContentManager(models.Manager):
     def setContent(self, object, content, language, body):
         if language is None:
-            language = dsettings.LANGUAGE_CODE.split('-', 1)[0]
+            language = settings.LANGUAGE_CODE.split('-', 1)[0]
         object_type = ContentType.objects.get_for_model(object)
         try:
             mc = self.get(content_type=object_type, object_id=object.pk, content=content, language=language)
@@ -236,7 +177,7 @@ class MultilingualContentManager(models.Manager):
 
     def getContent(self, object, content, language):
         if language is None:
-            language = dsettings.LANGUAGE_CODE.split('-', 1)[0]
+            language = settings.LANGUAGE_CODE.split('-', 1)[0]
         object_type = ContentType.objects.get_for_model(object)
         records = dict(
             (x.language, x)
@@ -248,7 +189,8 @@ class MultilingualContentManager(models.Manager):
             if not records:
                 return None
             else:
-                return records.get(dsettings.LANGUAGE_CODE, list(records.values())[0])
+                return records.get(settings.LANGUAGE_CODE, list(records.values())[0])
+
 
 class MultilingualContent(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -265,7 +207,6 @@ class MultilingualContent(models.Model):
 class _fs_upload_to(object):
     """Deconstructible class to avoid django migrations' limitations on
     python2. See https://code.djangoproject.com/ticket/22999 """
-
     def __init__(self, subdir, attr=None, package='conference'):
         self.subdir = subdir
         self.attr = attr if attr is not None else 'slug'
@@ -278,12 +219,13 @@ class _fs_upload_to(object):
             '%s%s' % (getattr(instance, self.attr), os.path.splitext(filename)[1].lower())
         )
 
-        ipath = os.path.join(dsettings.MEDIA_ROOT, fpath)
+        ipath = os.path.join(settings.MEDIA_ROOT, fpath)
 
         if os.path.exists(ipath):
             os.unlink(ipath)
 
         return fpath
+
 
 class AttendeeProfileManager(models.Manager):
     def findSlugForUser(self, user):
@@ -305,13 +247,12 @@ class AttendeeProfileManager(models.Manager):
                 last = counter
 
         if last is not None:
-            slug = '%s-%d' % (slug, last+1)
+            slug = '%s-%d' % (slug, last + 1)
         elif not slug:
             # if there is no slug, because the firstname or the lastname are empties,
             # we will return '-1'
             slug = '-1'
         return slug
-
 
     def randomUUID(self, length=6):
         import string
@@ -360,9 +301,16 @@ class AttendeeProfileManager(models.Manager):
 
 
 ATTENDEEPROFILE_VISIBILITY = Choices(
-    ('p', "PUBLIC", 'Publicly available'),
-    ('m', "PARTICIPANTS_ONLY", 'Visible to EuroPython attendees'),
-    ('x', "PRIVATE", 'Visible only to you'),
+    ("p", "PUBLIC", "Publicly available"),
+    ("m", "PARTICIPANTS_ONLY", "Visible to EuroPython attendees"),
+    ("x", "PRIVATE", "Visible only to you"),
+)
+
+ATTENDEEPROFILE_GENDER = Choices(
+    ("m", "MALE", "Male"),
+    ("f", "FEMALE", "Female"),
+    ("o", "OTHER", "Other"),
+    ("x", "PREFER_NOT_TO_SAY", "Prefer not to say"),
 )
 
 
@@ -387,9 +335,21 @@ class AttendeeProfile(models.Model):
     phone = models.CharField(
         _('Phone'),
         max_length=30, blank=True,
-        help_text=_('Enter a phone number where we can contact you in case of administrative issues.<br />Use the international format, eg: +39-055-123456'),
+        help_text=_(
+            "We require a mobile phone number for all speakers "
+            "for last minute contacts and in case we need "
+            "timely clarification (if no reponse to previous emails). "
+            "Use the international format (e.g.: +44 123456789)."
+        ),
     )
-    gender = models.CharField(max_length=32, blank=True)
+
+    gender = models.CharField(
+        max_length=1, choices=ATTENDEEPROFILE_GENDER,
+        help_text=_(
+            "We use this information for statistics related to conference "
+            "attendance diversity."
+        )
+    )
 
     personal_homepage = models.URLField(_('Personal homepage'), blank=True)
     company = models.CharField(_('Company'), max_length=50, blank=True)
@@ -409,9 +369,7 @@ class AttendeeProfile(models.Model):
     def clean(self):
         from django.core.exceptions import ValidationError
         if self.visibility != 'p':
-            if TalkSpeaker.objects\
-                .filter(speaker__user=self.user_id, talk__status='accepted')\
-                .count()>0:
+            if TalkSpeaker.objects.filter(speaker__user=self.user_id, talk__status='accepted').exists():
                 raise ValidationError('This profile must be public')
 
     def setBio(self, body, language=None):
@@ -420,39 +378,6 @@ class AttendeeProfile(models.Model):
     def getBio(self, language=None):
         return MultilingualContent.objects.getContent(self, 'bios', language)
 
-
-class Presence(models.Model):
-    """
-    Presence of a participant in a conference.
-    """
-    profile = models.ForeignKey(AttendeeProfile, related_name='presences', on_delete=models.CASCADE)
-    conference = models.CharField(max_length=10)
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = (('profile', 'conference'),)
-
-class AttendeeLinkManager(models.Manager):
-    def findLinks(self, uid):
-        return AttendeeLink.objects.filter(
-                models.Q(attendee1=uid) |
-                models.Q(attendee2=uid))
-
-    def getLink(self, uid1, uid2):
-        return AttendeeLink.objects.get(
-                models.Q(attendee1=uid1, attendee2=uid2) |
-                models.Q(attendee1=uid2, attendee2=uid1))
-
-class AttendeeLink(models.Model):
-    """
-    Connection between two participants
-    """
-    attendee1 = models.ForeignKey(AttendeeProfile, related_name='link1', on_delete=models.CASCADE)
-    attendee2 = models.ForeignKey(AttendeeProfile, related_name='link2', on_delete=models.CASCADE)
-    message = models.TextField(blank=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    objects = AttendeeLinkManager()
 
 class SpeakerManager(models.Manager):
     def byConference(self, conf, only_accepted=True, talk_type=None):
@@ -472,7 +397,7 @@ class SpeakerManager(models.Manager):
         return Speaker.objects.filter(user__in=qs)
 
 
-class Speaker(models.Model, UrlMixin):
+class Speaker(models.Model):
     user = models.OneToOneField(get_user_model(), primary_key=True, on_delete=models.CASCADE)
 
     objects = SpeakerManager()
@@ -497,13 +422,14 @@ class Speaker(models.Model, UrlMixin):
         return Talk.objects.filter(id__in=qs.values('talk'))
 
 
-TALK_LANGUAGES = dsettings.LANGUAGES
+TALK_LANGUAGES = settings.LANGUAGES
 
 TALK_STATUS = Choices(
     ('proposed', _('Proposed')),
     ('accepted', _('Accepted')),
     ('canceled', _('Canceled')),
     ('waitlist', _('Waitlist')),
+    ('declined', _('Declined')),
 )
 
 VIDEO_TYPE = (
@@ -575,6 +501,7 @@ class TalkQuerySet(models.QuerySet):
             TalkSpeaker(talk=talk, speaker=speaker).save()
         return talk
 
+
 # Previous definition of TALK_TYPE, kept around, since some of the
 # code in the system uses the codes to checks.
 #
@@ -596,6 +523,7 @@ TALK_TYPE = [
     ('t_60', 'Talk (60 mins)'),
     ('i_60', 'Interactive (60 mins)'),
     ('r_180', 'Training (180 mins)'),
+    ('p_45', 'Poster session (45 mins)'),
     ('p_180', 'Poster session (180 mins)'),
     ('n_60', 'Panel (60 mins)'),
     ('n_90', 'Panel (90 mins)'),
@@ -604,6 +532,23 @@ TALK_TYPE = [
 
 TALK_TYPE_CHOICES = Choices(*TALK_TYPE)
 
+# Copy of TALK_TYPE, which defines the types that can be chosen in the
+# CFP. The other types remain available via the Django admin.
+CFP_TALK_TYPE = [
+    ('t_30', 'Talk (30 mins)'),
+    ('t_45', 'Talk (45 mins)'),
+    #('t_60', 'Talk (60 mins)'),
+    ('i_60', 'Interactive (60 mins)'),
+    #('r_180', 'Training (180 mins)'),
+    ('p_45', 'Poster session (45 mins)'),
+    #('p_180', 'Poster session (180 mins)'),
+    ('n_60', 'Panel (60 mins)'),
+    #('n_90', 'Panel (90 mins)'),
+    ('h_180', 'Help desk (180 mins)'),
+]
+
+
+
 # Mapping of TALK_TYPE to duration in minutes
 TALK_DURATION = {
     't_30': 30,
@@ -611,6 +556,7 @@ TALK_DURATION = {
     't_60': 60,
     'i_60': 60,
     'r_180': 180,
+    'p_45': 45,
     'p_180': 180,
     'n_60': 60,
     'n_90': 90,
@@ -641,7 +587,7 @@ def random_shortuuid():
     return shortuuid.ShortUUID().random(length=7)
 
 
-class Talk(models.Model, UrlMixin):
+class Talk(models.Model):
     # CharField because sqlite
     uuid = models.CharField(
         # FIXME(artcz)
@@ -652,7 +598,7 @@ class Talk(models.Model, UrlMixin):
         default=random_shortuuid,
         editable=False,
     )
-    created_by = models.ForeignKey(get_user_model(), blank=True, null=True)
+    created_by = models.ForeignKey(get_user_model(), blank=True, null=True, on_delete=models.deletion.PROTECT)
 
     title = models.CharField("Talk title", max_length=80)
     sub_title = models.CharField(
@@ -702,6 +648,8 @@ class Talk(models.Model, UrlMixin):
     )
 
     slides = models.FileField(upload_to=_fs_upload_to("slides"), blank=True)
+    slides_url = models.URLField(blank=True)
+    repository_url = models.URLField(blank=True)
     video_type = models.CharField(
         max_length=30, choices=VIDEO_TYPE, blank=True
     )
@@ -735,8 +683,8 @@ class Talk(models.Model, UrlMixin):
 
     domain = models.CharField(
         max_length=20,
-        choices=dsettings.CONFERENCE_TALK_DOMAIN,
-        default=dsettings.CONFERENCE_TALK_DOMAIN.other,
+        choices=settings.CONFERENCE_TALK_DOMAIN,
+        default=settings.CONFERENCE_TALK_DOMAIN.other,
         blank=True,
     )
     domain_level = models.CharField(
@@ -767,16 +715,16 @@ class Talk(models.Model, UrlMixin):
         ordering = ["title"]
 
     def save(self, *args, **kwargs):
-        # The duration is taken directly from talk's type, unless it was
-        # customized
-        if self.duration == 0 or self.duration in list(TALK_DURATION.values()):
-            # duration was previously set to a standard value, so update
-            # the value to the talk length
+        # Handle duration customizations (if any)
+        if self.pk is not None:
+            # Use 0 duration if the type changed
+            old_object = Talk.objects.get(pk=self.pk)
+            if old_object.type != self.type:
+                self.duration = 0
+        if self.duration == 0:
+            # Use the talk type's default value in case the duration was
+            # set to 0
             self.duration = TALK_DURATION[self.type]
-        else:
-            # Custom curation: leave as it is; this is useful for e.g.
-            # workshops
-            pass
         super(Talk, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -796,6 +744,20 @@ class Talk(models.Model, UrlMixin):
             return None
 
         return event.schedule.get_absolute_url() + '?' + urlencode({'selected': self.slug})
+
+    def get_slides_url(self):
+
+        """ Return the slides URL (relative to the website)
+            or None in case no slides are available.
+        
+            For externally hosted slides, the URL refers to an absolute URL
+            (anything the speaker entered).
+        
+        """
+        if self.slides and self.slides.url:
+            return self.slides.url or None
+        else:
+            return self.slides_url or None
 
     def get_admin_url(self):
         return reverse("admin:conference_talk_change", args=[self.id])
@@ -847,20 +809,20 @@ class TalkSpeaker(models.Model):
     class Meta:
         unique_together = (('talk', 'speaker'),)
 
-
     def __str__(self):
         return f'[{self.speaker.user}] for {self.talk.title}'
 
 
 class FareQuerySet(models.QuerySet):
     def available(self, conference=None):
-        today = datetime.date.today()
+        today = timezone.now().date()
         q1 = models.Q(start_validity=None, end_validity=None)
         q2 = models.Q(start_validity__lte=today, end_validity__gte=today)
         qs = self.filter(q1 | q2)
         if conference:
             qs = qs.filter(conference=conference)
         return qs
+
 
 # TODO(artcz) Convert those to Choices for easier enum-like interface
 
@@ -882,6 +844,8 @@ FARE_TYPES = Choices(
     ('p', 'personal', 'Personal'),
     ('s', 'student', 'Student'),
 )
+
+
 class Fare(models.Model):
     conference = models.CharField(help_text='Conference code', max_length=20)
     code = models.CharField(max_length=10)
@@ -908,8 +872,8 @@ class Fare(models.Model):
         unique_together = (('conference', 'code'),)
 
     def valid(self):
-        #numb = len(list(Ticket.objects.all()))
-        today = datetime.date.today()
+        # numb = len(list(Ticket.objects.all()))
+        today = timezone.now().date()
         try:
             validity = self.start_validity <= today <= self.end_validity
         except TypeError:
@@ -917,7 +881,7 @@ class Fare(models.Model):
             # both) are set to None. That by default means fare is invalid
             # right now.
             validity = False
-        #validity = numb < settings.MAX_TICKETS
+        # validity = numb < settings.MAX_TICKETS
         return validity
 
     def fare_type(self):
@@ -927,14 +891,12 @@ class Fare(models.Model):
         return dict(FARE_TYPES).get(self.recipient_type, 'Regular')
 
     def calculated_price(self, qty=1, **kw):
-        from conference.listeners import fare_price
         params = dict(kw)
         params['qty'] = qty
         calc = {
             'total': self.price * qty,
             'params': params,
         }
-        fare_price.send(sender=self, calc=calc)
         return calc['total']
 
     def create_tickets(self, user):
@@ -981,6 +943,7 @@ TICKET_TYPE = (
     ('staff', 'staff'),
 )
 
+
 class Ticket(models.Model):
     user = models.ForeignKey(
         get_user_model(),
@@ -995,9 +958,11 @@ class Ticket(models.Model):
     frozen = models.BooleanField(
         default=False,
         verbose_name=_('ticket canceled / invalid / frozen'),
-        help_text=_('If a ticket was canceled or otherwise needs to be marked as '
-                    'invalid, please check this checkbox to indicate this.'),
-        )
+        help_text=_(
+            'If a ticket was canceled or otherwise needs to be marked as '
+            'invalid, please check this checkbox to indicate this.'
+        ),
+    )
     ticket_type = models.CharField(max_length=8, choices=TICKET_TYPE, default='standard')
 
     objects = TicketQuerySet.as_manager()
@@ -1049,146 +1014,22 @@ class SponsorIncome(models.Model):
     sponsor = models.ForeignKey(Sponsor, on_delete=models.CASCADE)
     conference = models.CharField(max_length=20)
     income = models.PositiveIntegerField()
-    tags = TagField()
-
-    class Meta:
-        ordering = ['conference']
-
-
-class MediaPartner(models.Model):
-    """
-    The media partners are the sponsors who do not pay but that offer visibility
-    of some kind.
-    """
-    partner = models.CharField(max_length=100, help_text='The media partner name')
-    slug = models.SlugField()
-    url = models.URLField(blank=True)
-    logo = models.ImageField(
-        upload_to=_fs_upload_to('media-partner'), blank = True,
-        help_text='Insert a raster image big enough to be scaled as needed'
+    tags = models.CharField(
+        max_length=200, blank=True,
+        help_text='comma separated list of tags. Something like: special, break, keynote'
     )
-
-    class Meta:
-        ordering = ['partner']
-
-    def __str__(self):
-        return self.partner
-
-
-class MediaPartnerConference(models.Model):
-    partner = models.ForeignKey(MediaPartner, on_delete=models.CASCADE)
-    conference = models.CharField(max_length = 20)
-    tags = TagField()
 
     class Meta:
         ordering = ['conference']
 
 
 class ScheduleManager(models.Manager):
+
     def attendees(self, conference, forecast=False):
         """
         Returns the number of participants for each of the conference schedule.
         """
-        return settings.SCHEDULE_ATTENDEES(conference, forecast)
-
-    def events_score_by_attendance(self, conference):
-        """
-        Using events Interest returns a "Presence score" for each event;
-        The score is proportional to the number of people who have expressed
-        interest in that event.
-        """
-        # I consider it an expression of interest, interest > 0, as the will to
-        # participate in an event and add the user among the participants. If the user
-        # has voted the most contemporary events. I consider his presence in proportion
-        # (so events can have fractional score)
-        events = defaultdict(set)
-        for x in EventInterest.objects\
-                    .filter(event__schedule__conference=conference, interest__gt=0)\
-                    .select_related('event__schedule'):
-            events[x.event].add(x.user_id)
-        # In addition to EventInterest keep account of EventBooking,
-        # the confidence in these cases in even greater.
-        for x in EventBooking.objects\
-                    .filter(event__schedule__conference=conference)\
-                    .select_related('event__schedule'):
-            events[x.event].add(x.user_id)
-
-        # Associate to each event the number of votes it has obtained;
-        # the operation is complicated by the fact that not all votes have the
-        # same weight; if a user has marked as +1 two events to occur
-        # Parallel obviously can not participate in both, so the
-        # his vote should be scaled
-        scores = defaultdict(lambda: 0.0)
-        for evt, users in events.items():
-            group = list(Event.objects.group_events_by_times(events, event=evt))[0]
-            while users:
-                u = users.pop()
-                # what is the presence of `` evt` u` for the event? If `u` does not take
-                # part in no other event of the same group, then 1, otherwise a value proportional
-                # to the number of events of interest.
-                found = [ evt ]
-                for other in group:
-                    if other != evt:
-                        try:
-                            events[other].remove(u)
-                        except KeyError:
-                            pass
-                        else:
-                            found.append(other)
-                score = 1.0 / len(found)
-                for f in found:
-                    scores[f.id] += score
-        return scores
-
-    def expected_attendance(self, conference, factor=0.85):
-        """
-        Return for each event prediction of participation based on EventInterest
-        """
-        seats_available = defaultdict(lambda: 0)
-        for row in EventTrack.objects\
-                    .filter(event__schedule__conference=conference)\
-                    .values('event', 'track__seats'):
-            seats_available[row['event']] += row['track__seats']
-
-        scores = self.events_score_by_attendance(conference)
-        events = Event.objects\
-            .filter(schedule__conference=conference)\
-            .select_related('schedule')
-
-        output = {}
-        # Now I have to make the forecast of the participants for each event,
-        # to make it divide the score of an event by the number of voters who
-        # have expressed a vote for an event in the same time band * *; the number
-        # I get is a k factor when multiplied by the forecast of people a day gives
-        # me an indication of how many people are expected for the event.
-        forecasts = self.attendees(conference, forecast=True)
-
-        # to calculate the score for a time band I have to do a double for the
-        # events, to limit the number of internal iterations I group events per day
-        event_by_day = defaultdict(set)
-        for e in events:
-            event_by_day[e.schedule_id].add(e)
-
-        for event in events:
-            score = scores[event.id]
-            group = list(Event.objects\
-                .group_events_by_times(event_by_day[event.schedule_id], event=event))[0]
-
-            group_score = sum([ scores[e.id] for e in group ])
-            if group_score:
-                k = score / group_score
-            else:
-                k = 0
-            expected = k * forecasts[event.schedule_id] * factor
-            seats = seats_available.get(event.id, 0)
-            output[event.id] = {
-                'score': score,
-                'seats': seats,
-                'expected': expected,
-                'overbook': seats and expected > seats,
-            }
-
-        return output
+        return settings.CONFERENCE_SCHEDULE_ATTENDEES(conference, forecast)
 
 
 class Schedule(models.Model):
@@ -1199,7 +1040,7 @@ class Schedule(models.Model):
     The latter can be the talk of the events or "custom" as the pyBirra,
     and are connected to the track in the "weak" mode, through a tagfield.
     """
-    conference = models.CharField(help_text = 'nome della conferenza', max_length = 20)
+    conference = models.CharField(help_text = 'Name of the conference', max_length = 20)
     slug = models.SlugField()
     date = models.DateField()
     description = models.TextField(blank=True)
@@ -1219,23 +1060,25 @@ class Schedule(models.Model):
         })
 
     def speakers(self):
-        qs = Event.objects\
-            .filter(schedule=self, talk__id__isnull=False)\
-            .values('talk__talkspeaker__speaker')
+        qs = Event.objects.filter(schedule=self, talk__id__isnull=False).values('talk__talkspeaker__speaker')
         return Speaker.objects.filter(user__in=qs)
 
 
 class Track(models.Model):
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE)
-    track = models.CharField('nome track', max_length=20)
-    title = models.TextField('titolo della track', help_text='HTML supportato')
+    # XXX This should really be called "name", not "track"
+    track = models.CharField('Track name', max_length=20) # Internal track name
+    title = models.TextField('Track title', help_text='HTML supported') # Display name
     seats = models.PositiveIntegerField(default=0)
-    order = models.PositiveIntegerField('ordine', default=0)
+    order = models.PositiveIntegerField(default=0)
     translate = models.BooleanField(default=False)
     outdoor = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.track
+        return self.title
+
+    def __repr__(self):
+        return 'Track(track=%r, title=%r)' % (self.track, self.title)
 
 
 class EventManager(models.Manager):
@@ -1332,20 +1175,24 @@ class Event(models.Model):
         else:
             return self.custom
 
-    def get_all_tracks_names(self):
-        from tagging.utils import parse_tag_input
-        return parse_tag_input(self.track)
+    def get_all_track_names(self):
 
-    def get_track(self):
+        """ Return a set of internal track names to which this event applies.
+        
         """
-        returns to the first track instance with the specified values or None if the event
-        It is of special type
-        """
-        # XXX: Use the tag template get track event that hunts the query
-        dbtracks = dict( (t.track, t) for t in self.schedule.track_set.all())
-        for t in tagging.models.Tag.objects.get_for_object(self):
-            if t.name in dbtracks:
-                return dbtracks[t.name]
+        return set(track.track for track in self.tracks.all())
+
+    def json_dump(self):
+    
+        (start, end) = self.get_time_range()
+        return {
+            'custom_description': self.custom,
+            'custom_abstract': self.abstract,
+            'start_time': self.start_time.isoformat(),
+            'duration': self.get_duration(),
+            'time_range': (start.isoformat(), end.isoformat()),
+            'track_names': list(self.get_all_track_names()),
+            }
 
     def split(self, time):
         """
@@ -1391,107 +1238,6 @@ class EventTrack(models.Model):
         unique_together = (('track', 'event',),)
 
 
-class EventInterest(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    interest = models.IntegerField()
-
-    class Meta:
-        unique_together = (('user', 'event'),)
-
-
-class EventBookingManager(models.Manager):
-    def booking_status(self, eid):
-        seats = Event.objects.values('seats').get(id=eid)['seats']
-        if not seats:
-            seats = sum(EventTrack.objects\
-                .filter(event=eid)\
-                .values_list('track__seats', flat=True))
-        booked = list(EventBooking.objects\
-            .filter(event=eid)\
-            .values_list('user', flat=True))
-        return {
-            'seats': seats,
-            'booked': booked,
-            'available': seats - len(booked),
-        }
-
-    def booking_available(self, eid, uid):
-        st = self.booking_status(eid)
-        return (uid in st['booked']) or (st['available'] > 0)
-
-    def book_event(self, eid, uid):
-        try:
-            e = EventBooking.objects.get(event=eid, user=uid)
-        except EventBooking.DoesNotExist:
-            e = EventBooking(event_id=eid, user_id=uid)
-            e.save()
-            signals.event_booked.send(sender=Event, booked=True, event_id=eid, user_id=uid)
-        return e
-
-    def cancel_reservation(self, eid, uid):
-        try:
-            e = EventBooking.objects.get(event=eid, user=uid)
-        except EventBooking.DoesNotExist:
-            return
-        e.delete()
-        signals.event_booked.send(sender=Event, booked=False, event_id=eid, user_id=uid)
-
-
-class EventBooking(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-
-    objects = EventBookingManager()
-
-    class Meta:
-        unique_together = (('user', 'event'),)
-
-
-class Hotel(models.Model):
-    """
-    Hotels allow you to track affiliated places and not where finding accommodations during the conference.
-    """
-    name = models.CharField('Name', max_length = 100)
-    telephone = models.CharField('Phone', max_length = 50, blank = True)
-    url = models.URLField(blank = True)
-    email = models.EmailField('email', blank = True)
-    availability = models.CharField('Availability', max_length = 50, blank = True)
-    price = models.CharField('Price', max_length = 50, blank = True)
-    note = models.TextField('note', blank = True)
-    affiliated = models.BooleanField('Affiliated', default = False)
-    visible = models.BooleanField('visibile', default = True)
-    address = models.CharField('Address', max_length = 200, default = '', blank = True)
-    lng = models.FloatField('longitude', default = 0.0, blank = True)
-    lat = models.FloatField('latitude', default = 0.0, blank = True)
-    modified = models.DateField(auto_now = True)
-
-    class Meta:
-        ordering = ['name']
-
-    def __str__(self):
-        return self.name
-
-
-class DidYouKnow(models.Model):
-    """
-    Do you know that ?
-    """
-    visible = models.BooleanField('visible', default = True)
-    messages = GenericRelation(MultilingualContent)
-
-
-class Quote(models.Model):
-    who = models.CharField(max_length=100)
-    conference = models.CharField(max_length=20)
-    text = models.TextField()
-    activity = models.CharField(max_length=50, blank=True)
-    image = models.ImageField(upload_to=_fs_upload_to('quote', 'who'), blank=True)
-
-    class Meta:
-        ordering = ['conference', 'who']
-
-
 class VotoTalk(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     talk = models.ForeignKey(Talk, on_delete=models.CASCADE)
@@ -1503,33 +1249,6 @@ class VotoTalk(models.Model):
         unique_together = (('user', 'talk'),)
         verbose_name = 'Talk voting'
         verbose_name_plural = 'Talk votings'
-#
-#def _clear_track_cache(sender, **kwargs):
-#    if hasattr(sender, 'schedule_id'):
-#        Track.objects.clear_cache(sender.schedule_id)
-#post_save.connect(_clear_track_cache, sender=Track)
-#
-#def _clear_talkspeaker_cache(sender, **kwargs):
-#    o = kwargs['instance']
-#    if isinstance(o, Talk):
-#        conference = o.conference
-#    else:
-#        conference = None
-#    TalkSpeaker.objects.clear_cache(conference)
-#post_save.connect(_clear_talkspeaker_cache, sender=Talk)
-#post_save.connect(_clear_talkspeaker_cache, sender=Speaker)
-#
-#def _clear_schedule_cache(sender, **kwargs):
-#    o = kwargs['instance']
-#    if isinstance(o, Event):
-#        conference = o.schedule.conference
-#    else:
-#        conference = o.event.schedule.conference
-#    Schedule.objects.clear_cache(conference)
-#post_save.connect(_clear_schedule_cache, sender=Event)
-#post_save.connect(_clear_schedule_cache, sender=EventInterest)
-
-from conference import listeners
 
 
 # ========================================
@@ -1599,7 +1318,7 @@ class News(TimeStampedModel):
     # CharField because sqlite
     uuid = models.CharField(unique=True, max_length=40, default=uuid.uuid4)
 
-    conference = models.ForeignKey(Conference)
+    conference = models.ForeignKey(Conference, on_delete=models.deletion.PROTECT)
     title = models.CharField(max_length=255)
     slug = models.SlugField()
     content = models.TextField()
@@ -1636,10 +1355,11 @@ class StripePayment(models.Model):
     token = models.CharField(max_length=100)
     token_type = models.CharField(max_length=20)
     charge_id = models.CharField(max_length=100, null=True)
+    session_id = models.CharField(max_length=100, null=True)
     email = models.CharField(max_length=255)
 
-    user = models.ForeignKey(get_user_model())
-    order = models.ForeignKey('assopy.Order')
+    user = models.ForeignKey(get_user_model(), on_delete=models.deletion.PROTECT)
+    order = models.ForeignKey('assopy.Order', on_delete=models.deletion.PROTECT)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.CharField(max_length=255)
 
@@ -1652,4 +1372,3 @@ class StripePayment(models.Model):
     def amount_for_stripe(self):
         # 9.99 becomes 999
         return int(self.amount * 100)
-

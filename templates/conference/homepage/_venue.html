@@ -1,0 +1,41 @@
+{% load static %}
+
+<div id="homepage_venue" class='text-light'>
+    <div class="container">
+        <!-- Example row of columns -->
+        <div class="row">
+            <div id='venue-description' class="col-md-6 text-left">
+                <div >
+                    <h2>Conference and Sprint Venue</h2>
+                    <h3>Your home or office</h3>
+                </div>
+                <div >
+                    <p>
+                        Online /<br>
+                        Internet /<br>
+                        Planet Earth<br>
+                    </p>
+                </div>
+                <div></div>
+                {%comment%}
+                <div >
+                    <a href='{{ CCD_GOOGLEMAPS_URL }}' target="_blank" class='btn btn-outline-light'>CCD on Google Maps</a>
+                    <a href='{{ CCD_OSM_URL }}' target="_blank" class='btn btn-outline-light'>CCD on OSM</a>
+                </div>
+                {%endcomment%}
+            </div>
+            <div class="col-md-6 text-left">
+                <img width="100%" src="{% static 'img/ep2020-snake-wrangler.jpg' %}">
+            </div>
+        </div>
+
+    </div> <!-- /container -->
+</div>
+
+<style>
+#venue-description {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+</style>

@@ -1,0 +1,46 @@
+{% extends "conference/base.html" %}
+
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+
+<div id="login_page">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Signup</h1>
+            </div>
+        </div>
+
+        <div class='row'>
+            <div class="col-md-6">
+                <h3>with email &amp; password</h3>
+
+                <form method='POST' action='.' class='form'>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <button class="btn btn-success btn-lg btn-block">
+                        Create Account
+                    </button>
+                </form>
+            </div>
+
+            <div class="col-md-6">
+                {% include "conference/accounts/_login_with_google.html" %}
+            </div>
+        </div>
+
+
+        <div class="row" style='margin-top: 5em;'>
+            <div class='col-md-6'>
+                <a class="btn btn-block btn-outline-primary" href="{% url "accounts:login" %}?next={{ next }}" class="btn">Already have an account? Click here to login</a>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

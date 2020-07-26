@@ -1,12 +1,8 @@
-
-
-
 import django.db.models.deletion
 from django.db import migrations, models
 from django.conf import settings
 
 import taggit.managers
-import tagging.fields
 import common.django_urls
 
 import conference.models
@@ -76,7 +72,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('object_id', models.IntegerField(verbose_name='Object id', db_index=True)),
-                ('content_type', models.ForeignKey(related_name='conference_conferencetaggeditem_tagged_items', verbose_name='Content type', to='contenttypes.ContentType')),
+                ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='conference_conferencetaggeditem_tagged_items', verbose_name='Content type', to='contenttypes.ContentType')),
                 ('tag', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='conference_conferencetaggeditem_items', to='conference.ConferenceTag')),
             ],
             options={
@@ -207,7 +203,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('conference', models.CharField(max_length=20)),
-                ('tags', tagging.fields.TagField(max_length=255, blank=True)),
+                ('tags', models.CharField(blank=True, help_text='comma separated list of tags. Something like: special, break, keynote', max_length=200)),
                 ('partner', models.ForeignKey(to='conference.MediaPartner', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
@@ -308,7 +304,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('conference', models.CharField(max_length=20)),
                 ('income', models.PositiveIntegerField()),
-                ('tags', tagging.fields.TagField(max_length=255, blank=True)),
+                ('tags', models.CharField(blank=True, help_text='comma separated list of tags. Something like: special, break, keynote', max_length=200)),
                 ('sponsor', models.ForeignKey(to='conference.Sponsor', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={

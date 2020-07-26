@@ -1,0 +1,433 @@
+{% extends "conference/base.html" %}
+{% load conference assopy_tags i18n %}
+{% load tz %}
+
+{% block body %}
+
+{% include "conference/header/_regular.html" %}
+
+<style>
+.schedule {
+    width: calc(100vw - (100vw - 100%));
+    overflow-x: auto;
+}
+
+.schedule > h2 {
+    margin: 20px 0;
+}
+
+.schedule__row {
+    width: calc((100vw + 20px) * 7);
+}
+.schedule__time {
+    background: white;
+}
+.schedule__talk {
+    --base-width: calc(100vw - 20px);
+    --multiplier: 1;
+    width: calc(var(--base-width) * var(--multiplier) - 20px);
+    display: inline-block;
+    border: 1px solid purple;
+    margin: 10px;
+    vertical-align: top;
+    position: relative;
+}
+.schedule__talk--length-2 {
+    --multiplier: 2;
+}
+.schedule__talk--length-3 {
+    --multiplier: 3;
+}
+.schedule__talk--length-4 {
+    --multiplier: 4;
+}
+.schedule__talk--length-5 {
+    --multiplier: 5;
+}
+.schedule__talk--length-6 {
+    --multiplier: 6;
+}
+.schedule__talk--length-7 {
+    --multiplier: 7;
+}
+.schedule__row--length-1 .schedule__talk--length-1 {
+    --multiplier: 7;
+}
+@media (min-width: 600px) {
+    .schedule__talk {
+        --base-width: 150px;
+    }
+}
+.schedule__day {
+    display: flex;
+    width: 100%;
+    position: relative;
+}
+.schedule__grid {
+    --cols: 1;
+    --rows: 1;
+    --height: 22px;
+    --min-width: calc(100vw - 60px);
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(var(--min-width), 1fr));
+    grid-template-rows: repeat(var(--rows), var(--height));
+    grid-gap: 5px;
+}
+.schedule__grid--header {
+    --height: 50px;
+}
+.schedule__grid--header > div {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #d4d2cd;
+}
+.schedule__day--sidebar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    grid-template-columns: 50px;
+    margin-right: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    text-align: center;
+}
+.schedule__day--time {
+    grid-template-columns: 50px;
+    margin-right: 5px;
+}
+.schedule__grid > div {
+    {% comment %} border: 1px solid red; {% endcomment %}
+}
+.schedule__day__talk_title {
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 1.4;
+    margin-top: 2px;
+}
+.schedule__day__talk_title .language {
+    width: 20px;
+    height: auto;
+}
+.schedule__day__talk_speakers {
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+.schedule__day__talk {
+    --level-color: gray;
+    background: #EFECDF;
+    position: relative;
+}
+.schedule__day__talk.talk-selected {
+    background: #ababab;
+}
+.schedule__day__level_indicator {
+    display: block;
+    width: 100%;
+    background: var(--level-color);
+    padding-left: 6px;
+    color: #ffffff;
+    font-size: 12px;
+    min-height: 1.8em;
+}
+.talk-level--beginner {
+    --level-color: #738023;
+}
+.talk-level--intermediate {
+    --level-color: #e7c30f;
+}
+.talk-level--advanced {
+    --level-color: #DA2300;
+}
+.schedule__day__keynote {
+    display: block;
+    width: 100%;
+    background: #00307b;
+    padding-left: 6px;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 12px;
+    min-height: 1.6em;
+}
+.schedule__day__startend {
+    margin-top: auto;
+    padding-bottom: 0;
+    font-size: 12px;
+    min-height: 1.8em;
+    text-align: right;
+}
+.schedule__day__inner {
+    width: 100%;
+    height: 100%;
+    max-width: calc(100vw - 60px);
+    padding: 5px 10px 5px 10px;
+    display: flex;
+    flex-direction: column;
+}
+.schedule__day__footer {
+    margin-top: auto;
+}
+.schedule__day__footer button {
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    cursor: pointer;
+}
+@media (min-width: 600px) {
+    .schedule__grid {
+        --min-width: 250px;
+    }
+}
+
+#days-navbar {
+    background-color: #DE8524;
+    padding-left: 55px;
+}
+
+#days-navbar .nav-link {
+    color: black;
+}
+
+#days-navbar .nav-link:hover, #days-navbar .active .nav-link {
+    margin-bottom: -2px;
+}
+
+div.cms .cms-toolbar {
+    position: absolute!important;
+}
+
+.schedule__talks_header {
+    background: white;
+}
+
+.schedule__time {
+    top: 50px;
+}
+
+#days-navbar>.navbar-nav {
+    justify-content: center;
+    width: 100%;
+}
+
+@media (max-width: 991px) {
+    #days-navbar>.navbar-nav {
+        width: auto;
+    }
+}
+
+</style>
+
+{% load cms_tags menu_tags %}
+
+{% comment %}
+<div class="alert alert-danger text-center">
+    Please note that our schedule is in <b>preview mode</b>.  Changes are
+    still possible.
+</div>
+{% endcomment %}
+
+<div class="alert alert-danger text-center">
+    For links to the sessions, please click on the track headers in Discord.
+    Those will then take you to the Zoom rooms and webinars.
+</div>
+
+<div class="alert alert-primary text-center">
+    The scheduled times are displayed in your local timezone as configured
+    in your browser (<span class="schedule-timezone-display">UTC</span>).
+    Hover over each time to see other timezones.
+</div>
+
+<nav class="navbar navbar-expand-lg" id="days-navbar">
+     <ul class="navbar-nav mr-auto">
+        {% for day in days %}
+        <li class="nav-item{% if day == schedule.day %} active{% endif %}">
+            <a
+                class="nav-link"
+                href="{% url "schedule:schedule" day=day.day month=day|date:"F"|lower %}"
+            >
+                {{ day|date:"l, jS" }}
+            </a>
+        </li>
+        {% endfor %}
+        </ul>
+</nav>
+
+
+<div class="schedule">
+    <div class="schedule__day">
+        <div class="schedule__day--sidebar">
+            <div class="schedule__grid schedule__grid--header schedule__day--time" style="--cols: 1; --rows: 1;">
+                <div id="timezone" style="background: white;">UTC</div>
+            </div>
+
+            <div class="schedule__grid schedule__day--time" style="--cols: 1; --rows: {{ schedule.grid.rows }};">
+                {% for time in schedule.grid.times %}
+                    <div class="schedule__time" style="
+                        grid-row: {{ time.start_row }} / {{ time.end_row }};
+                        grid-column: 1 / 1;
+                    ">
+                        <a class="schedule-time-display"
+			   data-fulltime="{{ time.time|utc|date:'Y-m-d H:i' }}"
+			   name="{{ time.time|utc|date:'H:i' }}-UTC"
+			   href="#{{ time.time|utc|date:'H:i' }}-UTC">{{ time.time|utc|date:'H:i' }}</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div>
+            <div class="schedule__grid schedule__grid--header schedule__talks_header" style="--cols: {{ schedule.grid.cols }}; --rows: 1;">
+                {% for title in schedule.titles %}
+                    <div>{{ title|safe }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="schedule__grid" style="--cols: {{ schedule.grid.cols }}; --rows: {{ schedule.grid.rows }};">
+                {% for talk in schedule.talks %}
+                    <div
+                        class="schedule__day__talk {% if talk.level %}talk-level--{{ talk.level }}{% endif %} {% if talk.selected %}talk-selected{% endif %}"
+                        style="
+                            grid-row: {{ talk.start_row }} / {{ talk.end_row }};
+                            grid-column: {{ talk.start_column }} / {{ talk.end_column }};
+                        "
+                    >
+                        <div class="schedule__day__inner">
+                            {% if talk.speakers %}
+                            <div class="schedule__day__talk_speakers">
+                                {% for s in talk.speakers %}
+                                    <a href="{% url "profiles:profile" profile_slug=s.slug %}">{{ s.name }}</a>
+				   {% if s.company %} ({{ s.company }}) {% endif %}
+                                   {% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                            <div class="schedule__day__talk_title">
+                                {% if talk.slug %}
+                                <a href="{% url "talks:talk" talk_slug=talk.slug %}">
+                                {% endif %}
+
+                                {{ talk.title|safe }}
+
+                                {% if talk.slug %}
+                                </a>
+                                {% endif %}
+                            </div>
+
+                            {% comment "the starring behaviour is not fully implemented" %}
+                            {% if talk.can_be_starred %}
+                            <div class="schedule__day__footer">
+                                <button
+                                    data-url="/conference/schedule/{{ conference }}/{{ sdata.slug }}/{{ talk.id }}/interest" class="star"
+                                    class="{% if talk.starred %}active{% endif %}"
+                                >
+                                    {% if talk.starred %}
+                                        ⭐
+                                    {% else %}
+                                        ☆
+                                    {% endif %}
+                                </button>
+                            </div>
+                            {% endif %}
+                            {% endcomment %}
+
+                            <div class="schedule__day__startend">
+			        <span class="schedule-time-display"
+                                      data-fulltime="{{ talk.start|utc|date:'Y-m-d H:i' }}">
+                                  {{ talk.start|utc|date:'H:i' }}
+                                </span> -
+	                        <span class="schedule-time-display"
+                                      data-fulltime="{{ talk.end|utc|date:'Y-m-d H:i' }}">
+                                  {{ talk.end|utc|date:'H:i' }}
+                                </span>
+                            </div>
+
+                            {% if talk.admin_type == 'k' %}
+                            <div class="schedule__day__keynote">
+                                Keynote
+                            </div>
+                            {% elif talk.level %}
+                            <div class="schedule__day__level_indicator">
+                                {{ talk.level }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "conference/footer/footer.html" %}
+
+
+{% endblock body %}
+
+{% block morejs %}
+
+<script type="text/javascript">
+function format_time(date) {
+    var h = date.getHours();
+    var m = date.getMinutes();
+    var text = "";
+    if (h < 10)
+       text += "0" + h;
+    else
+       text += h;
+    text += ":";
+    if (m < 10)
+       text += "0" + m;
+    else
+       text += m;
+    return text;
+}
+
+/* Change all schedule times from UTC to browser local time */
+function format_local_times() {
+    var tz_offset_min = new Date().getTimezoneOffset();
+    var tz_offset_ms = tz_offset_min * 60000;
+    var cest_offset_ms = -120 * 60000;
+    var tz_offset;
+    var prefix;
+    if (tz_offset_min < 0) {
+        tz_offset_min = -tz_offset_min;
+        prefix = 'GMT+';
+    }
+    else
+        prefix = 'GMT-';
+    tz_offset = new Date(2020, 7, 23, tz_offset_min / 60, tz_offset_min % 60);
+    // Fix all schedule time displays
+    $('.schedule-time-display').each(function(i, obj) {
+        var value = obj.dataset.fulltime;
+        // This approach is necessary to work around issues with Safari
+        // browsers: see https://stackoverflow.com/questions/6427204/date-parsing-in-javascript-is-different-between-safari-and-chrome
+        // It should also be a tad faster.
+        var t = value.split(/[^0-9]/);
+        var utc_time = new Date(t[0], t[1], t[2], t[3], t[4]);
+	var cest_time = new Date(utc_time - cest_offset_ms);
+	var local_time = new Date(utc_time - tz_offset_ms);
+        obj.innerHTML = format_time(local_time);
+	obj.title = ("UTC: " + format_time(utc_time)
+	             + "\nCEST: " + format_time(cest_time)
+	             + "\nYour time: " + format_time(local_time));
+	$(this).show();
+        });
+    // Fix all schedule timezone displays
+    $('.schedule-timezone-display').each(function(i, obj) {
+        obj.innerHTML = prefix + format_time(tz_offset);
+	$(this).show();
+        });
+    return true;
+};
+
+$(document).ready(function() {
+    format_local_times();
+    $('#timezone').text("Your Time");
+});
+
+</script>
+
+{% endblock morejs %}

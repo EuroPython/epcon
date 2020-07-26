@@ -2,7 +2,7 @@ import random
 
 from django import forms
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.contrib import messages
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import views as auth_views
@@ -10,7 +10,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import slugify
@@ -24,7 +24,7 @@ from conference.models import CaptchaQuestion, AttendeeProfile
 from p3.models import P3Profile
 
 
-LOGIN_TEMPLATE = "ep19/bs/accounts/login.html"
+LOGIN_TEMPLATE = "conference/accounts/login.html"
 
 PRIVACY_POLICY_CHECKBOX = (
     "I consent to the use of my data subject to the "
@@ -35,7 +35,7 @@ PRIVACY_POLICY_ERROR = (
     "You need to consent to use of your data before we can continue"
 )
 
-EMAIL_VERIFICATION_SUBJECT = "EuroPython2019: Please verify your email"
+EMAIL_VERIFICATION_SUBJECT = "%s: Please verify your email" % settings.CONFERENCE_NAME
 
 
 class LoginForm(auth_forms.AuthenticationForm):
@@ -94,13 +94,13 @@ def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
                 )
                 get_or_create_attendee_profile_for_new_user(assopy_user.user)
                 current_site = get_current_site(request)
-                send_verification_email(assopy_user, current_site)
+                send_verification_email(assopy_user.user, current_site)
 
                 messages.success(request, "Email verification sent")
 
             return redirect('accounts:signup_step_2_please_verify_email')
 
-    return TemplateResponse(request, "ep19/bs/accounts/signup.html", {
+    return TemplateResponse(request, "conference/accounts/signup.html", {
         'form': form,
         'next': request.GET.get('next', '/'),
     })
@@ -108,19 +108,19 @@ def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
 
 def signup_step_2_please_verify_email(request):
     return TemplateResponse(
-        request, "ep19/bs/accounts/signup_please_verify_email.html", {}
+        request, "conference/accounts/signup_please_verify_email.html", {}
     )
 
 
-def send_verification_email(assopy_user, current_site) -> None:
+def send_verification_email(user, current_site) -> None:
 
-    new_token = create_new_email_verification_token(assopy_user.user)
+    new_token = create_new_email_verification_token(user)
     verification_path = reverse(
         "accounts:handle_verification_token", args=[new_token.token]
     )
     full_url = f'https://{current_site.domain}{verification_path}'
 
-    content = render_to_string("ep19/emails/signup_verification_email.txt", {
+    content = render_to_string("conference/emails/signup_verification_email.txt", {
         'new_token': new_token,
         'verification_email_url': full_url,
     })
@@ -129,7 +129,7 @@ def send_verification_email(assopy_user, current_site) -> None:
         subject=EMAIL_VERIFICATION_SUBJECT,
         message=content,
         from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[assopy_user.user.email],
+        recipient_list=[user.email],
     )
 
 
@@ -249,7 +249,7 @@ class NewAccountForm(forms.Form):
 
     def clean_email(self):
         email = self.cleaned_data['email']
-        if User.objects.filter(email__iexact=email).count() > 0:
+        if User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError('Email already in use')
 
         return email.lower()
@@ -268,68 +268,61 @@ class NewAccountForm(forms.Form):
 
 
 urlpatterns = [
-    url(
+    re_path(
         r"^login/$",
         auth_views.LoginView.as_view(
             authentication_form=LoginForm, template_name=LOGIN_TEMPLATE
         ),
         name="login",
     ),
-    url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
-    url(
+    re_path(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
+    re_path(
         r"^signup/$",
         signup_step_1_create_account,
         name="signup_step_1_create_account",
     ),
-    url(
+    re_path(
         r"^signup/thanks/$",
         signup_step_2_please_verify_email,
         name="signup_step_2_please_verify_email",
     ),
-    url(
+    re_path(
         # 22 not 36 because we use short uuid
         r"^signup/verify-email/(?P<token>\w{22})/$",
         handle_verification_token,
         name="handle_verification_token",
     ),
     # Password reset, using default django views.
-    url(
+    re_path(
         r"^password-reset/$",
-        auth_views.password_reset,
-        kwargs={
-            "template_name": "ep19/bs/accounts/password_reset.html",
-            "post_reset_redirect": reverse_lazy(
-                "accounts:password_reset_done"
-            ),
-            "email_template_name": "ep19/emails/password_reset_email.txt",
-            "subject_template_name": "ep19/emails/password_reset_subject.txt",
-        },
+        auth_views.PasswordResetView.as_view(
+            template_name="conference/accounts/password_reset.html",
+            success_url=reverse_lazy("accounts:password_reset_done"),
+            email_template_name="conference/emails/password_reset_email.txt",
+            subject_template_name="conference/emails/password_reset_subject.txt",
+        ),
         name="password_reset",
     ),
-    url(
+    re_path(
         r"^password-reset/done/$",
-        auth_views.password_reset_done,
-        kwargs={"template_name": "ep19/bs/accounts/password_reset_done.html"},
+        auth_views.PasswordResetDoneView.as_view(
+            template_name="conference/accounts/password_reset_done.html",
+        ),
         name="password_reset_done",
     ),
-    url(
+    re_path(
         r"^reset/(?P<uidb64>[\w-]+)/(?P<token>[\w]{1,13}-[\w]{1,20})/$",
-        auth_views.password_reset_confirm,
-        kwargs={
-            "set_password_form": auth_forms.SetPasswordForm,
-            "template_name": "ep19/bs/accounts/password_reset_confirm.html",
-            "post_reset_redirect": reverse_lazy(
-                "accounts:password_reset_complete"
-            ),
-        },
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name="conference/accounts/password_reset_confirm.html",
+            success_url=reverse_lazy("accounts:password_reset_complete"),
+        ),
         name="password_reset_confirm",
     ),
-    url(
+    re_path(
         r"^reset/done/$",
-        auth_views.password_reset_complete,
-        kwargs={
-            "template_name": "ep19/bs/accounts/password_reset_complete.html"
-        },
+        auth_views.PasswordResetCompleteView.as_view(
+            template_name="conference/accounts/password_reset_complete.html",
+        ),
         name="password_reset_complete",
     ),
 ]

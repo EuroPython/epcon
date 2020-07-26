@@ -1,26 +1,22 @@
-from p3.models import TicketConference
-from django.conf import settings
 from django.db.models import Q
+
+from p3.models import TicketConference
 from conference.models import Ticket
 from conference.fares import FARE_CODE_REGEXES, FARE_CODE_VARIANTS
-from p3.utils import assign_ticket_to_user
-
-# TODO: Move this somewhere else. Settings maybe(?)
-DEFAULT_SHIRT_SIZE = "l"
-DEFAULT_DIET = "omnivorous"
 
 
 def reset_ticket_settings(ticket):
     tc = ticket.p3_conference
-    tc.shirt_size = DEFAULT_SHIRT_SIZE
-    tc.diet = DEFAULT_DIET
-    tc.tagline = ""
-    tc.days = ""
+    new_tc = TicketConference()  # won't save this, created just to copy defaults from it
+    tc.shirt_size = new_tc.shirt_size
+    tc.diet = new_tc.diet
+    tc.tagline = new_tc.tagline
+    tc.days = new_tc.days
     tc.save()
     return tc
 
 
-def count_number_of_sold_training_tickets_including_combined_tickets(conference_code):
+def sold_training_tickets_including_combined_tickets(conference_code):
     qs = Ticket.objects.filter(
         fare__conference=conference_code,
         frozen=False,
@@ -37,4 +33,4 @@ def count_number_of_sold_training_tickets_including_combined_tickets(conference_
             ]
         )
     )
-    return qs.count()
+    return qs

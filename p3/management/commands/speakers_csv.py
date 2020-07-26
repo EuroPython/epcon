@@ -1,5 +1,4 @@
 import csv
-import sys
 
 from django.core.management.base import BaseCommand
 
@@ -31,7 +30,7 @@ class Command(BaseCommand):
             #'discounts',
             COL_NAME, COL_TITLE, COL_BIO,
         )
-        writer = csv.DictWriter(sys.stdout, columns)
+        writer = csv.DictWriter(self.stdout, columns)
         writer.writerow(dict(list(zip(columns, columns))))
 
         for s in sorted(speakers, key=lambda x: x.user.assopy_user.name()):

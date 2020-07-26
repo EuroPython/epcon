@@ -1,7 +1,7 @@
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
@@ -26,13 +26,13 @@ def talk(request, talk_slug):
 
     return TemplateResponse(
         request,
-        "ep19/bs/talks/talk.html",
+        "conference/talks/talk.html",
         {
             "title": talk.title,
             "talk": talk,
             "talk_as_dict": talk_as_dict,
             "social_image_url": request.build_absolute_uri(
-                reverse("conference-talk-social-card-png", kwargs={"slug": talk.slug})
+                reverse("conference:conference-talk-social-card-png", kwargs={"slug": talk.slug})
             ),
             "can_update_talk": can_update_talk,
             "can_submit_slides": can_submit_slides,
@@ -64,7 +64,7 @@ def update_talk(request, talk_slug):
 
     return TemplateResponse(
         request,
-        "ep19/bs/talks/update_talk.html",
+        "conference/talks/update_talk.html",
         {"talk": talk, "talk_update_form": talk_update_form},
     )
 
@@ -93,7 +93,7 @@ def submit_slides(request, talk_slug):
 
     return TemplateResponse(
         request,
-        "ep19/bs/talks/update_talk.html",
+        "conference/talks/update_talk.html",
         {"talk": talk, "talk_update_form": talk_slides_form},
     )
 
@@ -129,8 +129,18 @@ def can_user_submit_talk_slides(user, talk):
     )
 
 
-def dump_relevant_talk_information_to_dict(talk: Talk):
+def dump_relevant_talk_information_to_dict(talk: Talk, speaker_tickets=None):
 
+    """ Dumps information about talk to a dictionary suitable for sending
+        back as JSON.
+        
+        speaker_tickets may be given as dictionary mapping assigned to email
+        to Ticket object and is used for defining has_ticket.
+        
+    """
+    event = talk.get_event()
+    if event is not None:
+        event = event.json_dump()
     output = {
         "title": talk.title,
         "uuid": talk.uuid,
@@ -149,12 +159,17 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
         "status": talk.status,
         "tags": [t.name for t in talk.tags.all()],
         "speakers": [],
+        "event": event,
         "schedule_url": talk.get_schedule_url(),
-        "slides_url": talk.slides,
+        "slides_url": talk.get_slides_url(),
     }
 
     for speaker in talk.get_all_speakers():
         ap = speaker.user.attendeeprofile
+        if speaker_tickets is not None:
+            has_ticket = speaker.user.email in speaker_tickets
+        else:
+            has_ticket = None
         output["speakers"].append(
             {
                 "id": speaker.user.id,
@@ -165,6 +180,8 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
                 "bio": getattr(ap.getBio(), "body", ""),
                 "phone": ap.phone,
                 "slug": ap.slug,
+                "location": ap.location,
+                "has_ticket": has_ticket,
             }
         )
 
@@ -172,7 +189,19 @@ def dump_relevant_talk_information_to_dict(talk: Talk):
 
 
 urlpatterns = [
-    url(r"^(?P<talk_slug>[\w-]+)/update/$", update_talk, name="update_talk"),
-    url(r"^(?P<talk_slug>[\w-]+)/submit_slides/$", submit_slides, name="submit_slides"),
-    url(r"^(?P<talk_slug>[\w-]+)/$", talk, name="talk"),
+    re_path(
+        r"^(?P<talk_slug>[\w-]+)/update/$",
+        update_talk,
+        name="update_talk"
+    ),
+    re_path(
+        r"^(?P<talk_slug>[\w-]+)/submit_slides/$",
+        submit_slides,
+        name="submit_slides"
+    ),
+    re_path(
+        r"^(?P<talk_slug>[\w-]+)/$",
+        talk,
+        name="talk"
+    ),
 ]

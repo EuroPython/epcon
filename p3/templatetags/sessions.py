@@ -4,7 +4,7 @@
     to be escaped in MarkItUp CMS plugins.
 
 """
-
+from anglicize import anglicize
 from django import template
 from conference import models
 
@@ -67,7 +67,7 @@ def speaker_list_key(entry):
         speaker.user.last_name)
 
     # Remove whitespace and use title case
-    return name.strip().title()
+    return anglicize(name.strip().title())
 
 ###
 
@@ -121,16 +121,13 @@ def acceptedsessions(conference, filtertypes=None, filtercommunity=None,
     for talk in talks:
         talk_type = talk.type[:1]
         admin_type = talk.admin_type[:1]
-        if (admin_type == 'm' or 
-            'EPS' in talk.title or
-            'EuroPython 20' in talk.title):
+        if admin_type == 'm':
             # EPS sessions
             type = 'e'
-        elif (admin_type == 'k' or 
-              talk.title.lower().startswith('keynote')):
+        elif admin_type == 'k':
             # Keynotes
             type = 'k'
-        elif (admin_type == 'p'):
+        elif admin_type == 'p':
             # Community sessions
             type = 'c'
         elif admin_type in ('x', 'o', 'c', 'l', 'r', 's', 'e'):

@@ -1,9 +1,8 @@
-
 from assopy import models
 from conference import cachef
 from conference.models import Ticket
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 
 cache_me = cachef.CacheFunction(prefix='assopy:')
@@ -14,12 +13,6 @@ def user_data(u):
         'email': u.email,
     }
 
-def user_identities(u):
-    return [{
-        'provider': i.provider,
-        'identifier': i.identifier,
-        } for i in u.assopy_user.identities.all()]
-        
 def user_tickets(u):
     qs = Ticket.objects\
         .filter(user=u)\
@@ -107,38 +100,8 @@ def all_user_data(uid):
     user = User.objects.get(id=uid)
     output = {
         'user': user_data(user),
-        'identities': user_identities(user),
         'tickets': user_tickets(user),
         'orders': user_orders(user),
         'coupons': user_coupons(user),
     }
     return output
-
-# XXX: per il momento all_user_data viene usata solo dall'admin, quindi non è
-# oggetto di richieste parallele; se le perfomance dovessero essere troppo
-# oscene bisognerà ricorrere alla cache.
-
-#def _i_all_user_data(sender, **kw):
-#    if sender is User:
-#        uids = [ kw['instance'].id ]
-#    elif sender is models.UserIdentity:
-#        uids = [ kw['instance'].user.user_id ]
-#    elif sender is models.Order:
-#        uids = [ kw['instance'].user.user_id ]
-#    elif sender is models.Coupon:
-#        uids = []
-#        if kw['instance'].user:
-#            uids.append(kw['instance'].user.user_id)
-#        uids.extend(models.Order.objects\
-#            .filter(
-#                orderitem__code=kw['instance'].code,
-#                created__year=kw['instance'].conference.conference_start.year)\
-#            .values_list('user__user', flat=True))
-#    elif sender is Ticket:
-#        uids = [ kw['instance'].user_id ]
-#
-#    return [ 'all_user_data:%s' % x for x in uids ]
-#
-#all_user_data = cache_me(
-#    models=(User, models.UserIdentity, models.Order, models.Coupon, Ticket),
-#    key='all_user_data:%(uid)s')(all_user_data, _i_all_user_data)

@@ -1,6 +1,5 @@
 import csv
 import random
-from datetime import date
 from datetime import timedelta
 from io import StringIO
 
@@ -16,21 +15,19 @@ from djangocms_text_ckeditor.cms_plugins import TextPlugin
 from assopy.models import AssopyUser, Country, Vat
 from conference.fares import pre_create_typical_fares_for_conference
 from conference.models import (
-    Conference,
     ConferenceTag,
+    Fare,
     News,
     TALK_STATUS,
     Speaker,
     ExchangeRate,
 )
-from conference.tests.factories.fare import SponsorIncomeFactory, TicketFactory
-from conference.tests.factories.talk import TalkFactory
 from conference.cfp import add_speaker_to_talk
 from conference.accounts import get_or_create_attendee_profile_for_new_user
 from conference.fares import set_early_bird_fare_dates, set_other_fares_dates
 
-
-DEFAULT_VAT_RATE = "20"  # 20%
+from tests.common_tools import get_default_conference, create_homepage_in_cms
+from tests.factories import SponsorIncomeFactory, TalkFactory, DEFAULT_VAT_RATE, OrderFactory
 
 
 class Command(BaseCommand):
@@ -41,48 +38,45 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
-        conference, _ = Conference.objects.get_or_create(
-            code=settings.CONFERENCE_CONFERENCE,
-            name="Europython 2019",
-            # For easier testing open CFP
-            cfp_start=timezone.now() - timedelta(days=3),
-            cfp_end=timezone.now() + timedelta(days=3),
-            conference_start=date(2019, 7, 8),
-            conference_end=date(2019, 7, 14),
-            # For easier testing also start with open voting
-            voting_start=timezone.now() - timedelta(days=3),
-            voting_end=timezone.now() + timedelta(days=3),
-        )
+        conference = get_default_conference()
+        create_homepage_in_cms()
+
+        today = timezone.now().date()
         ExchangeRate.objects.create(
-            datestamp=date.today(), currency="CHF", rate="1.0"
+            datestamp=today, currency="CHF", rate="1.0"
         )
 
         print("Creating an admin user")
         admin = AssopyUser.objects.create_superuser(
-            username="admin", email="admin@admin.com", password="europython"
+            username="admin",
+            email="admin@admin.com",
+            password="europython",
+            first_name="Joe",
+            last_name="Schmoe",
         )
 
         print("Creating regular users")
         alice = AssopyUser.objects.create_user(
+            first_name="Alice",
+            last_name="Doe",
             email="alice@europython.eu",
             password="europython",
             active=True,
         )
         bob = AssopyUser.objects.create_user(
+            first_name="Bob",
+            last_name="Doe",
             email="bob@europython.eu",
             password="europython",
             active=True,
         )
         cesar = AssopyUser.objects.create_user(
             email="cesar@europython.eu",
+            first_name="Cesar",
+            last_name="Bloggs",
             password="europython",
             active=True,
         )
-
-        print("Creating tickets to allow users to vote")
-        # Leaving Cesar out from voting
-        for assopy_user in (admin, alice, bob):
-            TicketFactory(user=assopy_user.user, frozen=False)
 
         print("Making some talk proposals")
         for user in alice, bob, cesar:
@@ -127,7 +121,7 @@ class Command(BaseCommand):
                     title=title,
                     language="en",
                     template=(
-                        "ep19/bs/content/"
+                        "conference/content/"
                         "generic_content_page_with_sidebar.html"
                     ),
                     published=True,
@@ -202,9 +196,10 @@ class Command(BaseCommand):
             ("social-media", "Social Media"),
             ("code-of-conduct", "Code of Conduct"),
             ("privacy", "Privacy policy"),
-            ("workgroups", "2019 Team"),
+            ("workgroups", "2020 Team"),
             ("photos", "Photos"),
             ("videos", "Videos"),
+            ("terms", "Terms & Conditions"),
             ("eps", "EuroPython Society"),
             ("previous-editions", "Previous Editions"),
             ("help-organize", "Help Organize next EuroPython"),
@@ -213,6 +208,7 @@ class Command(BaseCommand):
             new_page(rev_id, title, parent=about_europython_page)
 
         print("Creating some countries")
+        created_countries = []
         for iso, name in [
             ("PL", "Poland"),
             ("DE", "Germany"),
@@ -221,7 +217,8 @@ class Command(BaseCommand):
             ("IT", "Italy"),
             ("CH", "Switzerland"),
         ]:
-            Country.objects.get_or_create(iso=iso, name=name)
+            country, _created = Country.objects.get_or_create(iso=iso, name=name)
+            created_countries.append(country)
 
         print("Creating sponsors")
         SponsorIncomeFactory(
@@ -244,14 +241,26 @@ class Command(BaseCommand):
 
         set_early_bird_fare_dates(
             conference,
-            date.today(),
-            date.today() + timedelta(days=7)
+            today,
+            today + timedelta(days=7)
         )
         set_other_fares_dates(
             conference,
-            date.today(),
-            date.today() + timedelta(days=7)
+            today,
+            today + timedelta(days=7)
         )
+
+        print("Creating tickets to allow users to vote")
+        # Leaving Cesar out from voting
+        fare = Fare.objects.first()
+        for assopy_user in (admin, alice, bob):
+            order = OrderFactory(
+                user=assopy_user,
+                items=[(fare, {"qty": 1}), ],
+                country=random.choice(created_countries),
+            )
+            order._complete = True
+            order.save()
 
         # News
 

@@ -1,14 +1,11 @@
-import uuid
-from datetime import date
-
 from django import forms
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
@@ -21,9 +18,11 @@ from .fares import (
     FARE_CODE_GROUPS,
     FARE_CODE_REGEXES,
     FARE_TICKET_TYPES,
+    FARE_CODE_TYPES,
     FareIsNotAvailable,
     get_available_fares,
     is_fare_code_valid,
+    is_early_bird_sold_out,
 )
 from .invoicing import create_invoices_for_order
 from .orders import (
@@ -34,13 +33,15 @@ from .orders import (
     is_business_order,
     is_non_conference_ticket_order,
 )
-from .payments import PaymentError, charge_for_payment
+from .payments import PaymentError, prepare_for_payment, verify_payment
+from .decorators import full_profile_required
 
 
 GLOBAL_MAX_PER_FARE_TYPE = 6
-ORDER_CONFIRMATION_EMAIL_SUBJECT = "EuroPython2019: Order confirmation"
+ORDER_CONFIRMATION_EMAIL_SUBJECT = "%s: Order confirmation" % settings.CONFERENCE_NAME
 
 
+@full_profile_required
 def cart_step1_choose_type_of_order(request):
     """
     This view is not login required because we want to display some summary of
@@ -49,11 +50,12 @@ def cart_step1_choose_type_of_order(request):
     special_fares = get_available_fares_for_type(TicketType.other)
     context = {"show_special": bool(special_fares)}
     return TemplateResponse(
-        request, "ep19/bs/cart/step_1_choose_type_of_order.html", context
+        request, "conference/cart/step_1_choose_type_of_order.html", context
     )
 
 
 @login_required
+@full_profile_required
 def cart_step2_pick_tickets(request, type_of_tickets):
     """
     Only submit this form if user is authenticated, otherwise display some
@@ -71,11 +73,13 @@ def cart_step2_pick_tickets(request, type_of_tickets):
         "currency": "EUR",
         "fares_info": {},  # empty fares info
     }
-    if request.method == "POST":
 
+    if request.method == "POST":
         discount_code, fares_info = extract_order_parameters_from_request(
-            request.POST
+            post_data=request.POST,
         )
+        if discount_code is not None:
+            discount_code = discount_code.strip()
         context["fares_info"] = fares_info
 
         if sum(fares_info.values()) == 0:
@@ -101,7 +105,7 @@ def cart_step2_pick_tickets(request, type_of_tickets):
                     request, "The discount code provided expired or is invalid"
                 )
 
-        if CartActions.buy_tickets in request.POST:
+        elif CartActions.buy_tickets in request.POST:
             order = create_order(
                 for_user=request.user,
                 for_date=timezone.now().date(),
@@ -115,13 +119,13 @@ def cart_step2_pick_tickets(request, type_of_tickets):
             )
 
     return TemplateResponse(
-        request, "ep19/bs/cart/step_2_pick_tickets.html", context
+        request, "conference/cart/step_2_pick_tickets.html", context
     )
 
 
 @login_required
+@full_profile_required
 def cart_step3_add_billing_info(request, order_uuid):
-
     order = get_object_or_404(Order, uuid=order_uuid)
 
     if is_business_order(order) or is_non_conference_ticket_order(order):
@@ -140,12 +144,13 @@ def cart_step3_add_billing_info(request, order_uuid):
 
     return TemplateResponse(
         request,
-        "ep19/bs/cart/step_3_add_billing_info.html",
+        "conference/cart/step_3_add_billing_info.html",
         {"form": form, "order": order},
     )
 
 
 @login_required
+@full_profile_required
 def cart_step4_payment(request, order_uuid):
     order = get_object_or_404(Order, uuid=order_uuid)
     total_for_stripe = int(order.total() * 100)
@@ -155,7 +160,7 @@ def cart_step4_payment(request, order_uuid):
 
         if total_for_stripe == 0:
             # For 100% discounted orders/coupons
-            order.payment_date = date.today()
+            order.payment_date = timezone.now()
             order.save()
 
             with transaction.atomic():
@@ -167,21 +172,47 @@ def cart_step4_payment(request, order_uuid):
                 "cart:step5_congrats_order_complete", order_uuid=order.uuid
             )
 
-        stripe_payment = StripePayment.objects.create(
-            order=order,
-            user=request.user,
-            uuid=str(uuid.uuid4()),
-            amount=order.total(),
-            token=request.POST.get("stripeToken"),
-            token_type=request.POST.get("stripeTokenType"),
-            email=request.POST.get("stripeEmail"),
-            description=f"payment for order {order.pk} by {request.user.email}",
+    # sanity/security check to make sure we don't publish the the wrong key
+    stripe_key = settings.STRIPE_PUBLISHABLE_KEY
+    assert stripe_key.startswith("pk_")
+    stripe_session_id = None
+    if total_for_stripe > 0:
+        stripe_session = prepare_for_payment(
+            request,
+            order = order,
+            description = f"payment for order {order.pk} by {request.user.email}"
         )
+        stripe_session_id = stripe_session.id
+
+    return TemplateResponse(
+        request,
+        "conference/cart/step_4_payment.html",
+        {
+            "order": order,
+            "payment": payments,
+            "stripe_key": stripe_key,
+            "total_for_stripe": total_for_stripe,
+            "stripe_session_id": stripe_session_id,
+        },
+    )
+
+
+@login_required
+def cart_step4b_verify_payment(request, payment_uuid, session_id):
+    payment = get_object_or_404(StripePayment, uuid=payment_uuid)
+    order = payment.order
+    if payment.status != 'SUCCESSFUL':
         try:
-            # Save the payment information as soon as it goes through to
-            # avoid data loss.
-            charge_for_payment(stripe_payment)
-            order.payment_date = date.today()
+            verify_payment(payment, session_id)
+        except PaymentError:
+            return redirect("cart:step4_payment", order_uuid=order.uuid)
+
+        if order.payment_date is not None:
+            # XXX This order was already paid for(!)
+            payment.message = 'Duplicate payment?!?'
+            payment.save()
+        else:
+            order.payment_date = timezone.now()
             order.save()
 
             with transaction.atomic():
@@ -189,36 +220,16 @@ def cart_step4_payment(request, order_uuid):
                 current_site = get_current_site(request)
                 send_order_confirmation_email(order, current_site)
 
-                return redirect(
-                    "cart:step5_congrats_order_complete", order_uuid=order.uuid
-                )
-        except PaymentError:
-            # Redirect to the same page, show information about failed
-            # payment(s) and reshow the same Pay with Card button
-            return redirect(".")
-
-    # sanity/security check to make sure we don't publish the the wrong key
-    stripe_key = settings.STRIPE_PUBLISHABLE_KEY
-    assert stripe_key.startswith("pk_")
-
-    return TemplateResponse(
-        request,
-        "ep19/bs/cart/step_4_payment.html",
-        {
-            "order": order,
-            "payments": payments,
-            "stripe_key": stripe_key,
-            "total_for_stripe": total_for_stripe,
-        },
-    )
+    return redirect("cart:step5_congrats_order_complete", order.uuid)
 
 
 @login_required
 def cart_step5_congrats_order_complete(request, order_uuid):
     order = get_object_or_404(Order, uuid=order_uuid)
+
     return TemplateResponse(
         request,
-        "ep19/bs/cart/step_5_congrats_order_complete.html",
+        "conference/cart/step_5_congrats_order_complete.html",
         {"order": order},
     )
 
@@ -227,13 +238,13 @@ def extract_order_parameters_from_request(post_data):
     discount_code = None
     fares_info = {}
 
-    for k, v in post_data.items():
-        if k == "discount_code":
-            discount_code = v
+    for fare_code, fare_count in post_data.items():
+        if fare_code == "discount_code":
+            discount_code = fare_count
 
-        elif is_fare_code_valid(k):
+        elif is_fare_code_valid(fare_code):
             try:
-                fares_info[k] = int(v)
+                fares_info[fare_code] = int(fare_count)
             except ValueError:
                 pass
 
@@ -246,7 +257,7 @@ def send_order_confirmation_email(order: Order, current_site) -> None:
     user_panel_url = f"https://{current_site.domain}{user_panel_path}"
 
     content = render_to_string(
-        "ep19/emails/order_confirmation_email.txt",
+        "conference/emails/order_confirmation_email.txt",
         {"order": order, "user_panel_url": user_panel_url},
     )
 
@@ -297,6 +308,12 @@ def get_available_fares_for_type(type_of_tickets):
             code__regex=FARE_CODE_REGEXES["groups"][regex_group]
         )
 
+        # Check if early bird tickets should be available
+        if is_early_bird_sold_out():
+            fares = fares.exclude(
+                code__regex=FARE_CODE_REGEXES["types"][FARE_CODE_TYPES.EARLY_BIRD]
+            )
+
     elif type_of_tickets == TicketType.other:
         fares = fares.exclude(
             ticket_type=FARE_TICKET_TYPES.conference,
@@ -336,24 +353,29 @@ class BusinessBillingForm(forms.ModelForm):
         labels = {"card_name": "Name of the buyer"}
 
 
-urlpatterns_ep19 = [
-    url(r"^$", cart_step1_choose_type_of_order, name="step1_choose_type"),
-    url(
+urlpatterns = [
+    re_path(r"^$", cart_step1_choose_type_of_order, name="step1_choose_type"),
+    re_path(
         r"^(?P<type_of_tickets>\w+)/$",
         cart_step2_pick_tickets,
         name="step2_pick_tickets",
     ),
-    url(
+    re_path(
         r"^add-billing/(?P<order_uuid>[\w-]+)/$",
         cart_step3_add_billing_info,
         name="step3_add_billing_info",
     ),
-    url(
+    re_path(
         r"^payment/(?P<order_uuid>[\w-]+)/$",
         cart_step4_payment,
         name="step4_payment",
     ),
-    url(
+    re_path(
+        r"^verify/(?P<payment_uuid>[\w-]+)/(?P<session_id>[-_\w{}]+)/$",
+        cart_step4b_verify_payment,
+        name="step4b_verify_payment",
+    ),
+    re_path(
         r"^thanks/(?P<order_uuid>[\w-]+)/$",
         cart_step5_congrats_order_complete,
         name="step5_congrats_order_complete",

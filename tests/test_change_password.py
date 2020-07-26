@@ -1,20 +1,17 @@
 from datetime import date
 from pytest import mark
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 
-from django_factory_boy import auth as auth_factories
-
-# TODO: clean up this import path
-from assopy.tests.factories.user import AssopyUserFactory
 from conference.models import AttendeeProfile, Conference
 
-from tests.common_tools import template_used
+from .common_tools import template_used
+from . import factories
 
 
 @mark.django_db
-def test_change_password(client):
+def test_change_password(client, user):
     """
     Testing full change password flow,
 
@@ -24,10 +21,6 @@ def test_change_password(client):
     4. Log in with new password
     """
 
-    # default password is 'password123' per django_factory_boy
-    user = auth_factories.UserFactory(
-        email="joedoe@example.com", is_active=True
-    )
     # Conference is needed for user panel to work properly – because of
     # proposals and orders
     Conference.objects.create(
@@ -36,11 +29,7 @@ def test_change_password(client):
         conference_start=date.today(),
     )
 
-    # both are required to access user profile page.
-    AssopyUserFactory(user=user)
-    AttendeeProfile.objects.create(user=user, slug="foobar")
-
-    client.login(email="joedoe@example.com", password="password123")
+    client.login(email=user.email, password="password123")
 
     user_dashboard_url = reverse("user_panel:dashboard")
     change_password_url = reverse("user_panel:password_change")
@@ -48,11 +37,11 @@ def test_change_password(client):
     response = client.get(user_dashboard_url)
     assert "Change your password" in response.content.decode("utf-8")
     assert change_password_url in response.content.decode("utf-8")
-    assert template_used(response, "ep19/bs/user_panel/dashboard.html")
+    assert template_used(response, "conference/user_panel/dashboard.html")
 
     response = client.get(change_password_url)
     assert template_used(
-        response, "ep19/bs/user_panel/password_change.html"
+        response, "conference/user_panel/password_change.html"
     )
     assert "Django Administration" not in response.content.decode("utf-8")
 
@@ -67,14 +56,12 @@ def test_change_password(client):
     )
 
     assert template_used(
-        response, "ep19/bs/user_panel/password_change_done.html"
+        response, "conference/user_panel/password_change_done.html"
     )
     assert user_dashboard_url in response.content.decode("utf-8")
     assert "Password updated" in response.content.decode("utf-8")
 
     client.logout()
 
-    can_log_in_with_new_password = client.login(
-        email="joedoe@example.com", password="pwd345"
-    )
+    can_log_in_with_new_password = client.login(email=user.email, password="pwd345")
     assert can_log_in_with_new_password

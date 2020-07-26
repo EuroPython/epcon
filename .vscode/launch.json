@@ -1,0 +1,22 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Attach",
+            "type": "python",
+            "request": "attach",
+            "port": 3000,
+            "host": "localhost",
+            "django": true, // allows you to set breakpoints in Django template files.
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "." // automatically maps to the remote cwd where your app is running
+                }
+            ],
+        }
+    ]
+}

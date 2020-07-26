@@ -1,11 +1,11 @@
 from django import forms
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.db import transaction
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -14,26 +14,28 @@ from django.views.generic import RedirectView
 
 from phonenumber_field.formfields import PhoneNumberField
 
-from conference.forms import ProposalForm
-from conference.models import (
+from .forms import ProposalForm
+from .models import (
     Conference,
     AttendeeProfile,
     Speaker,
     Talk,
     TalkSpeaker,
+    Ticket,
 )
-from conference.talks import dump_relevant_talk_information_to_dict
-
+from .talks import dump_relevant_talk_information_to_dict
+from .decorators import full_profile_required
+from conference.fares import SPEAKER_TICKET_CODE_REGEXP
 
 @login_required
+@full_profile_required
 def submit_proposal_step1_talk_info(request):
     """
-    Main submit_proposal view for ep2019+
+    Main submit_proposal view
     """
-
     conf = Conference.objects.current()
     if not conf.cfp():
-        return TemplateResponse(request, "ep19/bs/cfp/cfp_is_closed.html", {
+        return TemplateResponse(request, "conference/cfp/cfp_is_closed.html", {
             'conf': conf
         })
 
@@ -47,13 +49,12 @@ def submit_proposal_step1_talk_info(request):
                 talk = proposal_form.save(request.user)
                 messages.success(
                     request,
-                    "Proposal added, "
-                    "now please add information about the speaker",
+                    "Proposal added, now please add information about the speaker",
                 )
                 send_talk_details_to_backup_email(talk)
                 return redirect("cfp:step2_add_speakers", talk_uuid=talk.uuid)
 
-    return TemplateResponse(request, "ep19/bs/cfp/step1_talk_info.html", {
+    return TemplateResponse(request, "conference/cfp/step1_talk_info.html", {
         "proposal_form": proposal_form,
     })
 
@@ -84,11 +85,11 @@ def send_talk_details_to_backup_email(talk: Talk):
 
 
 @login_required
+@full_profile_required
 def submit_proposal_step2_add_speakers(request, talk_uuid):
     """
     Step2 of adding proposal - information about the speakers
     """
-
     talk = get_object_or_404(Talk, uuid=talk_uuid)
 
     speaker_form = AddSpeakerToTalkForm(
@@ -103,32 +104,29 @@ def submit_proposal_step2_add_speakers(request, talk_uuid):
                     request.user, speaker_form.cleaned_data
                 )
                 add_speaker_to_talk(speaker, talk)
-
-                messages.success(
-                    request,
-                    "Speaker added successfully.",
-                )
+                messages.success(request, "Speaker added successfully.")
                 return redirect("cfp:step3_thanks", talk_uuid=talk.uuid)
 
-    return TemplateResponse(request, "ep19/bs/cfp/step2_add_speaker.html", {
+    return TemplateResponse(request, "conference/cfp/step2_add_speaker.html", {
         "talk": talk,
         "speaker_form": speaker_form,
     })
 
 
 @login_required
+@full_profile_required
 def submit_proposal_step3_thanks(request, talk_uuid):
     """
     Step3 - thanks for proposal
     """
-
     talk = get_object_or_404(Talk, uuid=talk_uuid)
-    return TemplateResponse(request, "ep19/bs/cfp/step3_thanks.html", {
+    return TemplateResponse(request, "conference/cfp/step3_thanks.html", {
         "talk": talk,
     })
 
 
 @login_required
+@full_profile_required
 def update_proposal(request, talk_uuid):
     """
     Update/Edit proposal view
@@ -149,19 +147,17 @@ def update_proposal(request, talk_uuid):
 
         if proposal_edit_form.is_valid():
             proposal_edit_form.save(request.user)
-            messages.success(
-                request,
-                "Proposal updated"
-            )
+            messages.success(request, "Proposal updated")
             return redirect('cfp:preview', talk_slug=talk.slug)
 
-    return TemplateResponse(request, "ep19/bs/cfp/update_proposal.html", {
+    return TemplateResponse(request, "conference/cfp/update_proposal.html", {
         "talk": talk,
         "proposal_edit_form": proposal_edit_form,
     })
 
 
 @login_required
+@full_profile_required
 def update_speakers(request, talk_uuid):
     """
     Update/Edit proposal's speaker(s) view
@@ -186,14 +182,10 @@ def update_speakers(request, talk_uuid):
                 save_information_from_speaker_form(
                     request.user, speaker_form.cleaned_data
                 )
-
-                messages.success(
-                    request,
-                    "Speaker updated successfully.",
-                )
+                messages.success(request, "Speaker updated successfully.",)
                 return redirect("cfp:preview", talk_slug=talk.slug)
 
-    return TemplateResponse(request, "ep19/bs/cfp/update_speakers.html", {
+    return TemplateResponse(request, "conference/cfp/update_speakers.html", {
         "talk": talk,
         "speaker_edit_form": speaker_form,
     })
@@ -207,7 +199,7 @@ def preview_proposal(request, talk_slug):
     talk = get_object_or_404(Talk, slug=talk_slug)
     talk_as_dict = dump_relevant_talk_information_to_dict(talk)
     conf = Conference.objects.current()
-    return TemplateResponse(request, "ep19/bs/cfp/preview.html", {
+    return TemplateResponse(request, "conference/cfp/preview.html", {
         "talk": talk,
         "talk_as_dict": talk_as_dict,
         "cfp_is_open": conf.cfp(),
@@ -222,29 +214,43 @@ def program_wg_download_all_talks_for_current_conference(request):
     """
     current_conf = Conference.objects.current()
     talks = dump_all_talks_for_conference_to_dict(current_conf)
+    #print ('talks = %r' % talks)
     return JsonResponse({'talks': talks})
 
 
 def extract_initial_speaker_data_from_user(user):
     attendee = user.attendeeprofile
 
+    given_name, family_name = user.assopy_user.name_tuple()
     return {
-        'users_given_name': user.assopy_user.name(),
+        'users_given_name': given_name,
+        'users_family_name': family_name,
         'is_minor': attendee.is_minor,
-        'gender': attendee.gender,
         'job_title': attendee.job_title,
         'bio': getattr(attendee.getBio(), "body", ""),
         'company': attendee.company,
         'company_homepage': attendee.company_homepage,
         'phone': attendee.phone,
+        'location': attendee.location,
     }
 
 
 def dump_all_talks_for_conference_to_dict(conference: Conference):
 
     talks = Talk.objects.filter(conference=conference.code)
+    ticket_data = Ticket.objects.filter(
+        fare__conference=conference,
+        fare__ticket_type='conference',
+        orderitem__order___complete=True,
+        fare__code__regex=SPEAKER_TICKET_CODE_REGEXP,
+        frozen=False,
+        )
+    speaker_tickets = dict(
+        (ticket.p3_conference.assigned_to, ticket)
+        for ticket in ticket_data)
     output = [
-        dump_relevant_talk_information_to_dict(talk)
+        dump_relevant_talk_information_to_dict(talk,
+                                               speaker_tickets=speaker_tickets)
         for talk in talks
     ]
     return output
@@ -252,13 +258,12 @@ def dump_all_talks_for_conference_to_dict(conference: Conference):
 
 def save_information_from_speaker_form(user, cleaned_data):
     user.first_name = cleaned_data['users_given_name']
-    user.last_name = ''
+    user.last_name = cleaned_data['users_family_name']
     user.save()
 
     ap = user.attendeeprofile
     ap.phone = cleaned_data['phone']
     ap.is_minor = cleaned_data['is_minor']
-    ap.gender = cleaned_data['gender']
     ap.job_title = cleaned_data['job_title']
     ap.company = cleaned_data['company']
     ap.company_homepage = cleaned_data['company_homepage']
@@ -275,13 +280,13 @@ def add_speaker_to_talk(speaker, talk):
 
 
 class AddSpeakerToTalkForm(forms.ModelForm):
-
-    users_given_name = forms.CharField(label="Name of the speaker")
+    users_given_name = forms.CharField(label="Given name of the speaker")
+    users_family_name = forms.CharField(label="Family name of the speaker")
     is_minor = forms.BooleanField(
         label="Are you a minor?",
         help_text=(
             "Please select this checkbox if you're going to be under 18"
-            "years old on July 8th 2019"
+            "years old on July 23rd 2020"
         ),
         # required=False, because django forms... it means that unless someone
         # is a minor we don't provide a value.
@@ -297,16 +302,11 @@ class AddSpeakerToTalkForm(forms.ModelForm):
         help_text=(
             "We require a mobile phone number for all speakers "
             "for last minute contacts and in case we need "
-            "timely clarification (if no reponse to previous emails).<br>"
-            "Use the international format, eg: +39-055-123456.<br />"
-            "This number will <strong>never</strong> be published."
+            "timely clarification (if no reponse to previous emails). "
+            "Use the international format (e.g.: +44 123456789). "
+            "This field will <strong>never</strong> be published."
         ),
         max_length=30,
-    )
-    gender = forms.CharField(
-        label="Type your gender",
-        max_length=32,
-        required=False,
     )
     company = forms.CharField(
         label="Your company", max_length=50, required=False
@@ -327,11 +327,11 @@ class AddSpeakerToTalkForm(forms.ModelForm):
         model = AttendeeProfile
         fields = [
             'users_given_name',
+            'users_family_name',
             'job_title',
+            'is_minor',
             'phone',
             'bio',
-            'gender',
-            'is_minor',
             'company',
             'company_homepage',
         ]
@@ -342,41 +342,41 @@ class UpdateAttendeeProfile(AddSpeakerToTalkForm):
 
 
 urlpatterns = [
-    url(
+    re_path(
         r'^$',
         RedirectView.as_view(url=reverse_lazy("cfp:step1_submit_proposal"))
     ),
-    url(
+    re_path(
         r"^submit-proposal/$",
         submit_proposal_step1_talk_info,
         name="step1_submit_proposal",
     ),
-    url(
+    re_path(
         r"^submit-proposal/(?P<talk_uuid>[\w-]+)/add-speakers/$",
         submit_proposal_step2_add_speakers,
         name="step2_add_speakers",
     ),
-    url(
+    re_path(
         r"^submit-proposal/(?P<talk_uuid>[\w-]+)/thanks/$",
         submit_proposal_step3_thanks,
         name="step3_thanks",
     ),
-    url(
+    re_path(
         r"^preview/(?P<talk_slug>[\w-]+)/$",
         preview_proposal,
         name="preview",
     ),
-    url(
+    re_path(
         r"^update/(?P<talk_uuid>[\w-]+)/speakers/$",
         update_speakers,
         name="update_speakers",
     ),
-    url(
+    re_path(
         r"^update/(?P<talk_uuid>[\w-]+)/$",
         update_proposal,
         name="update",
     ),
-    url(
+    re_path(
         r"^program-wg/download-all-talks/$",
         program_wg_download_all_talks_for_current_conference,
         name="program_wg_download_all_talks",

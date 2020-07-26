@@ -1,5 +1,3 @@
-
-
 """
 Things in this file are related to a special debug panel that helps us debug
 things in production.
@@ -9,7 +7,7 @@ import platform
 import subprocess
 
 import django
-from django.conf.urls import url
+from django.conf.urls import url as re_path
 from django import forms
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
@@ -29,8 +27,8 @@ from conference.invoicing import (
     REAL_INVOICE_PREFIX,
     next_invoice_code_for_year,
     render_invoice_as_html,
-    export_invoices_to_2018_tax_report,
-    export_invoices_to_2018_tax_report_csv,
+    export_invoices_to_tax_report,
+    export_invoices_to_tax_report_csv,
     export_invoices_for_payment_reconciliation,
     extract_customer_info,
 )
@@ -39,7 +37,7 @@ from conference.fares import (
     set_early_bird_fare_dates,
     set_regular_fare_dates,
 )
-from conference.tickets import count_number_of_sold_training_tickets_including_combined_tickets
+from conference.tickets import sold_training_tickets_including_combined_tickets
 
 
 def get_current_commit_hash():
@@ -90,9 +88,9 @@ def debug_panel_index(request):
         ('Python_Version',      platform.python_version()),
         ('Conference_current',  Conference.objects.current()),
         ('SOLD_TRAINING_TICKETS',
-         count_number_of_sold_training_tickets_including_combined_tickets(
+         sold_training_tickets_including_combined_tickets(
              conference_code=settings.CONFERENCE_CONFERENCE,
-         )),
+         ).count()),
     ]
 
     allowed_settings = [
@@ -187,9 +185,9 @@ def debug_panel_invoice_example(request):
 
 
 @staff_member_required
-def debug_panel_invoice_export_for_tax_report_2018(request):
+def debug_panel_invoice_export_for_tax_report(request):
     start_date, end_date = get_start_end_dates(request)
-    invoices_and_exported = export_invoices_to_2018_tax_report(
+    invoices_and_exported = export_invoices_to_tax_report(
         start_date, end_date
     )
 
@@ -203,13 +201,13 @@ def debug_panel_invoice_export_for_tax_report_2018(request):
 
 
 @staff_member_required
-def debug_panel_invoice_export_for_tax_report_2018_csv(request):
+def debug_panel_invoice_export_for_tax_report_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] =\
         'attachment; filename="export-invoices.csv"'
 
     start_date, end_date = get_start_end_dates(request)
-    export_invoices_to_2018_tax_report_csv(response, start_date, end_date)
+    export_invoices_to_tax_report_csv(response, start_date, end_date)
 
     return response
 
@@ -274,7 +272,7 @@ def reissue_invoice(request, invoice_id):
             new_invoice.html = render_invoice_as_html(new_invoice)
             new_invoice.save()
 
-            return redirect('debug_panel_invoice_export_for_tax_report_2018')
+            return redirect('debug_panel:invoice_export_for_tax_report')
     else:
         customer = (
             old_invoice.customer
@@ -342,31 +340,45 @@ class FareSetup:
 
 
 urlpatterns = [
-    url(r'^$', debug_panel_index, name='debug_panel_index'),
-    url(r'^invoices/$',
+    re_path(r'^$', debug_panel_index, name='index'),
+    re_path(
+        r'^invoices/$',
         debug_panel_invoice_placeholders,
-        name='debug_panel_invoice_placeholders'),
-    url(r'^invoices/(?P<invoice_id>\d+)/$',
+        name='invoice_placeholders'
+    ),
+    re_path(
+        r'^invoices/(?P<invoice_id>\d+)/$',
         debug_panel_invoice_force_preview,
-        name="debug_panel_invoice_forcepreview"),
-    url(r'^invoices_export/$',
-        debug_panel_invoice_export_for_tax_report_2018,
-        name='debug_panel_invoice_export_for_tax_report_2018'),
-    url(r'^invoices_export.csv$',
-        debug_panel_invoice_export_for_tax_report_2018_csv,
-        name='debug_panel_invoice_export_for_tax_report_2018_csv'),
-    url(r'^invoices_export_for_accounting.json$',
+        name="invoice_forcepreview"
+    ),
+    re_path(
+        r'^invoices_export/$',
+        debug_panel_invoice_export_for_tax_report,
+        name='invoice_export_for_tax_report'
+    ),
+    re_path(
+        r'^invoices_export.csv$',
+        debug_panel_invoice_export_for_tax_report_csv,
+        name='invoice_export_for_tax_report_csv'
+    ),
+    re_path(
+        r'^invoices_export_for_accounting.json$',
         debug_panel_invoice_export_for_payment_reconciliation_json,
-        name='debug_panel_invoice_export_for_payment_reconciliation_json'),
-    url(r'^invoices/reissue/(?P<invoice_id>\d+)/$',
+        name='invoice_export_for_payment_reconciliation_json'
+    ),
+    re_path(
+        r'^invoices/reissue/(?P<invoice_id>\d+)/$',
         reissue_invoice,
-        name='debug_panel_reissue_invoice'),
-
-    url(r'^fares/setup/$',
+        name='reissue_invoice'
+    ),
+    re_path(
+        r'^fares/setup/$',
         debugpanel_fares_setup,
-        name='debug_panel_fares_setup'),
-
-    url(r'^invoice-example/$',
+        name='fares_setup'
+    ),
+    re_path(
+        r'^invoice-example/$',
         debug_panel_invoice_example,
-        name='debug_panel_invoice_example'),
+        name='invoice_example'
+    ),
 ]

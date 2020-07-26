@@ -1,0 +1,47 @@
+{% load menu_tags static %}
+
+<div id="footer" style='font-size: .9em'>
+    <div class='container'>
+        <div class='row'>
+            {% show_menu 0 100 100 100 "conference/footer/_show_menu_in_footer.html" %}
+
+            <div class='col-md-2'>
+                <a href='https://www.europython-society.org'><img src="{% static 'img/epslogo.png' %}"></a>
+                <p style='margin-top: 1em; font-size: .9em' class='text-light'>
+                EuroPython Society (EPS)<br>
+                Ramnebacken 45<br>
+                424 38 Agnesberg<br>
+                Sweden
+                </p>
+                <p><a href='https://www.europython-society.org'>EPS website</a></p>
+            </div>
+        </div>
+
+
+        <div class="row text-center" style='margin-top: 3em; font-family: monospace'>
+            <div class="col-md-12">
+                <a href='https://blog.europython.eu' class=''>blog.europython.eu</a>
+                | <a href='https://twitter.com/europython' class='btn-outline-primary'>twitter.com/europython</a>
+                | <a href='https://www.linkedin.com/company/europython' class='btn-outline-primary'>linkedin.com/company/europython</a>
+                | <a href='https://github.com/europython' class=''>github.com/europython</a>
+            </div>
+        </div>
+
+
+        <div class='row' style='margin-top: 3em;'>
+            <div class='col-md-12'>
+                Previous editions:
+                <a href='https://ep2019.europython.eu'>2019</a>
+                <a href='https://ep2018.europython.eu'>2018</a>
+                <a href='https://ep2017.europython.eu'>2017</a>
+                <a href='https://ep2016.europython.eu'>2016</a>
+                <a href='https://ep2015.europython.eu'>2015</a>
+                <a href='https://www.europython-society.org/europython'>more...</a>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Copyright &copy; 2020, EuroPython Society, <a href="mailto:info@europython-society.org">info@europython-society.org</a></p>
+        </footer>
+    </div>
+</div>

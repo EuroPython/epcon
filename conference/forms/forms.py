@@ -1,7 +1,7 @@
+import logging
 
 from django import forms
-from django.conf import settings as dsettings
-from django.contrib.admin import widgets as admin_widgets
+from django.conf import settings
 from django.core import mail
 from django.forms import widgets
 from django.forms.utils import flatatt
@@ -9,14 +9,10 @@ from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from conference import models
-from conference import settings
-
-from p3 import utils as p3utils
-
 from taggit.forms import TagField
 
-import logging
+from p3 import utils as p3utils
+from conference import models
 
 log = logging.getLogger('conference.tags')
 
@@ -42,9 +38,9 @@ sent to:
 %(addresses)s
 """ % ctx)
     mail.send_mail(
-        '[%s] feedback mass mailing (admin stats)' % settings.CONFERENCE,
+        '[%s] feedback mass mailing (admin stats)' % settings.CONFERENCE_CONFERENCE,
         feedback_email,
-        dsettings.DEFAULT_FROM_EMAIL,
+        settings.DEFAULT_FROM_EMAIL,
         recipient_list=[feedback_address],
      )
 
@@ -95,62 +91,8 @@ class TagWidget(widgets.TextInput):
             final_attrs['value'] = force_text(self._format_value(value))
         return mark_safe('<input%s />' % flatatt(final_attrs))
 
-class ReadonlyTagWidget(widgets.TextInput):
-    def render(self, name, value, attrs=None, renderer=None):
-        if value is None:
-            value = ''
-        else:
-            if not isinstance(value, str):
-                names = []
-                for v in value:
-                    if isinstance(v, str):
-                        names.append(v)
-                    elif isinstance(v, models.ConferenceTag):
-                        names.append(v.name)
-                    else:
-                        names.append(v.tag.name)
-                value = ','.join(names)
-        final_attrs = self.build_attrs(attrs, extra_attrs=dict(type='text', name=name))
-        final_attrs['class'] = (final_attrs.get('class', '') + ' readonly-tag-field').strip()
-        if value != '':
-            # Only add the 'value' attribute if a value is non-empty.
-            final_attrs['value'] = force_text(self._format_value(value))
-        return mark_safe('<input%s /><script>setup_tag_field("#%s")</script>' % (flatatt(final_attrs), final_attrs['id']))
-
-# MarkEditWidget we have adapted the code
-# http://tstone.github.com/jquery-markedit/
-
-class MarkEditWidget(forms.Textarea):
-    class Media:
-        css = {
-            'all': ('conference/jquery-markedit/jquery.markedit.css',),
-        }
-        js =  (
-            'conference/jquery-markedit/showdown.js',
-            'conference/jquery-markedit/jquery.markedit.js',
-        )
-
-    def render(self, name, value, attrs=None):
-        if attrs is None:
-            attrs = {}
-        else:
-            attrs = dict(attrs)
-        attrs['class'] = (attrs.get('class', '') + ' markedit-widget').strip()
-        return super().render(name, value, attrs)
-
-
-
-class PseudoRadioSelectWidget(forms.widgets.RadioSelect):
-    template_name = 'conference/widgets/radio_select.html'
-    option_template_name = 'conference/widgets/radio_select_option.html'
-
-    def get_context(self, name, value, attrs):
-        context = super().get_context(name, value, attrs)
-        return context
-
 
 class TalkBaseForm(forms.Form):
-
     # Talk details
     title = forms.CharField(
         label=_('Title'),
@@ -181,7 +123,7 @@ class TalkBaseForm(forms.Form):
         required=False)
     language = forms.TypedChoiceField(
         help_text=_('Select a non-English language only if you are not comfortable in speaking English.'),
-        choices=settings.TALK_SUBMISSION_LANGUAGES,
+        choices=settings.CONFERENCE_TALK_SUBMISSION_LANGUAGES,
         required=False)
 
     level = forms.TypedChoiceField(
@@ -208,238 +150,12 @@ class TalkBaseForm(forms.Form):
         widget=forms.Textarea,
         required=False)
 
-# This form is used for new talk submissions and only when the speaker
-# has not yet submitted another talk; see TalkForm for talk
-# editing and additional talks.
-
-class SubmissionForm(forms.Form):
-    """
-    Submission Form for the first paper, it will contain the fields
-    which populates the user profile and the data of the talk,
-    only essential data is required.
-    """
-
-    # Speaker details
-    first_name = forms.CharField(
-        label=_('First name'),
-        max_length=30)
-    last_name = forms.CharField(
-        label=_('Last name'),
-        max_length=30)
-    birthday = forms.DateField(
-        label=_('Date of birth'),
-        help_text=_('Format: YYYY-MM-DD<br />This date will <strong>never</strong> be published. We require date of birth for speakers to accomodate for laws regarding minors.'),
-        input_formats=('%Y-%m-%d',),
-        widget=forms.DateInput(attrs={'size': 10, 'maxlength': 10}))
-    job_title = forms.CharField(
-        label=_('Job title'),
-        help_text=_('eg: student, developer, CTO, js ninja, BDFL'),
-        max_length=50,
-        required=False,)
-    phone = forms.CharField(
-        help_text=_('We require a mobile number for all speakers for important last minutes contacts.<br />Use the international format, eg: +39-055-123456.<br />This number will <strong>never</strong> be published.'),
-        max_length=30)
-    company = forms.CharField(
-        label=_('Your company'),
-        max_length=50,
-        required=False)
-    company_homepage = forms.URLField(
-        label=_('Company homepage'),
-        required=False)
-    bio = forms.CharField(
-        label=_('Compact biography'),
-        help_text=_('Please enter a short biography (one or two paragraphs) <br />Do not paste your CV!'),
-        widget=forms.Textarea())
-
-    # Talk details
-    title = TalkBaseForm.base_fields['title']
-    sub_title = TalkBaseForm.base_fields['sub_title']
-    abstract = TalkBaseForm.base_fields['abstract']
-    abstract_short = TalkBaseForm.base_fields['abstract_short']
-    prerequisites = TalkBaseForm.base_fields['prerequisites']
-    language = TalkBaseForm.base_fields['language']
-    level = TalkBaseForm.base_fields['level']
-    domain_level = TalkBaseForm.base_fields['level']
-    tags = TalkBaseForm.base_fields['tags']
-    abstract_extra = TalkBaseForm.base_fields['abstract_extra']
-
-    def __init__(self, user, *args, **kwargs):
-        try:
-            profile = user.attendeeprofile
-        except models.AttendeeProfile.DoesNotExist:
-            profile = None
-        data = {
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-        }
-        if profile:
-            if profile.birthday is None:
-                birthday_value = None
-            else:
-                birthday_value = profile.birthday.strftime('%Y-%m-%d')
-
-            data.update({
-                'phone': profile.phone,
-                'birthday': birthday_value,
-                'job_title': profile.job_title,
-                'company': profile.company,
-                'company_homepage': profile.company_homepage,
-                'bio': getattr(profile.getBio(), 'body', ''),
-            })
-        data.update(kwargs.get('initial', {}))
-        kwargs['initial'] = data
-        super().__init__(*args, **kwargs)
-        self.user = user
-
-    #@transaction.atomic
-    def save(self):
-        data = self.cleaned_data
-
-        user = self.user
-        user.first_name = data['first_name'].strip()
-        user.last_name = data['last_name'].strip()
-        user.save()
-
-        profile = models.AttendeeProfile.objects.getOrCreateForUser(user)
-        profile.phone = data['phone']
-        profile.birthday = data['birthday']
-        profile.job_title = data['job_title']
-        profile.company = data['company']
-        profile.company_homepage = data['company_homepage']
-        profile.save()
-        profile.setBio(data['bio'])
-
-        try:
-            speaker = user.speaker
-        except models.Speaker.DoesNotExist:
-            speaker = models.Speaker(user=user)
-            speaker.save()
-
-        talk = models.Talk.objects.createFromTitle(
-            title=data['title'],
-            sub_title=data['sub_title'],
-            prerequisites=data['prerequisites'],
-            abstract_short=data['abstract_short'],
-            abstract_extra=data['abstract_extra'],conference=settings.CONFERENCE,
-            speaker=speaker,
-            status='proposed',
-            language=data['language'],
-            domain=data['domain'],
-            domain_level=data['domain_level'],
-            level=data['level'],
-            type=data['type']
-        )
-
-        talk.save()
-        talk.setAbstract(data['abstract'])
-
-        if 'tags' in data:
-            valid_tags = validate_tags(data['tags'])
-
-            talk.tags.set(*(valid_tags))
-
-        return talk
-
-class SpeakerForm(forms.Form):
-    activity = forms.CharField(
-        label=_('Job title'),
-        help_text=_('eg: student, developer, CTO, js ninja, BDFL'),
-        max_length=50,
-        required=False,)
-    activity_homepage = forms.URLField(label=_('Personal homepage'), required=False)
-    company = forms.CharField(label=_('Your company'), max_length=50, required=False)
-    company_homepage = forms.URLField(label=_('Company homepage'), required=False)
-    industry = forms.CharField(max_length=50, required=False)
-    bio = forms.CharField(
-        label=_('Compact biography'),
-        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
-        widget=forms.Textarea(),)
-    ad_hoc_description = forms.CharField(label=_('Presentation'), required=False)
-
-_abstract = models.Talk._meta.get_field('abstracts')
-
-# This form is used in case the speaker has already proposed a talk
-# and for editing talks
-
-class TalkForm(forms.ModelForm):
-
-    # Talk details
-    title = TalkBaseForm.base_fields['title']
-    sub_title = TalkBaseForm.base_fields['sub_title']
-    abstract = TalkBaseForm.base_fields['abstract']
-    abstract_short = TalkBaseForm.base_fields['abstract_short']
-    prerequisites = TalkBaseForm.base_fields['prerequisites']
-    language = TalkBaseForm.base_fields['language']
-    level = TalkBaseForm.base_fields['level']
-    tags = TalkBaseForm.base_fields['tags']
-    abstract_extra = TalkBaseForm.base_fields['abstract_extra']
-
-    class Meta:
-        model = models.Talk
-        fields = ('title', 'sub_title','prerequisites', 'abstract_short', 'abstract_extra', 'type', 'language', 'level', 'slides', 'teaser_video', 'tags')
-        widgets = {
-            'tags': TagWidget,
-        }
-
-    def __init__(self, *args, **kw):
-        if kw.get('instance'):
-            o = kw['instance']
-            initial = kw.get('initial', {})
-            data = {}
-            abstract = o.getAbstract()
-            if abstract:
-                data['abstract'] = abstract.body
-            data.update(initial)
-            kw['initial'] = data
-        super().__init__(*args, **kw)
-
-    def save(self, commit=True, speaker=None):
-        assert commit, "commit==False not supported yet"
-        data = self.cleaned_data
-        pk = self.instance.pk
-
-        tags = None
-
-        if 'tags' in self.cleaned_data:
-            tags = self.cleaned_data['tags']
-            del self.cleaned_data['tags']
-
-        if not pk:
-            assert speaker is not None
-            self.instance = models.Talk.objects.createFromTitle(
-                title=data['title'],
-                sub_title=data['sub_title'],
-                prerequisites=data['prerequisites'],
-                abstract_short=data['abstract_short'],
-                abstract_extra=data['abstract_extra'],
-                domain=data['domain'],
-                domain_level=data['domain_level'],
-                conference=settings.CONFERENCE,
-                speaker=speaker,
-                status='proposed',
-                language=data['language'],
-                level=data['level'],
-                type=data['type']
-            )
-        talk = super().save(commit=commit)
-        talk.setAbstract(data['abstract'])
-
-        if tags:
-            valid_tags = validate_tags(tags)
-
-            talk.tags.set(*(valid_tags))
-
-        return talk
-
-del _abstract
-
-from tagging.models import TaggedItem
-from tagging.utils import parse_tag_input
 
 class TrackForm(forms.ModelForm):
     class Meta:
         model = models.Track
         exclude = ('schedule', 'track',)
+
 
 class EventForm(forms.ModelForm):
     event_tracks = forms.ModelMultipleChoiceField(queryset=models.Track.objects.all())
@@ -462,43 +178,6 @@ class EventForm(forms.ModelForm):
             raise forms.ValidationError('set the talk or the custom text')
         return data
 
-class ProfileForm(forms.ModelForm):
-    bio = forms.CharField(
-        label=_('Compact biography'),
-        help_text=_('Please enter a short biography (one or two paragraphs). Do not paste your CV!'),
-        widget=forms.Textarea(),
-        required=False,)
-
-    class Meta:
-        model = models.AttendeeProfile
-        exclude = ('user', 'slug',)
-
-    def __init__(self, *args, **kwargs):
-        i = kwargs.get('instance')
-        if i:
-           initial = kwargs.get('initial', {})
-           initial['bio'] = getattr(i.getBio(), 'body', '')
-           kwargs['initial'] = initial
-        super().__init__(*args, **kwargs)
-
-    def save(self, commit=True):
-        profile = super().save(commit)
-        profile.setBio(self.cleaned_data.get('bio', ''))
-        return profile
-
-class EventBookingForm(forms.Form):
-    value = forms.BooleanField(required=False)
-
-    def __init__(self, event, user, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.event = event
-        self.user = user
-
-    def clean_value(self):
-        data = self.cleaned_data.get('value', False)
-        if data and not models.EventBooking.objects.booking_available(self.event, self.user):
-            raise forms.ValidationError('sold out')
-        return data
 
 class AdminSendMailForm(forms.Form):
     """
@@ -506,7 +185,7 @@ class AdminSendMailForm(forms.Form):
         * statistics for the sold tickets
         * allow to send a mail to a group of users
     """
-    from_ = forms.EmailField(max_length=50, initial=dsettings.DEFAULT_FROM_EMAIL)
+    from_ = forms.EmailField(max_length=50, initial=settings.DEFAULT_FROM_EMAIL)
     subject = forms.CharField(max_length=200)
     body = forms.CharField(widget=forms.Textarea)
     send_email = forms.BooleanField(required=False)
@@ -516,12 +195,12 @@ class AdminSendMailForm(forms.Form):
         super().__init__(*args, **kw)
 
     def load_emails(self):
-        if not settings.ADMIN_TICKETS_STATS_EMAIL_LOG:
+        if not settings.CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG:
             return []
 
         output = []
         try:
-            with open(settings.ADMIN_TICKETS_STATS_EMAIL_LOG, 'r') as email_log_file:
+            with open(settings.CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG, 'r') as email_log_file:
                 while True:
                     try:
                         msg = {
@@ -542,10 +221,10 @@ class AdminSendMailForm(forms.Form):
         return reversed(output)
 
     def save_email(self):
-        if not settings.ADMIN_TICKETS_STATS_EMAIL_LOG:
+        if not settings.CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG:
             return False
         data = self.cleaned_data
-        with open(settings.ADMIN_TICKETS_STATS_EMAIL_LOG, 'a') as email_log_file:
+        with open(settings.CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOG, 'a') as email_log_file:
             email_log_file.write('%s\n' % repr(data['from_']))
             email_log_file.write('%s\n' % repr(data['subject']))
             email_log_file.write('%s\n' % repr(data['body']))
@@ -558,8 +237,8 @@ class AdminSendMailForm(forms.Form):
 
         data = self.cleaned_data
 
-        if settings.ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY:
-            libs = '{%% load %s %%}' % ' '.join(settings.ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY)
+        if settings.CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY:
+            libs = '{%% load %s %%}' % ' '.join(settings.CONFERENCE_ADMIN_TICKETS_STATS_EMAIL_LOAD_LIBRARY)
         else:
             libs = ''
         tSubject = Template(libs + data['subject'])
@@ -604,37 +283,3 @@ class AdminSendMailForm(forms.Form):
         # Let it run until completion without joining it again
         process = None
         return len(messages)
-
-class AttendeeLinkDescriptionForm(forms.Form):
-    message = forms.CharField(label='A note to yourself (when you met this persone, why you want to stay in touch)', widget=forms.Textarea)
-
-# -- Custom Option Form used for Talk Voting Filters
-class OptionForm(forms.Form):
-    abstracts = forms.ChoiceField(
-        choices=(('not-voted', 'To be voted'), ('all', 'All'),),
-        required=False,
-        initial='not-voted',
-        widget=PseudoRadioSelectWidget(),
-    )
-    talk_type = forms.ChoiceField(
-        choices=settings.TALK_TYPES_TO_BE_VOTED,
-        required=False,
-        initial='all',
-        widget=PseudoRadioSelectWidget(),
-    )
-    language = forms.ChoiceField(
-        choices=(('all', 'All'),) + tuple(settings.TALK_SUBMISSION_LANGUAGES),
-        required=False,
-        initial='all',
-        widget=PseudoRadioSelectWidget(),
-    )
-    order = forms.ChoiceField(
-        choices=(('vote', 'Vote'), ('speaker', 'Speaker name'),),
-        required=False,
-        initial='vote',
-        widget=PseudoRadioSelectWidget(),
-    )
-    tags = TagField(
-        required=False,
-        widget=ReadonlyTagWidget(),
-    )
