@@ -6,6 +6,7 @@ from phonenumber_field.formfields import PhoneNumberField
 from model_utils import Choices
 
 from django import forms
+from django.conf import settings
 from django.conf.urls import url as re_path
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
@@ -467,6 +468,12 @@ class ProfileSettingsForm(forms.ModelForm):
         data = self.cleaned_data.get("twitter", "")
         if data.startswith("@"):
             data = data[1:]
+        return data
+
+    def clean_image(self):
+        data = self.cleaned_data.get("image")
+        if data.size > settings.PROFILE_PICTURE_MAX_SIZE:
+            raise forms.ValidationError("Profile Picture is too big")
         return data
 
     def resolve_image_settings(self, selected_option, image_url, image):
