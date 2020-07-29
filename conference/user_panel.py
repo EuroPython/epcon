@@ -472,8 +472,12 @@ class ProfileSettingsForm(forms.ModelForm):
 
     def clean_image(self):
         data = self.cleaned_data.get("image")
-        if data.size > settings.PROFILE_PICTURE_MAX_SIZE:
-            raise forms.ValidationError("Profile Picture is too big")
+        try:
+            if data.size > settings.PROFILE_PICTURE_MAX_SIZE:
+                print("failed")
+                raise forms.ValidationError("Profile Picture is too big")
+        except AttributeError:
+            pass
         return data
 
     def resolve_image_settings(self, selected_option, image_url, image):
