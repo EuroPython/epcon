@@ -474,8 +474,7 @@ class ProfileSettingsForm(forms.ModelForm):
         data = self.cleaned_data.get("image")
         try:
             if data.size > settings.PROFILE_PICTURE_MAX_SIZE:
-                print("failed")
-                raise forms.ValidationError("Profile Picture is too big")
+                raise forms.ValidationError("Profile picture too large ( > 2.5mb )")
         except AttributeError:
             pass
         return data
