@@ -102,7 +102,7 @@ def profile_data(uid):
 def sponsor_data():
     return models.Sponsor.objects.filter(
         sponsorincome__conference=settings.CONFERENCE_CONFERENCE
-    )
+    ).order_by('-sponsorincome__income')
 
 
 @register.filter
