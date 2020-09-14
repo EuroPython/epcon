@@ -7,13 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
 from conference.models import TALK_STATUS, TALK_LEVEL
-from tests.factories import (
-    EventFactory,
-    UserFactory,
-    TalkFactory,
-    ConferenceTagFactory,
-    TalkSpeakerFactory,
-)
+from tests.factories import UserFactory, TalkFactory, ConferenceTagFactory, TalkSpeakerFactory
 from tests.common_tools import get_default_conference, redirects_to, template_used, make_user
 
 pytestmark = [pytest.mark.django_db]
@@ -271,18 +265,3 @@ def test_view_slides_url_on_talk_detail_page(client):
     response = client.get(url)
 
     assert 'download/view slides' in response.content.decode().lower()
-
-
-def test_show_talk_link_in_schedule(client):
-    """
-    The talk url points to the schedule, with correct talk slug, and time in utc
-    """
-    get_default_conference()
-    talk = TalkFactory(status=TALK_STATUS.accepted)
-    event = EventFactory(talk=talk)
-    url = talk.get_absolute_url()
-
-    response = client.get(url)
-
-    start_time = event.start_time.strftime('%H:%M-UTC')
-    assert f"{talk.slug}#{start_time}" in response.content.decode()
