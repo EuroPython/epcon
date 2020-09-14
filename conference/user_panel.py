@@ -467,6 +467,11 @@ class ProfileSettingsForm(forms.ModelForm):
         data = self.cleaned_data.get("twitter", "")
         if data.startswith("@"):
             data = data[1:]
+
+        # Remove http[s]://twitter.com
+        if data.startswith(('https://twitter.com', 'http://twitter.com')):
+            data = data.split('/')[-1]
+
         return data
 
     def resolve_image_settings(self, selected_option, image_url, image):
