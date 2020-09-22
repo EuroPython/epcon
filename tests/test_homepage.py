@@ -66,6 +66,37 @@ def test_homepage_contains_sponsors_if_income_for_current_conference(
     assert sponsor.title_text in response.content.decode()
 
 
+def test_homepage_contains_sponsors_sorted_by_income(db, client):
+    create_homepage_in_cms()
+    a_sponsor = SponsorFactory(
+        alt_text="A Sponsor Alt Text", title_text="A Sponsor Title Text"
+    )
+    b_sponsor = SponsorFactory(
+        alt_text="B Sponsor Alt Text", title_text="B Sponsor Title Text"
+    )
+    c_sponsor = SponsorFactory(
+        alt_text="C Sponsor Alt Text", title_text="B Sponsor Title Text"
+    )
+
+    a_sponsor.sponsorincome_set.create(
+        income=123, conference=settings.CONFERENCE_CONFERENCE
+    )
+    b_sponsor.sponsorincome_set.create(
+        income=789, conference=settings.CONFERENCE_CONFERENCE
+    )
+    c_sponsor.sponsorincome_set.create(
+        income=456, conference=settings.CONFERENCE_CONFERENCE
+    )
+    url = "/"
+    response = client.get(url)
+
+    a_sponsor_position = response.content.decode().find('A Sponsor')
+    b_sponsor_position = response.content.decode().find('B Sponsor')
+    c_sponsor_position = response.content.decode().find('C Sponsor')
+
+    assert b_sponsor_position < c_sponsor_position < a_sponsor_position
+
+
 def test_homepage_contains_googleanalytics(db, client):
     create_homepage_in_cms()
     url = "/"
