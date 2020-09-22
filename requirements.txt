@@ -15,7 +15,7 @@ chardet==3.0.4            # via requests
 git+https://github.com/pawelmarkowski/cmsplugin-filer@2.0.2#egg=cmsplugin-filer  # via -r requirements.in
 cryptography==2.8         # via social-auth-core
 cssselect2==0.3.0         # via cairosvg, weasyprint
-dataclasses==0.7          # via -r requirements.in
+# dataclasses==0.7          # via -r requirements.in
 decorator==4.4.2          # via -r requirements.in, ipython, traitlets
 defusedxml==0.6.0         # via cairosvg, python3-openid, social-auth-core
 dj-database-url==0.5.0    # via -r requirements.in

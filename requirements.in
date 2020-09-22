@@ -49,7 +49,7 @@ ipython
 decorator
 
 lxml  # for currencies
-dataclasses
+# dataclasses
 
 gunicorn<20.0
 
