@@ -1,4 +1,4 @@
-Django~=1.11
+Django~=2.2
 
 requests
 requests-oauthlib
@@ -6,29 +6,29 @@ shortuuid
 
 django-classy-tags
 django_extensions
-django-model-utils<4.0
+django-model-utils
 django-crispy-forms
 
-django-taggit~=1.2
+django-taggit
 git+https://github.com/bennylope/django-taggit-labels@c4006980d133f4c392b9f37e386bd7da43a8d4ce#egg=django-taggit-labels
 
 python3-openid
-python-social-auth==0.3.6
+python-social-auth
 social-auth-app-django
 # Fixes https://github.com/python-social-auth/social-app-django/issues/178
 social-auth-core[openidconnect]
 
-markdown2>=2.3.9
+markdown2
 
 # 3.7 DjangoCMS LTS release
 django-cms>=3.7,<3.8
 djangocms-admin-style
 djangocms-text-ckeditor
-django-filer<1.6
+django-filer
 git+https://github.com/pawelmarkowski/cmsplugin-filer@2.0.2#egg=cmsplugin-filer
 
-django-filebrowser-no-grappelli~=3.8
-django-markitup~=3.5
+django-filebrowser-no-grappelli
+django-markitup
 
 # django settings enhancements
 python-decouple
@@ -42,15 +42,15 @@ phonenumbers
 stripe
 
 WeasyPrint
-unicodecsv==0.14.1
+unicodecsv
 
-openpyxl==2.4.8
+openpyxl
 ipython
 decorator
 
 lxml  # for currencies
 dataclasses
 
-gunicorn<20.0
+gunicorn
 
 anglicize
