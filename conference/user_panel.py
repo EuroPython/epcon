@@ -12,7 +12,7 @@ from django.contrib import messages
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, re_path
 from django.db import transaction
 from django.db.models import Q, Case, When, Value, BooleanField
 from django.http import HttpResponse
@@ -216,11 +216,11 @@ class TicketConferenceConfigForm(forms.ModelForm):
 
     class Meta:
         model = TicketConference
-        fields = ["name", 
+        fields = ["name",
                   # XXX Disabled for EP2020; see #1269
-                  #"diet", 
-                  #"shirt_size", 
-                  "tagline", 
+                  #"diet",
+                  #"shirt_size",
+                  "tagline",
                   "days"]
 
     def __init__(self, *args, **kwargs):

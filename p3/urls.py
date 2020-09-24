@@ -1,4 +1,4 @@
-from django.conf.urls import url as re_path
+from django.urls import re_path
 
 from p3 import views as p3_views
 

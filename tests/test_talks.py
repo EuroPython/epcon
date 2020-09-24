@@ -22,8 +22,12 @@ pytestmark = [pytest.mark.django_db]
 def test_talk_view_as_anonymous(client):
     original_abstract = "Hello!\nGoto http://example.com"
     # newlines should become BR, urls should be linked
+<<<<<<< HEAD
     expected_abstract = ('Hello!<br>Goto <a href="http://example.com" rel="nofollow">'
                          'http://example.com</a>')
+=======
+    expected_abstract = 'Hello!<br>Goto <a href="http://example.com" rel="nofollow">http://example.com</a>'
+>>>>>>> origin/ar/django2-upgrade
     get_default_conference()
     talk = TalkFactory()
     talk.setAbstract(original_abstract)

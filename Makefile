@@ -87,7 +87,7 @@ test: build
 	docker-compose run --rm epcon "pytest"
 
 test-pdb:
-	docker-compose run --rm epcon "pytest --pdb"
+	docker-compose run --rm epcon "PYTHONWARNINGS=always pytest --pdb --capture=no"
 
 test-lf:
 	docker-compose run --rm epcon "pytest --lf"
@@ -116,13 +116,13 @@ clean-py:
 	find . -name '.coverage' -delete
 
 deployment-requirements:
-	pip install -U pip==19.3.1
+	pip install -U pip
 	pip install -U pip-tools
 	pip-compile --upgrade requirements.in -o requirements.txt
 	chmod a+r requirements.txt
 
 install:
-	pip install -U pip==19.3.1
+	pip install -U pip
 	pip install -U pip-tools
 	pip-sync requirements.txt
 

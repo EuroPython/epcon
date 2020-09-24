@@ -1,11 +1,10 @@
 from django import forms
 from django.conf import settings
-from django.conf.urls import url as re_path
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, re_path
 from django.db import transaction
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import get_object_or_404, redirect

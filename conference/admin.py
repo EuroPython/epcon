@@ -8,11 +8,10 @@ from django import http
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.conf.urls import url as re_path
 from django.contrib.contenttypes.fields import (
     ReverseGenericManyToOneDescriptor,
 )
-from django.urls import reverse
+from django.urls import reverse, re_path
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
