@@ -20,7 +20,7 @@ You are thus welcome to fork away and reuse/enhance this project, as long as you
 
 ## Pre-requisites
 
-In order to run the project locally, you need to have [Docker](https://docs.docker.com/install/)
+To run the project locally, you need to have [Docker](https://docs.docker.com/install/)
 and [docker-compose](https://docs.docker.com/compose/overview/) installed.
 
 You can install the above mentioned packages manually or you can use our helper commands.
