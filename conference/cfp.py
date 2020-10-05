@@ -4,6 +4,7 @@ from django.conf.urls import url as re_path
 from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.urls import reverse_lazy
 from django.db import transaction
@@ -120,9 +121,31 @@ def submit_proposal_step3_thanks(request, talk_uuid):
     Step3 - thanks for proposal
     """
     talk = get_object_or_404(Talk, uuid=talk_uuid)
-    return TemplateResponse(request, "conference/cfp/step3_thanks.html", {
-        "talk": talk,
-    })
+    speakers = list(talk.get_all_speakers())
+    speaker_emails = [speaker.user.email for speaker in speakers]
+    speaker_names = ",".join(
+        [f"{speaker.user.first_name} {speaker.user.last_name}" for speaker in speakers]
+    )
+    current_site = get_current_site(request)
+    cfp_path = reverse_lazy("cfp:preview", args=[talk.slug])
+    proposal_url = f"https://{current_site}{cfp_path}"
+    content = f"""
+    Hi {speaker_names}!
+    We have received your submission "{talk.title}".
+    We will notify you once we have had time to consider all submissions,
+    but until then you can see and edit your submission at {proposal_url}
+
+    Please do not hesitate to contact us at at helpdesk@europython.eu if you have any questions!
+    """
+    send_mail(
+        subject=f"Your submission to Europython: {talk.title}",
+        message=content,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=speaker_emails,
+    )
+    return TemplateResponse(
+        request, "conference/cfp/step3_thanks.html", {"talk": talk,}
+    )
 
 
 @login_required
