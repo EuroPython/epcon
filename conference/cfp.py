@@ -138,7 +138,7 @@ def submit_proposal_step3_thanks(request, talk_uuid):
     Please do not hesitate to contact us at at helpdesk@europython.eu if you have any questions!
     """
     send_mail(
-        subject=f"Your submission to Europython: {talk.title}",
+        subject=f"Your submission to {settings.CONFERENCE_NAME}: {talk.title}",
         message=content,
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=speaker_emails,
