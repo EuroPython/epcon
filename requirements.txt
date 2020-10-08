@@ -1,6 +1,8 @@
 akismet==0.2.0
+-e git+https://github.com/EuroPython/assopy.git@9a3bae3dc90b7a3b7d6bd3c3e8596b236261e325#egg=assopy-master
 BeautifulSoup==3.2.1
 cmsplugin-filer==0.10.1
+-e git+https://github.com/EuroPython/conference.git@ac0293c8695955a899ecf9006f7eec27706a50dc#egg=conference-master
 Django==1.5.11
 django-appconf==1.0.1
 django-authority==0.4
@@ -65,5 +67,3 @@ stripe==1.19.1
 suds==0.4
 Unidecode==0.4.17
 virtualenv==12.0.7
--e git+https://github.com/EuroPython/assopy.git#egg=assopy
--e git+https://github.com/EuroPython/conference.git#egg=conference
