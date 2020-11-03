@@ -36,8 +36,8 @@ from .accepted_talks import TYPE_NAMES
 # License notice to attach to talks
 LICENSE = """
 
-License: This video is licensed under the CC BY-NC-SA 3.0 license: https://creativecommons.org/licenses/by-nc-sa/3.0/
-Please see our speaker release agreement for details: https://ep2020.europython.eu/events/speaker-release-agreement/
+License: This video is licensed under the CC BY-NC-SA 4.0 license: https://creativecommons.org/licenses/by-nc-sa/4.0/
+Please see our speaker release agreement for details: https://ep2021.europython.eu/events/speaker-release-agreement/
 """
 
 # Special handling of poster sessions
