@@ -14,6 +14,7 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect
 from django.template import Template, Context
 from django.template.response import TemplateResponse
+from django.utils.safestring import mark_safe
 
 from assopy import dataaccess as assopy_dataaccess
 from assopy import forms as assopy_forms
@@ -168,15 +169,13 @@ class OrderAdmin(admin.ModelAdmin):
         html = '<a href="%s">%s</a>' % (url, name)
         if name != o.card_name:
             html += ' - ' + o.card_name
-        return html
+        return mark_safe(html)
     _user.short_description = 'buyer'
-    _user.allow_tags = True
     _user.admin_order_field = 'user__user__last_name'
 
     def _email(self, o):
-        return '<a href="mailto:%s">%s</a>' % (o.user.user.email, o.user.user.email)
+        return mark_safe('<a href="mailto:%s">%s</a>' % (o.user.user.email, o.user.user.email))
     _email.short_description = 'buyer email'
-    _email.allow_tags = True
     _email.admin_order_field = 'user__user__email'
 
     def _items(self, o):
@@ -217,8 +216,7 @@ class OrderAdmin(admin.ModelAdmin):
                 '<a href="%s">%s%s</a>' % (
                     url, i.code, ' *' if not i.payment_date else '')
             )
-        return ' '.join(output)
-    _invoice.allow_tags = True
+        return mark_safe(" ".join(output))
     _invoice.admin_order_field = 'invoices'
 
     def get_urls(self):
@@ -517,8 +515,7 @@ class AuthUserAdmin(UserAdmin):
 
     def _doppelganger(self, o):
         url = reverse('admin:auser-create-doppelganger', kwargs={'uid': o.id})
-        return '<a href="%s" target="_blank">become this user</a>' % url
-    _doppelganger.allow_tags = True
+        return mark_safe('<a href="%s" target="_blank">become this user</a>' % url)
     _doppelganger.short_description = 'Doppelganger'
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
@@ -552,8 +549,7 @@ class InvoiceAdmin(admin.ModelAdmin):
     def _order(self, o):
         order = o.order
         url = reverse('admin:assopy_order_change', args=(order.id,))
-        return '<a href="%s">%s</a>' % (url, order.code)
-    _order.allow_tags = True
+        return mark_safe('<a href="%s">%s</a>' % (url, order.code))
     _order.admin_order_field = 'order'
 
     def _user(self, o):
@@ -564,7 +560,7 @@ class InvoiceAdmin(admin.ModelAdmin):
         html = '<a href="%s">%s</a> (<a href="%s">D</a>)' % (admin_url, name, dopp_url)
         if o.order.card_name != name:
             html += ' - ' + o.order.card_name
-        return html
+        return mark_safe(html)
     _user.allow_tags = True
     _user.admin_order_field = 'order__user__user__first_name'
 
@@ -572,8 +568,7 @@ class InvoiceAdmin(admin.ModelAdmin):
         fake = not i.payment_date
         view = reverse('assopy-invoice-html', kwargs={'order_code': i.order.code, 'code': i.code})
         download = reverse('assopy-invoice-pdf', kwargs={'order_code': i.order.code, 'code': i.code})
-        return '<a href="%s">View</a> - <a href="%s">Download</a> %s' % (view, download, '[Not payed]' if fake else '')
-    _invoice.allow_tags = True
+        return mark_safe('<a href="%s">View</a> - <a href="%s">Download</a> %s' % (view, download, '[Not payed]' if fake else ''))
     _invoice.short_description = 'Download'
 
     def has_delete_permission(self, request, obj=None):
