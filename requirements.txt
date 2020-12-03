@@ -15,7 +15,6 @@ chardet==3.0.4            # via requests
 git+https://github.com/pawelmarkowski/cmsplugin-filer@2.0.2#egg=cmsplugin-filer  # via -r requirements.in
 cryptography==2.8         # via social-auth-core
 cssselect2==0.3.0         # via cairosvg, weasyprint
-# dataclasses==0.7          # via -r requirements.in
 decorator==4.4.2          # via -r requirements.in, ipython, traitlets
 defusedxml==0.6.0         # via cairosvg, python3-openid, social-auth-core
 dj-database-url==0.5.0    # via -r requirements.in
@@ -37,7 +36,7 @@ django-sekizai==1.1.0     # via cmsplugin-filer, django-cms
 git+https://github.com/bennylope/django-taggit-labels@c4006980d133f4c392b9f37e386bd7da43a8d4ce#egg=django-taggit-labels  # via -r requirements.in
 django-taggit==1.2.0      # via -r requirements.in, django-taggit-labels
 django-treebeard==4.3.1   # via django-cms
-django==1.11.29           # via -r requirements.in, cmsplugin-filer, django-appconf, django-classy-tags, django-cms, django-filer, django-formtools, django-model-utils, django-mptt, django-phonenumber-field, django-polymorphic, django-sekizai, django-taggit, django-treebeard, easy-thumbnails
+django==2.2.17           # via -r requirements.in, cmsplugin-filer, django-appconf, django-classy-tags, django-cms, django-filer, django-formtools, django-model-utils, django-mptt, django-phonenumber-field, django-polymorphic, django-sekizai, django-taggit, django-treebeard, easy-thumbnails
 djangocms-admin-style==1.5.0  # via -r requirements.in, django-cms
 djangocms-attributes-field==1.2.0  # via cmsplugin-filer
 djangocms-text-ckeditor==3.9.0  # via -r requirements.in

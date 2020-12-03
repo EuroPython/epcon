@@ -27,7 +27,7 @@ def _request_cache(request, key):
     return request._conf_cache[key]
 
 # Current conference object
-@register.assignment_tag()
+@register.simple_tag()
 def current_conference():
     return models.Conference.objects.current()
 

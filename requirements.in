@@ -1,4 +1,4 @@
-Django~=1.11
+Django~=2.2
 
 requests
 requests-oauthlib
@@ -49,7 +49,6 @@ ipython
 decorator
 
 lxml  # for currencies
-# dataclasses
 
 gunicorn<20.0
 
