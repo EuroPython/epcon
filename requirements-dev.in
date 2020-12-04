@@ -6,7 +6,8 @@ pytest-xdist
 
 freezegun
 responses
-factory_boy
+# factory_boy
+git+https://github.com/FactoryBoy/factory_boy.git#factory_boy
 
 flake8
 black
