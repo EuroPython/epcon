@@ -49,3 +49,4 @@ prof/
 # virtualenvwrapper/zsh
 .venv
 .env
+env
