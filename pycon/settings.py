@@ -59,6 +59,8 @@ LOGS_DIR = os.path.join(PROJECT_DIR, "logs/")
 
 SITE_DATA_ROOT = DATA_DIR + "/site"
 
+PROFILE_PICTURE_MAX_SIZE = 2621440
+
 # DATABASE
 # --------
 DATABASES = {
@@ -210,7 +212,6 @@ TEMPLATES = [
 
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

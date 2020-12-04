@@ -27,7 +27,7 @@ def _request_cache(request, key):
     return request._conf_cache[key]
 
 # Current conference object
-@register.assignment_tag()
+@register.simple_tag()
 def current_conference():
     return models.Conference.objects.current()
 
@@ -102,7 +102,7 @@ def profile_data(uid):
 def sponsor_data():
     return models.Sponsor.objects.filter(
         sponsorincome__conference=settings.CONFERENCE_CONFERENCE
-    )
+    ).order_by('-sponsorincome__income')
 
 
 @register.filter

@@ -14,7 +14,8 @@ def talk(request, talk_slug):
     """
     Display Talk
     """
-    talk = get_object_or_404(Talk, slug=talk_slug)
+    current_conf = Conference.objects.current().code
+    talk = get_object_or_404(Talk, slug=talk_slug, conference=current_conf)
     talk_as_dict = dump_relevant_talk_information_to_dict(talk)
 
     can_update_talk = request.user.is_authenticated and can_user_update_talk(

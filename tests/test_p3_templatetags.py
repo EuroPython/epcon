@@ -1,20 +1,13 @@
-from datetime import timedelta
-
 import pytest
 
-from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.utils import timezone
-
-from conference.models import TALK_STATUS, TALK_LEVEL
 from p3.templatetags import sessions
-from tests.factories import UserFactory, TalkFactory, ConferenceTagFactory, TalkSpeakerFactory, SpeakerFactory
-from tests.common_tools import get_default_conference, redirects_to, template_used, make_user
+from tests.factories import TalkSpeakerFactory
+from tests.common_tools import get_default_conference, make_user
 
 pytestmark = [pytest.mark.django_db]
 
 
-def test_spealers_templatetag():
+def test_speakers_templatetag():
     names = [
         # these 2 should not be listed
         ("To Be", "Announced"),
