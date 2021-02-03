@@ -39,7 +39,7 @@ https://www.europython-society.org
 
 EPS_19 = EPS_18
 
-# EP2020: Not listing the VAT ID, since we're a non-profit and VAT exempt. 
+# EP2020: Not listing the VAT ID, since we're a non-profit and VAT exempt.
 # The VAT ID would confuse people.
 EPS_20 = """
 Europython Society
@@ -51,7 +51,7 @@ Contact Email: billing@europython.eu
 https://www.europython-society.org/
 """.strip()
 
-# EP2021: Not listing the VAT ID, since we're a non-profit and VAT exempt. 
+# EP2021: Not listing the VAT ID, since we're a non-profit and VAT exempt.
 # The VAT ID would confuse people.
 EPS_21 = """
 Europython Society
@@ -63,6 +63,7 @@ Contact Email: billing@europython.eu
 https://www.europython-society.org/
 """.strip()
 
+# EP2022: We will have to charge Irish VAT and therefore list our VAT ID.
 EPS_22 = """
 Europython Society
 Ramnebacken 45
