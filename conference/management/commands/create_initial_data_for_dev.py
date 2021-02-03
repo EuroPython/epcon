@@ -85,10 +85,12 @@ class Command(BaseCommand):
             add_speaker_to_talk(speaker, talk)
             profile = get_or_create_attendee_profile_for_new_user(user.user)
             if not profile.getBio():
+                # FIXME: evaluate is a private method.
+                # https://github.com/FactoryBoy/factory_boy/commit/824c6e01f91dcb07d16f51578300da3c99b6a336
                 profile.setBio(
                     factory.Faker(
                         "sentence", nb_words=20, variable_nb_words=True
-                    ).generate({})
+                    ).evaluate(None, None, extra={"locale": None})
                 )
 
         for i in range(20):
@@ -196,7 +198,7 @@ class Command(BaseCommand):
             ("social-media", "Social Media"),
             ("code-of-conduct", "Code of Conduct"),
             ("privacy", "Privacy policy"),
-            ("workgroups", "2020 Team"),
+            ("workgroups", "2021 Team"),
             ("photos", "Photos"),
             ("videos", "Videos"),
             ("terms", "Terms & Conditions"),

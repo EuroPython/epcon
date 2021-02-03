@@ -37,7 +37,7 @@ from .accepted_talks import TYPE_NAMES
 LICENSE = """
 
 License: This video is licensed under the CC BY-NC-SA 3.0 license: https://creativecommons.org/licenses/by-nc-sa/3.0/
-Please see our speaker release agreement for details: https://ep2020.europython.eu/events/speaker-release-agreement/
+Please see our speaker release agreement for details: https://ep2021.europython.eu/events/speaker-release-agreement/
 """
 
 # Special handling of poster sessions
@@ -127,7 +127,7 @@ def video_description(title, abstract,
     # XXX Make this configurables in settings
     return """\
 %(title)s
-[EuroPython 2020 - %(type)s - %(date)s - %(room)s]
+[EuroPython 2021 - %(type)s - %(date)s - %(room)s]
 [Online]
 
 %(abstract)s

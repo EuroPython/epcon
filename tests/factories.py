@@ -319,10 +319,12 @@ class TalkFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Talk
 
+    # FIXME: evaluate is a provate method
+    # https://github.com/FactoryBoy/factory_boy/commit/824c6e01f91dcb07d16f51578300da3c99b6a336
     title = factory.LazyAttribute(
         lambda talk: factory.Faker(
             "sentence", nb_words=6, variable_nb_words=True
-        ).generate({})[:80]
+        ).evaluate(None, None, extra={"locale": None})[:80]
     )
     sub_title = factory.Faker("sentence", nb_words=12, variable_nb_words=True)
 
@@ -341,8 +343,12 @@ class TalkFactory(factory.django.DjangoModelFactory):
 
     @factory.post_generation
     def abstract(self, create, extracted, **kwargs):
+        # FIXME: evaluate is a private method
+        # https://github.com/FactoryBoy/factory_boy/commit/824c6e01f91dcb07d16f51578300da3c99b6a336
         self.setAbstract(
-            factory.Faker("sentence", nb_words=30, variable_nb_words=True).generate({})
+            factory.Faker(
+                "sentence", nb_words=30, variable_nb_words=True
+            ).evaluate(None, None, extra={"locale": None})
         )
 
 

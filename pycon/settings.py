@@ -452,18 +452,18 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 SESSION_COOKIE_NAME = 'sid'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
-CONFERENCE_CONFERENCE = 'ep2020'
-CONFERENCE_NAME = "EuroPython 2020"
+CONFERENCE_CONFERENCE = 'ep2021'
+CONFERENCE_NAME = "EuroPython 2021"
 CONFERENCE_SEND_EMAIL_TO = ["helpdesk@europython.eu"]
 CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL = []
-CONFERENCE_VOTING_DISALLOWED = 'https://ep2020.europython.eu/talk-voting/'
+CONFERENCE_VOTING_DISALLOWED = 'https://ep2021.europython.eu/talk-voting/'
 CONFERENCE_TALK_VOTING_ELIGIBLE = (
     "ep2015",
     "ep2016",
     "ep2017",
     "ep2018",
     "ep2019",
-    "ep2020",
+    "ep2021",
 )
 EARLY_BIRD_ORDER_LIMIT = config("EARLY_BIRD_ORDER_LIMIT", default=220, cast=int)
 
@@ -669,7 +669,7 @@ ASSOPY_SEND_EMAIL_TO = ['billing-log@europython.io']
 # It is used for generating URLs pointing back to the site
 # in quite a few places.
 #
-DEFAULT_URL_PREFIX = 'https://ep2020.europython.eu'
+DEFAULT_URL_PREFIX = 'https://ep2021.europython.eu'
 LOGIN_REDIRECT_URL = reverse_lazy("user_panel:dashboard")
 
 P3_TWITTER_USER = 'europython'
@@ -678,7 +678,7 @@ P3_USER_MESSAGE_FOOTER = '''
 This message was sent from a participant at the EuroPython conference.
 Your email address is not disclosed to anyone, to stop receiving messages
 from other users you can change your privacy settings from this page:
-https://ep2020.europython.eu/accounts/profile/
+https://ep2021.europython.eu/accounts/profile/
 '''
 
 

@@ -164,7 +164,7 @@ def clear_all_the_caches():
     cache.clear()
 
 
-def setup_conference_with_typical_fares(start=date(2020, 7, 20), end=date(2020, 7, 26)):
+def setup_conference_with_typical_fares(start=date(2021, 7, 23), end=date(2021, 8, 1)):
     conference = get_default_conference(
         conference_start=start,
         conference_end=end,

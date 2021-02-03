@@ -39,7 +39,7 @@ https://www.europython-society.org
 
 EPS_19 = EPS_18
 
-# EP2020: Not listing the VAT ID, since we're a non-profit and VAT exempt. 
+# EP2020: Not listing the VAT ID, since we're a non-profit and VAT exempt.
 # The VAT ID would confuse people.
 EPS_20 = """
 Europython Society
@@ -51,7 +51,20 @@ Contact Email: billing@europython.eu
 https://www.europython-society.org/
 """.strip()
 
+# EP2021: Not listing the VAT ID, since we're a non-profit and VAT exempt.
+# The VAT ID would confuse people.
 EPS_21 = """
+Europython Society
+Ramnebacken 45
+424 38 Agnesberg
+Sweden
+Org ID: 802417-7704
+Contact Email: billing@europython.eu
+https://www.europython-society.org/
+""".strip()
+
+# EP2022: We will have to charge Irish VAT and therefore list our VAT ID.
+EPS_22 = """
 Europython Society
 Ramnebacken 45
 424 38 Agnesberg
@@ -67,6 +80,7 @@ ISSUER_BY_YEAR = {
     2019: EPS_19,
     2020: EPS_20,
     2021: EPS_21,
+    2022: EPS_22,
 }
 
 LOCAL_CURRENCY_BY_YEAR = {
@@ -77,13 +91,15 @@ LOCAL_CURRENCY_BY_YEAR = {
     2019: "EUR",
     2020: "EUR",
     2021: "EUR",
+    2022: "EUR",
 }
 
 EP_CITY_FOR_YEAR = {
     2018: "Edinburgh",
     2019: "Basel",
     2020: "Online",
-    2021: "Dublin",
+    2021: "Online",
+    2022: "Dublin",
 }
 
 ADDITIONAL_TEXT_FOR_YEAR = {
@@ -91,6 +107,7 @@ ADDITIONAL_TEXT_FOR_YEAR = {
     2019: "assopy/invoices/_additional_text_for_2019.html",
     2020: "assopy/invoices/_additional_text_for_2020.html",
     2021: "assopy/invoices/_additional_text_for_2021.html",
+    2022: "assopy/invoices/_additional_text_for_2022.html",
 }
 
 REAL_INVOICE_PREFIX = "I/"

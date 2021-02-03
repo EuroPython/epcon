@@ -30,7 +30,7 @@ def test_talk_abstracts():
 
 
 # Creating an order tags the order with the year number of the current year right now.
-@freeze_time("2020-02-02")
+@freeze_time("2021-02-02")
 def test_ticket_profiles():
     stdout = StringIO()
     conference = get_default_conference()

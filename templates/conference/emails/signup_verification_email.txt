@@ -1,6 +1,6 @@
 Hello!
 
-Thanks for creating account for EuroPython 2020.
+Thanks for creating account for EuroPython 2021.
 
 Here's the link to activate your account:
 
@@ -8,5 +8,5 @@ Here's the link to activate your account:
 
 Thanks,
 -- 
-EuroPython 2020 Team
-https://ep2020.europython.eu
+EuroPython 2021 Team
+https://ep2021.europython.eu
