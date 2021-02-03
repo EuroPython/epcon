@@ -17,7 +17,7 @@ RUN mkdir /code
 WORKDIR /code
 
 # Install dependencies (simulates `make install` in the live dockerfile)
-RUN pip install -U pip==19.3.1
+RUN pip install -U pip
 RUN pip install -U pip-tools
 COPY ./requirements*.txt /tmp/
 RUN pip-sync /tmp/requirements.txt /tmp/requirements-dev.txt
