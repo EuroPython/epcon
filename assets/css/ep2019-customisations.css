@@ -6,7 +6,7 @@
 .text-primary-light { color: #47A71C; }
 .text-secondary-light { color: #FFCB96; }
 
-/* Fonts for ep2020*/
+/* Fonts for ep2021*/
 @font-face {
     font-family: "Galyon";
     src: url("Galyon-Regular.otf");
@@ -41,7 +41,7 @@
 }
 
 #background_image {
-    background: url("/static/img/ep2020-background-online.jpg");
+    background: url("/static/img/ep2021-background-online.jpg");
     background-size: cover;
     color: white;
     min-height: 90px;

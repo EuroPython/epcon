@@ -196,7 +196,7 @@ class Command(BaseCommand):
             ("social-media", "Social Media"),
             ("code-of-conduct", "Code of Conduct"),
             ("privacy", "Privacy policy"),
-            ("workgroups", "2020 Team"),
+            ("workgroups", "2021 Team"),
             ("photos", "Photos"),
             ("videos", "Videos"),
             ("terms", "Terms & Conditions"),

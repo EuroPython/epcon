@@ -16,12 +16,12 @@ def render_meta(context, title=""):
 
     description = ""
     page_title = (
-        f"{title}EuroPython 2020 Online &middot; 23-26 July 2020"
+        f"{title}EuroPython 2021 Online &middot; 23-26 July 2021"
     )
     page_url = context["CURRENT_URL"]
 
     image_url = context.get("social_image_url") or request.build_absolute_uri(
-        static("img/ep2020-social-online-card.jpg")
+        static("img/ep2021-social-online-card.jpg")
     )
 
     TEMPLATE = f"""

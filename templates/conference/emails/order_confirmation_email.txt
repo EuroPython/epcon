@@ -1,6 +1,6 @@
 Hello!
 
-Thanks for buying tickets for EuroPython 2020.
+Thanks for buying tickets for EuroPython 2021.
 
 This is the summary of order {{ order.code }}:
 
@@ -18,13 +18,13 @@ Your invoice is also available on the same url.
 If you have purchased tickets for other attendees, please follow these
 steps to have them assigned to your attendees:
 
-https://ep2020.europython.eu/faq/#I-bought-the-ticket-for-someone-else-How-can-I-re-assign-it
+https://ep2021.europython.eu/faq/#I-bought-the-ticket-for-someone-else-How-can-I-re-assign-it
 
 We will be running the conference using our Discord server. In order
 to register, please use the Discord invite link listed on our
 website:
 
-https://ep2020.europython.eu/setup/chat-system/
+https://ep2021.europython.eu/setup/chat-system/
 
 and follow the instructions on the page to register. We also provide
 a helpful intro video to get you started with Discord on the same
@@ -34,6 +34,6 @@ If you run into any issues, please contact us at helpdesk@europython.eu
 
 Kind regards,
 -- 
-EuroPython 2020 Team
-https://ep2020.europython.eu
+EuroPython 2021 Team
+https://ep2021.europython.eu
 https://www.europython-society.org/
