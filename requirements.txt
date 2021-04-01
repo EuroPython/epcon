@@ -49,7 +49,7 @@ django-classy-tags==2.0.0
     #   -r requirements.in
     #   django-cms
     #   django-sekizai
-django-cms==3.8.0
+django-cms==3.7.4
     # via
     #   -r requirements.in
     #   cmsplugin-filer
@@ -206,6 +206,7 @@ shortuuid==1.0.1
     # via -r requirements.in
 six==1.15.0
     # via
+    #   django-cms
     #   django-filebrowser-no-grappelli
     #   ecdsa
     #   html5lib
