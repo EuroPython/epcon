@@ -21,7 +21,7 @@ social-auth-core[openidconnect]
 markdown2
 
 # 3.7 DjangoCMS LTS release
-django-cms
+django-cms<3.8
 djangocms-admin-style
 djangocms-text-ckeditor
 django-filer

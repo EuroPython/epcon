@@ -16,3 +16,6 @@ pdbpp
 ptvsd
 
 pip-tools
+wheel
+certifi
+requests
