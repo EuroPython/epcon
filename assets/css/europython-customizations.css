@@ -45,9 +45,9 @@
     background-size: cover;
     color: white;
     min-height: 90px;
-    padding-bottom: 4em;
+/*    padding-bottom: 4em; */
 }
-.jumbotron { background: transparent; color: white; padding: 4em 0 13em 0;}
+.jumbotron { background: transparent; color: white; }
 .text-underline { text-decoration: underline; }
 
 .page { min-height: 500px; padding-bottom: 10em; padding-top: 4em}
