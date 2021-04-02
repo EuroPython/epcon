@@ -79,6 +79,14 @@ a.navbar-brand:hover{
     color: white;
 }
 
+.navbar {
+    background-image: linear-gradient( rgb(9 33 22), rgb(31 80 62 / 30%));
+    background-color: rgb(27 103 75 / 75%);
+}
+.navbar-expand-lg>.container, .navbar-expand-lg>.container-fluid {
+    flex-wrap: wrap;
+}
+
 #content_page {
     min-height: 500px;
     margin: 40px 0;
