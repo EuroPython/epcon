@@ -127,7 +127,6 @@ def test_user_registration(client):
     assert template_used(response, "conference/homepage/home_template.html")
     # checking if user is logged in.
     assert "Joe Doe" in response.content.decode("utf-8")
-    assert "My Account" in response.content.decode("utf-8")
 
 
 @mark.django_db
