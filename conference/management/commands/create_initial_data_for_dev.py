@@ -146,7 +146,7 @@ class Command(BaseCommand):
             except FieldError as e:
                 print("Warning: ", e)
 
-        program_page = new_page("faq", "FAQ")
+        program_page = new_page("registration", "Registration")
         for rev_id, title in [
             ("tickets", "Buy Tickets"),
             ("tips-for-attendees", "Tips for Attendees"),

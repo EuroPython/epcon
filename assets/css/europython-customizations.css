@@ -1,6 +1,6 @@
 /* primary: #15653B; */
 /* primary-light/info: #47A71C */
-/* secondary: #E88100 */
+/* secondary: #f49928 */
 /* secondary-light/warning: #FFCB96 */
 
 .text-primary-light { color: #47A71C; }
@@ -27,7 +27,7 @@
 }
 
 #announcement {
-    background: #E88100;
+    background: #f49928;
     /* full width minus scrollbar*/
     padding: 32px;
     box-shadow: 0px 0px 10px 0px rgba(217,122,10,0.75);
@@ -45,17 +45,17 @@
     background-size: cover;
     color: white;
     min-height: 90px;
-    padding-bottom: 4em;
+/*    padding-bottom: 4em; */
 }
-.jumbotron { background: transparent; color: white; padding: 4em 0 13em 0;}
+.jumbotron { background: transparent; color: white; }
 .text-underline { text-decoration: underline; }
 
 .page { min-height: 500px; padding-bottom: 10em; padding-top: 4em}
-#footer { background: #136F43; padding: 1em 0; color: #f8c48f}
+#footer { background: #30b080; padding: 1em 0; color: #f8c48f}
 #footer a { color: white; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
 #footer ul { list-style-type: none; padding-left: 0}
 #footer ul li { margin: .5em 0; }
-#homepage_news { background: #136F43; padding: 2em 0; margin 0:}
+#homepage_news { background: #30b080; padding: 2em 0; margin 0:}
 #homepage_news a { color: #fff; text-decoration: underline;}
 #homepage_news a:hover { color: #f8c48f; text-decoration: underline;}
 .news-card { height: 300px; }
@@ -77,6 +77,14 @@
 }
 a.navbar-brand:hover{
     color: white;
+}
+
+.navbar {
+    background-image: linear-gradient( rgb(9 33 22), rgb(31 80 62 / 30%));
+    background-color: rgb(27 103 75 / 75%);
+}
+.navbar-expand-lg>.container, .navbar-expand-lg>.container-fluid {
+    flex-wrap: wrap;
 }
 
 #content_page {
@@ -167,11 +175,11 @@ a.navbar-brand:hover{
 .dropdown-item.active, .dropdown-item:active {
     color: #fff;
     text-decoration: none;
-    background-color: #136F43;
+    background-color: #30b080;
 }
 
 a.nav-link, a.navbar-brand {
-    color: #E88100;
+    color: #f49928;
 }
 
 /* Don't show carets in the dropdown menus */
