@@ -127,6 +127,7 @@ class Command(BaseCommand):
                         "generic_content_page_with_sidebar.html"
                     ),
                     published=True,
+                    created_by=admin.user,
                     publication_date=timezone.now(),
                     in_navigation=True,
                     **kwargs,
@@ -137,7 +138,6 @@ class Command(BaseCommand):
                     language="en",
                     body=f"This is the page content for {title}",
                 )
-                publish_page(page, user=admin.user, language="en")
                 print("Created page: ", page.reverse_id, title, page.template)
                 return page
 
