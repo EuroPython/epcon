@@ -243,7 +243,7 @@ class NewAccountForm(forms.Form):
     def clean_captcha_answer(self):
         question = self.cleaned_data['captcha_question']
         cq = CaptchaQuestion.objects.get(question=question)
-        if cq.answer.strip() != self.cleaned_data['captcha_answer'].strip():
+        if cq.answer.strip().lower() != self.cleaned_data['captcha_answer'].strip().lower():
             raise forms.ValidationError("Sorry, that's a wrong answer")
         return self.cleaned_data['captcha_question']
 
