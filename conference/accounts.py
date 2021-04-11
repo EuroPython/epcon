@@ -79,6 +79,10 @@ def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
         return redirect('user_panel:dashboard')
 
     form = NewAccountForm()
+    form.order_fields([
+        'first_name',  'last_name', 'email', 'password1', 'password2',
+        'captcha_question', 'captcha_answer', 'i_accept_privacy_policy',
+        ])
 
     if request.method == 'POST':
         form = NewAccountForm(data=request.POST)
@@ -204,26 +208,11 @@ def handle_verification_token(request, token) -> [404, redirect]:
     messages.success(request, 'Email verfication complete')
     return redirect('user_panel:dashboard')
 
-
-class NewAccountForm(forms.Form):
-    first_name = forms.CharField(max_length=30)
-    last_name = forms.CharField(max_length=30)
-    email = forms.EmailField()
-    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
-    password2 = forms.CharField(
-        label="Confirm password", widget=forms.PasswordInput
-    )
-
+class CaptchaQuestionForm(forms.Form):
     # Additional captcha field with simple python questions
     # https://github.com/EuroPython/epcon/issues/703
     captcha_question = forms.CharField(widget=forms.HiddenInput)
     captcha_answer = forms.CharField()
-
-    # Keep this in sync with LoginForm.i_accept_privacy_policy
-    i_accept_privacy_policy = forms.BooleanField(
-        label=PRIVACY_POLICY_CHECKBOX
-    )
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         random_question = self.get_random_captcha_question()
@@ -247,6 +236,22 @@ class NewAccountForm(forms.Form):
             raise forms.ValidationError("Sorry, that's a wrong answer")
         return self.cleaned_data['captcha_question']
 
+
+class AccountForm(forms.Form):
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30)
+    email = forms.EmailField()
+    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
+    password2 = forms.CharField(
+        label="Confirm password", widget=forms.PasswordInput
+    )
+
+
+    # Keep this in sync with LoginForm.i_accept_privacy_policy
+    i_accept_privacy_policy = forms.BooleanField(
+        label=PRIVACY_POLICY_CHECKBOX
+    )
+
     def clean_email(self):
         email = self.cleaned_data['email']
         if User.objects.filter(email__iexact=email).exists():
@@ -266,6 +271,8 @@ class NewAccountForm(forms.Form):
             raise forms.ValidationError('password mismatch')
         return data
 
+class NewAccountForm(CaptchaQuestionForm, AccountForm):
+    ''''''
 
 urlpatterns = [
     re_path(
