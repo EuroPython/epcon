@@ -237,7 +237,7 @@ class CaptchaQuestionForm(forms.Form):
         return self.cleaned_data['captcha_question']
 
 
-class AccountForm(forms.Form):
+class NewAccountForm(CaptchaQuestionForm):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
     email = forms.EmailField()
@@ -271,8 +271,6 @@ class AccountForm(forms.Form):
             raise forms.ValidationError('password mismatch')
         return data
 
-class NewAccountForm(CaptchaQuestionForm, AccountForm):
-    ''''''
 
 urlpatterns = [
     re_path(
