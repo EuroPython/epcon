@@ -1287,16 +1287,15 @@ class CaptchaQuestionManager(models.Manager):
         except IndexError:
             raise CaptchaQuestion.NoQuestionsAvailable()
 
-class CaptchaAnswer(models.Model):
-    answer   = models.CharField(max_length=255)
-
 class CaptchaQuestion(TimeStampedModel):
 
     class NoQuestionsAvailable(Exception):
         pass
 
     question = models.CharField(max_length=255)
-    answer   = models.ForeignKey(CaptchaAnswer, on_delete=models.CASCADE)
+    answer   = models.CharField(max_length=255, 
+        verbose_name='''answer (seperate possible answers with commas, e.g.
+                    "python, the python programming language, cpython")''')
     enabled  = models.BooleanField(default=True)
 
     objects = CaptchaQuestionManager()
