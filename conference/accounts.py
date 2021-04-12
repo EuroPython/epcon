@@ -212,11 +212,13 @@ def handle_verification_token(request, token) -> [404, redirect]:
     messages.success(request, 'Email verfication complete')
     return redirect('user_panel:dashboard')
 
+
 class CaptchaQuestionForm(forms.Form):
     # Additional captcha field with simple python questions
     # https://github.com/EuroPython/epcon/issues/703
     captcha_question = forms.CharField(widget=forms.HiddenInput)
     captcha_answer = forms.CharField()
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         random_question = self.get_random_captcha_question()
@@ -239,7 +241,7 @@ class CaptchaQuestionForm(forms.Form):
         correct_answers = {
             answer.strip().lower() for answer
             in CaptchaQuestion.objects.get(question=question).answer.split(',')
-            }
+        }
         if answer not in correct_answers:
             raise forms.ValidationError("Sorry, that's a wrong answer")
         return self.cleaned_data['captcha_question']
