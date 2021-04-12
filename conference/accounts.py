@@ -86,6 +86,10 @@ def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
 
     if request.method == 'POST':
         form = NewAccountForm(data=request.POST)
+        form.order_fields([
+            'first_name',  'last_name', 'email', 'password1', 'password2',
+            'captcha_question', 'captcha_answer', 'i_accept_privacy_policy',
+            ])
 
         if form.is_valid():
             data = form.cleaned_data
@@ -231,8 +235,12 @@ class CaptchaQuestionForm(forms.Form):
 
     def clean_captcha_answer(self):
         question = self.cleaned_data['captcha_question']
-        cq = CaptchaQuestion.objects.get(question=question)
-        if cq.answer.strip().lower() != self.cleaned_data['captcha_answer'].strip().lower():
+        answer = self.cleaned_data['captcha_answer']
+        correct_answers = {
+            answer.strip().lower() for answer
+            in CaptchaQuestion.objects.get(question=question).answer.split(',')
+            }
+        if answer not in correct_answers:
             raise forms.ValidationError("Sorry, that's a wrong answer")
         return self.cleaned_data['captcha_question']
 
