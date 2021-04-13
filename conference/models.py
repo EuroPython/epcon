@@ -1302,6 +1302,10 @@ class CaptchaQuestion(TimeStampedModel):
 
     objects = CaptchaQuestionManager()
 
+    def save(self, *args, **kwargs):
+        self.answer = self.answer.lower()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.question
 

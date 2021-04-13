@@ -237,9 +237,9 @@ class CaptchaQuestionForm(forms.Form):
 
     def clean_captcha_answer(self):
         question = self.cleaned_data['captcha_question']
-        answer = self.cleaned_data['captcha_answer']
+        answer = self.cleaned_data['captcha_answer'].lower()
         correct_answers = {
-            answer.strip().lower() for answer
+            answer.strip() for answer
             in CaptchaQuestion.objects.get(question=question).answer.split(',')
         }
         if answer not in correct_answers:
@@ -247,7 +247,7 @@ class CaptchaQuestionForm(forms.Form):
         return self.cleaned_data['captcha_question']
 
 
-class NewAccountForm(CaptchaQuestionForm):
+class AccountForm(forms.Form):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
     email = forms.EmailField()
@@ -255,8 +255,6 @@ class NewAccountForm(CaptchaQuestionForm):
     password2 = forms.CharField(
         label="Confirm password", widget=forms.PasswordInput
     )
-
-
     # Keep this in sync with LoginForm.i_accept_privacy_policy
     i_accept_privacy_policy = forms.BooleanField(
         label=PRIVACY_POLICY_CHECKBOX
@@ -280,6 +278,10 @@ class NewAccountForm(CaptchaQuestionForm):
         if data['password1'] != data['password2']:
             raise forms.ValidationError('password mismatch')
         return data
+
+
+class NewAccountForm(AccountForm, CaptchaQuestionForm):
+    ''''''
 
 
 urlpatterns = [
