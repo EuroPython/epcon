@@ -281,7 +281,9 @@ class AccountForm(forms.Form):
 
 
 class NewAccountForm(AccountForm, CaptchaQuestionForm):
-    ''''''
+    """
+    Mixin is used to seperate the captcha and account logic.
+    """
 
 
 urlpatterns = [
