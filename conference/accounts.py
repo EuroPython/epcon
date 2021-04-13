@@ -216,6 +216,7 @@ def handle_verification_token(request, token) -> [404, redirect]:
 class CaptchaQuestionForm(forms.Form):
     # Additional captcha field with simple python questions
     # https://github.com/EuroPython/epcon/issues/703
+    # https://github.com/EuroPython/epcon/issues/823
     captcha_question = forms.CharField(widget=forms.HiddenInput)
     captcha_answer = forms.CharField()
 
