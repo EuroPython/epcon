@@ -247,7 +247,7 @@ class CaptchaQuestionForm(forms.Form):
         return self.cleaned_data['captcha_question']
 
 
-class AccountForm(forms.Form):
+class NewAccountForm(CaptchaQuestionForm):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
     email = forms.EmailField()
@@ -278,12 +278,6 @@ class AccountForm(forms.Form):
         if data['password1'] != data['password2']:
             raise forms.ValidationError('password mismatch')
         return data
-
-
-class NewAccountForm(AccountForm, CaptchaQuestionForm):
-    """
-    Mixin is used to seperate the captcha and account logic.
-    """
 
 
 urlpatterns = [
