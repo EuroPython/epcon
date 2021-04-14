@@ -1295,16 +1295,14 @@ class CaptchaQuestion(TimeStampedModel):
 
     question = models.CharField(max_length=255)
     answer   = models.CharField(max_length=255,
-                                verbose_name='''answer (seperate possible
-                                answers with commas, e.g. "python, the python
-                                programming language, cpython")''')
+                                verbose_name='''answer (use a regular expression
+                                to capture possible answers e.g.
+                                "(python|the python programming language)"
+                                case is ignored)
+                                ''')
     enabled  = models.BooleanField(default=True)
 
     objects = CaptchaQuestionManager()
-
-    def save(self, *args, **kwargs):
-        self.answer = self.answer.lower()
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.question

@@ -1,4 +1,5 @@
 import random
+import re
 
 from django import forms
 from django.conf import settings
@@ -246,12 +247,10 @@ class NewAccountForm(forms.Form):
 
     def clean_captcha_answer(self):
         question = self.cleaned_data['captcha_question']
-        answer = self.cleaned_data['captcha_answer'].lower()
-        correct_answers = {
-            answer.strip() for answer
-            in CaptchaQuestion.objects.get(question=question).answer.split(',')
-        }
-        if answer not in correct_answers:
+        answer = self.cleaned_data['captcha_answer']
+        correct_answers = CaptchaQuestion.objects.get(question=question).answer
+        answer_regx = re.compile(correct_answers, re.IGNORECASE)
+        if not answer_regx.match(answer):
             raise forms.ValidationError("Sorry, that's a wrong answer")
         return self.cleaned_data['captcha_question']
 
