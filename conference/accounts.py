@@ -80,17 +80,9 @@ def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
         return redirect('user_panel:dashboard')
 
     form = NewAccountForm()
-    form.order_fields([
-        'first_name',  'last_name', 'email', 'password1', 'password2',
-        'captcha_question', 'captcha_answer', 'i_accept_privacy_policy',
-        ])
 
     if request.method == 'POST':
         form = NewAccountForm(data=request.POST)
-        form.order_fields([
-            'first_name',  'last_name', 'email', 'password1', 'password2',
-            'captcha_question', 'captcha_answer', 'i_accept_privacy_policy',
-            ])
 
         if form.is_valid():
             data = form.cleaned_data
