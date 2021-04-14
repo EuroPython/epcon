@@ -213,7 +213,15 @@ def handle_verification_token(request, token) -> [404, redirect]:
     return redirect('user_panel:dashboard')
 
 
-class CaptchaQuestionForm(forms.Form):
+class NewAccountForm(forms.Form):
+    first_name = forms.CharField(max_length=30)
+    last_name = forms.CharField(max_length=30)
+    email = forms.EmailField()
+    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
+    password2 = forms.CharField(
+        label="Confirm password", widget=forms.PasswordInput
+    )
+
     # Additional captcha field with simple python questions
     # https://github.com/EuroPython/epcon/issues/703
     # https://github.com/EuroPython/epcon/issues/823
@@ -247,15 +255,6 @@ class CaptchaQuestionForm(forms.Form):
             raise forms.ValidationError("Sorry, that's a wrong answer")
         return self.cleaned_data['captcha_question']
 
-
-class NewAccountForm(CaptchaQuestionForm):
-    first_name = forms.CharField(max_length=30)
-    last_name = forms.CharField(max_length=30)
-    email = forms.EmailField()
-    password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
-    password2 = forms.CharField(
-        label="Confirm password", widget=forms.PasswordInput
-    )
     # Keep this in sync with LoginForm.i_accept_privacy_policy
     i_accept_privacy_policy = forms.BooleanField(
         label=PRIVACY_POLICY_CHECKBOX
