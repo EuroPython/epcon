@@ -196,9 +196,7 @@ def test_703_test_captcha_questions(client):
 
     QUESTION = "Can you foo in Python?"
     ANSWER = "(Yes|yeah|Definitely|CERTAINLY)"
-    CaptchaQuestion.objects.create(
-        question=QUESTION, answer=ANSWER
-    )
+    CaptchaQuestion.objects.create(question=QUESTION, answer=ANSWER)
     Email.objects.create(code="verify-account")
 
     sign_up_url = reverse("accounts:signup_step_1_create_account")
