@@ -20,15 +20,10 @@ steps to have them assigned to your attendees:
 
 https://ep2021.europython.eu/faq/#I-bought-the-ticket-for-someone-else-How-can-I-re-assign-it
 
-We will be running the conference using our Discord server. In order
-to register, please use the Discord invite link listed on our
-website:
+We will be running the conference using our chat server. Please follow
+the instructions on our website:
 
 https://ep2021.europython.eu/setup/chat-system/
-
-and follow the instructions on the page to register. We also provide
-a helpful intro video to get you started with Discord on the same
-page.
 
 If you run into any issues, please contact us at helpdesk@europython.eu
 
