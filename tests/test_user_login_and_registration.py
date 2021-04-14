@@ -263,6 +263,7 @@ def test_703_test_captcha_questions(client):
     assert "captcha_answer" not in response.content.decode("utf-8")
     assert response.content.decode("utf-8").count(QUESTION) == 0
 
+
 @mark.django_db
 def test_872_login_redirects_to_user_dashboard(client):
     u = make_user(email='joe@example.com', password='foobar')
