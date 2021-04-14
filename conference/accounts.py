@@ -221,6 +221,11 @@ class NewAccountForm(forms.Form):
     captcha_question = forms.CharField(widget=forms.HiddenInput)
     captcha_answer = forms.CharField()
 
+    # Keep this in sync with LoginForm.i_accept_privacy_policy
+    i_accept_privacy_policy = forms.BooleanField(
+        label=PRIVACY_POLICY_CHECKBOX
+    )
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         random_question = self.get_random_captcha_question()
@@ -245,11 +250,6 @@ class NewAccountForm(forms.Form):
         if not answer_regx.match(answer):
             raise forms.ValidationError("Sorry, that's a wrong answer")
         return self.cleaned_data['captcha_question']
-
-    # Keep this in sync with LoginForm.i_accept_privacy_policy
-    i_accept_privacy_policy = forms.BooleanField(
-        label=PRIVACY_POLICY_CHECKBOX
-    )
 
     def clean_email(self):
         email = self.cleaned_data['email']
