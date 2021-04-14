@@ -247,7 +247,7 @@ class NewAccountForm(forms.Form):
 
     def clean_captcha_answer(self):
         question = self.cleaned_data['captcha_question']
-        answer = self.cleaned_data['captcha_answer']
+        answer = self.cleaned_data['captcha_answer'].strip()
         correct_answers = CaptchaQuestion.objects.get(question=question).answer
         answer_regx = re.compile(correct_answers, re.IGNORECASE)
         if not answer_regx.match(answer):

@@ -195,8 +195,10 @@ def test_703_test_captcha_questions(client):
     """
 
     QUESTION = "Can you foo in Python?"
-    ANSWER = "Yes you can"
-    CaptchaQuestion.objects.create(question=QUESTION, answer=ANSWER)
+    ANSWER = "(Yes|yeah|Definitely|CERTAINLY)"
+    CaptchaQuestion.objects.create(
+        question=QUESTION, answer=ANSWER
+    )
     Email.objects.create(code="verify-account")
 
     sign_up_url = reverse("accounts:signup_step_1_create_account")
@@ -246,7 +248,7 @@ def test_703_test_captcha_questions(client):
             "password1": "password",
             "password2": "password",
             "captcha_question": QUESTION,
-            "captcha_answer": ANSWER,
+            "captcha_answer": "YEAH",
             "i_accept_privacy_policy": True,
         },
     )
@@ -260,7 +262,6 @@ def test_703_test_captcha_questions(client):
     assert "captcha_question" not in response.content.decode("utf-8")
     assert "captcha_answer" not in response.content.decode("utf-8")
     assert response.content.decode("utf-8").count(QUESTION) == 0
-
 
 @mark.django_db
 def test_872_login_redirects_to_user_dashboard(client):
