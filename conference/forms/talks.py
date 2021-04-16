@@ -5,7 +5,7 @@ from taggit.forms import TagField
 from taggit_labels.widgets import LabelWidget
 
 from conference.forms import TalkBaseForm
-from conference.models import (Conference, ConferenceTag, Talk, TALK_TYPE, 
+from conference.models import (Conference, ConferenceTag, Talk, TALK_TYPE,
     CFP_TALK_TYPE)
 
 
@@ -20,6 +20,9 @@ class TalkUpdateForm(forms.ModelForm):
     prerequisites = TalkBaseForm.base_fields["prerequisites"]
     level = TalkBaseForm.base_fields["level"]
     domain_level = TalkBaseForm.base_fields["domain_level"]
+    i_accept_speaker_release  = TalkBaseForm.base_fields[
+        'i_accept_speaker_release'
+    ]
 
     class Meta:
         model = Talk
