@@ -152,6 +152,7 @@ def test_if_user_can_submit_talk_details_and_is_redirect_to_step2(user_client):
             "tags": "abc, defg",
             "level": TALK_LEVEL.beginner,
             "domain_level": TALK_LEVEL.advanced,
+            "i_accept_speaker_release": True,
         },
     )
 
@@ -172,6 +173,36 @@ def test_if_user_can_submit_talk_details_and_is_redirect_to_step2(user_client):
     assert redirects_to(
         response, reverse("cfp:step2_add_speakers", args=[talk.uuid])
     )
+
+
+def test_if_user_cannot_submit_talk_if_release_not_selected(user_client):
+    STEP1_VALIDATION_FAIL_200 = 200
+
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_CONFERENCE,
+        cfp_start=timezone.now().date() - timedelta(days=2),
+        cfp_end=timezone.now().date() + timedelta(days=1),
+    )
+    step1_url = reverse("cfp:step1_submit_proposal")
+
+    response = user_client.post(
+        step1_url,
+        {
+            "type": TALK_TYPE_CHOICES.t_30,
+            "abstract": "Abstract goes here",
+            "title": "A title",
+            "sub_title": "A sub title",
+            "abstract_short": "Short abstract",
+            "abstract_extra": "Abstract _extra",
+            "tags": "abc, defg",
+            "level": TALK_LEVEL.beginner,
+            "domain_level": TALK_LEVEL.advanced,
+            "i_accept_speaker_release": False,
+        },
+    )
+
+    assert response.status_code == STEP1_VALIDATION_FAIL_200
 
 
 def test_validation_errors_are_handled_on_step2(user_client):
@@ -450,6 +481,7 @@ def test_update_proposal_updates_proposal(user_client):
             "title": "New title",
             "sub_title": "New sub title",
             "tags": "Some, tags",
+            "i_accept_speaker_release": True,
         },
     )
 
@@ -468,6 +500,42 @@ def test_update_proposal_updates_proposal(user_client):
     assert talk_dict["python_level"] == "Intermediate"
     assert talk_dict["domain_level"] == "Advanced"
     assert talk_dict["speakers"] == []
+
+
+def test_update_proposal_fails_if_missing_release_agreement(user_client):
+    create_conference_with_open_cfp()
+    talk = TalkFactory()
+    talk.setAbstract("some abstract")
+    talk.created_by = user_client.user
+    talk.save()
+
+    edit_url = reverse("cfp:update", args=[talk.uuid])
+
+    response = user_client.post(
+        edit_url,
+        {
+            "type": TALK_TYPE_CHOICES.t_45,
+            "abstract": "New abstract",
+            "abstract_short": "New short abstract",
+            "abstract_extra": "New extra abstract",
+            "level": TALK_LEVEL.intermediate,
+            "domain_level": TALK_LEVEL.advanced,
+            "title": "New title",
+            "sub_title": "New sub title",
+            "tags": "Some, tags",
+            "i_accept_speaker_release": False
+        },
+    )
+
+    # We do not advance and talk should be unchanged in DB
+    assert response.status_code == 200
+
+    # Make sure that nothing changed.
+    orig_talk_dict = dump_relevant_talk_information_to_dict(talk)
+    talk.refresh_from_db()
+    new_talk_dict = dump_relevant_talk_information_to_dict(talk)
+
+    assert orig_talk_dict == new_talk_dict
 
 
 def test_update_speaker_updated_speaker(user_client):
