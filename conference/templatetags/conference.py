@@ -123,4 +123,22 @@ def attrib_(ob, attrib):
 
 @register.simple_tag
 def tickets(user):
+    """
+    Return the list of tikets `user` has assigned to them, for the current
+    conference only.
+
+    Example usage in a template
+    {% load conference %}
+
+    {% if user.is_authenticated %}
+        You are logged in and these are your tickets:
+        {% tickets user as tickets %}
+
+        {% for ticket in tickets %}
+            <p>{{ ticket }}</p>
+        {% endfor %}
+    {% else %}
+        Booo! You need to login.
+    {% endif %}
+    """
     return get_tickets_for_current_conference(user)
