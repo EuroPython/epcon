@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 
 from conference import dataaccess, models
+from conference.user_panel import get_tickets_for_current_conference
 
 mimetypes.init()
 
@@ -118,3 +119,8 @@ def attrib_(ob, attrib):
             return getattr(ob, attrib, None)
         else:
             return [attrib_(x, attrib) for x in ob]
+
+
+@register.simple_tag
+def tickets(user):
+    return get_tickets_for_current_conference(user)
