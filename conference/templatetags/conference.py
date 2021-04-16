@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 
 from conference import dataaccess, models
+from conference.user_panel import get_tickets_for_current_conference
 
 mimetypes.init()
 
@@ -118,3 +119,26 @@ def attrib_(ob, attrib):
             return getattr(ob, attrib, None)
         else:
             return [attrib_(x, attrib) for x in ob]
+
+
+@register.simple_tag
+def tickets(user):
+    """
+    Return the list of tikets `user` has assigned to them, for the current
+    conference only.
+
+    Example usage in a template
+    {% load conference %}
+
+    {% if user.is_authenticated %}
+        You are logged in and these are your tickets:
+        {% tickets user as tickets %}
+
+        {% for ticket in tickets %}
+            <p>{{ ticket }}</p>
+        {% endfor %}
+    {% else %}
+        Booo! You need to login.
+    {% endif %}
+    """
+    return get_tickets_for_current_conference(user)
