@@ -24,10 +24,11 @@ FARE_CODE_TYPES = Choices(
 FARE_CODE_VARIANTS = Choices(
     ("S", "STANDARD", "Standard"),
     ("L", "LIGHT",    "Standard Light (no trainings)"),
-    ("T", "TRAINING", "Trainings (ep2018+)"), # Starting with EP2018
-    ("C", "COMBINED", "Combined (ep2019+)"), # Starting with EP2019
-    ("P", "SPRINT", "Sprints only"), # Starting with EP2020
+    ("T", "TRAINING", "Trainings (ep2018+)"),   # Starting with EP2018
+    ("C", "COMBINED", "Combined (ep2019+)"),    # Starting with EP2019
+    ("P", "SPRINT", "Sprints only"),            # Starting with EP2020
     ("D", "DAYPASS",  "Day Pass"),
+    ("V", "STREAM",  "Stream only"),            # Starting with EP2021
 )
 
 # Variants eligible for talk voting
