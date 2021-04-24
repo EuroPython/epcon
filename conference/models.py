@@ -539,7 +539,7 @@ CFP_TALK_TYPE = [
     ('t_45', 'Talk (45 mins)'),
     #('t_60', 'Talk (60 mins)'),
     ('i_60', 'Interactive (60 mins)'),
-    #('r_180', 'Training (180 mins)'),
+    ('r_180', 'Training (180 mins)'),
     ('p_45', 'Poster session (45 mins)'),
     #('p_180', 'Poster session (180 mins)'),
     ('n_60', 'Panel (60 mins)'),
