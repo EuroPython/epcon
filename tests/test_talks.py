@@ -8,6 +8,10 @@ from django.utils import timezone
 
 from conference.cfp import dump_relevant_talk_information_to_dict
 from conference.models import TALK_STATUS, TALK_LEVEL
+try:
+    from pycon.settings import CONFERENCE_TIMESLOTS
+except ImportError:
+    CONFERENCE_TIMESLOTS = None
 from tests.factories import (
     EventFactory,
     UserFactory,
@@ -136,6 +140,9 @@ def test_update_talk_post(user_client):
         "tags": ",".join(tag.name for tag in tags),
         "i_accept_speaker_release": True,
     }
+    if CONFERENCE_TIMESLOTS and \
+       isinstance(CONFERENCE_TIMESLOTS, (list, tuple)):
+        post_data['availability'] = [CONFERENCE_TIMESLOTS[0][0], ]
     resp = user_client.post(url, data=post_data)
 
     talk.refresh_from_db()
