@@ -170,7 +170,7 @@ class TalkBaseForm(forms.Form):
                 '<p>Please select yout timezone availability. You can '
                 'select multiple time-slots using SHIFT. Select '
                 'non-contigous slots using CMD (macOS) or CTRL. You can '
-                'deselect a selcted entry using CMD (macOS) ar CTRL.</p>'
+                'deselect a selcted entry using CMD (macOS) or CTRL.</p>'
             ),
             required=True,
         )
