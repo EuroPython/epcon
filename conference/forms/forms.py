@@ -157,6 +157,25 @@ class TalkBaseForm(forms.Form):
         help_text=_('<p>Please add anything you may find useful for the review of your session proposal, e.g. references of where you have held talks, blogs, YouTube channels, books you have written, etc. This information will only be shown for talk review purposes.</p>'),
         widget=forms.Textarea,
         required=False)
+
+    # For online conference we want to know availability in the defined
+    # timeslots. Of course no timeslot defined, no need to ask :-)
+    # Timeslots are defined in settings.py
+    timeslots = getattr(settings, 'CONFERENCE_TIMESLOTS', None)
+    if timeslots:
+        availability = forms.MultipleChoiceField(
+            label='Timezone Availability',
+            choices=timeslots,
+            help_text=_(
+                '<p>Please select yout timezone availability. You can '
+                'select multiple time-slots using SHIFT. Select '
+                'non-contigous slots using CMD (macOS) or CTRL. You can '
+                'deselect a selcted entry using CMD (macOS) ar CTRL.</p>'
+            ),
+            required=True,
+        )
+
+    # Make sure that they agree to the Speaker Release Terms.
     i_accept_speaker_release = forms.BooleanField(
         label=RELEASE_AGREEMENT_CHECKBOX,
         required=True
