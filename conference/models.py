@@ -539,7 +539,7 @@ CFP_TALK_TYPE = [
     ('t_45', 'Talk (45 mins)'),
     #('t_60', 'Talk (60 mins)'),
     ('i_60', 'Interactive (60 mins)'),
-    #('r_180', 'Training (180 mins)'),
+    ('r_180', 'Training (180 mins)'),
     ('p_45', 'Poster session (45 mins)'),
     #('p_180', 'Poster session (180 mins)'),
     ('n_60', 'Panel (60 mins)'),
@@ -752,10 +752,10 @@ class Talk(models.Model):
 
         """ Return the slides URL (relative to the website)
             or None in case no slides are available.
-        
+
             For externally hosted slides, the URL refers to an absolute URL
             (anything the speaker entered).
-        
+
         """
         if self.slides and self.slides.url:
             return self.slides.url or None
@@ -1181,12 +1181,12 @@ class Event(models.Model):
     def get_all_track_names(self):
 
         """ Return a set of internal track names to which this event applies.
-        
+
         """
         return set(track.track for track in self.tracks.all())
 
     def json_dump(self):
-    
+
         (start, end) = self.get_time_range()
         return {
             'custom_description': self.custom,
