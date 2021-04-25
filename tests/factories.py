@@ -28,6 +28,10 @@ from conference.models import (
 )
 from conference.fares import ALL_POSSIBLE_FARE_CODES, TALK_VOTING_FARE_CODES
 from p3.models import TICKET_CONFERENCE_SHIRT_SIZES, TICKET_CONFERENCE_DIETS
+try:
+    from pycon.settings import CONFERENCE_TIMESLOTS
+except ImportError:
+    CONFERENCE_TIMESLOTS = None
 
 
 fake = Faker()
@@ -340,6 +344,11 @@ class TalkFactory(factory.django.DjangoModelFactory):
         Conference.objects.all().values_list("code", flat=True)
     )
     language = factory.Iterator(TALK_LANGUAGES, getter=lambda x: x[0])
+    _slots = [ts[0] for ts in CONFERENCE_TIMESLOTS]
+    if CONFERENCE_TIMESLOTS:
+        availability = '|'.join(
+            random.choices(_slots, k=random.randint(1, len(_slots)))
+        )
 
     @factory.post_generation
     def abstract(self, create, extracted, **kwargs):

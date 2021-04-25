@@ -647,6 +647,13 @@ class Talk(models.Model):
         default="",
     )
 
+    availability = models.TextField(
+        verbose_name=_('Timezone availability'),
+        help_text=_('<p>Please enter your time availability.</p>'),
+        blank=True,
+        default='',
+    )
+
     slides = models.FileField(upload_to=_fs_upload_to("slides"), blank=True)
     slides_url = models.URLField(blank=True)
     repository_url = models.URLField(blank=True)
@@ -802,6 +809,13 @@ class Talk(models.Model):
             return abstract.body
         else:
             return self.abstract_short
+
+    def set_availability(self, values, language=None):
+        encoded_value = '|'.join(values)
+        self.availability = encoded_value
+
+    def get_availability(self):
+        return self.availability.split('|')
 
 
 class TalkSpeaker(models.Model):

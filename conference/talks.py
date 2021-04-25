@@ -134,11 +134,15 @@ def dump_relevant_talk_information_to_dict(talk: Talk, speaker_tickets=None):
 
     """ Dumps information about talk to a dictionary suitable for sending
         back as JSON.
-        
+
         speaker_tickets may be given as dictionary mapping assigned to email
         to Ticket object and is used for defining has_ticket.
-        
+
     """
+    if not talk.availability:
+        availability = None
+    else:
+        availability = talk.availability.split('|')
     event = talk.get_event()
     if event is not None:
         event = event.json_dump()
@@ -163,6 +167,7 @@ def dump_relevant_talk_information_to_dict(talk: Talk, speaker_tickets=None):
         "event": event,
         "schedule_url": talk.get_schedule_url(),
         "slides_url": talk.get_slides_url(),
+        "availability": availability,
     }
 
     for speaker in talk.get_all_speakers():

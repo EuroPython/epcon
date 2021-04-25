@@ -454,6 +454,14 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 
 CONFERENCE_CONFERENCE = 'ep2021'
 CONFERENCE_NAME = "EuroPython 2021"
+# IF The conference has timeslots and IF we want to ask speakers for their
+# availability in these timeslots, add/edit below. Otherwise just set to None
+# CONFERENCE_TIMESLOTS = None
+CONFERENCE_TIMESLOTS = (
+    ('morning', _('08-12 CEST / 06-10 UTC')),
+    ('afternoon', _('12-16 CEST / 10-14 UTC')),
+    ('evening', _('16-20 CEST / 14-18 UTC')),
+)
 CONFERENCE_SEND_EMAIL_TO = ["helpdesk@europython.eu"]
 CONFERENCE_TALK_SUBMISSION_NOTIFICATION_EMAIL = []
 CONFERENCE_VOTING_DISALLOWED = 'https://ep2021.europython.eu/talk-voting/'
