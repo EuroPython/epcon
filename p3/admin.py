@@ -2,6 +2,7 @@ from django.urls import reverse
 from django.contrib import admin
 from django.db import models
 from django.forms import TextInput, Textarea
+from django.utils.safestring import mark_safe
 
 from taggit.forms import TagField
 from taggit_labels.widgets import LabelWidget
@@ -21,6 +22,7 @@ class VotoTalkAdmin(admin.ModelAdmin):
     ]
     ordering = ("-talk__conference", "talk")
 
+    @mark_safe
     def _name(self, o):
         url = reverse(
             "profiles:profile", kwargs={"profile_slug": o.user.attendeeprofile.slug}
@@ -50,6 +52,7 @@ class AttendeeProfileAdmin(admin.ModelAdmin):
         "location",
     ]
 
+    @mark_safe
     def _name(self, o):
         url = reverse("profiles:profile", kwargs={"profile_slug": o.slug})
         return '<a href="%s">%s %s</a>' % (
@@ -61,6 +64,7 @@ class AttendeeProfileAdmin(admin.ModelAdmin):
     _name.allow_tags = True
     _name.admin_order_field = "user__first_name"
 
+    @mark_safe
     def _user(self, o):
         url = reverse("admin:auth_user_change", args=(o.user.id,))
         return '<a href="%s">%s</a>' % (url, o.user.username)
@@ -126,6 +130,7 @@ class TalkAdmin(admin.ModelAdmin):
     def _tags(self, obj):
         return ", ".join(sorted(str(tag) for tag in obj.tags.all()))
 
+    @mark_safe
     def _speakers(self, obj):
         """Warnings – this is de-optimised version of previous cached query,
         however much easier to work with and much easier to debug"""
