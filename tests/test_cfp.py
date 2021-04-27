@@ -10,6 +10,10 @@ from conference.cfp import (
     dump_relevant_talk_information_to_dict,
     AddSpeakerToTalkForm,
 )
+try:
+    from pycon.settings import CONFERENCE_TIMESLOTS
+except ImportError:
+    CONFERENCE_TIMESLOTS = None
 
 from tests.common_tools import redirects_to, template_used
 from tests.factories import TalkFactory
@@ -140,6 +144,56 @@ def test_if_user_can_submit_talk_details_and_is_redirect_to_step2(user_client):
     )
     step1_url = reverse("cfp:step1_submit_proposal")
 
+    data = {
+        "type": TALK_TYPE_CHOICES.t_30,
+        "abstract": "Abstract goes here",
+        "title": "A title",
+        "sub_title": "A sub title",
+        "abstract_short": "Short abstract",
+        "abstract_extra": "Abstract _extra",
+        "tags": "abc, defg",
+        "level": TALK_LEVEL.beginner,
+        "domain_level": TALK_LEVEL.advanced,
+        "i_accept_speaker_release": True,
+    }
+    if CONFERENCE_TIMESLOTS and \
+       isinstance(CONFERENCE_TIMESLOTS, (list, tuple)):
+        data['availability'] = [CONFERENCE_TIMESLOTS[0][0], ]
+
+    response = user_client.post(step1_url, data)
+    assert response.status_code == STEP1_CORRECT_REDIRECT_302
+
+    talk = Talk.objects.get()
+    talk_dict = dump_relevant_talk_information_to_dict(talk)
+    assert talk_dict["type"] == TALK_TYPE_CHOICES.t_30
+    assert talk_dict["type_display"] == "Talk (30 mins)"
+    assert talk_dict["subtitle"] == "A sub title"
+    assert talk_dict["abstract"] == "Abstract goes here"
+    assert talk_dict["abstract_short"] == "Short abstract"
+    assert talk_dict["abstract_extra"] == "Abstract _extra"
+    assert talk_dict["python_level"] == "Beginner"
+    assert talk_dict["domain_level"] == "Advanced"
+    assert talk_dict["speakers"] == []
+    if 'availability' in data:
+        assert talk_dict['availability'] == data['availability']
+
+    assert redirects_to(
+        response, reverse("cfp:step2_add_speakers", args=[talk.uuid])
+    )
+
+
+@mark.skipif(CONFERENCE_TIMESLOTS is None, reason='no timeslot defined')
+def test_if_user_cannot_submit_talk_if_availability_not_selected(user_client):
+    STEP1_VALIDATION_FAIL_200 = 200
+
+    Conference.objects.create(
+        code=settings.CONFERENCE_CONFERENCE,
+        name=settings.CONFERENCE_CONFERENCE,
+        cfp_start=timezone.now().date() - timedelta(days=2),
+        cfp_end=timezone.now().date() + timedelta(days=1),
+    )
+    step1_url = reverse("cfp:step1_submit_proposal")
+
     response = user_client.post(
         step1_url,
         {
@@ -156,23 +210,7 @@ def test_if_user_can_submit_talk_details_and_is_redirect_to_step2(user_client):
         },
     )
 
-    assert response.status_code == STEP1_CORRECT_REDIRECT_302
-
-    talk = Talk.objects.get()
-    talk_dict = dump_relevant_talk_information_to_dict(talk)
-    assert talk_dict["type"] == TALK_TYPE_CHOICES.t_30
-    assert talk_dict["type_display"] == "Talk (30 mins)"
-    assert talk_dict["subtitle"] == "A sub title"
-    assert talk_dict["abstract"] == "Abstract goes here"
-    assert talk_dict["abstract_short"] == "Short abstract"
-    assert talk_dict["abstract_extra"] == "Abstract _extra"
-    assert talk_dict["python_level"] == "Beginner"
-    assert talk_dict["domain_level"] == "Advanced"
-    assert talk_dict["speakers"] == []
-
-    assert redirects_to(
-        response, reverse("cfp:step2_add_speakers", args=[talk.uuid])
-    )
+    assert response.status_code == STEP1_VALIDATION_FAIL_200
 
 
 def test_if_user_cannot_submit_talk_if_release_not_selected(user_client):
@@ -469,21 +507,23 @@ def test_update_proposal_updates_proposal(user_client):
 
     edit_url = reverse("cfp:update", args=[talk.uuid])
 
-    response = user_client.post(
-        edit_url,
-        {
-            "type": TALK_TYPE_CHOICES.t_45,
-            "abstract": "New abstract",
-            "abstract_short": "New short abstract",
-            "abstract_extra": "New extra abstract",
-            "level": TALK_LEVEL.intermediate,
-            "domain_level": TALK_LEVEL.advanced,
-            "title": "New title",
-            "sub_title": "New sub title",
-            "tags": "Some, tags",
-            "i_accept_speaker_release": True,
-        },
-    )
+    data = {
+        "type": TALK_TYPE_CHOICES.t_45,
+        "abstract": "New abstract",
+        "abstract_short": "New short abstract",
+        "abstract_extra": "New extra abstract",
+        "level": TALK_LEVEL.intermediate,
+        "domain_level": TALK_LEVEL.advanced,
+        "title": "New title",
+        "sub_title": "New sub title",
+        "tags": "Some, tags",
+        "i_accept_speaker_release": True,
+    }
+    if CONFERENCE_TIMESLOTS and \
+       isinstance(CONFERENCE_TIMESLOTS, (list, tuple)):
+        data['availability'] = [CONFERENCE_TIMESLOTS[0][0], ]
+
+    response = user_client.post(edit_url, data)
 
     assert response.status_code == 302
     talk.refresh_from_db()
