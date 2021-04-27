@@ -83,11 +83,13 @@ def ticketConferenceForm():
 class ConferenceAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', '_schedule_view', '_attendee_stats')
 
+    @mark_safe
     def _schedule_view(self, o):
         u = reverse('admin:conference-conference-schedule', args=(o.code,))
         return '<a href="%s">schedule</a>' % u
     _schedule_view.allow_tags = True
 
+    @mark_safe
     def _attendee_stats(self, o):
         u = reverse('admin:conference-ticket-stats', args=(o.code,))
         return '<a href="%s">Attendee Stats</a>' % u
@@ -480,6 +482,7 @@ class SpeakerAdmin(admin.ModelAdmin):
             },
         )
 
+    @mark_safe
     def _user(self, o):
         if o.user.attendeeprofile:
             p = reverse('profiles:profile', kwargs={'profile_slug': o.user.attendeeprofile.slug})
@@ -498,6 +501,7 @@ class SpeakerAdmin(admin.ModelAdmin):
         return o.user.email
     _user.admin_order_field = 'user__email'
 
+    @mark_safe
     def _avatar(self, o):
         try:
             img = o.user.attendeeprofile.image
@@ -956,6 +960,7 @@ class TicketAdmin(admin.ModelAdmin):
         return o.fare.code
     _ticket.admin_order_field = 'fare__code'
 
+    @mark_safe
     def _order(self, obj):
         url = reverse('admin:assopy_order_change',
                       args=(obj.orderitem.order.id,))
@@ -966,6 +971,7 @@ class TicketAdmin(admin.ModelAdmin):
         return o.orderitem.order.created
     _order_date.admin_order_field = 'orderitem__order__created'
 
+    @mark_safe
     def _assigned(self, ticket):
         if ticket.p3_conference:
             assigned_to = ticket.p3_conference.assigned_to
@@ -1068,6 +1074,7 @@ class TicketAdmin(admin.ModelAdmin):
         return p3c.python_experience
     _python_experience.admin_order_field = 'p3_conference__python_experience'
 
+    @mark_safe
     def _tagline(self, o):
         try:
             p3c = o.p3_conference
