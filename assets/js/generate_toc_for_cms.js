@@ -16,9 +16,9 @@ function addTOC() {
       var header = $(this);
       var title = header.text();
       var header_id = title
-        .replace(/[ :&\/\$]/g, "-")
+        .replace(/[ \n\t:&\/\$\xa0()]/g, "-")
         .replace(/--+/g, "-")
-        .replace(/[\?!,.\'\"]/g, "");
+        .replace(/[\?!,.\'\"]|^-|-$/g, "");
       header.attr("id", header_id);
       toc +=
         '<li class="toc-li table-of-contents-' +
