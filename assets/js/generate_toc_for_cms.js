@@ -31,5 +31,6 @@ function addTOC() {
     });
   toc += "</ul>" + "</p>";
   div_toc.replaceWith(toc);
+  $(document).scrollTop( $($(location).attr("hash")).offset().top );
 }
 $(document).ready(addTOC);
