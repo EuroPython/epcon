@@ -21,7 +21,10 @@ social-auth-core[openidconnect]
 markdown2
 
 # 3.7 DjangoCMS LTS release
+# Please note that django-cms relies on django-treebeard and version 4.5.1 of 
+# that package is incompatible: https://stackoverflow.com/questions/66776994/
 django-cms<3.8
+django-treebeard<4.5.1
 djangocms-admin-style
 djangocms-text-ckeditor
 django-filer

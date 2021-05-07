@@ -122,7 +122,7 @@ deployment-requirements:
 	chmod a+r requirements.txt
 
 install:
-	pip install -U pip==19.3.1
+	pip install -U pip
 	pip install -U pip-tools
 	pip-sync requirements.txt
 
