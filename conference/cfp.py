@@ -82,6 +82,7 @@ def send_talk_details_to_backup_email(talk: Talk):
         message=content,
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=SEND_CFP_BACKUP_TO,
+        bcc=settings.CFP_SUBMISSION_BCC_ADDRESS
     )
 
 
@@ -135,7 +136,7 @@ def submit_proposal_step3_thanks(request, talk_uuid):
     We will notify you once we have had time to consider all submissions,
     but until then you can see and edit your submission at {proposal_url}
 
-    Please do not hesitate to contact us at at helpdesk@europython.eu if you have any questions!
+    Please do not hesitate to contact us at at program@europython.eu if you have any questions!
     """
     send_mail(
         subject=f"Your submission to {settings.CONFERENCE_NAME}: {talk.title}",
