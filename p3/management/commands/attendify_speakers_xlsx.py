@@ -42,7 +42,7 @@ from p3.utils import profile_url
 _debug = 1
 
 # URL prefix to use in URLs
-URL_PREFIX = settings.DEFAULT_URL_PREFIX or 'https://ep2020.europython.eu'
+URL_PREFIX = settings.DEFAULT_URL_PREFIX or 'https://ep2021.europython.eu'
 
 ### Helpers
 

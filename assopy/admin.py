@@ -392,6 +392,7 @@ class CouponAdmin(admin.ModelAdmin):
             request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(CouponAdmin,self).changelist_view(request, extra_context=extra_context)
 
+    @mark_safe
     def _user(self, o):
         if not o.user:
             return ''
@@ -552,6 +553,7 @@ class InvoiceAdmin(admin.ModelAdmin):
         return mark_safe('<a href="%s">%s</a>' % (url, order.code))
     _order.admin_order_field = 'order'
 
+    @mark_safe
     def _user(self, o):
         u = o.order.user.user
         name = '%s %s' % (u.first_name, u.last_name)

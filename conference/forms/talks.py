@@ -5,7 +5,7 @@ from taggit.forms import TagField
 from taggit_labels.widgets import LabelWidget
 
 from conference.forms import TalkBaseForm
-from conference.models import (Conference, ConferenceTag, Talk, TALK_TYPE, 
+from conference.models import (Conference, ConferenceTag, Talk, TALK_TYPE,
     CFP_TALK_TYPE)
 
 
@@ -20,6 +20,11 @@ class TalkUpdateForm(forms.ModelForm):
     prerequisites = TalkBaseForm.base_fields["prerequisites"]
     level = TalkBaseForm.base_fields["level"]
     domain_level = TalkBaseForm.base_fields["domain_level"]
+    if 'availability' in TalkBaseForm.base_fields:
+        availability = TalkBaseForm.base_fields["availability"]
+    i_accept_speaker_release  = TalkBaseForm.base_fields[
+        'i_accept_speaker_release'
+    ]
 
     class Meta:
         model = Talk
@@ -39,6 +44,7 @@ class TalkUpdateForm(forms.ModelForm):
 
         if kwargs.get("instance"):
             self.fields["abstract"].initial = kwargs["instance"].getAbstract().body
+            self.fields['availability'].initial = kwargs['instance'].get_availability()
 
     def save(self, user):
         """
@@ -49,6 +55,7 @@ class TalkUpdateForm(forms.ModelForm):
         talk.created_by = user
         talk.slug = f"{talk.uuid}-{slugify(talk.title)}"
         talk.conference = Conference.objects.current().code
+        talk.set_availability(self.cleaned_data['availability'])
         talk.save()
         talk.setAbstract(self.cleaned_data["abstract"])
 

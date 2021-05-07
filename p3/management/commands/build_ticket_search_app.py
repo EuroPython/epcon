@@ -21,7 +21,7 @@
     on port 8000. Pointing a browser at http://localhost:8000/ will
     then load the app into the browser.
 
-    Author: Marc-Andre Lemburg, 2016-2020.
+    Author: Marc-Andre Lemburg, 2016-2021.
 
 """
 import sys

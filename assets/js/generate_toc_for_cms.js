@@ -16,9 +16,10 @@ function addTOC() {
       var header = $(this);
       var title = header.text();
       var header_id = title
-        .replace(/[ :&\/\$]/g, "-")
+        .replace(/[ \n\t:&\/\$\xa0()]/g, "-")
         .replace(/--+/g, "-")
-        .replace(/[\?!,.\'\"]/g, "");
+        .replace(/[\?!,.\'\"\’]/g, "")
+        .replace(/^-|-$/g, "");
       header.attr("id", header_id);
       toc +=
         '<li class="toc-li table-of-contents-' +
@@ -31,5 +32,6 @@ function addTOC() {
     });
   toc += "</ul>" + "</p>";
   div_toc.replaceWith(toc);
+  $(document).scrollTop( $($(location).attr("hash")).offset().top );
 }
 $(document).ready(addTOC);

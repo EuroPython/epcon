@@ -398,7 +398,7 @@ function format_local_times() {
     }
     else
         prefix = 'GMT-';
-    tz_offset = new Date(2020, 7, 23, tz_offset_min / 60, tz_offset_min % 60);
+    tz_offset = new Date(2021, 7, 26, tz_offset_min / 60, tz_offset_min % 60);
     // Fix all schedule time displays
     $('.schedule-time-display').each(function(i, obj) {
         var value = obj.dataset.fulltime;

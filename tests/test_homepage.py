@@ -16,7 +16,7 @@ def test_get_homepage(db, client):
     assert template_used(response, "conference/homepage/_sponsors.html")
     assert template_used(response, "conference/homepage/_schedule_overview.html")
     assert template_used(response, "conference/header/_with_jumbotron.html")
-    assert b"EuroPython 2020" in response.content
+    assert b"EuroPython 2021" in response.content
 
 
 def test_homepage_doesnt_contain_sponsor_if_no_income(db, client):
@@ -40,7 +40,7 @@ def test_homepage_doesnt_contain_sponsor_if_income_for_different_conference(
     sponsor = SponsorFactory(
         alt_text="Sponsor Alt Text", title_text="Sponsor Title Text"
     )
-    sponsor.sponsorincome_set.create(income=123, conference="whatever2020")
+    sponsor.sponsorincome_set.create(income=123, conference="whatever2021")
 
     url = "/"
     response = client.get(url)

@@ -539,7 +539,7 @@ CFP_TALK_TYPE = [
     ('t_45', 'Talk (45 mins)'),
     #('t_60', 'Talk (60 mins)'),
     ('i_60', 'Interactive (60 mins)'),
-    #('r_180', 'Training (180 mins)'),
+    ('r_180', 'Training (180 mins)'),
     ('p_45', 'Poster session (45 mins)'),
     #('p_180', 'Poster session (180 mins)'),
     ('n_60', 'Panel (60 mins)'),
@@ -647,6 +647,13 @@ class Talk(models.Model):
         default="",
     )
 
+    availability = models.TextField(
+        verbose_name=_('Timezone availability'),
+        help_text=_('<p>Please enter your time availability.</p>'),
+        blank=True,
+        default='',
+    )
+
     slides = models.FileField(upload_to=_fs_upload_to("slides"), blank=True)
     slides_url = models.URLField(blank=True)
     repository_url = models.URLField(blank=True)
@@ -752,10 +759,10 @@ class Talk(models.Model):
 
         """ Return the slides URL (relative to the website)
             or None in case no slides are available.
-        
+
             For externally hosted slides, the URL refers to an absolute URL
             (anything the speaker entered).
-        
+
         """
         if self.slides and self.slides.url:
             return self.slides.url or None
@@ -802,6 +809,13 @@ class Talk(models.Model):
             return abstract.body
         else:
             return self.abstract_short
+
+    def set_availability(self, values, language=None):
+        encoded_value = '|'.join(values)
+        self.availability = encoded_value
+
+    def get_availability(self):
+        return self.availability.split('|')
 
 
 class TalkSpeaker(models.Model):
@@ -1181,12 +1195,12 @@ class Event(models.Model):
     def get_all_track_names(self):
 
         """ Return a set of internal track names to which this event applies.
-        
+
         """
         return set(track.track for track in self.tracks.all())
 
     def json_dump(self):
-    
+
         (start, end) = self.get_time_range()
         return {
             'custom_description': self.custom,

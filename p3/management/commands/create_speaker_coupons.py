@@ -44,7 +44,7 @@ from assopy.models import Coupon
 #
 # 
 #
-if settings.CONFERENCE_CONFERENCE == 'ep2020':
+if settings.CONFERENCE_CONFERENCE == 'ep2021':
     # For the virtul event we give out 100% coupons
     TALK_TYPE_DISCOUNTS = {
         't': ('TLK', '100%', False),  # Talk

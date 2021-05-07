@@ -45,3 +45,8 @@ htmlcov/
 coverage.xml
 prof/
 .vagrant
+
+# virtualenvwrapper/zsh
+.venv
+.env
+env

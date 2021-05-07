@@ -6,7 +6,12 @@ from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
+from conference.cfp import dump_relevant_talk_information_to_dict
 from conference.models import TALK_STATUS, TALK_LEVEL
+try:
+    from pycon.settings import CONFERENCE_TIMESLOTS
+except ImportError:
+    CONFERENCE_TIMESLOTS = None
 from tests.factories import (
     EventFactory,
     UserFactory,
@@ -22,7 +27,7 @@ pytestmark = [pytest.mark.django_db]
 def test_talk_view_as_anonymous(client):
     original_abstract = "Hello!\nGoto http://example.com"
     # newlines should become BR, urls should be linked
-    expected_abstract = ('Hello!<br />Goto <a href="http://example.com" rel="nofollow">'
+    expected_abstract = ('Hello!<br>Goto <a href="http://example.com" rel="nofollow">'
                          'http://example.com</a>')
     get_default_conference()
     talk = TalkFactory()
@@ -133,7 +138,11 @@ def test_update_talk_post(user_client):
         "level": TALK_LEVEL.advanced,
         "domain_level": TALK_LEVEL.advanced,
         "tags": ",".join(tag.name for tag in tags),
+        "i_accept_speaker_release": True,
     }
+    if CONFERENCE_TIMESLOTS and \
+       isinstance(CONFERENCE_TIMESLOTS, (list, tuple)):
+        post_data['availability'] = [CONFERENCE_TIMESLOTS[0][0], ]
     resp = user_client.post(url, data=post_data)
 
     talk.refresh_from_db()
@@ -148,6 +157,37 @@ def test_update_talk_post(user_client):
     assert set(talk.tags.all().values_list("pk", flat=True)) == set(
         [tag.pk for tag in tags]
     )
+
+
+def test_update_talk_post_fails_if_release_not_agreed(user_client):
+    tomorrow = timezone.now().date() + timedelta(days=1)
+    get_default_conference(conference_end=tomorrow)
+    talk = TalkFactory(created_by=user_client.user, status=TALK_STATUS.accepted)
+    url = reverse("talks:update_talk", args=[talk.slug])
+
+    tags = ConferenceTagFactory.create_batch(size=3)
+    post_data = {
+        "title": "new title",
+        "sub_title": "new sub title",
+        "abstract": "new abstract",
+        "abstract_short": "new short abstract",
+        "prerequisites": "new prerequisites",
+        "level": TALK_LEVEL.advanced,
+        "domain_level": TALK_LEVEL.advanced,
+        "tags": ",".join(tag.name for tag in tags),
+        "i_accept_speaker_release": False,
+    }
+    resp = user_client.post(url, data=post_data)
+
+    # We do not advance and talk should be unchanged in DB
+    assert resp.status_code == 200
+
+    # Make sure that nothing changed.
+    orig_talk_dict = dump_relevant_talk_information_to_dict(talk)
+    talk.refresh_from_db()
+    new_talk_dict = dump_relevant_talk_information_to_dict(talk)
+
+    assert orig_talk_dict == new_talk_dict
 
 
 def test_anonymous_cannot_get_submit_slides(client):

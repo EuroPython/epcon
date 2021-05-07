@@ -28,6 +28,10 @@ from conference.models import (
 )
 from conference.fares import ALL_POSSIBLE_FARE_CODES, TALK_VOTING_FARE_CODES
 from p3.models import TICKET_CONFERENCE_SHIRT_SIZES, TICKET_CONFERENCE_DIETS
+try:
+    from pycon.settings import CONFERENCE_TIMESLOTS
+except ImportError:
+    CONFERENCE_TIMESLOTS = None
 
 
 fake = Faker()
@@ -319,10 +323,12 @@ class TalkFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Talk
 
+    # FIXME: evaluate is a provate method
+    # https://github.com/FactoryBoy/factory_boy/commit/824c6e01f91dcb07d16f51578300da3c99b6a336
     title = factory.LazyAttribute(
         lambda talk: factory.Faker(
             "sentence", nb_words=6, variable_nb_words=True
-        ).generate({})[:80]
+        ).evaluate(None, None, extra={"locale": None})[:80]
     )
     sub_title = factory.Faker("sentence", nb_words=12, variable_nb_words=True)
 
@@ -338,11 +344,20 @@ class TalkFactory(factory.django.DjangoModelFactory):
         Conference.objects.all().values_list("code", flat=True)
     )
     language = factory.Iterator(TALK_LANGUAGES, getter=lambda x: x[0])
+    _slots = [ts[0] for ts in CONFERENCE_TIMESLOTS]
+    if CONFERENCE_TIMESLOTS:
+        availability = '|'.join(
+            random.choices(_slots, k=random.randint(1, len(_slots)))
+        )
 
     @factory.post_generation
     def abstract(self, create, extracted, **kwargs):
+        # FIXME: evaluate is a private method
+        # https://github.com/FactoryBoy/factory_boy/commit/824c6e01f91dcb07d16f51578300da3c99b6a336
         self.setAbstract(
-            factory.Faker("sentence", nb_words=30, variable_nb_words=True).generate({})
+            factory.Faker(
+                "sentence", nb_words=30, variable_nb_words=True
+            ).evaluate(None, None, extra={"locale": None})
         )
 
 

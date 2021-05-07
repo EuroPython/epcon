@@ -5,7 +5,7 @@
 
 This project (and its dependencies) contains the EuroPython website source code.
 
-The code is used for the EuroPython 2020 website.
+The code is used for the EuroPython 2021 website.
 
 # LICENSE
 
@@ -86,19 +86,19 @@ $ make test
 
 # CONTRIBUTING
 
-Note: We are using the ep2020 branch for the production version of the
-website, once we have switched on production, and dev/ep2020 during
+Note: We are using the ep2021 branch for the production version of the
+website, once we have switched on production, and dev/ep2021 during
 development leading up to the production version.  The instructions
-reference the ep2020 branch - please adjust to dev/ep2020 for the
+reference the ep2021 branch - please adjust to dev/ep2021 for the
 development version.
 
 1. Make a fork of github.com/europython/epcon
 2. Make changes in your fork (ideally on a feature/bugfix branch)
-3. Make sure your branch is based on latest `upstream/ep2020`
+3. Make sure your branch is based on latest `upstream/ep2021`
 4. Push your changes
-5. Create a pull request to `europython/epcon`, targeting `ep2020` branch.
+5. Create a pull request to `europython/epcon`, targeting `ep2021` branch.
 
-IMPORTANT: all the active development happens on the `ep2020` branch, `master` is not up to date.
+IMPORTANT: all the active development happens on the `ep2021` branch, `master` is not up to date.
 
 ## Development Guidelines
 

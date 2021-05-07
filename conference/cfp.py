@@ -309,7 +309,7 @@ class AddSpeakerToTalkForm(forms.ModelForm):
         label="Are you a minor?",
         help_text=(
             "Please select this checkbox if you're going to be under 18"
-            "years old on July 23rd 2020"
+            "years old on July 26th 2021"
         ),
         # required=False, because django forms... it means that unless someone
         # is a minor we don't provide a value.
