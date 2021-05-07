@@ -82,7 +82,6 @@ def send_talk_details_to_backup_email(talk: Talk):
         message=content,
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=SEND_CFP_BACKUP_TO,
-        bcc=settings.CFP_SUBMISSION_BCC_ADDRESS
     )
 
 
@@ -143,6 +142,7 @@ def submit_proposal_step3_thanks(request, talk_uuid):
         message=content,
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=speaker_emails,
+        bcc=settings.CFP_SUBMISSION_BCC_ADDRESS
     )
     return TemplateResponse(
         request, "conference/cfp/step3_thanks.html", {"talk": talk,}
