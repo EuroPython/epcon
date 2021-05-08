@@ -1,3 +1,4 @@
+import json
 import random
 
 from django import forms
@@ -10,12 +11,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
+from django.http import JsonResponse
 from django.urls import reverse, reverse_lazy
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
+from django.views.decorators.csrf import csrf_exempt
+
 
 import shortuuid
 
@@ -265,6 +269,45 @@ class NewAccountForm(forms.Form):
         if data['password1'] != data['password2']:
             raise forms.ValidationError('password mismatch')
         return data
+
+
+@csrf_exempt
+def matrix_auth(request):
+    """
+    Endpoint to authenticate users in our Matrix server using:
+    https://github.com/ma1uta/matrix-synapse-rest-password-provider#integrate
+    """
+    print("DEBUG::::")
+    print(request.body)
+    print("\n\n\n\n")
+    data = json.loads(request.body)
+    user_id = data["user"]["id"]
+    username = user_id.split(":")[0].replace("@", "")
+    password = data["user"]["password"]
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        payload = {
+            "auth": {
+                "success": True,
+                "mxid": user_id,
+                "profile": {
+                    "display_name": f"{user.first_name} {user.last_name}",
+                    "three_pids": [
+                        {
+                            "medium": "email",
+                            "address": user.email,
+                        },
+                    ]
+                }
+            }
+        }
+    else:
+        payload= {
+            "auth": {
+                "success": False
+            }
+        }
+    return JsonResponse(payload)
 
 
 urlpatterns = [
