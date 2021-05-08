@@ -281,8 +281,8 @@ def add_speaker_to_talk(speaker, talk):
 
 
 class AddSpeakerToTalkForm(forms.ModelForm):
-    users_given_name = forms.CharField(label="Given name of the speaker")
-    users_family_name = forms.CharField(label="Family name of the speaker")
+    users_given_name = forms.CharField(label="Given name")
+    users_family_name = forms.CharField(label="Family name")
     is_minor = forms.BooleanField(
         label="Are you a minor?",
         help_text=(
