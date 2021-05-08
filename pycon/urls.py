@@ -6,6 +6,7 @@ from django.views.generic import RedirectView
 from filebrowser.sites import site as fsite
 
 from conference.accounts import urlpatterns as accounts_urls
+from conference.accounts import matrix_auth
 from conference.cart import urlpatterns as cart_urls
 from conference.cfp import urlpatterns as cfp_urls
 from conference.debug_panel import urlpatterns as debugpanel_urls
@@ -51,6 +52,12 @@ urlpatterns = [
 
     # production debug panel
     re_path(r'^nothing-to-see-here/', include((debugpanel_urls, 'conference'), namespace='debug_panel')),
+    # matrix
+    re_path(
+        r"^_matrix-internal/identity/v1/check_credentials/$",
+        matrix_auth,
+        name="matrix_auth",
+    )
 ]
 
 if settings.DEBUG:
