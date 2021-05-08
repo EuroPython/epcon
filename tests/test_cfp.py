@@ -631,6 +631,7 @@ def test_update_speaker_updated_speaker_name(user_client):
         users_family_name="Name",
         phone="+48123456789",
         bio="this is my bio",
+        i_accept_speaker_release=True,
     )
 
     response = user_client.post(edit_url, speaker_data)
