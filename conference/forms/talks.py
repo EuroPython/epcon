@@ -22,9 +22,6 @@ class TalkUpdateForm(forms.ModelForm):
     domain_level = TalkBaseForm.base_fields["domain_level"]
     if 'availability' in TalkBaseForm.base_fields:
         availability = TalkBaseForm.base_fields["availability"]
-    i_accept_speaker_release  = TalkBaseForm.base_fields[
-        'i_accept_speaker_release'
-    ]
 
     class Meta:
         model = Talk
