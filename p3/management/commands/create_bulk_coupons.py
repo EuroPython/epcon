@@ -71,7 +71,7 @@ class Command(BaseCommand):
             reader = csv.DictReader(csv_file)
             for row in reader:
                 code = row['code'].strip()
-                if not code:
+                if not code or code == '0':
                     # Skip lines without code
                     continue
                 if code in all_codes:
@@ -86,7 +86,7 @@ class Command(BaseCommand):
                 c.description = row.get('description', '')
                 if not self.dry_run:
                     c.save()
-                    c.fares = all_fares.filter(
+                    c.fares.set(all_fares.filter(
                         code__in = [x.strip()
-                                    for x in row['fares'].split(',')])
-                print ('Coupond %r created' % c.code)
+                                    for x in row['fares'].split(',')]))
+                print ('Coupon %r created' % c.code)
