@@ -1,9 +1,9 @@
 
-""" Create a batch of single use discount coupons from a CSV file.
+""" Create/update a batch of discount coupons from a CSV file.
 
     Parameters: <conference> <csv-file>
 
-    Creates coupons based on the CSV file contents:
+    Creates/updates coupons based on the CSV file contents:
     
 	code		- coupon code
         max_usage 	- max. number of uses
@@ -13,6 +13,9 @@
 	fares 		- comma separated list of included fares
 
     Use --dry-run to test drive the script.
+
+    Existing coupon codes will get updated by the script.  Indexing is by
+    code.
 
 """
 import sys
