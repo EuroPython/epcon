@@ -54,9 +54,9 @@ class Command(BaseCommand):
         csv_filename = options['csv']
 
         # Get set of existing coupon codes
-        all_codes = set(c['code'] for c in Coupon.objects\
-            .filter(conference=conference.code)\
-            .values('code'))
+        all_codes = dict((c.code, c)
+            for c in Coupon.objects\
+                .filter(conference=conference.code))
 
         # Valid fares (conference fares only)
         all_fares = cmodels.Fare.objects\
@@ -70,16 +70,18 @@ class Command(BaseCommand):
         with csv_file:
             reader = csv.DictReader(csv_file)
             for row in reader:
+                #print ('Row %r' % row)
                 code = row['code'].strip()
                 if not code or code == '0':
                     # Skip lines without code
                     continue
                 if code in all_codes:
-                    # Skip coupons which already exist
-                    print ('Coupon %r already exists - skipping' % code)
-                    continue
-                c = Coupon(conference=conference)
-                c.code = code
+                    print ('Coupon %r already exists - updating' % code)
+                    c = all_codes[code]
+                else:
+                    print ('New coupon %r will be created' % c.code)
+                    c = Coupon(conference=conference)
+                    c.code = code
                 c.max_usage = int(row.get('max_usage', 1))
                 c.items_per_usage = int(row.get('items_per_usage', 1))
                 c.value = row['value']
@@ -89,4 +91,3 @@ class Command(BaseCommand):
                     c.fares.set(all_fares.filter(
                         code__in = [x.strip()
                                     for x in row['fares'].split(',')]))
-                print ('Coupon %r created' % c.code)
