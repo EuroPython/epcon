@@ -24,6 +24,7 @@ class ApiError(Enum):
     AUTH_ERROR = 2
     INPUT_ERROR = 3
     UNAUTHORIZED = 4
+    WRONG_SCHEME = 5
 
 
 def _error(error: ApiError, msg: str) -> JsonResponse:
@@ -75,6 +76,9 @@ def isauth(request):
     best_effort_ip = get_client_ip(request)
     if ALLOWED_IPS and best_effort_ip not in ALLOWED_IPS:
         return _error(ApiError.UNAUTHORIZED, 'you are not authorized here')
+
+    if request.scheme != 'https':
+        return _error(ApiError.WRONG_SCHEME, 'please use HTTPS')
 
     if request.method != 'POST':
         return _error(ApiError.WRONG_METHOD, 'please use POST')
