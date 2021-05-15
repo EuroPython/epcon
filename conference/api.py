@@ -77,7 +77,7 @@ def isauth(request):
     if ALLOWED_IPS and best_effort_ip not in ALLOWED_IPS:
         return _error(ApiError.UNAUTHORIZED, 'you are not authorized here')
 
-    if request.scheme != 'https':
+    if request.scheme != 'http':
         return _error(ApiError.WRONG_SCHEME, 'please use HTTPS')
 
     if request.method != 'POST':
@@ -127,11 +127,11 @@ def isauth(request):
     except Speaker.DoesNotExist:
         is_speaker = False
     else:
-        talkspeakers = TalkSpeaker.objects.filter(
-            speaker=speaker, talk__conference=conference.code
-        )
-        is_speaker = len([None for ts in talkspeakers
-                          if ts.talk.status == 'accepted']) != 0
+        is_speaker = TalkSpeaker.objects.filter(
+            speaker=speaker,
+            talk__conference=conference.code,
+            talk__status='accepted'
+        ).count() > 0
 
     payload = {
         "username": profile.user.username,
