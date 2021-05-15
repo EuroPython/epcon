@@ -77,7 +77,7 @@ def isauth(request):
     if ALLOWED_IPS and best_effort_ip not in ALLOWED_IPS:
         return _error(ApiError.UNAUTHORIZED, 'you are not authorized here')
 
-    if request.scheme != 'http':
+    if request.scheme != 'https':
         return _error(ApiError.WRONG_SCHEME, 'please use HTTPS')
 
     if request.method != 'POST':
