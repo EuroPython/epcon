@@ -40,6 +40,7 @@ class ApiError(Enum):
     INPUT_ERROR = 3
     UNAUTHORIZED = 4
     WRONG_SCHEME = 5
+    BAD_REQUEST = 6
 
 
 def _error(error: ApiError, msg: str) -> JsonResponse:
@@ -66,30 +67,40 @@ def get_client_ip(request) -> str:
     return ip
 
 
-def ensure_https_in_ops(fn):
+# Checkers
+def request_checker(checker, error_msg):
     """
-    Ensure that the view is called via an HTTPS request and return a JSON error
-    payload if not.
+    Generic sanity check decorator on views.
 
-    If DEBUG = True, it has no effect.
+    It accepts two parameters:
+        `checker`: a function that accepts a request and returns True if valid
+        `error_msg`: what to return as error message if request is invalid
+
+    In case of invalid requests, it returns a BAD_REQUEST error.
     """
-    @wraps(fn)
-    def wrapper(request, *args, **kwargs):
-        if not DEBUG and not request.is_secure():
-            return _error(ApiError.WRONG_SCHEME, 'please use HTTPS')
-        return fn(request, *args, **kwargs)
-    return wrapper
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(request, *args, **kwargs):
+            if not checker(request):
+                return _error(ApiError.BAD_REQUEST, error_msg)
+            return fn(request, *args, **kwargs)
+        return wrapper
+    return decorator
 
 
-def ensure_post(fn):
-    # We use this instead of the bult-in decorator to return a JSON error
-    # payload instead of a simple 405.
-    @wraps(fn)
-    def wrapper(request, *args, **kwargs):
-        if request.method != 'POST':
-            return _error(ApiError.WRONG_SCHEME, 'please use POST')
-        return fn(request, *args, **kwargs)
-    return wrapper
+# Ensure that the view is called via an HTTPS request and return a JSON error
+# payload if not. If DEBUG = True, it has no effect.
+ensure_https_in_ops = request_checker(
+    lambda r: DEBUG or r.is_secure(), 'please user HTTPS'
+)
+
+# We use this instead of the bult-in decorator to return a JSON error
+# payload instead of a simple 405.
+ensure_post = request_checker(lambda r: r.method == 'POST', 'please use POST')
+
+ensure_json_content_type = request_checker(
+    lambda r: r.content_type == 'application/json', 'please send JSON'
+)
 
 
 def restrict_client_ip_to_allowed_list(fn):
@@ -107,6 +118,7 @@ def restrict_client_ip_to_allowed_list(fn):
 @csrf_exempt
 @ensure_post
 @ensure_https_in_ops
+@ensure_json_content_type
 @restrict_client_ip_to_allowed_list
 def isauth(request):
     """
