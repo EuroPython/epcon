@@ -27,10 +27,8 @@ from conference.models import (
     TalkSpeaker,
     Ticket,
 )
-
-DEBUG = True
-# Only these IPs can connect to the API
-ALLOWED_IPS = []
+from pycon.settings import MATRIX_AUTH_API_DEBUG as DEBUG
+from pycon.settings import MATRIX_AUTH_API_ALLOWED_IPS as ALLOWED_IPS
 
 
 # Error Codes
@@ -91,7 +89,7 @@ def request_checker(checker, error_msg):
 # Ensure that the view is called via an HTTPS request and return a JSON error
 # payload if not. If DEBUG = True, it has no effect.
 ensure_https_in_ops = request_checker(
-    lambda r: DEBUG or r.is_secure(), 'please user HTTPS'
+    lambda r: DEBUG or r.is_secure(), 'please use HTTPS'
 )
 
 # We use this instead of the bult-in decorator to return a JSON error
