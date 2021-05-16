@@ -86,7 +86,7 @@ def ensure_post(fn):
     # payload instead of a simple 405.
     @wraps(fn)
     def wrapper(request, *args, **kwargs):
-        if not request.method != 'POST':
+        if request.method != 'POST':
             return _error(ApiError.WRONG_SCHEME, 'please use POST')
         return fn(request, *args, **kwargs)
     return wrapper
