@@ -730,11 +730,11 @@ if not os.path.exists(LOGS_DIR):
 # Matrix Auth API settings
 MATRIX_AUTH_API_DEBUG = config(
     'MATRIX_AUTH_API_DEBUG',
-    default=False,
+    default=True,
     cast=bool
 )
 MATRIX_AUTH_API_ALLOWED_IPS = config(
     'MATRIX_AUTH_API_ALLOWED_IPS',
     default='',
-    cast=lambda v: [s.strip() for s in v.split(',')]
+    cast=lambda v: [s.strip() for s in v.split(',') if s.strip()]
 )
