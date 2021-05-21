@@ -67,7 +67,7 @@ def send_talk_details_to_backup_email(talk: Talk):
     """
     SEND_CFP_BACKUP_TO = ['web-wg@europython.eu']
 
-    content = f"""\
+    content = f"""
     title: {talk.title}
     author: {talk.created_by.id}
     type_display: {talk.get_type_display()}
@@ -129,7 +129,7 @@ def submit_proposal_step3_thanks(request, talk_uuid):
     current_site = get_current_site(request)
     cfp_path = reverse_lazy("cfp:preview", args=[talk.slug])
     proposal_url = f"https://{current_site}{cfp_path}"
-    content = f"""
+    content = f"""\
     Hi {speaker_names}!
     We have received your submission "{talk.title}".
     We will notify you once we have had time to consider all submissions,
