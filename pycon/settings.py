@@ -726,3 +726,15 @@ DISABLE_CACHING = False
 # Complete project setup.
 if not os.path.exists(LOGS_DIR):
     os.makedirs(LOGS_DIR)
+
+# Matrix Auth API settings
+MATRIX_AUTH_API_DEBUG = config(
+    'MATRIX_AUTH_API_DEBUG',
+    default=True,
+    cast=bool
+)
+MATRIX_AUTH_API_ALLOWED_IPS = config(
+    'MATRIX_AUTH_API_ALLOWED_IPS',
+    default='',
+    cast=lambda v: [s.strip() for s in v.split(',') if s.strip()]
+)
