@@ -81,9 +81,6 @@ SERVER_EMAIL = config('SERVER_EMAIL', default='noreply@europython.eu')
 # Email sender address used per default for emails to e.g. attendees
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='info@europython.eu')
 
-# BCC these emails on cfp submissions
-CFP_SUBMISSION_BCC_ADDRESS = config('CFP_SUBMISSION_BCC_ADDRESS', default=['program@europython.eu'])
-
 # Timezone and languages
 # -----------------------
 # If you set this to False, Django will make some optimizations so as not
