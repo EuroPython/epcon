@@ -103,7 +103,6 @@ def submit_proposal_step2_add_speakers(request, talk_uuid):
                 speaker = save_information_from_speaker_form(
                     request.user, speaker_form.cleaned_data
                 )
-                print(speaker_form.cleaned_data)
                 add_speaker_to_talk(speaker, talk)
                 messages.success(request, "Speaker added successfully.")
                 return redirect("cfp:step3_thanks", talk_uuid=talk.uuid)
