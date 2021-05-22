@@ -1264,6 +1264,32 @@ class NewsAdmin(admin.ModelAdmin):
     readonly_fields = ('uuid',)
 
 
+### Streaming
+
+@admin.register(models.StreamSet)
+class StreamSetAdmin(admin.ModelAdmin):
+    list_display = (
+        'conference',
+        'enabled',
+        'name',
+        'start_date',
+        'end_date',
+    )
+    list_display_links = (
+        'name',
+        )
+    list_filter = (
+        'conference',
+        'enabled',
+    )
+    ordering = (
+        'start_date',
+        'name',
+        'enabled',
+    )
+
+### Old school registrations:
+
 admin.site.register(models.CaptchaQuestion, CaptchaQuestionAdmin)
 admin.site.register(models.Conference, ConferenceAdmin)
 admin.site.register(models.ConferenceTag, ConferenceTagAdmin)
@@ -1274,3 +1300,4 @@ admin.site.register(models.Speaker, SpeakerAdmin)
 admin.site.register(models.Sponsor, SponsorAdmin)
 admin.site.register(models.Ticket, TicketAdmin)
 admin.site.register(models.News, NewsAdmin)
+

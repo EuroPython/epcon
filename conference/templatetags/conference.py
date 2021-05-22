@@ -7,7 +7,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 
 from conference import dataaccess, models
-from conference.user_panel import get_tickets_for_current_conference
+from conference.user_panel import (
+    get_tickets_for_current_conference,
+    get_streams_for_current_conference)
 
 mimetypes.init()
 
@@ -142,3 +144,11 @@ def tickets(user):
     {% endif %}
     """
     return get_tickets_for_current_conference(user)
+
+@register.simple_tag
+def visible_streams(user):
+    """ Return the list of currently active streams as dictionaries:
+        - title
+        - url
+    """
+    return get_streams_for_current_conference(user)
