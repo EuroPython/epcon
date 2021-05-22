@@ -22,6 +22,7 @@ import shortuuid
 from assopy.models import AssopyUser, Token
 from conference.models import CaptchaQuestion, AttendeeProfile
 from p3.models import P3Profile
+from conference.forms import CustomPasswordResetForm
 
 
 LOGIN_TEMPLATE = "conference/accounts/login.html"
@@ -300,6 +301,7 @@ urlpatterns = [
             success_url=reverse_lazy("accounts:password_reset_done"),
             email_template_name="conference/emails/password_reset_email.txt",
             subject_template_name="conference/emails/password_reset_subject.txt",
+            form_class=CustomPasswordResetForm,
         ),
         name="password_reset",
     ),
