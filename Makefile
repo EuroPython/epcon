@@ -13,6 +13,7 @@ help:
 	@echo "update-requirements - run pip compile and rebuild the requirements files"
 	@echo "migrations - generate migrations in a clean container"
 	@echo "shell - start a django shell"
+	@echo "bash - start a bash shell in a running container"
 	@echo "urls - print url routes"
 
 	@echo "\n[TEST]"
@@ -79,6 +80,9 @@ migrations: build
 
 shell:
 	docker-compose run --rm epcon "./manage.py shell_plus"
+
+bash:
+	docker-compose exec epcon /bin/bash
 
 urls:
 	docker-compose run --rm epcon "./manage.py show_urls"
