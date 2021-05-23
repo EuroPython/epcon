@@ -1,3 +1,4 @@
+import random
 from datetime import timedelta
 
 from crispy_forms.helper import FormHelper
@@ -568,14 +569,18 @@ def get_streams_for_current_conference(user):
     #print ('User has these fares: %r' % fare_codes)
     conference = Conference.objects.current()
     now = timezone.now()
-    stream_sets = StreamSet.objects.filter(
+    stream_sets = list(StreamSet.objects.filter(
         Q(conference=conference) &
         Q(enabled = True) &
         (Q(start_date = None) | Q(start_date__lte = now)) &
         (Q(end_date = None) | Q(end_date__gte = now))
-    )
+    ))
     #print ('Found these stream_sets: %r' % stream_sets)
     streams = []
+    if stream_sets:
+        reload_date = now + timedelta(hours=12)
+    else:
+        reload_date = now + timedelta(minutes=0)
     for stream_set in stream_sets:
         #print ('Found this stream_set: %r' % stream_set)
         assert isinstance(stream_set.streams, list)
@@ -587,8 +592,16 @@ def get_streams_for_current_conference(user):
                     'title': stream['title'],
                     'url': stream['url'],
                 })
+        end_date = stream_set.end_date
+        if end_date is not None and end_date < reload_date:
+            reload_date = end_date
     #print ('Found these streams: %r' % l)
-    return streams
+    data = dict(
+        streams=streams,
+        reload_timeout_seconds=(
+            (reload_date - now).total_seconds() + random.randint(5, 60)),
+    )
+    return data
 
 def get_invoices_for_current_conference(user):
     return Invoice.objects.filter(
