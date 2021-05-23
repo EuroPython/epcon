@@ -397,7 +397,8 @@ CMS_TEMPLATES = (
     # ('conference/content/generic_content_page.html', 'Generic Content Page'),
     ('conference/content/generic_content_page_with_sidebar.html',
      'Generic Content Page (with sidebar)'),
-    ('conference/homepage/home_template.html', 'Homepage'),
+    ('conference/homepage/home_template.html',
+     'Homepage'),
 )
 PAGE_TEMPLATES = (
     ('conference/content/generic_content_page_with_sidebar.html',
