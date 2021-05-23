@@ -83,3 +83,6 @@ if settings.DEBUG:
 urlpatterns += [
     re_path(r'^', include('cms.urls')),
 ]
+urlpatterns += [
+    re_path(r'^', include(('social_django.urls'), namespace='social_django'))
+]

@@ -168,6 +168,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.mail.mail_validation',
     'social_core.pipeline.social_auth.associate_by_email',
     'social_core.pipeline.user.create_user',
+    'conference.accounts.social_force_local_password',
     # THIS IS IMPORTANT!!!! Connect new authenticated users to profiles
     # of the important project apps!!
     'conference.accounts.social_connect_profile',
@@ -176,6 +177,10 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details'
 )
+# Force the auth pipeline to stp and ask users to create a local password.
+# This is the list of variables passed from one stage of the social auth
+# pipeline to the next.
+SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['local_password', 'backend', ]
 
 TEMPLATES = [
     {

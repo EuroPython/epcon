@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.hashers import is_password_usable, make_password
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
@@ -16,6 +17,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
+from social_core.pipeline.partial import partial
 
 import shortuuid
 
@@ -68,6 +70,34 @@ class LoginForm(auth_forms.AuthenticationForm):
                 raise forms.ValidationError("This account is inactive.")
 
         return data
+
+
+class PasswordForm(forms.Form):
+    password = forms.CharField(max_length=10)
+
+
+def setup_local_password(request):
+    if request.method == 'POST':
+        form = PasswordForm(request.POST)
+        if form.is_valid():
+            # because of FIELDS_STORED_IN_SESSION, this will get copied
+            # to the request dictionary when the pipeline is resumed
+            request.session['local_password'] = make_password(
+                form.cleaned_data['password']
+            )
+
+            backend = request.session['backend']
+
+            # once we have the password stashed in the session, we can
+            # tell the pipeline to resume by using the "complete" endpoint
+            return redirect(reverse('social_django:complete',
+                                    # kwargs={'backend': 'google-oauth2'},))
+                                    kwargs={'backend': backend},))
+    # else:
+    return TemplateResponse(
+        request, "conference/accounts/password_setup.html",
+        {'form': PasswordForm()}
+    )
 
 
 def signup_step_1_create_account(request) -> [TemplateResponse, redirect]:
@@ -142,6 +172,68 @@ def social_connect_profile(backend, user, response, *args, **kwargs) -> None:
 
     AssopyUser.objects.get_or_create(user=user)
     get_or_create_attendee_profile_for_new_user(user=user)
+
+
+# Partial says "we may interrupt, but we will come back here again"
+@partial
+def social_force_local_password(strategy, backend, request, details,
+                                *args, **kwargs):
+    """
+    This is used to force social auth accounts to always have a local password
+    unless of course they already do.
+
+    It is a "partial" pipeline, in the sense that it interrupts the flow (in
+    case a social account does not have a local usable password) and then
+    comes back (restarting from the beginning of the function).
+
+    Sadly, the social auth code documentation is not very complete and somewhat
+    outdated on this type of flow. Remember that if you modify some object
+    which is part of the flow, you have to return it so that it is picked up
+    by other stages of the pipeline. In our case, it is User that we need to
+    return, in a dictionary. Failure to do that would result in the User object
+    being overwritten by the next pipeline stage.
+    """
+    # First step: see if the user account (whcih should exist at this point),
+    # has a valid password or not.
+    if 'user' in kwargs and isinstance(kwargs['user'], User):
+        user = kwargs['user']
+    else:
+        if 'email' in details:
+            email_address = details['email']
+        elif 'email' in kwargs.get('request', {}).get('response', {}):
+            email_address = kwargs['request']['response']['email']
+        else:
+            email_address = kwargs['uuid']          # Last hope!
+        user = User.objects.get(email=email_address)
+
+    if is_password_usable(user.password):
+        # noop: all is good from our side and no need to return an unmodified
+        # User instance.
+        return
+
+    # Please note that local_password is already hashed and ready to be
+    # associated to the account.
+    # session 'local_password' is set by the pipeline infrastructure
+    # because it exists in FIELDS_STORED_IN_SESSION
+    local_password = strategy.session_get('local_password', None)
+    if not local_password:
+        # if we return something besides a dict or None, then that is
+        # returned to the user -- in this case we will redirect to a
+        # view that can be used to get a password
+
+        # Tell the view which backend we are currently using.
+        strategy.session_set('backend', backend.name)
+        return redirect("accounts:setup_local_password")
+
+    # grab the user object from the database (remember that they may
+    # not be logged in yet) and set their password.  (Assumes that the
+    # email address was captured in an earlier step.)
+    user.password = local_password
+    user.save(update_fields=['password'])
+
+    # Continue the pipeline BUT make sure that the infrastructure updates its
+    # copy of the User instance by returning it.
+    return {'user': user}
 
 
 def get_or_create_attendee_profile_for_new_user(user):
@@ -292,6 +384,12 @@ urlpatterns = [
         r"^signup/verify-email/(?P<token>\w{22})/$",
         handle_verification_token,
         name="handle_verification_token",
+    ),
+    # Collect local password for social auth accounts
+    re_path(
+        r"^password-setup/$",
+        setup_local_password,
+        name="setup_local_password",
     ),
     # Password reset, using default django views.
     re_path(
