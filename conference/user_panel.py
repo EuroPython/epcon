@@ -1,3 +1,4 @@
+import random
 from datetime import timedelta
 
 from crispy_forms.helper import FormHelper
@@ -12,6 +13,7 @@ from django.contrib import messages
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.utils import timezone
 from django.urls import reverse_lazy
 from django.db import transaction
 from django.db.models import Q, Case, When, Value, BooleanField
@@ -33,6 +35,7 @@ from .models import (
     Speaker,
     TalkSpeaker,
     Ticket,
+    StreamSet,
     ATTENDEEPROFILE_VISIBILITY,
     ATTENDEEPROFILE_GENDER,
 )
@@ -216,11 +219,11 @@ class TicketConferenceConfigForm(forms.ModelForm):
 
     class Meta:
         model = TicketConference
-        fields = ["name", 
+        fields = ["name",
                   # XXX Disabled for EP2020; see #1269
-                  #"diet", 
-                  #"shirt_size", 
-                  "tagline", 
+                  #"diet",
+                  #"shirt_size",
+                  "tagline",
                   "days"]
 
     def __init__(self, *args, **kwargs):
@@ -538,6 +541,8 @@ class ProfileSettingsForm(forms.ModelForm):
 
 
 def get_tickets_for_current_conference(user):
+    if not user.is_authenticated:
+        return Ticket.objects.none()
     conference = Conference.objects.current()
     return Ticket.objects.filter(
         Q(fare__conference=conference.code)
@@ -552,6 +557,51 @@ def get_tickets_for_current_conference(user):
         )
     )
 
+
+def get_streams_for_current_conference(user):
+
+    """ Return the list of currently active streams as dictionaries:
+        - title
+        - url
+    """
+    fare_codes = set(
+        get_tickets_for_current_conference(user).values_list("fare__code", flat=True))
+    #print ('User has these fares: %r' % fare_codes)
+    conference = Conference.objects.current()
+    now = timezone.now()
+    stream_sets = list(StreamSet.objects.filter(
+        Q(conference=conference) &
+        Q(enabled = True) &
+        (Q(start_date = None) | Q(start_date__lte = now)) &
+        (Q(end_date = None) | Q(end_date__gte = now))
+    ))
+    #print ('Found these stream_sets: %r' % stream_sets)
+    streams = []
+    if stream_sets:
+        reload_date = now + timedelta(hours=12)
+    else:
+        reload_date = now + timedelta(minutes=0)
+    for stream_set in stream_sets:
+        #print ('Found this stream_set: %r' % stream_set)
+        assert isinstance(stream_set.streams, list)
+        for stream in stream_set.streams:
+            stream_fare_codes = set(stream.get('fare_codes', ()))
+            #print ('Stream requires these fare codes: %r' % stream_fare_codes)
+            if stream_fare_codes & fare_codes:
+                streams.append({
+                    'title': stream['title'],
+                    'url': stream['url'],
+                })
+        end_date = stream_set.end_date
+        if end_date is not None and end_date < reload_date:
+            reload_date = end_date
+    #print ('Found these streams: %r' % l)
+    data = dict(
+        streams=streams,
+        reload_timeout_seconds=(
+            (reload_date - now).total_seconds() + random.randint(5, 60)),
+    )
+    return data
 
 def get_invoices_for_current_conference(user):
     return Invoice.objects.filter(
