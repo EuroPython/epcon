@@ -73,7 +73,19 @@ class LoginForm(auth_forms.AuthenticationForm):
 
 
 class PasswordForm(forms.Form):
-    password = forms.CharField(max_length=10)
+    password = forms.CharField(label="Password", widget=forms.PasswordInput)
+    password2 = forms.CharField(
+        label="Confirm password", widget=forms.PasswordInput
+    )
+
+    def clean(self):
+        if not self.is_valid():
+            return super().clean()
+
+        data = self.cleaned_data
+        if data['password'] != data['password2']:
+            raise forms.ValidationError('password mismatch')
+        return data
 
 
 def setup_local_password(request):
@@ -93,6 +105,10 @@ def setup_local_password(request):
             return redirect(reverse('social_django:complete',
                                     # kwargs={'backend': 'google-oauth2'},))
                                     kwargs={'backend': backend},))
+        else:
+            # Not sure why this is not sent automatically by the form
+            # validation code...
+            messages.error(request, "Password mismatch")
     # else:
     return TemplateResponse(
         request, "conference/accounts/password_setup.html",
