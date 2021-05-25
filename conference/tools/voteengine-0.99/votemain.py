@@ -16,7 +16,6 @@ public domain.
 This module contains the heart of the program.
 """
 
-#from string import *
 import re
 import numpy
 import sys

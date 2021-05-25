@@ -16,7 +16,6 @@ public domain.
 This module is for the procedures that don't do I/O or anything like that.
 """
 
-#from string import *
 import re
 import numpy
 import sys
