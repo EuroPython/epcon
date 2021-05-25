@@ -3,20 +3,20 @@
 """
 Votelib module by Blake Cretney
 
-This work is distributed AS IS.  It is up to you to 
-determine if it is useful and safe.  In particular, 
+This work is distributed AS IS.  It is up to you to
+determine if it is useful and safe.  In particular,
 NO WARRANTY is expressed or implied.
 
-I permanently give everyone the rights to use, modify, 
-copy, distribute, re-distribute, and perform this work, 
-and all derived works, to the extent that I hold copyright 
-in them.  My intent is to have this work treated as 
+I permanently give everyone the rights to use, modify,
+copy, distribute, re-distribute, and perform this work,
+and all derived works, to the extent that I hold copyright
+in them.  My intent is to have this work treated as
 public domain.
 
 This module is for the procedures that don't do I/O or anything like that.
 """
 
-from string import *
+#from string import *
 import re
 import numpy
 import sys
@@ -31,7 +31,7 @@ def alpha_to_int(x):
 		total=total*26+ord(x[c])-64
 		c=c+1
 	return(total)
-	
+
 def int_to_alpha(x):
 	alpha=""
 	sub=1
@@ -50,7 +50,7 @@ def int_to_alpha(x):
 	return(alpha)
 
 # change the matrix to a winning-votes matrix
-def zero_defeats(x): 
+def zero_defeats(x):
 	n=x.shape[0]
 	for i in range(n):
 		for j in range(i+1,n):
@@ -59,7 +59,7 @@ def zero_defeats(x):
 			else: x[i,j]=0
 
 # change the matrix to a marginal matrix
-def to_margins(x): 
+def to_margins(x):
 	n=x.shape[0]
 	for i in range(n):
 		for j in range(i+1,n):
@@ -77,7 +77,7 @@ def cmpTie(x,y,tiebreaker):
 def break_ties(winmat,tiebreaker):
 	if tiebreaker==None: return
 	n=winmat.shape[0]
-	done=numpy.zeros((n),numpy.int_) # record of which 
+	done=numpy.zeros((n),numpy.int_) # record of which
 	                                    #candidates are already processed
 	while 1:
 		for i in tiebreaker:
@@ -110,7 +110,7 @@ def print_ranks(winmat,candlist):
 	order.reverse()
 
 	ties=0
-	
+
 	for i in range(n):
 		(c_wins,c)=order[i]
 		if c_wins<n-1-i:
@@ -123,15 +123,15 @@ def print_ranks(winmat,candlist):
 		print(candlist[c], end=' ')
 		if i<n-1:
 			print(">", end=' ')
-	
+
 	if ties:
-		print("Some ties exist.  See table.")	
+		print("Some ties exist.  See table.")
 		print("      ", end=' ')
-		for j in range(n): 
-			print(rjust(candlist[j],5), end=' ')
+		for j in range(n):
+			print(candlist[j].rjust(5), end=' ')
 		print()
 		for i in range(n):
-			print(ljust(candlist[i],3), end=' ')
+			print(candlist[i].ljust(3), end=' ')
 			print("  ", end=' ')
 			for j in range(n):
 				if i==j: print("    X", end=' ')
@@ -141,20 +141,20 @@ def print_ranks(winmat,candlist):
 					print("    0", end=' ')
 				else:
 					print("    ?", end=' ')
-			print() 
+			print()
 	print()
 
 def print_some_scores(x,candlist,act):
 	n=x.shape[0]
 	print('      ', end=' ')
 	for j in act:
-		print(rjust(candlist[j],5), end=' ')
+		print(candlist[j].rjust(5), end=' ')
 	print()
 	for i in act:
-		print(ljust(candlist[i],3), '  ', end=' ')
+		print(candlist[i].ljust(3), '  ', end=' ')
 		for j in act:
 			if i==j: print('    X', end=' ')
-			else: print(rjust(repr(x[i,j]),5), end=' ')
+			else: print(repr(x[i,j]).rjust(5), end=' ')
 		print()
 	print()
 
@@ -165,45 +165,45 @@ def print_scores(x,candlist,act=None):
 	n=x.shape[0]
 	print('      ', end=' ')
 	for j in range(n):
-		print(rjust(candlist[j],5), end=' ')
+		print(candlist[j].rjust(5), end=' ')
 	print()
 	for i in range(n):
-		print(ljust(candlist[i],3), '  ', end=' ')
+		print(candlist[i].ljust(3), '  ', end=' ')
 		for j in range(n):
 			if i==j: print('    X', end=' ')
-			else: print(rjust(repr(x[i,j]),5), end=' ')
+			else: print(repr(x[i,j]).rjust(5), end=' ')
 		print()
 	print()
 
 def candRange(start,end): # translates selected range of candidates into list
-	
+
 	if start=="": failure("Missing Range")
 	pat=re.compile(r'(?P<alpha>[A-Z]*)(?P<num>\d*)')
 	m=pat.match(start)
 	if(m==None): failure("Improper range")
 	start_alpha_raw=m.group('alpha')
 	start_num_raw=m.group('num')
-	
+
 	m=pat.match(end)
 	if(m==None): failure("Improper range")
 	end_alpha_raw=m.group('alpha')
 	end_num_raw=m.group('num')
-	
+
 	if (start_alpha_raw=="")!=(end_alpha_raw==""):
 		failure('alpha mismatch on range')
-		
+
 	if (start_num_raw=="")!=(end_num_raw==""):
 		failure('Numeric mismatch on range')
 
-	if start_alpha_raw: 
+	if start_alpha_raw:
 		current_alpha=start_alpha=alpha_to_int(start_alpha_raw)
 		end_alpha=alpha_to_int(end_alpha_raw)
 		if start_alpha>end_alpha: failure('Alpha bound error on range')
-	if start_num_raw: 
+	if start_num_raw:
 		current_num=start_num=int(start_num_raw)
 		end_num=int(end_num_raw)
 		if start_num>end_num: failure('Numeric bound error on range')
-	
+
 	carry=0
 	list=[]
 	while carry<2:
@@ -232,4 +232,4 @@ def floyd(m):
 		for i in range(n):
 			for j in range(n):
 				m[i,j]=max(m[i,j],min(m[i,k],m[k,j]))
-	
+

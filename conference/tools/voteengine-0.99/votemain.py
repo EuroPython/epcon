@@ -3,20 +3,20 @@
 """
 Votelib module by Blake Cretney
 
-This work is distributed AS IS.  It is up to you to 
-determine if it is useful and safe.  In particular, 
+This work is distributed AS IS.  It is up to you to
+determine if it is useful and safe.  In particular,
 NO WARRANTY is expressed or implied.
 
-I permanently give everyone the rights to use, modify, 
-copy, distribute, re-distribute, and perform this work, 
-and all derived works, to the extent that I hold copyright 
-in them.  My intent is to have this work treated as 
+I permanently give everyone the rights to use, modify,
+copy, distribute, re-distribute, and perform this work,
+and all derived works, to the extent that I hold copyright
+in them.  My intent is to have this work treated as
 public domain.
 
 This module contains the heart of the program.
 """
 
-from string import *
+#from string import *
 import re
 import numpy
 import sys
@@ -31,9 +31,9 @@ class Options:
 	n_votes=0
 	record_pw=0 # do I have to record pairwise information
 	pw_tbl=None
-	record_ballots=0 # do I have to record complete ballots 
+	record_ballots=0 # do I have to record complete ballots
 	ballot_tbl=None
-	tiebreaker=None 
+	tiebreaker=None
 		# order of candidates used by some methods to break ties
 
 class Ballot:
@@ -53,23 +53,23 @@ def input_line():
 	while 1:
 		rawline = input()
 		lineno=lineno+1
-		comment=find(rawline, '#') # filter out comments
-		if comment!=-1: 
+		comment=rawline.find('#') # filter out comments
+		if comment!=-1:
 			rawline=rawline[:comment]
-		rawline=lstrip(rawline)
+		rawline=rawline.lstrip()
 		while rawline and rawline[0]==">":
 			rawline=rawline[1:]
-			rawline=lstrip(rawline)
-		if rawline!="": break	
+			rawline=rawline.lstrip()
+		if rawline!="": break
 	return(rawline)
-	
+
 def read_table(x): # reads a directly entered table
 	n=x.shape[0]
 	try:
 		for i in range(n):
 			rawline=input_line()
 
-			sline=split(rawline)[-n:]
+			sline=rawline.split()[-n:]
 			for j in range(n):
 				if i!=j: x[i,j]=x[i,j]+int(sline[j])
 	except ValueError: failure('Bad Table Value')
@@ -78,10 +78,10 @@ def read_table(x): # reads a directly entered table
 
 def get_options(list,o): # gets command line options
 	for x in list:
-		x=split(x,None,1)
-		opt= lower(x[0])
-		
-		if len(x)>1: 
+		x=x.split(None,1)
+		opt= x[0].lower()
+
+		if len(x)>1:
 			param= x[1]
 		else:
 			param= None
@@ -96,37 +96,37 @@ def get_options(list,o): # gets command line options
 				failure('Redefinition of candidate list')
 
 			o.cand_l=[]
-			for cand in split(param):
-				if find(cand,'-')==-1:
+			for cand in param.split():
+				if cand.find('-')==-1:
 					o.cand_l = o.cand_l + [cand]
-				else: 
-					range=split(cand,'-',1)
+				else:
+					range=cand.split('-',1)
 					o.cand_l=o.cand_l + candRange(range[0],range[1])
 			n=len(o.cand_l)
 			if o.record_pw:
 				o.pw_tbl=numpy.zeros((n,n),numpy.int32) # pairwise table
 			if o.record_ballots:
-				 o.ballot_tbl=[] # storage for ballots	
-			
+				 o.ballot_tbl=[] # storage for ballots
+
 		elif opt=='m':
 			if o.method_nm!=None:
 				failure('Multiple methods selected')
 			if param==None:
 				failure('Missing parameter')
 			if o.n_votes>0: failure('-m must precede ballots')
-			o.method_nm=lower(param)
+			o.method_nm=param.lower()
 
 			if o.method_nm=="borda":
 				o.record_pw=1
-			
+
 			elif o.method_nm=="bucklin":
 				o.record_ballots=1
-			
+
 			elif o.method_nm=="c//irv":
 				o.method_nm="c_irv"
 				o.record_pw=1
 				o.record_ballots=1
-			
+
 			elif o.method_nm=="copeland":
 				o.record_pw=1
 
@@ -142,7 +142,7 @@ def get_options(list,o): # gets command line options
 
 			elif o.method_nm=="nanson":
 				o.record_pw=1
-				
+
 			elif o.method_nm=="pw-elim":
 				o.method_nm="pw_elim"
 				o.record_pw=1
@@ -164,29 +164,29 @@ def get_options(list,o): # gets command line options
 
 			elif o.method_nm=="table":
 				o.record_pw=1
-				
+
 			elif o.method_nm=="rp":
 				o.record_pw=1
-				
+
 			elif o.method_nm=="ukvt":
 				o.record_pw=1
-	
+
 			elif o.method_nm=="nrp":
 				o.record_pw=1
-	
+
 			else: failure('unknown method: ' + o.method_nm)
 
 		elif opt== 'table':
-			if o.cand_l==None: 
+			if o.cand_l==None:
 				failure('-cands must precede -table')
 			if o.record_pw==0: failure('-table needs pairwise method')
 			if o.record_ballots!=0: failure('-table requires purely pairwise method')
 			if o.n_votes>0: failure('Tables must precede ballots')
 
 			read_table(o.pw_tbl)
-			
+
 		elif opt=='tie':
-			if o.cand_l==None: 
+			if o.cand_l==None:
 				failure('-cands must precede -tie')
 			if param==None:
 				failure('Missing parameter')
@@ -194,7 +194,7 @@ def get_options(list,o): # gets command line options
 			if o.tiebreaker!=None:
 				failure('Multiple tiebreaker selected')
 
-			tb=split(param)
+			tb=param.split()
 			o.tiebreaker=[]
 			try:
 				for cand in tb:
@@ -209,37 +209,37 @@ def get_options(list,o): # gets command line options
 			o.zero_def=1
 		else:
 			failure('Unable to process option:' + repr(opt))
-			
-			
+
+
 def vote_main():
-	o=Options() 
-		
+	o=Options()
+
 	if len(sys.argv)>1: # process the command line for options
 		command=join(sys.argv[1:])
-		command=strip(command)
+		command=command.strip()
 		if command:
 			if command[0]!='-': failure('option must use hyphen')
 			get_options(re.split(r'\s+-',command[1:]),o)
-	
+
 	try:
 		while o.cand_l==None:
 			rawline=input_line()
 			if rawline[0]=='-': # process argument lines
 				get_options(re.split(r'\s+-',rawline[1:]),o)
-			else: 
+			else:
 				failure('Some options must precede data')
-	
+
 		n=len(o.cand_l)
-		
+
 		while 1:
 			rawline = input_line()
-	
+
 			if rawline[0]=='-': # process argument lines
 				get_options(re.split(r'\s+-',rawline[1:]),o)
 				continue
-				
 
-			bltsvote=split(rawline,":",1)
+
+			bltsvote=rawline.split(":",1)
 			if len(bltsvote)==1: #check for number of ballots
 				ballots=1
 				rawline=bltsvote[0]
@@ -248,51 +248,51 @@ def vote_main():
 					ballots=int(bltsvote[0])
 					rawline=bltsvote[1]
 				except ValueError: failure('illegal number of ballots')
-			
-			rawline=strip(rawline)
+
+			rawline=rawline.strip()
 			if len(rawline)==0: failure('missing ballot')
-	
-			if ballots<=0: failure('Number of ballots must be positive')			
+
+			if ballots<=0: failure('Number of ballots must be positive')
 			o.n_votes=o.n_votes+ballots
-			rawline=strip(rawline)
+			rawline=rawline.strip()
 			rawline=re.sub(r'\s*=\s*','=',rawline) # remove whitespace around '='
-	
+
 			line=re.split(r'[\s>]+',rawline) # '>' and/or any remaing whitespace means '>'
-	
+
 			#give each candidate a score based on where it appears on the ballot. n is best, 0 worst
 			working=numpy.zeros((n),numpy.int32)
 			level=n
-	
+
 			for eqcands in line:
-				cands= split(eqcands,"=")
+				cands= eqcands.split("=")
 				for cand in cands:
 					try:
 						x=o.cand_l.index(cand)
-					except ValueError: failure('Unknown candidate: ' + cand)	
+					except ValueError: failure('Unknown candidate: ' + cand)
 					working[x]=level
 				level=level-1
-				
+
 			if o.record_pw:
 				for i in range(n):
 					for j in range(n):
-						if working[i]>working[j]: 
+						if working[i]>working[j]:
 							o.pw_tbl[i,j]=o.pw_tbl[i,j]+ballots
 			if o.record_ballots:
 				b=Ballot()
 				b.votes=ballots
 				b.ballot=working
 				o.ballot_tbl=o.ballot_tbl+[b]
-	
+
 	except EOFError:
 		if o.cand_l==None:
 			print("Empty File.  Nothing to do.")
 			return
 	global lineno
 	lineno=-1
-	
+
 	print('VOTES  ' , o.n_votes)
 	if o.record_pw:
-		if o.zero_def: 
+		if o.zero_def:
 			zero_defeats(o.pw_tbl)
 			print("Defeats Zero'd out")
 
@@ -303,9 +303,9 @@ def vote_main():
 
 	if o.method_nm=="table":
 		return
-	
+
 	# choose which method to use on the data
-	
+
 	eval('votemethod.'+o.method_nm+'(o)')
 
 def vote_engine(fin=None,fout=None,opts=None):
