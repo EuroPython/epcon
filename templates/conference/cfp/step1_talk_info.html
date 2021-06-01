@@ -19,6 +19,11 @@
     <div class="row">
         <div class="col-md-12">
             <h1>Submit Your Proposal</h1>
+            <p>
+                Please provide the details of your proposal below and remember to
+                complete <b>both steps</b> of the submission process. Your proposal will
+                not be valid if you do not complete both steps.
+            </p>
         </div>
     </div>
 
@@ -28,7 +33,7 @@
                 {% csrf_token %}
                 {{ proposal_form|crispy }}
 
-                <button class="btn btn-success btn-lg btn-block">Submit Proposal</button>
+                <button class="btn btn-success btn-lg btn-block">Proceed to step 2</button>
             </form>
         </div>
         <div class="col-md-6">

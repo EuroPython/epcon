@@ -154,7 +154,6 @@ def test_if_user_can_submit_talk_details_and_is_redirect_to_step2(user_client):
         "tags": "abc, defg",
         "level": TALK_LEVEL.beginner,
         "domain_level": TALK_LEVEL.advanced,
-        "i_accept_speaker_release": True,
     }
     if CONFERENCE_TIMESLOTS and \
        isinstance(CONFERENCE_TIMESLOTS, (list, tuple)):
@@ -206,7 +205,6 @@ def test_if_user_cannot_submit_talk_if_availability_not_selected(user_client):
             "tags": "abc, defg",
             "level": TALK_LEVEL.beginner,
             "domain_level": TALK_LEVEL.advanced,
-            "i_accept_speaker_release": True,
         },
     )
 
@@ -236,7 +234,6 @@ def test_if_user_cannot_submit_talk_if_release_not_selected(user_client):
             "tags": "abc, defg",
             "level": TALK_LEVEL.beginner,
             "domain_level": TALK_LEVEL.advanced,
-            "i_accept_speaker_release": False,
         },
     )
 
@@ -282,6 +279,7 @@ def test_if_user_can_add_a_speaker_to_a_proposal(user_client):
             "users_family_name": "Doe",
             "phone": "+48523456789",
             "bio": "ASdf bio",
+            "i_accept_speaker_release": True
         },
     )
     assert response.status_code == STEP2_CORRECT_REDIRECT_302
@@ -294,6 +292,7 @@ def test_if_user_can_add_a_speaker_to_a_proposal(user_client):
     assert speaker["company_homepage"] == ""
     assert speaker["bio"] == "ASdf bio"
     assert speaker["phone"] == "+48523456789"
+
 
     assert redirects_to(
         response, reverse("cfp:step3_thanks", args=[talk.uuid])
@@ -517,7 +516,6 @@ def test_update_proposal_updates_proposal(user_client):
         "title": "New title",
         "sub_title": "New sub title",
         "tags": "Some, tags",
-        "i_accept_speaker_release": True,
     }
     if CONFERENCE_TIMESLOTS and \
        isinstance(CONFERENCE_TIMESLOTS, (list, tuple)):
@@ -563,7 +561,6 @@ def test_update_proposal_fails_if_missing_release_agreement(user_client):
             "title": "New title",
             "sub_title": "New sub title",
             "tags": "Some, tags",
-            "i_accept_speaker_release": False
         },
     )
 
@@ -595,6 +592,7 @@ def test_update_speaker_updated_speaker(user_client):
         company="widgets inc",
         company_homepage="www.widgets.inc",
         bio="this is my bio",
+        i_accept_speaker_release=True,
     )
 
     response = user_client.post(edit_url, speaker_data)
@@ -633,6 +631,7 @@ def test_update_speaker_updated_speaker_name(user_client):
         users_family_name="Name",
         phone="+48123456789",
         bio="this is my bio",
+        i_accept_speaker_release=True,
     )
 
     response = user_client.post(edit_url, speaker_data)
@@ -659,6 +658,7 @@ def test_speaker_form_accepts_valid_international_mobile_numbers(valid_phone):
             "users_family_name": "Doe",
             "phone": valid_phone,
             "bio": "ASdf bio",
+            "i_accept_speaker_release": True,
         }
     )
     assert form.is_valid()
@@ -678,6 +678,7 @@ def test_speaker_form_doesnt_accept_invalid_international_mobile_numbers(
             "users_family_name": "Doe",
             "phone": invalid_phone,
             "bio": "ASdf bio",
+            "i_accept_speaker_release": True
         }
     )
     assert not form.is_valid()
