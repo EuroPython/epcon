@@ -6,27 +6,32 @@ from optparse import make_option
 
 
 class Command(BaseCommand):
-    option_list = BaseCommand.option_list + (
-        make_option(
+
+    def add_arguments(self, parser):
+
+        # Positional arguments
+        parser.add_argument('conference')
+
+        # Named (optional) arguments
+        parser.add_argument(
             '--missing-vote',
             action='store',
             dest='missing_vote',
             default=0,
-            type='float',
-            help='Used whed a user didn\'t vote a talk',
-        ),
-        make_option(
+            type=float,
+            help='Used when a user didn\'t vote a talk'
+            )
+        parser.add_argument(
             '--show-input',
             action='store_true',
             dest='show_input',
             default=False,
             help='Show the input data piped to votengine',
-        ),
-    )
+            )
 
     def handle(self, *args, **options):
         try:
-            conference = args[0]
+            conference = options['conference']
         except IndexError:
             raise CommandError('conference not specified')
 
@@ -40,6 +45,11 @@ class Command(BaseCommand):
                 .values('user')
             votes = qs.count()
             users = qs.distinct().count()
-            print('%d talks / %d users / %d votes' % (talks.count(), users, votes))
+            print(f'Talk voting results for {conference}: {talks.count()} talks / {users} users / {votes} votes')
+            print('')
+            print(f'Rank,TalkID,TalkType,TalkLanguage,TalkTitle,FirstSpeaker,AllSpeakers')
             for ix, t in enumerate(utils.ranking_of_talks(talks, missing_vote=options['missing_vote'])):
-                print(ix + 1, '-', t.id, '-', t.type, '-', t.language, '-', t.title.encode('utf-8'))
+                speakers = [str(speaker) for speaker in list(t.get_all_speakers())]
+                first_speaker = speakers[0]
+                all_speakers = ', '.join(speakers)
+                print(f'{ix + 1},{t.id},{t.type},{t.language},"{t.title}","{first_speaker}","{all_speakers}"')

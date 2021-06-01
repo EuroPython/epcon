@@ -20,6 +20,7 @@ from django.contrib.contenttypes.fields import (
     GenericForeignKey,
     GenericRelation
 )
+from django_extensions.db.fields.json import JSONField
 
 import shortuuid
 from model_utils import Choices
@@ -1389,3 +1390,30 @@ class StripePayment(models.Model):
     def amount_for_stripe(self):
         # 9.99 becomes 999
         return int(self.amount * 100)
+
+### Streaming
+
+STREAMS_HELP_TEXT = """Stream definitions as JSON list, with one entry per track in
+the stream set. Order is important. The stream page will default to showing the first
+track. Example:
+[
+    {
+        "title": "Holy Grail",
+        "fare_codes": ["TRCC", "TRCP", "TRSC", "TRSP", "TRVC", "TRVP"],
+        "url": "https://www.youtube.com/embed/EEIk7gwjgIM"
+    }
+]
+"""
+class StreamSet(models.Model):
+
+    conference = models.ForeignKey(Conference, on_delete=models.deletion.PROTECT)
+    name = models.CharField(max_length=255)
+    enabled = models.BooleanField(default=True, help_text="Is this set visible to enduser?")
+    start_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True)
+    # JSON list with the stream descritions:
+    #   - title: Title of the track
+    #   - fare_codes: List of fare codes which may see the stream
+    #   - url: YouTube/Vimeo Stream URL
+    streams = JSONField(blank=True, help_text=STREAMS_HELP_TEXT)
+
