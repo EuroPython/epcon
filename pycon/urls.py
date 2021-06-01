@@ -6,6 +6,7 @@ from django.views.generic import RedirectView
 from filebrowser.sites import site as fsite
 
 from conference.accounts import urlpatterns as accounts_urls
+from conference.api import urlpatterns as api_urls
 from conference.cart import urlpatterns as cart_urls
 from conference.cfp import urlpatterns as cfp_urls
 from conference.debug_panel import urlpatterns as debugpanel_urls
@@ -29,6 +30,7 @@ urlpatterns = [
     re_path(r'^generic-content-page/with-sidebar/$', generic_content_page_with_sidebar),
     re_path(r'^user-panel/', include((user_panel_urls, 'conference'), namespace="user_panel")),
     re_path(r'^accounts/', include((accounts_urls, 'conference'), namespace="accounts")),
+    re_path(r'^api/', include((api_urls, 'conference'), namespace="api")),
     re_path(r'^cfp/', include((cfp_urls, 'conference'), namespace="cfp")),
     re_path(r'^talks/', include((talks_urls, 'conference'), namespace="talks")),
     re_path(r'^profiles/', include((profiles_urls, 'conference'), namespace="profiles")),

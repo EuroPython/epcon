@@ -452,3 +452,14 @@ class NewsFactory(factory.django.DjangoModelFactory):
     content = factory.Faker('sentence', nb_words=20)
     status = News.STATUS.PUBLISHED
     published_date = factory.LazyFunction(timezone.now)
+
+class StreamSetFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = "conference.StreamSet"
+
+    conference = factory.Iterator(Conference.objects.all())
+    name = factory.Faker('sentence', nb_words=4)
+    enabled = True
+    start_date = factory.LazyFunction(timezone.now)
+    end_date = factory.LazyFunction(lambda: timezone.now() + timedelta(hours=1))
+    streams = "[]"

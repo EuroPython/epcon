@@ -1,4 +1,5 @@
 import logging
+import os
 import os.path
 import re
 import subprocess
@@ -81,19 +82,24 @@ def _input_for_ranking_of_talks(talks, missing_vote=5):
 
 def ranking_of_talks(talks, missing_vote=5):
     import conference
-    vengine = os.path.join(os.path.dirname(conference.__file__), 'tools', 'voteengine-0.99', 'voteengine.py')
+    vengine = os.path.join(os.path.dirname(conference.__file__),
+                           'tools',
+                           'voteengine-0.99',
+                           'voteengine.py')
 
     talks_map = dict((t.id, t) for t in talks)
-    in_ = _input_for_ranking_of_talks(list(talks_map.values()), missing_vote=missing_vote)
+    in_ = _input_for_ranking_of_talks(list(talks_map.values()), missing_vote=missing_vote).encode('utf-8')
 
     pipe = subprocess.Popen(
         [vengine],
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        close_fds=True
+        close_fds=True,
+        env=os.environ
     )
     out, err = pipe.communicate(in_)
     if pipe.returncode != 0:
         raise RuntimeError("voteengine.py exits with code: %s; %s" % (pipe.returncode, err))
+    out = out.decode('utf-8')
 
     return [
         talks_map[int(tid)]

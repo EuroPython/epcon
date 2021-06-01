@@ -392,7 +392,8 @@ CMS_TEMPLATES = (
     # ('conference/content/generic_content_page.html', 'Generic Content Page'),
     ('conference/content/generic_content_page_with_sidebar.html',
      'Generic Content Page (with sidebar)'),
-    ('conference/homepage/home_template.html', 'Homepage'),
+    ('conference/homepage/home_template.html',
+     'Homepage'),
 )
 PAGE_TEMPLATES = (
     ('conference/content/generic_content_page_with_sidebar.html',
@@ -726,3 +727,15 @@ DISABLE_CACHING = False
 # Complete project setup.
 if not os.path.exists(LOGS_DIR):
     os.makedirs(LOGS_DIR)
+
+# Matrix Auth API settings
+MATRIX_AUTH_API_DEBUG = config(
+    'MATRIX_AUTH_API_DEBUG',
+    default=True,
+    cast=bool
+)
+MATRIX_AUTH_API_ALLOWED_IPS = config(
+    'MATRIX_AUTH_API_ALLOWED_IPS',
+    default='',
+    cast=lambda v: [s.strip() for s in v.split(',') if s.strip()]
+)

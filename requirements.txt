@@ -95,7 +95,7 @@ django-treebeard==4.4
     # via
     #   -r requirements.in
     #   django-cms
-django==2.2.19
+django==2.2.23
     # via
     #   -r requirements.in
     #   cmsplugin-filer
