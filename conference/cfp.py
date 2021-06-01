@@ -14,7 +14,7 @@ from django.views.generic import RedirectView
 
 from phonenumber_field.formfields import PhoneNumberField
 
-from .forms import ProposalForm
+from .forms import ProposalForm, TalkBaseForm
 from .models import (
     Conference,
     AttendeeProfile,
@@ -280,8 +280,8 @@ def add_speaker_to_talk(speaker, talk):
 
 
 class AddSpeakerToTalkForm(forms.ModelForm):
-    users_given_name = forms.CharField(label="Given name of the speaker")
-    users_family_name = forms.CharField(label="Family name of the speaker")
+    users_given_name = forms.CharField(label="Given name")
+    users_family_name = forms.CharField(label="Family name")
     is_minor = forms.BooleanField(
         label="Are you a minor?",
         help_text=(
@@ -322,6 +322,9 @@ class AddSpeakerToTalkForm(forms.ModelForm):
         ),
         widget=forms.Textarea(),
     )
+    i_accept_speaker_release  = TalkBaseForm.base_fields[
+        'i_accept_speaker_release'
+    ]
 
     class Meta:
         model = AttendeeProfile
