@@ -1,5 +1,11 @@
 CHANGELOG
 
+2021-05-25 MAL:
+- partially ported to Python 3 -- only as far as was needed to make the
+  tool run again
+
+-----
+
 0.99 Feb 12 2001
  Fixed some bugs introduced by 0.95.  Changed how method options
  are done.
