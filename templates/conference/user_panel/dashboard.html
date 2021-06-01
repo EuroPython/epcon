@@ -35,6 +35,27 @@
             <a href="{% page_url 'submit-proposal' %}">If you'd like to do this, here's more information</a>
             {% endif %}
 
+        <h2 style='margin-top: 2em'>Matrix Chat Server</h2>
+            {% if not matrix_username and not matrix_password %}
+            Sorry, you need either a Conference ticket or a Combined ticket to access the 
+            EuroPython Matrix Chat server.
+            {% else %}
+            You can access the <a href="https://matrix.europython.eu/">EuroPython Matrix Server</a>
+            using these credentials:
+            <dl>
+                <dt>Email</dt>
+                <dd>{{ matrix_username }}</dd>
+                <dt>Password</dt>
+              {% if matrix_password == user.password %}
+              <dd>The same password you use to login into this site</dd>
+              {% else %}
+              <dd>{{ matrix_password }}</dd>
+              Please not that this temporary password is valid until 23:59:59 CEST.
+              After that, a new one will be generated. Please come back here to see it.
+              {% endif %}
+            </dl>
+            {% endif %}
+
         <h2 style='margin-top: 2em'>Tickets</h2>
             {% if tickets %}
             {% include "conference/user_panel/_tickets.html" %}
@@ -42,7 +63,6 @@
             Sorry, you didn't buy any tickets yet.
             <a href="{% page_url 'tickets' %}">Click here to see what tickets we have available right now.</a>
             {% endif %}
-
 
         <h2 style='margin-top: 2em'>Invoices</h2>
             {% if invoices %}
