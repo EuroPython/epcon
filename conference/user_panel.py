@@ -10,6 +10,7 @@ from django import forms
 from django.conf import settings
 from django.conf.urls import url as re_path
 from django.contrib import messages
+from  django.contrib.auth.hashers import is_password_usable
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -27,6 +28,7 @@ from p3.models import P3Profile, TicketConference
 from p3.utils import assign_ticket_to_user
 
 from .accounts import get_or_create_attendee_profile_for_new_user
+from .api import generate_matrix_password
 from .cfp import AddSpeakerToTalkForm
 from .models import (
     AttendeeProfile,
@@ -43,6 +45,18 @@ from .tickets import reset_ticket_settings
 from .decorators import full_profile_required
 
 
+def fare_valid_for_matrix_login(user, ticket):
+    """
+    Return whether or not `ticket` allows `user` to access our Matrix chat
+    server.
+
+    The conditions are:
+      1. `ticket` is *assigned* to `user` AND
+      2. `ticket.fare.code` is in (TRCC, TRCP, TRSC, TRSP, TRPC, TRPP)
+    """
+    return ticket.user == user and ticket.fare.code[2] in 'CSP'
+
+
 @login_required
 @full_profile_required
 def user_dashboard(request):
@@ -50,6 +64,14 @@ def user_dashboard(request):
     orders = get_orders_for_current_conference(request.user)
     invoices = get_invoices_for_current_conference(request.user)
     tickets = get_tickets_for_current_conference(request.user)
+
+    matrix_username = None
+    matrix_password = None
+    if any(fare_valid_for_matrix_login(request.user, t) for t in tickets):
+        matrix_username = request.user.email
+        matrix_password = request.user.password \
+            if is_password_usable(request.user.password) \
+            else generate_matrix_password(request.user)
 
     return TemplateResponse(
         request,
@@ -63,6 +85,8 @@ def user_dashboard(request):
             "orders": orders,
             "invoices": invoices,
             "tickets": tickets,
+            "matrix_username": matrix_username,
+            "matrix_password": matrix_password,
         },
     )
 

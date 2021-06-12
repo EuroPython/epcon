@@ -15,8 +15,10 @@ please refer to https://github.com/matrix-org/synapse/blob/master/docs/\
 from enum import Enum
 import json
 from functools import wraps
+from hashlib import md5
 from django.conf.urls import url as re_path
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import check_password as django_check_password
+from django.contrib.auth.hashers import is_password_usable
 from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -29,6 +31,7 @@ from conference.models import (
 )
 from pycon.settings import MATRIX_AUTH_API_DEBUG as DEBUG
 from pycon.settings import MATRIX_AUTH_API_ALLOWED_IPS as ALLOWED_IPS
+from pycon.settings import SECRET_KEY
 
 
 # Error Codes
@@ -113,6 +116,57 @@ def restrict_client_ip_to_allowed_list(fn):
     return wrapper
 
 
+def check_user_password(user, password):
+    # Two options: either our User has a valid password, in which case we do
+    # check it, or not, in which case we check it against the generated passwd.
+    if not is_password_usable(user.password):
+        return password == generate_matrix_password(user)
+    return django_check_password(password, user.password)
+
+
+def get_assigned_tickets(user, conference):
+    return Ticket.objects.filter(
+        Q(fare__conference=conference.code)
+        & Q(frozen=False)                   # i.e. the ticket was not cancelled
+        & Q(orderitem__order___complete=True)       # i.e. they paid
+        & Q(user=user)                              # i.e. assigned to user
+    )
+
+
+def is_speaker(user, conference):
+    # A speaker is a user with at least one accepted talk in the current
+    # conference.
+    try:
+        speaker = user.speaker
+    except Speaker.DoesNotExist:
+        return False
+    return TalkSpeaker.objects.filter(
+        speaker=speaker,
+        talk__conference=conference.code,
+        talk__status='accepted'
+    ).count() > 0
+
+
+def generate_matrix_password(user):
+    """
+    Create a temporary password for `user` to that they can login into our
+    matrix chat server using their email address and that password. This is
+    only needed for social auth users since they do not have a valid password
+    in our database.
+
+    The generated passowrd is not stored anywhere.
+    """
+    def n_base_b(n, b, nums='0123456789abcdefghijklmnopqrstuvwxyz'):
+        """Return `n` in base `b`."""
+
+        return ((n == 0) and nums[0]) or \
+            (n_base_b(n // b, b, nums).lstrip(nums[0]) + nums[n % b])
+
+    encoded = md5(str(user.email + SECRET_KEY).encode()).hexdigest()
+    n = int(encoded, 16)
+    return n_base_b(n, 36)
+
+
 @csrf_exempt
 @ensure_post
 @ensure_https_in_ops
@@ -171,44 +225,22 @@ def isauth(request):
         return _error(ApiError.AUTH_ERROR, 'unknown user')
 
     # Is the password OK?
-    if not check_password(data['password'], profile.user.password):
+    if not check_user_password(profile.user, data['password']):
         return _error(ApiError.AUTH_ERROR, 'authentication error')
 
-    # Get the tickets **assigned** to the user
     conference = Conference.objects.current()
-
-    tickets = Ticket.objects.filter(
-        Q(fare__conference=conference.code)
-        & Q(frozen=False)                   # i.e. the ticket was not cancelled
-        & Q(orderitem__order___complete=True)       # i.e. they paid
-        & Q(user=profile.user)                      # i.e. assigned to user
-    )
-
-    # A speaker is a user with at least one accepted talk in the current
-    # conference.
-    try:
-        speaker = profile.user.speaker
-    except Speaker.DoesNotExist:
-        is_speaker = False
-    else:
-        is_speaker = TalkSpeaker.objects.filter(
-            speaker=speaker,
-            talk__conference=conference.code,
-            talk__status='accepted'
-        ).count() > 0
-
     payload = {
         "username": profile.user.username,
         "first_name": profile.user.first_name,
         "last_name": profile.user.last_name,
         "email": profile.user.email,
         "is_staff": profile.user.is_staff,
-        "is_speaker": is_speaker,
+        "is_speaker": is_speaker(profile.user, conference),
         "is_active": profile.user.is_active,
         "is_minor": profile.is_minor,
         "tickets": [
             {"fare_name": t.fare.name, "fare_code": t.fare.code}
-            for t in tickets
+            for t in get_assigned_tickets(profile.user, conference)
         ]
     }
 
