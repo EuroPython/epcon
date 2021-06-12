@@ -35,6 +35,36 @@
             <a href="{% page_url 'submit-proposal' %}">If you'd like to do this, here's more information</a>
             {% endif %}
 
+        <h2 style='margin-top: 2em'>EuroPython Conference System</h2>
+            {% if not matrix_username and not matrix_password %}
+            Sorry, you need Sprint Only, a Conference a Combined ticket to access the 
+            EuroPython Matrix Chat server.
+            {% else %}
+            You can access the 
+            <a href="https://matrix.europython.eu/" target="matrix">EuroPython Conference System</a>
+            using these credentials:<br /><br />
+
+            <table class="table">
+              <tr>
+                <th>Email</th><th>Password</th>
+              </tr>
+              <tr>
+                <td>{{ matrix_username }}</td>
+                <td>
+                {% if matrix_password == user.password %}
+                The same password you use to login into this site
+                {% else %}
+                {{ matrix_password }}
+                {% endif %}
+                </td>
+              </tr>
+            </table>
+            <a class='btn btn-primary' href="https://matrix.europython.eu/" target="matrix">
+                Go to the EuroPython Conference System Now
+            </a>
+            
+            {% endif %}
+
         <h2 style='margin-top: 2em'>Tickets</h2>
             {% if tickets %}
             {% include "conference/user_panel/_tickets.html" %}
@@ -42,7 +72,6 @@
             Sorry, you didn't buy any tickets yet.
             <a href="{% page_url 'tickets' %}">Click here to see what tickets we have available right now.</a>
             {% endif %}
-
 
         <h2 style='margin-top: 2em'>Invoices</h2>
             {% if invoices %}
