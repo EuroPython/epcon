@@ -54,7 +54,7 @@ def fare_valid_for_matrix_login(user, ticket):
       1. `ticket` is *assigned* to `user` AND
       2. `ticket.fare.code` is in (TRCC, TRCP, TRSC, TRSP)
     """
-    return ticket.user == user and ticket.fare.code[2] in 'CS'
+    return ticket.user == user and ticket.fare.code[2] in 'CSP'
 
 
 @login_required
