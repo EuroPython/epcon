@@ -44,12 +44,12 @@ from assopy.models import Coupon
 #
 # 
 #
-if settings.CONFERENCE_CONFERENCE == 'ep2021':
-    # For the virtul event we give out 100% coupons
+if settings.CONFERENCE_CONFERENCE in ('ep2021', 'ep2020'):
+    # For the virtual events we give out 100% coupons
     TALK_TYPE_DISCOUNTS = {
         't': ('TLK', '100%', False),  # Talk
         'i': ('INT', '100%', False),  # Interactive
-        'r': ('TRN', '100%', True),  # Training
+        'r': ('TRN', '100%', True),   # Training
         'p': ('PST', '100%', False),  # Poster
         'n': ('PAN', '100%', False),  # Panel
         'h': ('HPD', '100%', False),  # Helpdesk
@@ -282,7 +282,7 @@ class Command(BaseCommand):
                 fares = conference_fares
             if not self.dry_run:
                 c.save()
-                c.fares = fares
+                c.fares.set(fares)
             data.append(data_row)
 
         # Output CSV data, UTF-8 encoded
