@@ -259,13 +259,15 @@ div.cms .cms-toolbar {
 
             <div class="schedule__grid schedule__day--time" style="--cols: 1; --rows: {{ schedule.grid.rows }};">
                 {% for time in schedule.grid.times %}
-                    <div class="schedule__time" style="
+                    <div class="schedule__time" 
+                         style="
                         grid-row: {{ time.start_row }} / {{ time.end_row }};
                         grid-column: 1 / 1;
                     ">
                         <a class="schedule-time-display"
 			   data-fulltime="{{ time.time|utc|date:'Y-m-d H:i' }}"
 			   name="{{ time.time|utc|date:'H:i' }}-UTC"
+			   id="{{ time.time|utc|date:'H:i' }}-UTC"
 			   href="#{{ time.time|utc|date:'H:i' }}-UTC">{{ time.time|utc|date:'H:i' }}</a>
                     </div>
                 {% endfor %}
@@ -420,7 +422,11 @@ function format_local_times() {
 
 $(document).ready(function() {
     format_local_times();
+    // Adjust notice
     $('#timezone').text("Your Time");
+    // Scroll to anchor, if any
+    if (location.hash)
+        location.href = location.hash;
 });
 
 </script>

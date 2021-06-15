@@ -87,6 +87,10 @@ a.navbar-brand:hover{
     flex-wrap: wrap;
 }
 
+#days-navbar {
+    background-image: none;
+}
+
 #content_page {
     min-height: 500px;
     margin: 40px 0;
