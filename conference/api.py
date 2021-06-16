@@ -184,6 +184,13 @@ def isauth(request):
         "password": str (not encrypted)
     }
 
+    or
+
+    {
+        "username": str,
+        "password": str (not encrypted)
+    }
+
     Output (JSON)
     {
         "username": str,
@@ -207,22 +214,37 @@ def isauth(request):
         "error": int
     }
     """
-    required_fields = {'email', 'password'}
-
     try:
         data = json.loads(request.body)
     except json.decoder.JSONDecodeError as ex:
         return _error(ApiError.INPUT_ERROR, ex.msg)
 
-    if not isinstance(data, dict) or not required_fields.issubset(data.keys()):
+    if not isinstance(data, dict):
         return _error(ApiError.INPUT_ERROR,
                       'please provide credentials in JSON format')
+    if 'password' not in data:
+        return _error(ApiError.INPUT_ERROR,
+                      'please provide user password in JSON payload')
+    if 'username' not in data and 'email' not in data:
+        return _error(ApiError.INPUT_ERROR,
+                      'please provide username or email in JSON payload')
 
-    # First, let's find the user/account profile given the email address
-    try:
-        profile = AttendeeProfile.objects.get(user__email=data['email'])
-    except AttendeeProfile.DoesNotExist:
-        return _error(ApiError.AUTH_ERROR, 'unknown user')
+    # First, let's find the user/account profile given the email/username as
+    # appropriate.
+    if 'email' in data:
+        try:
+            profile = AttendeeProfile.objects.get(user__email=data['email'])
+        except AttendeeProfile.DoesNotExist:
+            return _error(ApiError.AUTH_ERROR, 'unknown user')
+    elif 'username' in data:
+        try:
+            profile = AttendeeProfile.objects.get(
+                user__username=data['username']
+            )
+        except AttendeeProfile.DoesNotExist:
+            return _error(ApiError.AUTH_ERROR, 'unknown user')
+    else:
+        return _error(ApiError.INPUT_ERROR, 'no email/username provided')
 
     # Is the password OK?
     if not check_user_password(profile.user, data['password']):
