@@ -95,6 +95,7 @@ USE_L10N = True
 USE_TZ = True
 
 TIME_ZONE = 'Europe/Amsterdam'
+
 LANGUAGE_CODE = 'en'
 
 LANGUAGES = (

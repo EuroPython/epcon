@@ -2,6 +2,7 @@ import datetime
 import os
 import os.path
 import uuid
+import pytz
 from collections import defaultdict
 from urllib.parse import urlencode
 
@@ -1187,6 +1188,20 @@ class Event(models.Model):
         return (
             n, (n + datetime.timedelta(seconds=self.get_duration() * 60))
         )
+
+    def get_schedule_string(self):
+    
+        """ Return a text representation of the scheduled slot.
+        
+        """
+        (start, end) = self.get_time_range()
+        duration = self.get_duration()
+        tz = pytz.timezone(settings.TIME_ZONE)
+        end = tz.localize(end)
+        return (
+            f'{start.strftime("%a, %b %d, %H:%M")}-'
+            f'{end.strftime("%H:%M %Z")} ({duration} min)'
+            )
 
     def get_description(self):
         if self.talk:
