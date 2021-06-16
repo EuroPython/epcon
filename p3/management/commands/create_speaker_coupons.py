@@ -14,6 +14,9 @@
     to get recreated, deleted it in the database first and then run
     the script.
 
+    There are several special cases handled by the script, e.g.  when
+    setting the admin type to keynote.  Please check below for details.
+
     Use --dry-run to test drive the script.
 
     WARNING: This script will create coupons for all speakers,
@@ -105,7 +108,7 @@ class Command(BaseCommand):
         speakers = {}
         qs = cmodels.TalkSpeaker.objects\
             .filter(Q(talk__conference=conference.code), 
-                    Q(talk__status='accepted') | Q(talk__status='waitlist'),
+                    Q(talk__status='accepted'),
                     Q(helper=False))\
             .select_related('talk', 'speaker__user')
         for row in qs:
@@ -143,11 +146,6 @@ class Command(BaseCommand):
                 if (entry is not None and
                     entry['discount'] != '100%'):
                     entry = None
-
-            if talk_code == 'r' and talk_status == 'waitlist':
-                # Training entries on the waiting list only get a
-                # 25% coupon, not a 100% one
-                discount_code = '25%'
 
             # Entry already exists, so don't create a new coupon
             if entry is not None:

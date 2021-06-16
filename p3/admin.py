@@ -90,8 +90,8 @@ class TalkAdmin(admin.ModelAdmin):
         "status",
         "duration",
         "type",
+        "admin_type",
         "level",
-        "tags__name",
     )
     list_editable = ("status",)
     search_fields = [
@@ -112,6 +112,7 @@ class TalkAdmin(admin.ModelAdmin):
         "type",
         "duration",
         "status",
+        "admin_type",
         "created",
         "level",
         "domain_level",
