@@ -753,7 +753,8 @@ class Talk(models.Model):
 
         url = event.schedule.get_absolute_url()
         slug = urlencode({'selected': self.slug})
-        time = event.start_time.strftime('%H:%M-UTC')
+        dt = datetime.datetime.combine(event.schedule.date, event.start_time)
+        time = dt.astimezone(datetime.timezone.utc).strftime('%H:%M-UTC')
         return f"{url}?{slug}#{time}"
 
     def get_slides_url(self):
