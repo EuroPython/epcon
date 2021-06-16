@@ -41,7 +41,7 @@
                     {% endfor %}
                 </p>
                 {% if talk_as_dict.schedule_url %}
-                    <a class="btn btn-primary" href="{{ talk_as_dict.schedule_url }}">See in schedule</a>
+                    <a class="btn btn-primary" href="{{ talk_as_dict.schedule_url }}">See in schedule: {{ talk_as_dict.schedule_string }}</a>
                 {% endif %}
                 {% if talk_as_dict.slides_url %}
                     <a class="btn btn-primary" href="{{ talk_as_dict.slides_url }}">Download/View Slides</a>
