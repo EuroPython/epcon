@@ -2,6 +2,7 @@ import datetime
 import os
 import os.path
 import uuid
+import pytz
 from collections import defaultdict
 from urllib.parse import urlencode
 
@@ -753,7 +754,7 @@ class Talk(models.Model):
 
         url = event.schedule.get_absolute_url()
         slug = urlencode({'selected': self.slug})
-        time = event.start_time.strftime('%H:%M-UTC')
+        time = event.get_utc_start_datetime().strftime('%H:%M-UTC')
         return f"{url}?{slug}#{time}"
 
     def get_slides_url(self):
@@ -1182,10 +1183,44 @@ class Event(models.Model):
             return 0
 
     def get_time_range(self):
+    
+        """ Return time range of the event in local time.
+        
+        """
         n = datetime.datetime.combine(self.schedule.date, self.start_time)
         return (
             n, (n + datetime.timedelta(seconds=self.get_duration() * 60))
         )
+
+    def get_utc_start_datetime(self):
+
+        """ Return start time as datetime in UTC.
+        
+        """
+        dt = datetime.datetime.combine(self.schedule.date, self.start_time)
+        return dt.astimezone(datetime.timezone.utc)
+
+    def get_utc_end_datetime(self):
+    
+        """ Return end time as datetime in UTC.
+        
+        """
+        return self.get_utc_start_datetime() + datetime.timedelta(
+            seconds=self.get_duration() * 60)
+
+    def get_schedule_string(self):
+    
+        """ Return a text representation of the scheduled slot.
+        
+        """
+        (start, end) = self.get_time_range()
+        duration = self.get_duration()
+        tz = pytz.timezone(settings.TIME_ZONE)
+        end = tz.localize(end)
+        return (
+            f'{start.strftime("%a, %b %d, %H:%M")}-'
+            f'{end.strftime("%H:%M %Z")} ({duration} min)'
+            )
 
     def get_description(self):
         if self.talk:

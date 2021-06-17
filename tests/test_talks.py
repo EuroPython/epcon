@@ -337,6 +337,13 @@ def test_show_talk_link_in_schedule(client):
     url = talk.get_absolute_url()
 
     response = client.get(url)
+    html = response.content.decode()
 
-    start_time = event.start_time.strftime('%H:%M-UTC')
-    assert f"{talk.slug}#{start_time}" in response.content.decode()
+    time_range = event.get_time_range()
+
+    utc_start = event.get_utc_start_datetime()
+    schedule_hash = utc_start.strftime('%H:%M-UTC')
+    assert f"{talk.slug}#{schedule_hash}" in html
+
+    schedule_string = event.get_schedule_string()
+    assert schedule_string in html

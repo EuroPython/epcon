@@ -427,8 +427,7 @@ class EventFactory(factory.django.DjangoModelFactory):
 
     schedule = factory.SubFactory(ScheduleFactory)
     talk = factory.SubFactory(TalkFactory)
-    start_time = factory.LazyFunction(timezone.now)
-
+    start_time = factory.LazyAttribute(lambda _: timezone.now().time())
 
 class EventTrackFactory(factory.django.DjangoModelFactory):
     class Meta:

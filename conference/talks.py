@@ -145,7 +145,11 @@ def dump_relevant_talk_information_to_dict(talk: Talk, speaker_tickets=None):
         availability = talk.availability.split('|')
     event = talk.get_event()
     if event is not None:
-        event = event.json_dump()
+        event_json = event.json_dump()
+        event_schedule = event.get_schedule_string()
+    else:
+        event_json = None
+        event_schedule = ""
     output = {
         "title": talk.title,
         "uuid": talk.uuid,
@@ -164,8 +168,9 @@ def dump_relevant_talk_information_to_dict(talk: Talk, speaker_tickets=None):
         "status": talk.status,
         "tags": [t.name for t in talk.tags.all()],
         "speakers": [],
-        "event": event,
+        "event": event_json,
         "schedule_url": talk.get_schedule_url(),
+        "schedule_string": event_schedule,
         "slides_url": talk.get_slides_url(),
         "availability": availability,
     }
