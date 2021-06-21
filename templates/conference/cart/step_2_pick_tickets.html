@@ -73,7 +73,8 @@ div#discount {
                     Discount for <em>{{ discount_code }}</em>: <span class='deducted'>- {{ calculation.total_discount|floatformat:2 }}</span> EUR
                 </div>
                 {% endif %}
-                <h3 class='text-right'>TOTAL: <span id="total">{{ calculation.final_price|floatformat:2 }}</span> EUR</h3>
+                <br />
+                <h3 class='text-right'>TOTAL DUE: <span id="total">{{ calculation.final_price|floatformat:2 }}</span> EUR</h3>
 
                 <div class='text-right' style='margin-top: 2em'>
                 <input type=submit name="{{ CartActions.buy_tickets }}" class='btn btn-outline-primary' value="Confirm order">
