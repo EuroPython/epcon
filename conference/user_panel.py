@@ -635,7 +635,10 @@ def get_streams_for_current_conference(user, request=None):
         fare_codes = set()
 
     # Allow filtering by title
-    title_filter = request.GET.get('title')
+    if request is not None:
+        title_filter = request.GET.get('title')
+    else:
+        title_filter = None
 
     #print ('User has these fares: %r' % fare_codes)
     conference = Conference.objects.current()
