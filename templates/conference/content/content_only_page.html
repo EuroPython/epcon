@@ -1,0 +1,37 @@
+{% extends "conference/base.html" %}
+
+{% load menu_tags cms_tags static %}
+
+{% block body %}
+{% include "conference/content/_messages.html" %}
+<div id="content_page">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-1 col-1"></div>
+            <div class="col-lg-10 col-10">
+                <div id="content" class="epcms_content">
+                    {% placeholder "text" %}
+                </div>
+            </div>
+            <div class="col-lg-1 col-1"></div>
+        </div><!-- .row -->
+    </div>
+</div>
+{% endblock %}
+
+{% block morejs %}
+<!-- No TOC generation script loaded -->
+{% endblock morejs %}
+
+{% block cookieconsent %}
+<!-- No cookie consent banner shown -->
+{% endblock %}
+
+{% block morecss %}
+<style>
+    img.filer_image {
+        max-width: 100%;
+        height: auto;
+    }
+</style>
+{% endblock morecss %}

@@ -582,14 +582,64 @@ def get_tickets_for_current_conference(user):
     )
 
 
-def get_streams_for_current_conference(user):
+def matrix_token_access(request):
+
+    """ Check whether a Matrix embedding token was passed in
+    
+    """
+    #print ('Configured token: %r' % settings.MATRIX_STREAM_EMBEDDING_TOKEN)
+
+    if request is None:
+        return False
+
+    # Token check
+    if settings.MATRIX_STREAM_EMBEDDING_TOKEN is None:
+        return False
+    token = request.GET.get('token')
+    #print ('Found token: %r' % token)
+    if token is None:
+        return False
+    if token != settings.MATRIX_STREAM_EMBEDDING_TOKEN:
+        return False
+
+    # Referer check
+    if settings.MATRIX_STREAM_EMBEDDING_REFERER is not None:
+        referrer = request.META.get('HTTP_REFERER')
+        #print ('Referrer: %r' % referrer)
+        if referrer is None:
+            return False
+        elif referrer.startswith(settings.MATRIX_STREAM_EMBEDDING_REFERER):
+            # check passes
+            pass
+        else:
+            return False
+
+    return True
+
+def get_streams_for_current_conference(user, request=None):
 
     """ Return the list of currently active streams as dictionaries:
         - title
         - url
     """
-    fare_codes = set(
-        get_tickets_for_current_conference(user).values_list("fare__code", flat=True))
+    if user.is_authenticated:
+        # Authenticated user: use tickets
+        fare_codes = set(
+            get_tickets_for_current_conference(user).values_list("fare__code", flat=True))
+    elif matrix_token_access(request):
+        # Use token fares
+        #print ('Allow Matrix embedding')
+        fare_codes = settings.MATRIX_STREAM_EMBEDDING_FARES
+    else:
+        # No fares available
+        fare_codes = set()
+
+    # Allow filtering by title
+    if request is not None:
+        title_filter = request.GET.get('title')
+    else:
+        title_filter = None
+
     #print ('User has these fares: %r' % fare_codes)
     conference = Conference.objects.current()
     now = timezone.now()
@@ -612,6 +662,9 @@ def get_streams_for_current_conference(user):
             stream_fare_codes = set(stream.get('fare_codes', ()))
             #print ('Stream requires these fare codes: %r' % stream_fare_codes)
             if stream_fare_codes & fare_codes:
+                if title_filter:
+                    if stream['title'] != title_filter:
+                        continue
                 streams.append({
                     'title': stream['title'],
                     'url': stream['url'],

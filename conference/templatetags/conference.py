@@ -145,10 +145,11 @@ def tickets(user):
     """
     return get_tickets_for_current_conference(user)
 
-@register.simple_tag
-def visible_streams(user):
+@register.simple_tag(takes_context=True)
+def visible_streams(context, user):
     """ Return the list of currently active streams as dictionaries:
         - title
         - url
     """
-    return get_streams_for_current_conference(user)
+    request = context['request']
+    return get_streams_for_current_conference(user, request=request)

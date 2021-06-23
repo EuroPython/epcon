@@ -49,7 +49,10 @@
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     {% block morejs %}{% endblock %}
 
+    {% block cookieconsent %}
     {% include "conference/_cookie_consent.html" %}
+    {% endblock %}
+
     {% render_block "js" %} {# FOR DJANGO CMS #}
   </body>
 </html>

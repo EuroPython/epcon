@@ -35,6 +35,11 @@ if not DEBUG:
     HTTPS = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
+else:
+    # In dev mode, allow configuring the HTTPS support via the env
+    HTTPS = (os.environ.get('HTTPS', 'off') == 'on')
+    if HTTPS:
+        SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 ADMINS = (("web-wg", "web-wg@europython.eu"),)
 MANAGERS = ADMINS
@@ -373,6 +378,22 @@ PAGE_REAL_TIME_SEARCH = False
 
 PAGE_USE_STRICT_URL = True
 
+### Django CMS
+
+# Disable CMS content caching
+#
+# See https://docs.divio.com/en/latest/background/caching/#caching-with-aldryn-django-legacy
+# for details.
+#
+# Not doing so, puts the system at risk, since it could potentially deliver
+# content which was rendered for a user with different permissions.
+#
+CMS_CACHE_DURATIONS = {
+    'menus': 60,
+    'content': 0,
+    'permissions': 60,
+}
+
 CMS_LANGUAGES = {
     1: [
         {
@@ -394,6 +415,10 @@ CMS_TEMPLATES = (
      'Generic Content Page (with sidebar)'),
     ('conference/homepage/home_template.html',
      'Homepage'),
+    ('conference/content/wide_content_page.html',
+     'Wide Content Page'),
+    ('conference/content/content_only_page.html',
+     'Content Only Page'),
 )
 PAGE_TEMPLATES = (
     ('conference/content/generic_content_page_with_sidebar.html',
@@ -452,6 +477,9 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 #
 SESSION_COOKIE_NAME = 'sid'
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
+if HTTPS:
+    # Use secure cookie settings when using HTTPS
+    SESSION_COOKIE_SECURE = True
 
 CONFERENCE_CONFERENCE = 'ep2021'
 CONFERENCE_NAME = "EuroPython 2021"
@@ -739,3 +767,28 @@ MATRIX_AUTH_API_ALLOWED_IPS = config(
     default='',
     cast=lambda v: [s.strip() for s in v.split(',') if s.strip()]
 )
+
+### Matrix stream embedding
+
+# Token to accept
+#
+# Normally, users have to be logged in to allow seeing streams based on
+# their tickets.  With the token, this can be overridden to e.g.  permit
+# Matrix widgets to show streams without having the user log in first.
+#
+MATRIX_STREAM_EMBEDDING_TOKEN = config(
+    'MATRIX_STREAM_EMBEDDING_TOKEN',
+    default=None
+)
+
+# Referer to accept
+#
+# This is optional and only checked if given.
+#
+MATRIX_STREAM_EMBEDDING_REFERER = config(
+    'MATRIX_STREAM_EMBEDDING_REFERER',
+    default=None
+)
+
+# Fare code set to assume when using stream embedding
+MATRIX_STREAM_EMBEDDING_FARES = set(['TRCC'])
