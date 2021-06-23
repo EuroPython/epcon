@@ -1,0 +1,35 @@
+{% extends "conference/base.html" %}
+
+{% load menu_tags cms_tags static %}
+
+{% block content %}
+<div id="content_page">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>{% page_attribute "title" %}</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-12">
+                <div id="content" class="epcms_content">
+                    {% placeholder "text" %}
+                </div>
+            </div>
+        </div><!-- .row -->
+    </div>
+</div>
+{% endblock %}
+
+{% block morejs %}
+<script src="{% static "/js/generate_toc_for_cms.js" %}"></script>
+{% endblock morejs %}
+
+{% block morecss %}
+<style>
+    img.filer_image {
+        max-width: 100%;
+        height: auto;
+    }
+</style>
+{% endblock morecss %}
