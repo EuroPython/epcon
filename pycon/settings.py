@@ -480,7 +480,6 @@ SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 if HTTPS:
     # Use secure cookie settings when using HTTPS
     SESSION_COOKIE_SECURE = True
-    SESSION_COOKIE_SAMESITE = 'None'
 
 CONFERENCE_CONFERENCE = 'ep2021'
 CONFERENCE_NAME = "EuroPython 2021"
