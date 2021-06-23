@@ -584,7 +584,13 @@ def get_tickets_for_current_conference(user):
 
 def matrix_token_access(request):
 
+    """ Check whether a Matrix embedding token was passed in
+    
+    """
     #print ('Configured token: %r' % settings.MATRIX_STREAM_EMBEDDING_TOKEN)
+
+    if request is None:
+        return False
 
     # Token check
     if settings.MATRIX_STREAM_EMBEDDING_TOKEN is None:
