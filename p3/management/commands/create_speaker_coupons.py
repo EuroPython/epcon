@@ -143,8 +143,7 @@ class Command(BaseCommand):
                 # Override existing talk discount with training; this
                 # means that someone who does e.g. both a talk and
                 # training, will get the higher training discount
-                if (entry is not None and
-                    entry['discount'] != '100%'):
+                if entry is not None:
                     entry = None
 
             # Entry already exists, so don't create a new coupon
