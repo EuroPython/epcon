@@ -82,7 +82,7 @@ class Command(BaseCommand):
                     print ('Coupon %r already exists - updating' % code)
                     c = all_codes[code]
                 else:
-                    print ('New coupon %r will be created' % c.code)
+                    print ('New coupon %r will be created' % code)
                     c = Coupon(conference=conference)
                     c.code = code
                 c.max_usage = int(row.get('max_usage', 1))
