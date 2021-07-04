@@ -1345,11 +1345,11 @@ class CaptchaQuestion(TimeStampedModel):
 
     question = models.CharField(max_length=255)
     answer   = models.CharField(max_length=255,
-                                verbose_name='''answer (use a regular expression
-                                to capture possible answers e.g.
-                                "(python|the python programming language)"
-                                case is ignored)
-                                ''')
+                                verbose_name='answer (use a regular expression'
+                                ' to capture possible answers e.g.'
+                                ' "(python|the python programming language)"'
+                                ' case is ignored)'
+                                )
     enabled  = models.BooleanField(default=True)
 
     objects = CaptchaQuestionManager()
