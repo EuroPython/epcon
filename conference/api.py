@@ -237,6 +237,15 @@ def isauth(request):
         except AttendeeProfile.DoesNotExist:
             return _error(ApiError.AUTH_ERROR, 'unknown user')
     elif 'username' in data:
+        # Here we could have an issue: the username could be coming from Matrix
+        # and could have been sanitized, accodring to some Matrix specific
+        # rules. The most common one is that the epcon username is a number,
+        # which Matriox does not like. What we do in Matrix is prepending a "g"
+        # to it (because it comes from folks with Google auth mostly). Try
+        # that.
+        if data['username'].startswith('g') and data['username'][1:].isdigit():
+            data['username'] = data['username'][1:]
+
         try:
             profile = AttendeeProfile.objects.get(
                 user__username=data['username']
