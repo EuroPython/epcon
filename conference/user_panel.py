@@ -266,7 +266,7 @@ class TicketConferenceConfigForm(forms.ModelForm):
 
 class ProfileSpamControlForm(forms.ModelForm):
     spam_recruiting = forms.BooleanField(
-        label="I want to receive a few selected job offers through EuroPython.",
+        label="I want to receive a few selected sponsor messages and job offers through EuroPython.",
         required=False,
     )
     spam_user_message = forms.BooleanField(
