@@ -620,6 +620,7 @@ def get_streams_for_current_conference(user, request=None):
 
     """ Return the list of currently active streams as dictionaries:
         - title
+        - id
         - url
     """
     if user.is_authenticated:
@@ -639,6 +640,12 @@ def get_streams_for_current_conference(user, request=None):
         title_filter = request.GET.get('title')
     else:
         title_filter = None
+
+    # Allow filtering by id
+    if request is not None:
+        id_filter = request.GET.get('id')
+    else:
+        id_filter = None
 
     #print ('User has these fares: %r' % fare_codes)
     conference = Conference.objects.current()
@@ -662,12 +669,19 @@ def get_streams_for_current_conference(user, request=None):
             stream_fare_codes = set(stream.get('fare_codes', ()))
             #print ('Stream requires these fare codes: %r' % stream_fare_codes)
             if stream_fare_codes & fare_codes:
+                title = stream['title']
+                id = stream.get('id', '')
+                url = stream['url']
                 if title_filter:
-                    if stream['title'] != title_filter:
+                    if title != title_filter:
+                        continue
+                if id_filter:
+                    if id != id_filter:
                         continue
                 streams.append({
-                    'title': stream['title'],
-                    'url': stream['url'],
+                    'title': title,
+                    'id': id,
+                    'url': url,
                 })
         end_date = stream_set.end_date
         if end_date is not None and end_date < reload_date:
