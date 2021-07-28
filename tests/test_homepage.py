@@ -103,4 +103,4 @@ def test_homepage_contains_googleanalytics(db, client):
     response = client.get(url)
     assert response.status_code == 200
 
-    assert 'google-analytics.com/ga.js' in response.content.decode()
+    assert 'https://www.googletagmanager.com/gtag/js' in response.content.decode()
