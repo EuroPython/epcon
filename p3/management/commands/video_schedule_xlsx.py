@@ -15,7 +15,7 @@
 
     Row A6: Start of data
 
-    Author: Marc-Andre Lemburg, 2017-2020.
+    Author: Marc-Andre Lemburg, 2017-2021.
 
 """
 from django.core.management.base import BaseCommand
@@ -36,7 +36,7 @@ from .accepted_talks import TYPE_NAMES
 # License notice to attach to talks
 LICENSE = """
 
-License: This video is licensed under the CC BY-NC-SA 3.0 license: https://creativecommons.org/licenses/by-nc-sa/3.0/
+License: This video is licensed under the CC BY-NC-SA 4.0 license: https://creativecommons.org/licenses/by-nc-sa/4.0/
 Please see our speaker release agreement for details: https://ep2021.europython.eu/events/speaker-release-agreement/
 """
 
@@ -124,8 +124,12 @@ def video_description(title, abstract,
         # Remove plural "s"
         session_type = session_type[:-1]
 
+    # Remove HTML from abstract, since YouTube doesn't display this
+    # correctly
+    abstract = format_text(abstract, remove_tags=True, output_html=False)
+
     # XXX Make this configurables in settings
-    return """\
+    text = """\
 %(title)s
 [EuroPython 2021 - %(type)s - %(date)s - %(room)s]
 [Online]
@@ -139,6 +143,7 @@ def video_description(title, abstract,
         room=room,
         abstract=abstract,
         license=license)
+    return text.strip()
 
 def add_event(data, talk=None, event=None, session_type='', talk_events=None):
 
