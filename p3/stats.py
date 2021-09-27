@@ -8,7 +8,10 @@ from django.db.models import Q, Count
 from p3 import models
 from conference import models as cmodels
 from conference.models import Ticket, Speaker, Talk, TALK_STATUS
-from conference.tickets import sold_training_tickets_including_combined_tickets
+from conference.tickets import (
+    sold_training_tickets_including_combined_tickets,
+    sold_conference_tickets_including_combined_tickets,
+    )
 
 
 def _create_option(id, title, total_qs, **kwargs):
@@ -67,6 +70,13 @@ def _assigned_tickets(conf, ticket_type='conference'):
 def _unassigned_tickets(conf, ticket_type='conference', only_complete=True):
     return _tickets(conf, ticket_type, only_complete=only_complete)\
         .filter(Q(p3_conference=None)|Q(name='')|Q(p3_conference__assigned_to=''))
+
+
+def _training_tickets_including_combined(conference_code):
+    return sold_training_tickets_including_combined_tickets(conference_code=conference_code)
+
+def _conference_tickets_including_combined(conference_code):
+    return sold_conference_tickets_including_combined_tickets(conference_code=conference_code)
 
 
 def shirt_sizes(conf):
@@ -185,7 +195,9 @@ def tickets_status(conf, code=None):
                 'assigned_tickets',
                 'unassigned_tickets',
                 'multiple_assignments',
-                'tickets_with_unique_email'
+                'tickets_with_unique_email',
+                'training_tickets_sold',
+                'conference_tickets_sold',
         ):
             output = ticket_status_for_un_assigned_sold_tickets(code, conf, multiple_assignments)
 
@@ -197,30 +209,6 @@ def tickets_status(conf, code=None):
 
         elif code == 'spam_recruiting':
             output = ticket_status_for_spam_recruiting(spam_recruiting)
-
-        elif code == 'training_tickets_sold':
-            output = ticket_status_for_training_tickets_including_combined(conference_code=conf)
-
-    return output
-
-
-def ticket_status_for_training_tickets_including_combined(conference_code):
-    output = {
-        'columns': (
-            ('ticket', 'Ticket'),
-            ('name', 'Attendee name'),
-            ('email', 'Email'),
-        ),
-        'data': [],
-    }
-    tickets = sold_training_tickets_including_combined_tickets(conference_code=conference_code)
-
-    for ticket in tickets:
-        output['data'].append({
-            'name': ticket.user.assopy_user.name(),
-            'email': ticket.user.email,
-            'ticket': ticket,
-        })
 
     return output
 
@@ -249,6 +237,10 @@ def ticket_status_for_un_assigned_sold_tickets(code, conf, multiple_assignments)
                     .values('p3_conference__assigned_to'))
     elif code == 'tickets_with_unique_email':
         qs = _tickets_with_unique_email(conf)
+    elif code == 'training_tickets_sold':
+        qs = _training_tickets_including_combined(conf)
+    elif code == 'conference_tickets_sold':
+        qs = _conference_tickets_including_combined(conf)
     else:
         raise ValueError('Unsupported stats code: %r' % code)
     qs = qs.select_related('p3_conference', 'user')
@@ -399,6 +391,11 @@ def ticket_status_no_code(conf, multiple_assignments, orphan_tickets, spam_recru
             'id': 'training_tickets_sold',
             'title': 'Sold training tickets (including combined)',
             'total': sold_training_tickets_including_combined_tickets(conference_code=conf).count(),
+        },
+        {
+            'id': 'conference_tickets_sold',
+            'title': 'Sold conference tickets (including combined)',
+            'total': sold_conference_tickets_including_combined_tickets(conference_code=conf).count(),
         },
         _create_option(
             'tickets_with_unique_email',

@@ -34,3 +34,27 @@ def sold_training_tickets_including_combined_tickets(conference_code):
         )
     )
     return qs
+
+def sold_conference_tickets_including_combined_tickets(conference_code):
+    qs = Ticket.objects.filter(
+        fare__conference=conference_code,
+        frozen=False,
+        orderitem__order___complete=True,
+    ).filter(
+        Q(
+            fare__code__regex=FARE_CODE_REGEXES["variants"][
+                FARE_CODE_VARIANTS.STANDARD
+            ]
+        )
+        | Q(
+            fare__code__regex=FARE_CODE_REGEXES["variants"][
+                FARE_CODE_VARIANTS.COMBINED
+            ]
+        )
+        | Q(
+            fare__code__regex=FARE_CODE_REGEXES["variants"][
+                FARE_CODE_VARIANTS.DAYPASS
+            ]
+        )
+    )
+    return qs
