@@ -145,7 +145,7 @@ def assign_ticket(request, ticket_id):
                 reset_ticket_settings(ticket)
 
             messages.success(
-                request, "Ticket successfuly reassigned to %s" % user.email
+                request, "Ticket successfully reassigned to %s" % user.email
             )
             return redirect("user_panel:dashboard")
 
