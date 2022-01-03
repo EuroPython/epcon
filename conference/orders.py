@@ -29,7 +29,7 @@ def latest_order_code_for_year(year):
     returns latest used order.code in a given year.
     rtype – string or None
     """
-    assert 2016 <= year <= 2021, year
+    assert 2016 <= year <= 2022, year
 
     orders = Order.objects.filter(
         code__startswith=ORDER_CODE_PREFIX, created__year=year
@@ -39,7 +39,7 @@ def latest_order_code_for_year(year):
 
 
 def next_order_code_for_year(year):
-    assert 2016 <= year <= 2021, year
+    assert 2016 <= year <= 2022, year
 
     current_code = latest_order_code_for_year(year)
     if current_code:
