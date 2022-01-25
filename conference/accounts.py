@@ -1,4 +1,5 @@
 import random
+import re
 
 from django import forms
 from django.conf import settings
@@ -217,6 +218,7 @@ class NewAccountForm(forms.Form):
 
     # Additional captcha field with simple python questions
     # https://github.com/EuroPython/epcon/issues/703
+    # https://github.com/EuroPython/epcon/issues/823
     captcha_question = forms.CharField(widget=forms.HiddenInput)
     captcha_answer = forms.CharField()
 
@@ -243,8 +245,10 @@ class NewAccountForm(forms.Form):
 
     def clean_captcha_answer(self):
         question = self.cleaned_data['captcha_question']
-        cq = CaptchaQuestion.objects.get(question=question)
-        if cq.answer.strip() != self.cleaned_data['captcha_answer'].strip():
+        answer = self.cleaned_data['captcha_answer'].strip()
+        correct_answers = CaptchaQuestion.objects.get(question=question).answer
+        answer_regx = re.compile(correct_answers, re.IGNORECASE)
+        if not answer_regx.match(answer):
             raise forms.ValidationError("Sorry, that's a wrong answer")
         return self.cleaned_data['captcha_question']
 
