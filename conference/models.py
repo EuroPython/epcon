@@ -138,7 +138,7 @@ class Conference(models.Model):
                 raise exceptions.ValidationError('Voting end must be > of voting start')
 
     def cfp(self):
-        today = timezone.now().date()
+        today = timezone.localtime().date()
         try:
             return self.cfp_start <= today <= self.cfp_end
         except TypeError:
@@ -146,7 +146,7 @@ class Conference(models.Model):
             return False
 
     def voting(self):
-        today = timezone.now().date()
+        today = timezone.localtime().date()
         try:
             return self.voting_start <= today <= self.voting_end
         except TypeError:
@@ -154,12 +154,12 @@ class Conference(models.Model):
             return False
 
     def conference(self):
-        today = timezone.now().date()
+        today = timezone.localtime().date()
         return self.conference_start <= today <= self.conference_end
 
     @property
     def has_finished(self):
-        today = timezone.now().date()
+        today = timezone.localtime().date()
         return today > self.conference_end
 
 
@@ -834,7 +834,7 @@ class TalkSpeaker(models.Model):
 
 class FareQuerySet(models.QuerySet):
     def available(self, conference=None):
-        today = timezone.now().date()
+        today = timezone.localtime().date()
         q1 = models.Q(start_validity=None, end_validity=None)
         q2 = models.Q(start_validity__lte=today, end_validity__gte=today)
         qs = self.filter(q1 | q2)
@@ -892,7 +892,7 @@ class Fare(models.Model):
 
     def valid(self):
         # numb = len(list(Ticket.objects.all()))
-        today = timezone.now().date()
+        today = timezone.localtime().date()
         try:
             validity = self.start_validity <= today <= self.end_validity
         except TypeError:
